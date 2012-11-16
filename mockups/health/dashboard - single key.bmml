@@ -1,0 +1,81 @@
+<mockup version="1.0" skin="sketch" fontFace="Balsamiq Sans" measuredW="1166" measuredH="880" mockupW="1024" mockupH="768">
+  <controls>
+    <control controlID="2" controlTypeID="com.balsamiq.mockups::Title" x="183" y="212" w="-1" h="-1" measuredW="509" measuredH="50" zOrder="1" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Health%20Developer%20Dashboard</text>
+      </controlProperties>
+    </control>
+    <control controlID="6" controlTypeID="com.balsamiq.mockups::BrowserWindow" x="142" y="112" w="1024" h="768" measuredW="450" measuredH="400" zOrder="0" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Health%20Developer%20Dashboard</text>
+      </controlProperties>
+    </control>
+    <control controlID="7" controlTypeID="com.balsamiq.mockups::Label" x="299" y="142" w="-1" h="-1" measuredW="196" measuredH="21" zOrder="2" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>https%3A//health.a2p3.ca/dashboard</text>
+      </controlProperties>
+    </control>
+    <control controlID="15" controlTypeID="com.balsamiq.mockups::Paragraph" x="183" y="271" w="206" h="28" measuredW="200" measuredH="80" zOrder="3" locked="false" isInGroup="-1">
+      <controlProperties>
+        <align>left</align>
+        <size>24</size>
+        <text>app.example.com</text>
+      </controlProperties>
+    </control>
+    <control controlID="77" controlTypeID="com.balsamiq.mockups::Paragraph" x="929" y="223" w="186" h="28" measuredW="200" measuredH="80" zOrder="4" locked="false" isInGroup="-1">
+      <controlProperties>
+        <align>left</align>
+        <size>20</size>
+        <text>joe@example.com</text>
+      </controlProperties>
+    </control>
+    <control controlID="83" controlTypeID="com.balsamiq.mockups::Paragraph" x="374" y="305" w="228" h="28" measuredW="200" measuredH="80" zOrder="10" locked="false" isInGroup="-1">
+      <controlProperties>
+        <align>left</align>
+        <size>16</size>
+        <text>health.a2p3.ca/prov_number</text>
+      </controlProperties>
+    </control>
+    <control controlID="84" controlTypeID="com.balsamiq.mockups::Paragraph" x="289" y="305" w="85" h="28" measuredW="200" measuredH="80" zOrder="11" locked="false" isInGroup="-1">
+      <controlProperties>
+        <align>right</align>
+        <size>16</size>
+        <text>Resource%3A</text>
+      </controlProperties>
+    </control>
+    <control controlID="86" controlTypeID="com.balsamiq.mockups::Paragraph" x="285" y="333" w="89" h="28" measuredW="200" measuredH="80" zOrder="5" locked="false" isInGroup="-1">
+      <controlProperties>
+        <align>right</align>
+        <size>14</size>
+        <text>Secret%20Key%3A</text>
+      </controlProperties>
+    </control>
+    <control controlID="87" controlTypeID="com.balsamiq.mockups::Paragraph" x="300" y="361" w="74" h="28" measuredW="200" measuredH="80" zOrder="6" locked="false" isInGroup="-1">
+      <controlProperties>
+        <align>right</align>
+        <size>14</size>
+        <text>Key%20ID%3A</text>
+      </controlProperties>
+    </control>
+    <control controlID="88" controlTypeID="com.balsamiq.mockups::Paragraph" x="374" y="333" w="689" h="28" measuredW="200" measuredH="80" zOrder="7" locked="false" isInGroup="-1">
+      <controlProperties>
+        <align>left</align>
+        <size>14</size>
+        <text>gj2twWrfqCpAVohMcFUjoCJErCLi6maKz73qySjEJOw5bzRlITmgfro2nXegcydPDC54YwE-eFq11KbihRsIDM</text>
+      </controlProperties>
+    </control>
+    <control controlID="89" controlTypeID="com.balsamiq.mockups::Paragraph" x="374" y="361" w="689" h="28" measuredW="200" measuredH="80" zOrder="8" locked="false" isInGroup="-1">
+      <controlProperties>
+        <align>left</align>
+        <size>14</size>
+        <text>OhaSTOCFTzo_EU591</text>
+      </controlProperties>
+    </control>
+    <control controlID="90" controlTypeID="com.balsamiq.mockups::Button" x="374" y="389" w="191" h="27" measuredW="191" measuredH="27" zOrder="9" locked="false" isInGroup="-1">
+      <controlProperties>
+        <size>14</size>
+        <text>Generate%20New%20Secret%20Key</text>
+      </controlProperties>
+    </control>
+  </controls>
+</mockup>
