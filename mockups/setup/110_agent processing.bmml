@@ -1,0 +1,66 @@
+<mockup version="1.0" skin="sketch" fontFace="Balsamiq Sans" measuredW="1166" measuredH="897" mockupW="1024" mockupH="785">
+  <controls>
+    <control controlID="0" controlTypeID="com.balsamiq.mockups::BrowserWindow" x="142" y="112" w="1024" h="768" measuredW="450" measuredH="400" zOrder="0" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Red%20Mobile%20Agent</text>
+      </controlProperties>
+    </control>
+    <control controlID="1" controlTypeID="com.balsamiq.mockups::Title" x="385" y="210" w="538" h="-1" measuredW="509" measuredH="50" zOrder="1" locked="false" isInGroup="-1">
+      <controlProperties>
+        <align>center</align>
+        <text>Red%20Mobile%20Agent%20Enrollment</text>
+      </controlProperties>
+    </control>
+    <control controlID="10" controlTypeID="com.balsamiq.mockups::TextInput" x="522" y="765" w="222" h="-1" measuredW="94" measuredH="27" zOrder="2" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>email%20address</text>
+      </controlProperties>
+    </control>
+    <control controlID="11" controlTypeID="com.balsamiq.mockups::Button" x="522" y="801" w="222" h="27" measuredW="185" measuredH="27" zOrder="3" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Send%20Red%20Mobile%20Agent%20Link</text>
+      </controlProperties>
+    </control>
+    <control controlID="13" controlTypeID="com.balsamiq.mockups::Paragraph" x="522" y="705" w="229" h="53" measuredW="200" measuredH="80" zOrder="4" locked="false" isInGroup="-1">
+      <controlProperties>
+        <align>center</align>
+        <text>Don%27t%20have%20the%20Red%20Mobile%20Agent%20app%3F%20Have%20a%20link%20sent%20to%20your%20email%20address%20and%20open%20on%20your%20mobile%20device</text>
+      </controlProperties>
+    </control>
+    <control controlID="22" controlTypeID="com.balsamiq.mockups::Paragraph" x="435" y="268" w="439" h="57" measuredW="200" measuredH="80" zOrder="5" locked="false" isInGroup="-1">
+      <controlProperties>
+        <align>center</align>
+        <size>20</size>
+        <text>Please%20open%20the%20Red%20Mobile%20Agent%20app%20on%20your%20mobile%20device%20and%20scan%20the%20QR%20Code%20below.</text>
+      </controlProperties>
+    </control>
+    <control controlID="23" controlTypeID="com.balsamiq.mockups::Image" x="456" y="331" w="360" h="352" measuredW="216" measuredH="216" zOrder="6" locked="false" isInGroup="-1">
+      <controlProperties>
+        <src>../bank/assets/QRcode.png</src>
+        <text/>
+      </controlProperties>
+    </control>
+    <control controlID="44" controlTypeID="com.balsamiq.mockups::Paragraph" x="299" y="143" w="-1" h="-1" measuredW="200" measuredH="80" zOrder="9" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>https%3A//red-as.a2p3.ca/enroll//qr</text>
+      </controlProperties>
+    </control>
+    <control controlID="47" controlTypeID="com.balsamiq.mockups::iPhone" x="771" y="387" w="-1" h="-1" measuredW="282" measuredH="510" zOrder="7" locked="false" isInGroup="-1"/>
+    <control controlID="54" controlTypeID="com.balsamiq.mockups::IconLabel" x="807" y="495" w="32" h="-1" measuredW="32" measuredH="47" zOrder="8" locked="false" isInGroup="-1">
+      <controlProperties>
+        <borderStyle>square</borderStyle>
+        <icon>./assets/icon_agent.png%7Cmedium</icon>
+        <size>8</size>
+        <text>%20</text>
+      </controlProperties>
+    </control>
+    <control controlID="55" controlTypeID="com.balsamiq.mockups::IconLabel" x="870" y="608" w="-1" h="-1" measuredW="85" measuredH="69" zOrder="10" locked="false" isInGroup="-1">
+      <controlProperties>
+        <href>120_agent%20success%26bm%3B120_agent%20success.bmml%26bm%3B120_agent%20success.bmml%26bm%3B120_agent%20success.bmml</href>
+        <icon>./assets/icon_processing.gif%7Clarge</icon>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22728%2C496%2C813%2C565%22%20href%3D%22120_agent%2520success.bmml%22%20alt%3D%22120_agent%20success%22%20id%3D%2255%22/%3E</map>
+        <text>Processing%20...%20</text>
+      </controlProperties>
+    </control>
+  </controls>
+</mockup>

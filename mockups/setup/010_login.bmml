@@ -1,0 +1,37 @@
+<mockup version="1.0" skin="sketch" fontFace="Balsamiq Sans" measuredW="1166" measuredH="880" mockupW="1024" mockupH="768">
+  <controls>
+    <control controlID="1" controlTypeID="com.balsamiq.mockups::Image" x="570" y="457" w="-1" h="-1" measuredW="169" measuredH="21" zOrder="1" locked="false" isInGroup="-1">
+      <controlProperties>
+        <href>020_FB-auth%26bm%3B020_FB-auth.bmml%26bm%3B020_FB-auth.bmml%26bm%3B020_FB-auth.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22428%2C345%2C597%2C366%22%20href%3D%22020_FB-auth.bmml%22%20alt%3D%22020_FB-auth%22%20id%3D%221%22/%3E</map>
+        <src>../../../bubbler/bubbler4chrome/bubbler-beta/images/facebook-connect.jpg</src>
+        <text/>
+      </controlProperties>
+    </control>
+    <control controlID="2" controlTypeID="com.balsamiq.mockups::Title" x="551" y="251" w="-1" h="-1" measuredW="223" measuredH="50" zOrder="2" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>A2P3%20Setup</text>
+      </controlProperties>
+    </control>
+    <control controlID="3" controlTypeID="com.balsamiq.mockups::Paragraph" x="562" y="316" w="208" h="60" measuredW="200" measuredH="80" zOrder="3" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>This%20site%20enrolls%20you%20into%20the%20A2P3%20Demo%20so%20that%20you%20can%20experience%20the%20A2P3%20protocol%20directly.%0A%20%0AAs%20this%20is%20a%20demo%2C%20the%20implementations%20do%20not%20provide%20high%20security.%20Do%20not%20release%20information%20that%20is%20not%20relatively%20public%20already.</text>
+      </controlProperties>
+    </control>
+    <control controlID="4" controlTypeID="com.balsamiq.mockups::Paragraph" x="562" y="376" w="200" h="60" measuredW="200" measuredH="80" zOrder="4" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>The%20Demo%20uses%20Facebook%20to%20populate%20the%20system%20with%20profile%20information%20and%20provides%20authentication%20on%20subsequent%20visits.</text>
+      </controlProperties>
+    </control>
+    <control controlID="6" controlTypeID="com.balsamiq.mockups::BrowserWindow" x="142" y="112" w="1024" h="768" measuredW="450" measuredH="400" zOrder="0" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>A2P3%20Setup</text>
+      </controlProperties>
+    </control>
+    <control controlID="7" controlTypeID="com.balsamiq.mockups::Label" x="299" y="142" w="-1" h="-1" measuredW="128" measuredH="21" zOrder="5" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>https%3A//setup.a2p3.ca</text>
+      </controlProperties>
+    </control>
+  </controls>
+</mockup>

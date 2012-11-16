@@ -1,0 +1,93 @@
+<mockup version="1.0" skin="sketch" fontFace="Balsamiq Sans" measuredW="1166" measuredH="880" mockupW="1024" mockupH="768">
+  <controls>
+    <control controlID="0" controlTypeID="com.balsamiq.mockups::BrowserWindow" x="142" y="112" w="1024" h="768" measuredW="450" measuredH="400" zOrder="0" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>A2P3%20Setup%20Dashboard</text>
+      </controlProperties>
+    </control>
+    <control controlID="1" controlTypeID="com.balsamiq.mockups::Title" x="203" y="233" w="689" h="-1" measuredW="566" measuredH="50" zOrder="1" locked="false" isInGroup="-1">
+      <controlProperties>
+        <align>left</align>
+        <text>A2P3%20Mobile%20Device%20Dashboard</text>
+      </controlProperties>
+    </control>
+    <control controlID="2" controlTypeID="com.balsamiq.mockups::Paragraph" x="203" y="353" w="438" h="22" measuredW="200" measuredH="80" zOrder="2" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>You%20have%20no%20mobile%20devices%20registered.%20Please%20enroll%20a%20mobile%20device.</text>
+      </controlProperties>
+    </control>
+    <control controlID="3" controlTypeID="com.balsamiq.mockups::SubTitle" x="278" y="305" w="-1" h="-1" measuredW="112" measuredH="33" zOrder="3" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Joe%20Smith</text>
+      </controlProperties>
+    </control>
+    <control controlID="5" controlTypeID="com.balsamiq.mockups::Icon" x="208" y="287" w="-1" h="-1" measuredW="48" measuredH="48" zOrder="4" locked="false" isInGroup="-1">
+      <controlProperties>
+        <icon>ContactIcon%7Clarge</icon>
+      </controlProperties>
+    </control>
+    <control controlID="6" controlTypeID="com.balsamiq.mockups::SubTitle" x="203" y="406" w="-1" h="-1" measuredW="203" measuredH="33" zOrder="5" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Add%20Mobile%20Device</text>
+      </controlProperties>
+    </control>
+    <control controlID="8" controlTypeID="com.balsamiq.mockups::Link" x="211" y="647" w="-1" h="-1" measuredW="140" measuredH="21" zOrder="6" locked="false" isInGroup="-1">
+      <controlProperties>
+        <href>070_enroll%20passcode%26bm%3B070_enroll%20passcode.bmml%26bm%3B070_enroll%20passcode.bmml%26bm%3B070_enroll%20passcode.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%2269%2C535%2C209%2C556%22%20href%3D%22070_enroll%2520passcode.bmml%22%20alt%3D%22070_enroll%20passcode%22%20id%3D%228%22/%3E</map>
+        <text>Enroll%20Red%20Mobile%20Agent</text>
+      </controlProperties>
+    </control>
+    <control controlID="9" controlTypeID="com.balsamiq.mockups::Label" x="203" y="493" w="-1" h="-1" measuredW="497" measuredH="21" zOrder="7" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>1%29%20Click%20one%20of%20the%20buttons%20below%20to%20send%20an%20email%20with%20links%20to%20the%20Mobile%20Agent%20App%20to%3A</text>
+      </controlProperties>
+    </control>
+    <control controlID="10" controlTypeID="com.balsamiq.mockups::TextInput" x="244" y="520" w="222" h="-1" measuredW="119" measuredH="27" zOrder="8" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>joe@example.com</text>
+      </controlProperties>
+    </control>
+    <control controlID="11" controlTypeID="com.balsamiq.mockups::Button" x="211" y="556" w="-1" h="-1" measuredW="125" measuredH="27" zOrder="9" locked="false" isInGroup="-1">
+      <controlProperties>
+        <href>060_dashboard-empty-email-notify%26bm%3B060_dashboard-empty-email-notify.bmml%26bm%3B060_dashboard-empty-email-notify.bmml%26bm%3B060_dashboard-empty-email-notify.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%2269%2C444%2C194%2C471%22%20href%3D%22060_dashboard-empty-email-notify.bmml%22%20alt%3D%22060_dashboard-empty-email-notify%22%20id%3D%2211%22/%3E</map>
+        <text>Red%20Mobile%20Agent</text>
+      </controlProperties>
+    </control>
+    <control controlID="12" controlTypeID="com.balsamiq.mockups::Button" x="372" y="556" w="-1" h="-1" measuredW="126" measuredH="27" zOrder="10" locked="false" isInGroup="-1">
+      <controlProperties>
+        <href>060_dashboard-empty-email-notify%26bm%3B060_dashboard-empty-email-notify.bmml%26bm%3B060_dashboard-empty-email-notify.bmml%26bm%3B060_dashboard-empty-email-notify.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22230%2C444%2C356%2C471%22%20href%3D%22060_dashboard-empty-email-notify.bmml%22%20alt%3D%22060_dashboard-empty-email-notify%22%20id%3D%2212%22/%3E</map>
+        <text>Blue%20Mobile%20Agent</text>
+      </controlProperties>
+    </control>
+    <control controlID="13" controlTypeID="com.balsamiq.mockups::Paragraph" x="203" y="439" w="543" h="54" measuredW="200" measuredH="80" zOrder="11" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>To%20add%20a%20mobile%20device%2C%20you%20must%20install%20an%20A2P3%20Mobile%20Agent%20on%20your%20mobile%20device.%0ATo%20demonstrate%20that%20A2P3%20supports%20multiple%20Authentication%20Services%2C%20you%20can%20choose%20between%20a%20Red%20Mobile%20Agent%20and%20a%20Blue%20Mobile%20Agent%20</text>
+      </controlProperties>
+    </control>
+    <control controlID="15" controlTypeID="com.balsamiq.mockups::Label" x="203" y="596" w="-1" h="-1" measuredW="374" measuredH="21" zOrder="12" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>2%29%20Open%20the%20email%20on%20your%20mobile%20device%20and%20follow%20the%20directions</text>
+      </controlProperties>
+    </control>
+    <control controlID="16" controlTypeID="com.balsamiq.mockups::Label" x="203" y="626" w="-1" h="-1" measuredW="367" measuredH="21" zOrder="13" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>3%29%20Click%20on%20the%20same%20agent%20link%20below%20to%20enroll%20the%20Mobile%20Agent</text>
+      </controlProperties>
+    </control>
+    <control controlID="17" controlTypeID="com.balsamiq.mockups::Link" x="372" y="647" w="-1" h="-1" measuredW="141" measuredH="21" zOrder="14" locked="false" isInGroup="-1">
+      <controlProperties>
+        <href>070_enroll%20passcode%26bm%3B070_enroll%20passcode.bmml%26bm%3B070_enroll%20passcode.bmml%26bm%3B070_enroll%20passcode.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22230%2C535%2C371%2C556%22%20href%3D%22070_enroll%2520passcode.bmml%22%20alt%3D%22070_enroll%20passcode%22%20id%3D%2217%22/%3E</map>
+        <text>Enroll%20Blue%20Mobile%20Agent</text>
+      </controlProperties>
+    </control>
+    <control controlID="18" controlTypeID="com.balsamiq.mockups::Paragraph" x="299" y="143" w="-1" h="-1" measuredW="200" measuredH="80" zOrder="15" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>https%3A//setup.a2p3.ca/dashboard</text>
+      </controlProperties>
+    </control>
+  </controls>
+</mockup>

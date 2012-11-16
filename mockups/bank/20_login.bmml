@@ -1,0 +1,27 @@
+<mockup version="1.0" skin="sketch" fontFace="Balsamiq Sans" measuredW="342" measuredH="537" mockupW="282" mockupH="510">
+  <controls>
+    <control controlID="45" controlTypeID="com.balsamiq.mockups::iPhone" x="60" y="27" w="-1" h="-1" measuredW="282" measuredH="510" zOrder="0" locked="false" isInGroup="-1"/>
+    <control controlID="46" controlTypeID="com.balsamiq.mockups::Button" x="111" y="255" w="181" h="45" measuredW="61" measuredH="27" zOrder="1" locked="false" isInGroup="-1">
+      <controlProperties>
+        <size>16</size>
+        <text>Login</text>
+      </controlProperties>
+    </control>
+    <control controlID="47" controlTypeID="com.balsamiq.mockups::Button" x="111" y="337" w="181" h="42" measuredW="123" measuredH="27" zOrder="2" locked="false" isInGroup="-1">
+      <controlProperties>
+        <href>30_passcode%26bm%3B30_passcode.bmml%26bm%3B30_passcode.bmml%26bm%3B30_passcode.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%2251%2C310%2C232%2C352%22%20href%3D%2230_passcode.bmml%22%20alt%3D%2230_passcode%22%20id%3D%2247%22/%3E</map>
+        <size>16</size>
+        <text>Open%20Account</text>
+      </controlProperties>
+    </control>
+    <control controlID="48" controlTypeID="com.balsamiq.mockups::IconLabel" x="178" y="156" w="46" h="-1" measuredW="32" measuredH="47" zOrder="3" locked="false" isInGroup="-1">
+      <controlProperties>
+        <borderStyle>square</borderStyle>
+        <icon>DollarIcon%7Cmedium</icon>
+        <size>8</size>
+        <text>Bank</text>
+      </controlProperties>
+    </control>
+  </controls>
+</mockup>

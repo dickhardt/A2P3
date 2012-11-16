@@ -1,0 +1,61 @@
+<mockup version="1.0" skin="sketch" fontFace="Balsamiq Sans" measuredW="1166" measuredH="897" mockupW="1024" mockupH="785">
+  <controls>
+    <control controlID="0" controlTypeID="com.balsamiq.mockups::BrowserWindow" x="142" y="112" w="1024" h="768" measuredW="450" measuredH="400" zOrder="0" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Red%20Mobile%20Agent</text>
+      </controlProperties>
+    </control>
+    <control controlID="1" controlTypeID="com.balsamiq.mockups::Title" x="385" y="210" w="538" h="-1" measuredW="509" measuredH="50" zOrder="1" locked="false" isInGroup="-1">
+      <controlProperties>
+        <align>center</align>
+        <text>Red%20Mobile%20Agent%20Enrollment</text>
+      </controlProperties>
+    </control>
+    <control controlID="22" controlTypeID="com.balsamiq.mockups::Paragraph" x="435" y="268" w="439" h="93" measuredW="200" measuredH="80" zOrder="2" locked="false" isInGroup="-1">
+      <controlProperties>
+        <align>center</align>
+        <size>20</size>
+        <text>Congratulations%21%0AYou%20have%20successfully%20installed%20the%20%0ARed%20Mobile%20Agent</text>
+      </controlProperties>
+    </control>
+    <control controlID="38" controlTypeID="com.balsamiq.mockups::Link" x="566" y="420" w="-1" h="-1" measuredW="200" measuredH="28" zOrder="3" locked="false" isInGroup="-1">
+      <controlProperties>
+        <size>20</size>
+        <text>Check%20out%20Demo%20Apps</text>
+      </controlProperties>
+    </control>
+    <control controlID="39" controlTypeID="com.balsamiq.mockups::Link" x="566" y="482" w="-1" h="-1" measuredW="202" measuredH="28" zOrder="4" locked="false" isInGroup="-1">
+      <controlProperties>
+        <href>130_dashboard%26bm%3B130_dashboard.bmml%26bm%3B130_dashboard.bmml%26bm%3B130_dashboard.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22424%2C370%2C626%2C398%22%20href%3D%22130_dashboard.bmml%22%20alt%3D%22130_dashboard%22%20id%3D%2239%22/%3E</map>
+        <size>20</size>
+        <text>Return%20to%20Demo%20Setup</text>
+      </controlProperties>
+    </control>
+    <control controlID="40" controlTypeID="com.balsamiq.mockups::Paragraph" x="299" y="143" w="245" h="80" measuredW="200" measuredH="80" zOrder="9" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>https%3A//red-as.a2p3.ca/enroll/success</text>
+      </controlProperties>
+    </control>
+    <control controlID="41" controlTypeID="com.balsamiq.mockups::iPhone" x="771" y="387" w="-1" h="-1" measuredW="282" measuredH="510" zOrder="5" locked="false" isInGroup="-1"/>
+    <control controlID="42" controlTypeID="com.balsamiq.mockups::Paragraph" x="801" y="511" w="222" h="56" measuredW="200" measuredH="80" zOrder="6" locked="false" isInGroup="-1">
+      <controlProperties>
+        <align>center</align>
+        <size>14</size>
+        <text>Congratulations%21%0AYou%20have%20successfully%20enrolled%20your%0ARed%20Mobile%20Agent</text>
+      </controlProperties>
+    </control>
+    <control controlID="43" controlTypeID="com.balsamiq.mockups::Button" x="818" y="605" w="181" h="45" measuredW="181" measuredH="27" zOrder="7" locked="false" isInGroup="-1">
+      <controlProperties>
+        <size>16</size>
+        <text>Check%20out%20Demo%20Apps</text>
+      </controlProperties>
+    </control>
+    <control controlID="44" controlTypeID="com.balsamiq.mockups::Button" x="818" y="687" w="181" h="42" measuredW="172" measuredH="27" zOrder="8" locked="false" isInGroup="-1">
+      <controlProperties>
+        <size>16</size>
+        <text>Scan%20Login%20QR%20Code</text>
+      </controlProperties>
+    </control>
+  </controls>
+</mockup>

@@ -1,0 +1,168 @@
+<mockup version="1.0" skin="sketch" fontFace="Balsamiq Sans" measuredW="342" measuredH="537" mockupW="282" mockupH="510">
+  <controls>
+    <control controlID="45" controlTypeID="com.balsamiq.mockups::iPhone" x="60" y="27" w="-1" h="-1" measuredW="282" measuredH="510" zOrder="0" locked="false" isInGroup="-1"/>
+    <control controlID="46" controlTypeID="com.balsamiq.mockups::HRule" x="83" y="385" w="237" h="-1" measuredW="100" measuredH="10" zOrder="1" locked="false" isInGroup="-1"/>
+    <control controlID="47" controlTypeID="com.balsamiq.mockups::IconLabel" x="100" y="400" w="32" h="-1" measuredW="32" measuredH="47" zOrder="2" locked="false" isInGroup="-1">
+      <controlProperties>
+        <borderStyle>square</borderStyle>
+        <icon>PhoneDialIcon%7Cmedium</icon>
+        <size>8</size>
+        <text>Phone</text>
+      </controlProperties>
+    </control>
+    <control controlID="48" controlTypeID="com.balsamiq.mockups::IconLabel" x="155" y="400" w="32" h="-1" measuredW="32" measuredH="47" zOrder="3" locked="false" isInGroup="-1">
+      <controlProperties>
+        <borderStyle>square</borderStyle>
+        <icon>EmailIcon%7Cmedium</icon>
+        <size>8</size>
+        <text>Mail</text>
+      </controlProperties>
+    </control>
+    <control controlID="49" controlTypeID="com.balsamiq.mockups::IconLabel" x="210" y="400" w="32" h="-1" measuredW="32" measuredH="47" zOrder="4" locked="false" isInGroup="-1">
+      <controlProperties>
+        <borderStyle>square</borderStyle>
+        <icon>ClockIcon%7Cmedium</icon>
+        <size>8</size>
+        <text>Safari</text>
+      </controlProperties>
+    </control>
+    <control controlID="50" controlTypeID="com.balsamiq.mockups::IconLabel" x="265" y="400" w="32" h="-1" measuredW="32" measuredH="47" zOrder="5" locked="false" isInGroup="-1">
+      <controlProperties>
+        <borderStyle>square</borderStyle>
+        <icon>VolumeIcon%7Cmedium</icon>
+        <size>8</size>
+        <text>iPod</text>
+      </controlProperties>
+    </control>
+    <control controlID="51" controlTypeID="com.balsamiq.mockups::IconLabel" x="98" y="137" w="42" h="-1" measuredW="42" measuredH="47" zOrder="6" locked="false" isInGroup="-1">
+      <controlProperties>
+        <borderStyle>square</borderStyle>
+        <icon>BaloonIcon%7Cmedium</icon>
+        <size>8</size>
+        <text>Messages</text>
+      </controlProperties>
+    </control>
+    <control controlID="52" controlTypeID="com.balsamiq.mockups::IconLabel" x="153" y="137" w="38" h="-1" measuredW="37" measuredH="47" zOrder="7" locked="false" isInGroup="-1">
+      <controlProperties>
+        <borderStyle>square</borderStyle>
+        <icon>CalendarIcon%7Cmedium</icon>
+        <size>8</size>
+        <text>Calendar</text>
+      </controlProperties>
+    </control>
+    <control controlID="53" controlTypeID="com.balsamiq.mockups::IconLabel" x="208" y="137" w="33" h="-1" measuredW="32" measuredH="47" zOrder="8" locked="false" isInGroup="-1">
+      <controlProperties>
+        <borderStyle>square</borderStyle>
+        <icon>ImageIcon%7Cmedium</icon>
+        <size>8</size>
+        <text>Photos</text>
+      </controlProperties>
+    </control>
+    <control controlID="54" controlTypeID="com.balsamiq.mockups::IconLabel" x="263" y="137" w="35" h="-1" measuredW="34" measuredH="47" zOrder="9" locked="false" isInGroup="-1">
+      <controlProperties>
+        <borderStyle>square</borderStyle>
+        <icon>CameraIcon%7Cmedium</icon>
+        <size>8</size>
+        <text>Camera</text>
+      </controlProperties>
+    </control>
+    <control controlID="55" controlTypeID="com.balsamiq.mockups::IconLabel" x="98" y="202" w="39" h="-1" measuredW="38" measuredH="47" zOrder="10" locked="false" isInGroup="-1">
+      <controlProperties>
+        <borderStyle>square</borderStyle>
+        <icon>ContactIcon%7Cmedium</icon>
+        <size>8</size>
+        <text>Contacts</text>
+      </controlProperties>
+    </control>
+    <control controlID="56" controlTypeID="com.balsamiq.mockups::IconLabel" x="151" y="202" w="41" h="-1" measuredW="38" measuredH="47" zOrder="11" locked="false" isInGroup="-1">
+      <controlProperties>
+        <borderStyle>square</borderStyle>
+        <icon>YouTubeIcon%7Cmedium</icon>
+        <size>8</size>
+        <text>YouTube</text>
+      </controlProperties>
+    </control>
+    <control controlID="57" controlTypeID="com.balsamiq.mockups::IconLabel" x="208" y="202" w="32" h="-1" measuredW="32" measuredH="47" zOrder="12" locked="false" isInGroup="-1">
+      <controlProperties>
+        <borderStyle>square</borderStyle>
+        <icon>CellBarsIcon%7Cmedium</icon>
+        <size>8</size>
+        <text>Stocks</text>
+      </controlProperties>
+    </control>
+    <control controlID="58" controlTypeID="com.balsamiq.mockups::IconLabel" x="263" y="202" w="32" h="-1" measuredW="32" measuredH="47" zOrder="13" locked="false" isInGroup="-1">
+      <controlProperties>
+        <borderStyle>square</borderStyle>
+        <icon>PushPinIcon%7Cmedium</icon>
+        <size>8</size>
+        <text>Maps</text>
+      </controlProperties>
+    </control>
+    <control controlID="59" controlTypeID="com.balsamiq.mockups::IconLabel" x="98" y="267" w="40" h="-1" measuredW="36" measuredH="47" zOrder="14" locked="false" isInGroup="-1">
+      <controlProperties>
+        <borderStyle>square</borderStyle>
+        <icon>CloudIcon%7Cmedium</icon>
+        <size>8</size>
+        <text>Weather</text>
+      </controlProperties>
+    </control>
+    <control controlID="60" controlTypeID="com.balsamiq.mockups::IconLabel" x="149" y="267" w="52" h="-1" measuredW="48" measuredH="47" zOrder="15" locked="false" isInGroup="-1">
+      <controlProperties>
+        <borderStyle>square</borderStyle>
+        <icon>MicIcon%7Cmedium</icon>
+        <size>8</size>
+        <text>Voice%20Memo</text>
+      </controlProperties>
+    </control>
+    <control controlID="61" controlTypeID="com.balsamiq.mockups::IconLabel" x="212" y="267" w="32" h="-1" measuredW="32" measuredH="47" zOrder="16" locked="false" isInGroup="-1">
+      <controlProperties>
+        <borderStyle>square</borderStyle>
+        <icon>DocEmptyIcon%7Cmedium</icon>
+        <size>8</size>
+        <text>Notes</text>
+      </controlProperties>
+    </control>
+    <control controlID="62" controlTypeID="com.balsamiq.mockups::IconLabel" x="263" y="267" w="32" h="-1" measuredW="32" measuredH="47" zOrder="17" locked="false" isInGroup="-1">
+      <controlProperties>
+        <borderStyle>square</borderStyle>
+        <icon>SmallClockIcon%7Cmedium</icon>
+        <size>8</size>
+        <text>Clock</text>
+      </controlProperties>
+    </control>
+    <control controlID="63" controlTypeID="com.balsamiq.mockups::IconLabel" x="98" y="332" w="37" h="-1" measuredW="34" measuredH="47" zOrder="18" locked="false" isInGroup="-1">
+      <controlProperties>
+        <borderStyle>square</borderStyle>
+        <icon>BulletsIcon%7Cmedium</icon>
+        <size>8</size>
+        <text>Settings</text>
+      </controlProperties>
+    </control>
+    <control controlID="64" controlTypeID="com.balsamiq.mockups::IconLabel" x="153" y="332" w="47" h="-1" measuredW="41" measuredH="47" zOrder="19" locked="false" isInGroup="-1">
+      <controlProperties>
+        <borderStyle>square</borderStyle>
+        <icon>CartIcon%7Cmedium</icon>
+        <size>8</size>
+        <text>App%20Store</text>
+      </controlProperties>
+    </control>
+    <control controlID="65" controlTypeID="com.balsamiq.mockups::IconLabel" x="208" y="332" w="46" h="-1" measuredW="32" measuredH="47" zOrder="20" locked="false" isInGroup="-1">
+      <controlProperties>
+        <borderStyle>square</borderStyle>
+        <href>20_login%26bm%3B20_login.bmml%26bm%3B20_login.bmml%26bm%3B20_login.bmml</href>
+        <icon>DollarIcon%7Cmedium</icon>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22148%2C305%2C194%2C352%22%20href%3D%2220_login.bmml%22%20alt%3D%2220_login%22%20id%3D%2265%22/%3E</map>
+        <size>8</size>
+        <text>Bank</text>
+      </controlProperties>
+    </control>
+    <control controlID="66" controlTypeID="com.balsamiq.mockups::IconLabel" x="263" y="332" w="32" h="-1" measuredW="32" measuredH="47" zOrder="21" locked="false" isInGroup="-1">
+      <controlProperties>
+        <borderStyle>square</borderStyle>
+        <icon>./assets/icon_agent.png%7Cmedium</icon>
+        <size>8</size>
+        <text>Agent</text>
+      </controlProperties>
+    </control>
+  </controls>
+</mockup>

@@ -1,0 +1,55 @@
+<mockup version="1.0" skin="sketch" fontFace="Balsamiq Sans" measuredW="1166" measuredH="919" mockupW="1024" mockupH="807">
+  <controls>
+    <control controlID="72" controlTypeID="com.balsamiq.mockups::iPhone" x="475" y="409" w="-1" h="-1" measuredW="282" measuredH="510" zOrder="1" locked="false" isInGroup="-1"/>
+    <control controlID="80" controlTypeID="com.balsamiq.mockups::IconLabel" x="512" y="512" w="32" h="-1" measuredW="32" measuredH="47" zOrder="2" locked="false" isInGroup="-1">
+      <controlProperties>
+        <borderStyle>square</borderStyle>
+        <icon>./assets/icon_agent.png%7Cmedium</icon>
+        <size>8</size>
+        <text>%20</text>
+      </controlProperties>
+    </control>
+    <control controlID="82" controlTypeID="__group__" x="142" y="112" w="1024" h="768" measuredW="1024" measuredH="768" zOrder="0" locked="false" isInGroup="-1">
+      <groupChildrenDescriptors>
+        <control controlID="0" controlTypeID="com.balsamiq.mockups::BrowserWindow" x="0" y="0" w="1024" h="768" measuredW="450" measuredH="400" zOrder="0" locked="false" isInGroup="82">
+          <controlProperties>
+            <text>Health%20Developer</text>
+          </controlProperties>
+        </control>
+        <control controlID="1" controlTypeID="com.balsamiq.mockups::Title" x="41" y="100" w="-1" h="-1" measuredW="310" measuredH="50" zOrder="1" locked="false" isInGroup="82">
+          <controlProperties>
+            <text>Health%20Developer%20</text>
+          </controlProperties>
+        </control>
+        <control controlID="2" controlTypeID="com.balsamiq.mockups::Label" x="157" y="30" w="-1" h="-1" measuredW="161" measuredH="21" zOrder="2" locked="false" isInGroup="82">
+          <controlProperties>
+            <text>https%3A//health.a2p3.ca/login</text>
+          </controlProperties>
+        </control>
+        <control controlID="3" controlTypeID="com.balsamiq.mockups::Paragraph" x="41" y="165" w="303" h="27" measuredW="200" measuredH="80" zOrder="3" locked="false" isInGroup="82">
+          <controlProperties>
+            <align>left</align>
+            <size>20</size>
+            <text>Login%20as%3A</text>
+          </controlProperties>
+        </control>
+        <control controlID="4" controlTypeID="com.balsamiq.mockups::Button" x="74" y="207" w="270" h="32" measuredW="185" measuredH="29" zOrder="4" locked="false" isInGroup="82">
+          <controlProperties>
+            <href>30_app%20registration%20login%26bm%3B30_app%20registration%20login.bmml%26bm%3B30_app%20registration%20login.bmml%26bm%3B30_app%20registration%20login.bmml</href>
+            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%2274%2C207%2C344%2C239%22%20href%3D%2230_app%2520registration%2520login.bmml%22%20alt%3D%2230_app%20registration%20login%22%20id%3D%224%22/%3E</map>
+            <size>20</size>
+            <text>joe@example.com</text>
+          </controlProperties>
+        </control>
+      </groupChildrenDescriptors>
+    </control>
+    <control controlID="83" controlTypeID="com.balsamiq.mockups::IconLabel" x="574" y="630" w="-1" h="-1" measuredW="85" measuredH="69" zOrder="3" locked="false" isInGroup="-1">
+      <controlProperties>
+        <href>95_index%20logged%20in%26bm%3B95_index%20logged%20in.bmml%26bm%3B95_index%20logged%20in.bmml%26bm%3B95_index%20logged%20in.bmml</href>
+        <icon>./assets/icon_processing.gif%7Clarge</icon>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22432%2C518%2C517%2C587%22%20href%3D%2295_index%2520logged%2520in.bmml%22%20alt%3D%2295_index%20logged%20in%22%20id%3D%2283%22/%3E</map>
+        <text>Processing%20...%20</text>
+      </controlProperties>
+    </control>
+  </controls>
+</mockup>
