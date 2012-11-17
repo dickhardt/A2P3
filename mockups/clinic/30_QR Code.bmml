@@ -1,0 +1,35 @@
+<mockup version="1.0" skin="sketch" fontFace="Balsamiq Sans" measuredW="1166" measuredH="880" mockupW="1024" mockupH="768">
+  <controls>
+    <control controlID="24" controlTypeID="com.balsamiq.mockups::BrowserWindow" x="142" y="112" w="1024" h="768" measuredW="450" measuredH="400" zOrder="0" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Clinic</text>
+      </controlProperties>
+    </control>
+    <control controlID="25" controlTypeID="com.balsamiq.mockups::Label" x="299" y="142" w="-1" h="-1" measuredW="169" measuredH="21" zOrder="1" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>https%3A//clinic.a2p3.ca/checkin</text>
+      </controlProperties>
+    </control>
+    <control controlID="26" controlTypeID="com.balsamiq.mockups::Paragraph" x="365" y="312" w="375" h="57" measuredW="200" measuredH="80" zOrder="2" locked="false" isInGroup="-1">
+      <controlProperties>
+        <align>left</align>
+        <size>20</size>
+        <text>Please%20open%20your%20mobile%20agent%20and%20scan%20the%20QR%20Code%20below%20to%20checkin.</text>
+      </controlProperties>
+    </control>
+    <control controlID="27" controlTypeID="com.balsamiq.mockups::Image" x="365" y="384" w="360" h="352" measuredW="216" measuredH="216" zOrder="3" locked="false" isInGroup="-1">
+      <controlProperties>
+        <href>35_Agent%20Launch%26bm%3B35_Agent%20Launch.bmml%26bm%3B35_Agent%20Launch.bmml%26bm%3B35_Agent%20Launch.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22223%2C272%2C583%2C624%22%20href%3D%2235_Agent%2520Launch.bmml%22%20alt%3D%2235_Agent%20Launch%22%20id%3D%2227%22/%3E</map>
+        <src>./assets/QRcode.png</src>
+        <text/>
+      </controlProperties>
+    </control>
+    <control controlID="28" controlTypeID="com.balsamiq.mockups::Title" x="365" y="234" w="-1" h="-1" measuredW="138" measuredH="72" zOrder="4" locked="false" isInGroup="-1">
+      <controlProperties>
+        <size>60</size>
+        <text>Clinic</text>
+      </controlProperties>
+    </control>
+  </controls>
+</mockup>

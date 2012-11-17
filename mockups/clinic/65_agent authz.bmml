@@ -1,0 +1,82 @@
+<mockup version="1.0" skin="sketch" fontFace="Balsamiq Sans" measuredW="1124" measuredH="924" mockupW="1024" mockupH="768">
+  <controls>
+    <control controlID="72" controlTypeID="com.balsamiq.mockups::iPhone" x="475" y="409" w="-1" h="-1" measuredW="282" measuredH="510" zOrder="1" locked="false" isInGroup="-1"/>
+    <control controlID="77" controlTypeID="com.balsamiq.mockups::PointyButton" x="512" y="780" w="-1" h="-1" measuredW="98" measuredH="27" zOrder="2" locked="false" isInGroup="-1">
+      <controlProperties>
+        <color>5865130</color>
+        <direction>center</direction>
+        <href>45_agent%20select%26bm%3B45_agent%20select.bmml%26bm%3B45_agent%20select.bmml%26bm%3B45_agent%20select.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22412%2C624%2C510%2C651%22%20href%3D%2245_agent%2520select.bmml%22%20alt%3D%2245_agent%20select%22%20id%3D%2277%22/%3E</map>
+        <size>16</size>
+        <text>Don%27t%20Allow</text>
+      </controlProperties>
+    </control>
+    <control controlID="78" controlTypeID="com.balsamiq.mockups::PointyButton" x="634" y="780" w="85" h="-1" measuredW="44" measuredH="27" zOrder="3" locked="false" isInGroup="-1">
+      <controlProperties>
+        <color>5865130</color>
+        <direction>center</direction>
+        <href>70_agent%20processing%26bm%3B70_agent%20processing.bmml%26bm%3B70_agent%20processing.bmml%26bm%3B70_agent%20processing.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22534%2C624%2C619%2C651%22%20href%3D%2270_agent%2520processing.bmml%22%20alt%3D%2270_agent%20processing%22%20id%3D%2278%22/%3E</map>
+        <size>16</size>
+        <text>OK</text>
+      </controlProperties>
+    </control>
+    <control controlID="80" controlTypeID="com.balsamiq.mockups::IconLabel" x="512" y="512" w="32" h="-1" measuredW="32" measuredH="47" zOrder="4" locked="false" isInGroup="-1">
+      <controlProperties>
+        <borderStyle>square</borderStyle>
+        <icon>./assets/icon_agent.png%7Cmedium</icon>
+        <size>8</size>
+        <text>%20</text>
+      </controlProperties>
+    </control>
+    <control controlID="81" controlTypeID="com.balsamiq.mockups::Paragraph" x="554" y="512" w="163" h="63" measuredW="200" measuredH="80" zOrder="5" locked="false" isInGroup="-1">
+      <controlProperties>
+        <align>left</align>
+        <size>14</size>
+        <text>%22Clinic%22%20at%0Ahttps%3A//clinic.a2p3.ca%0Awould%20like%20to%3A</text>
+      </controlProperties>
+    </control>
+    <control controlID="84" controlTypeID="com.balsamiq.mockups::Paragraph" x="512" y="575" w="211" h="128" measuredW="200" measuredH="80" zOrder="6" locked="false" isInGroup="-1">
+      <controlProperties>
+        <align>left</align>
+        <size>14</size>
+        <text>Access%20your%20Provincial%20Health%20Number%0A%20%0AAccess%20your%20name%2C%20date%20of%20birth%2C%20address%2C%20phone%2C%20email%20and%20photo</text>
+      </controlProperties>
+    </control>
+    <control controlID="85" controlTypeID="__group__" x="100" y="156" w="1024" h="768" measuredW="1024" measuredH="768" zOrder="0" locked="false" isInGroup="-1">
+      <groupChildrenDescriptors>
+        <control controlID="0" controlTypeID="com.balsamiq.mockups::BrowserWindow" x="0" y="0" w="1024" h="768" measuredW="450" measuredH="400" zOrder="0" locked="false" isInGroup="85">
+          <controlProperties>
+            <text>Clinic</text>
+          </controlProperties>
+        </control>
+        <control controlID="1" controlTypeID="com.balsamiq.mockups::Label" x="157" y="30" w="-1" h="-1" measuredW="169" measuredH="21" zOrder="1" locked="false" isInGroup="85">
+          <controlProperties>
+            <text>https%3A//clinic.a2p3.ca/checkin</text>
+          </controlProperties>
+        </control>
+        <control controlID="2" controlTypeID="com.balsamiq.mockups::Paragraph" x="223" y="200" w="375" h="57" measuredW="200" measuredH="80" zOrder="2" locked="false" isInGroup="85">
+          <controlProperties>
+            <align>left</align>
+            <size>20</size>
+            <text>Please%20open%20your%20mobile%20agent%20and%20scan%20the%20QR%20Code%20below%20to%20checkin.</text>
+          </controlProperties>
+        </control>
+        <control controlID="3" controlTypeID="com.balsamiq.mockups::Image" x="223" y="272" w="360" h="352" measuredW="216" measuredH="216" zOrder="3" locked="false" isInGroup="85">
+          <controlProperties>
+            <href>40_agent%20launch%26bm%3B40_agent%20launch.bmml%26bm%3B40_agent%20launch.bmml%26bm%3B40_agent%20launch.bmml</href>
+            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22223%2C272%2C583%2C624%22%20href%3D%2240_agent%2520launch.bmml%22%20alt%3D%2240_agent%20launch%22%20id%3D%223%22/%3E</map>
+            <src>./assets/QRcode.png</src>
+            <text/>
+          </controlProperties>
+        </control>
+        <control controlID="4" controlTypeID="com.balsamiq.mockups::Title" x="223" y="122" w="-1" h="-1" measuredW="138" measuredH="72" zOrder="4" locked="false" isInGroup="85">
+          <controlProperties>
+            <size>60</size>
+            <text>Clinic</text>
+          </controlProperties>
+        </control>
+      </groupChildrenDescriptors>
+    </control>
+  </controls>
+</mockup>

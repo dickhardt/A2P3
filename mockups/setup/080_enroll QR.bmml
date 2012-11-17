@@ -36,8 +36,8 @@
     </control>
     <control controlID="23" controlTypeID="com.balsamiq.mockups::Image" x="456" y="331" w="360" h="352" measuredW="216" measuredH="216" zOrder="6" locked="false" isInGroup="-1">
       <controlProperties>
-        <href>Agent%20Scan%26bm%3BAgent%20Scan.bmml%26bm%3BAgent%20Scan.bmml%26bm%3BAgent%20Scan.bmml</href>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22314%2C219%2C674%2C571%22%20href%3D%22Agent%2520Scan.bmml%22%20alt%3D%22Agent%20Scan%22%20id%3D%2223%22/%3E</map>
+        <href>084_mobile%20desktop%26bm%3B084_mobile%20desktop.bmml%26bm%3B084_mobile%20desktop.bmml%26bm%3B084_mobile%20desktop.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22314%2C219%2C674%2C571%22%20href%3D%22084_mobile%2520desktop.bmml%22%20alt%3D%22084_mobile%20desktop%22%20id%3D%2223%22/%3E</map>
         <src>../bank/assets/QRcode.png</src>
         <text/>
       </controlProperties>

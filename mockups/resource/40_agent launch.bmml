@@ -26,7 +26,7 @@
       <controlProperties>
         <href>Agent%20Scan%26bm%3BAgent%20Scan.bmml%26bm%3BAgent%20Scan.bmml%26bm%3BAgent%20Scan.bmml</href>
         <map>%3Carea%20shape%3D%22rect%22%20coords%3D%2241%2C237%2C401%2C589%22%20href%3D%22Agent%2520Scan.bmml%22%20alt%3D%22Agent%20Scan%22%20id%3D%2216%22/%3E</map>
-        <src>../bank/assets/QRcode.png</src>
+        <src>./assets/QRcode.png</src>
         <text/>
       </controlProperties>
     </control>
@@ -204,9 +204,9 @@
     <control controlID="66" controlTypeID="com.balsamiq.mockups::IconLabel" x="678" y="714" w="32" h="-1" measuredW="32" measuredH="47" zOrder="26" locked="false" isInGroup="-1">
       <controlProperties>
         <borderStyle>square</borderStyle>
-        <href>50_agent%20QR%26bm%3B50_agent%20QR.bmml%26bm%3B50_agent%20QR.bmml%26bm%3B50_agent%20QR.bmml</href>
+        <href>45_agent%20select%26bm%3B45_agent%20select.bmml%26bm%3B45_agent%20select.bmml%26bm%3B45_agent%20select.bmml</href>
         <icon>./assets/icon_agent.png%7Cmedium</icon>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22536%2C602%2C568%2C649%22%20href%3D%2250_agent%2520QR.bmml%22%20alt%3D%2250_agent%20QR%22%20id%3D%2266%22/%3E</map>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22536%2C602%2C568%2C649%22%20href%3D%2245_agent%2520select.bmml%22%20alt%3D%2245_agent%20select%22%20id%3D%2266%22/%3E</map>
         <size>8</size>
         <text>Agent</text>
       </controlProperties>

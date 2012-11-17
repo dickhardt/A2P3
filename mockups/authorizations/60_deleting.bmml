@@ -1,0 +1,62 @@
+<mockup version="1.0" skin="sketch" fontFace="Balsamiq Sans" measuredW="342" measuredH="537" mockupW="282" mockupH="510">
+  <controls>
+    <control controlID="63" controlTypeID="__group__" x="60" y="27" w="282" h="510" measuredW="282" measuredH="510" zOrder="0" locked="false" isInGroup="-1">
+      <groupChildrenDescriptors>
+        <control controlID="0" controlTypeID="com.balsamiq.mockups::iPhone" x="0" y="0" w="-1" h="-1" measuredW="282" measuredH="510" zOrder="0" locked="false" isInGroup="63"/>
+        <control controlID="1" controlTypeID="com.balsamiq.mockups::Paragraph" x="47" y="209" w="211" h="120" measuredW="200" measuredH="80" zOrder="1" locked="false" isInGroup="63">
+          <controlProperties>
+            <align>left</align>
+            <size>14</size>
+            <text>Social%20Insurance%20Number%0A%20%0AYour%20email%20address%0A%20%0AYour%20name%2C%20date%20of%20birth%20and%20full%20address</text>
+          </controlProperties>
+        </control>
+        <control controlID="2" controlTypeID="com.balsamiq.mockups::Paragraph" x="34" y="137" w="155" h="72" measuredW="200" measuredH="80" zOrder="2" locked="false" isInGroup="63">
+          <controlProperties>
+            <align>left</align>
+            <size>14</size>
+            <text>Bank%0ALast%20logged%20in%3A%0ALess%20than%2024%20hours%20ago%0AAccesses%3A</text>
+          </controlProperties>
+        </control>
+        <control controlID="3" controlTypeID="com.balsamiq.mockups::PointyButton" x="34" y="106" w="-1" h="-1" measuredW="82" measuredH="27" zOrder="3" locked="false" isInGroup="63">
+          <controlProperties>
+            <direction>left</direction>
+            <size>10</size>
+            <text>Authorizations</text>
+          </controlProperties>
+        </control>
+        <control controlID="4" controlTypeID="com.balsamiq.mockups::PointyButton" x="180" y="106" w="67" h="-1" measuredW="51" measuredH="27" zOrder="4" locked="false" isInGroup="63">
+          <controlProperties>
+            <direction>center</direction>
+            <size>10</size>
+            <text>Delete</text>
+          </controlProperties>
+        </control>
+      </groupChildrenDescriptors>
+    </control>
+    <control controlID="70" controlTypeID="__group__" x="101" y="217" w="200" h="131" measuredW="200" measuredH="131" zOrder="1" locked="false" isInGroup="-1">
+      <controlProperties>
+        <href>70_new%20authz%26bm%3B70_new%20authz.bmml%26bm%3B70_new%20authz.bmml%26bm%3B70_new%20authz.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%2241%2C190%2C241%2C321%22%20href%3D%2270_new%2520authz.bmml%22%20alt%3D%2270_new%20authz%22%20id%3D%2270%22/%3E</map>
+      </controlProperties>
+      <groupChildrenDescriptors>
+        <control controlID="0" controlTypeID="com.balsamiq.mockups::Alert" x="0" y="0" w="200" h="109" measuredW="200" measuredH="15" zOrder="0" locked="false" isInGroup="70">
+          <controlProperties>
+            <text>Deleting%20%22Bank%22%20Authorizations%20...%20</text>
+          </controlProperties>
+        </control>
+        <control controlID="1" controlTypeID="com.balsamiq.mockups::IconLabel" x="76" y="6" w="-1" h="-1" measuredW="48" measuredH="69" zOrder="1" locked="false" isInGroup="70">
+          <controlProperties>
+            <icon>./assets/icon_processing.gif%7Clarge</icon>
+            <text>%20</text>
+          </controlProperties>
+        </control>
+        <control controlID="2" controlTypeID="com.balsamiq.mockups::Paragraph" x="0" y="51" w="-1" h="-1" measuredW="200" measuredH="80" zOrder="2" locked="false" isInGroup="70">
+          <controlProperties>
+            <align>center</align>
+            <text>Deleting%0A%22Bank%22%0AAuthorizations%20...</text>
+          </controlProperties>
+        </control>
+      </groupChildrenDescriptors>
+    </control>
+  </controls>
+</mockup>

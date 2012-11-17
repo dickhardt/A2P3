@@ -26,19 +26,20 @@
       <controlProperties>
         <href>Agent%20Scan%26bm%3BAgent%20Scan.bmml%26bm%3BAgent%20Scan.bmml%26bm%3BAgent%20Scan.bmml</href>
         <map>%3Carea%20shape%3D%22rect%22%20coords%3D%2241%2C237%2C401%2C589%22%20href%3D%22Agent%2520Scan.bmml%22%20alt%3D%22Agent%20Scan%22%20id%3D%2216%22/%3E</map>
-        <src>../bank/assets/QRcode.png</src>
+        <src>./assets/QRcode.png</src>
         <text/>
       </controlProperties>
     </control>
-    <control controlID="72" controlTypeID="__group__" x="183" y="716" w="158" h="86" measuredW="158" measuredH="86" zOrder="9" locked="false" isInGroup="-1">
+    <control controlID="72" controlTypeID="com.balsamiq.mockups::iPhone" x="475" y="409" w="-1" h="-1" measuredW="282" measuredH="510" zOrder="5" locked="false" isInGroup="-1"/>
+    <control controlID="79" controlTypeID="__group__" x="183" y="716" w="158" h="86" measuredW="158" measuredH="86" zOrder="6" locked="false" isInGroup="-1">
       <groupChildrenDescriptors>
-        <control controlID="0" controlTypeID="com.balsamiq.mockups::Link" x="0" y="62" w="-1" h="-1" measuredW="142" measuredH="24" zOrder="0" locked="false" isInGroup="72">
+        <control controlID="0" controlTypeID="com.balsamiq.mockups::Link" x="0" y="62" w="-1" h="-1" measuredW="142" measuredH="24" zOrder="0" locked="false" isInGroup="79">
           <controlProperties>
             <size>16</size>
             <text>Get%20a%20mobile%20agent</text>
           </controlProperties>
         </control>
-        <control controlID="1" controlTypeID="com.balsamiq.mockups::CheckBox" x="0" y="0" w="-1" h="-1" measuredW="158" measuredH="29" zOrder="1" locked="false" isInGroup="72">
+        <control controlID="1" controlTypeID="com.balsamiq.mockups::CheckBox" x="0" y="0" w="-1" h="-1" measuredW="158" measuredH="29" zOrder="1" locked="false" isInGroup="79">
           <controlProperties>
             <size>20</size>
             <state>selected</state>
@@ -47,27 +48,20 @@
         </control>
       </groupChildrenDescriptors>
     </control>
-    <control controlID="73" controlTypeID="com.balsamiq.mockups::iPhone" x="475" y="409" w="-1" h="-1" measuredW="282" measuredH="510" zOrder="5" locked="false" isInGroup="-1"/>
-    <control controlID="76" controlTypeID="com.balsamiq.mockups::Title" x="508" y="527" w="272" h="-1" measuredW="220" measuredH="37" zOrder="6" locked="false" isInGroup="-1">
+    <control controlID="80" controlTypeID="com.balsamiq.mockups::IconLabel" x="512" y="512" w="32" h="-1" measuredW="32" measuredH="47" zOrder="7" locked="false" isInGroup="-1">
       <controlProperties>
-        <align>left</align>
-        <size>28</size>
-        <text>Health%20Developer</text>
+        <borderStyle>square</borderStyle>
+        <icon>./assets/icon_agent.png%7Cmedium</icon>
+        <size>8</size>
+        <text>%20</text>
       </controlProperties>
     </control>
-    <control controlID="77" controlTypeID="com.balsamiq.mockups::Paragraph" x="508" y="564" w="211" h="39" measuredW="200" measuredH="80" zOrder="7" locked="false" isInGroup="-1">
+    <control controlID="82" controlTypeID="com.balsamiq.mockups::IconLabel" x="574" y="630" w="-1" h="-1" measuredW="85" measuredH="69" zOrder="8" locked="false" isInGroup="-1">
       <controlProperties>
-        <align>left</align>
-        <size>12</size>
-        <text>Please%20open%20your%20mobile%20agent%20and%20scan%20the%20QR%20Code%20below.</text>
-      </controlProperties>
-    </control>
-    <control controlID="78" controlTypeID="com.balsamiq.mockups::Image" x="508" y="601" w="219" h="214" measuredW="216" measuredH="216" zOrder="8" locked="false" isInGroup="-1">
-      <controlProperties>
-        <href>65_agent%20authz%26bm%3B65_agent%20authz.bmml%26bm%3B65_agent%20authz.bmml%26bm%3B65_agent%20authz.bmml</href>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22366%2C489%2C585%2C703%22%20href%3D%2265_agent%2520authz.bmml%22%20alt%3D%2265_agent%20authz%22%20id%3D%2278%22/%3E</map>
-        <src>../bank/assets/QRcode.png</src>
-        <text/>
+        <href>80_dashboard%26bm%3B80_dashboard.bmml%26bm%3B80_dashboard.bmml%26bm%3B80_dashboard.bmml</href>
+        <icon>./assets/icon_processing.gif%7Clarge</icon>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22432%2C518%2C517%2C587%22%20href%3D%2280_dashboard.bmml%22%20alt%3D%2280_dashboard%22%20id%3D%2282%22/%3E</map>
+        <text>Processing%20...%20</text>
       </controlProperties>
     </control>
   </controls>

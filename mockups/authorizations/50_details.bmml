@@ -1,0 +1,37 @@
+<mockup version="1.0" skin="sketch" fontFace="Balsamiq Sans" measuredW="342" measuredH="537" mockupW="282" mockupH="510">
+  <controls>
+    <control controlID="45" controlTypeID="com.balsamiq.mockups::iPhone" x="60" y="27" w="-1" h="-1" measuredW="282" measuredH="510" zOrder="0" locked="false" isInGroup="-1"/>
+    <control controlID="50" controlTypeID="com.balsamiq.mockups::Paragraph" x="107" y="236" w="211" h="120" measuredW="200" measuredH="80" zOrder="1" locked="false" isInGroup="-1">
+      <controlProperties>
+        <align>left</align>
+        <size>14</size>
+        <text>Social%20Insurance%20Number%0A%20%0AYour%20email%20address%0A%20%0AYour%20name%2C%20date%20of%20birth%20and%20full%20address</text>
+      </controlProperties>
+    </control>
+    <control controlID="54" controlTypeID="com.balsamiq.mockups::Paragraph" x="94" y="164" w="155" h="72" measuredW="200" measuredH="80" zOrder="2" locked="false" isInGroup="-1">
+      <controlProperties>
+        <align>left</align>
+        <size>14</size>
+        <text>Bank%0ALast%20logged%20in%3A%0ALess%20than%2024%20hours%20ago%0AAccesses%3A</text>
+      </controlProperties>
+    </control>
+    <control controlID="56" controlTypeID="com.balsamiq.mockups::PointyButton" x="94" y="133" w="-1" h="-1" measuredW="82" measuredH="27" zOrder="3" locked="false" isInGroup="-1">
+      <controlProperties>
+        <direction>left</direction>
+        <href>40_authz%26bm%3B40_authz.bmml%26bm%3B40_authz.bmml%26bm%3B40_authz.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%2234%2C106%2C116%2C133%22%20href%3D%2240_authz.bmml%22%20alt%3D%2240_authz%22%20id%3D%2256%22/%3E</map>
+        <size>10</size>
+        <text>Authorizations</text>
+      </controlProperties>
+    </control>
+    <control controlID="57" controlTypeID="com.balsamiq.mockups::PointyButton" x="240" y="133" w="67" h="-1" measuredW="51" measuredH="27" zOrder="4" locked="false" isInGroup="-1">
+      <controlProperties>
+        <direction>center</direction>
+        <href>60_deleting%26bm%3B60_deleting.bmml%26bm%3B60_deleting.bmml%26bm%3B60_deleting.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22180%2C106%2C247%2C133%22%20href%3D%2260_deleting.bmml%22%20alt%3D%2260_deleting%22%20id%3D%2257%22/%3E</map>
+        <size>10</size>
+        <text>Delete</text>
+      </controlProperties>
+    </control>
+  </controls>
+</mockup>

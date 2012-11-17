@@ -1,0 +1,62 @@
+<mockup version="1.0" skin="sketch" fontFace="Balsamiq Sans" measuredW="1124" measuredH="924" mockupW="1024" mockupH="768">
+  <controls>
+    <control controlID="73" controlTypeID="com.balsamiq.mockups::iPhone" x="475" y="409" w="-1" h="-1" measuredW="282" measuredH="510" zOrder="1" locked="false" isInGroup="-1"/>
+    <control controlID="76" controlTypeID="com.balsamiq.mockups::Title" x="508" y="527" w="272" h="-1" measuredW="76" measuredH="41" zOrder="2" locked="false" isInGroup="-1">
+      <controlProperties>
+        <align>left</align>
+        <size>32</size>
+        <text>Clinic</text>
+      </controlProperties>
+    </control>
+    <control controlID="77" controlTypeID="com.balsamiq.mockups::Paragraph" x="508" y="564" w="211" h="39" measuredW="200" measuredH="80" zOrder="3" locked="false" isInGroup="-1">
+      <controlProperties>
+        <align>left</align>
+        <size>12</size>
+        <text>Please%20open%20your%20mobile%20agent%20and%20scan%20the%20QR%20Code%20below%20to%20checkin.</text>
+      </controlProperties>
+    </control>
+    <control controlID="78" controlTypeID="com.balsamiq.mockups::Image" x="508" y="601" w="219" h="214" measuredW="216" measuredH="216" zOrder="4" locked="false" isInGroup="-1">
+      <controlProperties>
+        <href>60_agent%20passcode%26bm%3B60_agent%20passcode.bmml%26bm%3B60_agent%20passcode.bmml%26bm%3B60_agent%20passcode.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22408%2C445%2C627%2C659%22%20href%3D%2260_agent%2520passcode.bmml%22%20alt%3D%2260_agent%20passcode%22%20id%3D%2278%22/%3E</map>
+        <src>./assets/QRcode.png</src>
+        <text/>
+      </controlProperties>
+    </control>
+    <control controlID="80" controlTypeID="__group__" x="100" y="156" w="1024" h="768" measuredW="1024" measuredH="768" zOrder="0" locked="false" isInGroup="-1">
+      <groupChildrenDescriptors>
+        <control controlID="0" controlTypeID="com.balsamiq.mockups::BrowserWindow" x="0" y="0" w="1024" h="768" measuredW="450" measuredH="400" zOrder="0" locked="false" isInGroup="80">
+          <controlProperties>
+            <text>Clinic</text>
+          </controlProperties>
+        </control>
+        <control controlID="1" controlTypeID="com.balsamiq.mockups::Label" x="157" y="30" w="-1" h="-1" measuredW="169" measuredH="21" zOrder="1" locked="false" isInGroup="80">
+          <controlProperties>
+            <text>https%3A//clinic.a2p3.ca/checkin</text>
+          </controlProperties>
+        </control>
+        <control controlID="2" controlTypeID="com.balsamiq.mockups::Paragraph" x="223" y="200" w="375" h="57" measuredW="200" measuredH="80" zOrder="2" locked="false" isInGroup="80">
+          <controlProperties>
+            <align>left</align>
+            <size>20</size>
+            <text>Please%20open%20your%20mobile%20agent%20and%20scan%20the%20QR%20Code%20below%20to%20checkin.</text>
+          </controlProperties>
+        </control>
+        <control controlID="3" controlTypeID="com.balsamiq.mockups::Image" x="223" y="272" w="360" h="352" measuredW="216" measuredH="216" zOrder="3" locked="false" isInGroup="80">
+          <controlProperties>
+            <href>40_agent%20launch%26bm%3B40_agent%20launch.bmml%26bm%3B40_agent%20launch.bmml%26bm%3B40_agent%20launch.bmml</href>
+            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22223%2C272%2C583%2C624%22%20href%3D%2240_agent%2520launch.bmml%22%20alt%3D%2240_agent%20launch%22%20id%3D%223%22/%3E</map>
+            <src>./assets/QRcode.png</src>
+            <text/>
+          </controlProperties>
+        </control>
+        <control controlID="4" controlTypeID="com.balsamiq.mockups::Title" x="223" y="122" w="-1" h="-1" measuredW="138" measuredH="72" zOrder="4" locked="false" isInGroup="80">
+          <controlProperties>
+            <size>60</size>
+            <text>Clinic</text>
+          </controlProperties>
+        </control>
+      </groupChildrenDescriptors>
+    </control>
+  </controls>
+</mockup>

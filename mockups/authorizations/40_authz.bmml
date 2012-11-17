@@ -1,0 +1,36 @@
+<mockup version="1.0" skin="sketch" fontFace="Balsamiq Sans" measuredW="342" measuredH="537" mockupW="282" mockupH="510">
+  <controls>
+    <control controlID="45" controlTypeID="com.balsamiq.mockups::iPhone" x="60" y="27" w="-1" h="-1" measuredW="282" measuredH="510" zOrder="0" locked="false" isInGroup="-1"/>
+    <control controlID="50" controlTypeID="com.balsamiq.mockups::Paragraph" x="96" y="192" w="211" h="43" measuredW="200" measuredH="80" zOrder="1" locked="false" isInGroup="-1">
+      <controlProperties>
+        <align>left</align>
+        <href>50_details%26bm%3B50_details.bmml%26bm%3B50_details.bmml%26bm%3B50_details.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%2236%2C165%2C247%2C208%22%20href%3D%2250_details.bmml%22%20alt%3D%2250_details%22%20id%3D%2250%22/%3E</map>
+        <size>14</size>
+        <text>Bank%0A%09Less%20than%2024%20hrs%20ago</text>
+      </controlProperties>
+    </control>
+    <control controlID="53" controlTypeID="com.balsamiq.mockups::IconLabel" x="96" y="135" w="32" h="-1" measuredW="32" measuredH="47" zOrder="2" locked="false" isInGroup="-1">
+      <controlProperties>
+        <borderStyle>square</borderStyle>
+        <icon>./assets/icon_agent.png%7Cmedium</icon>
+        <size>8</size>
+        <text>%20</text>
+      </controlProperties>
+    </control>
+    <control controlID="54" controlTypeID="com.balsamiq.mockups::Paragraph" x="138" y="135" w="155" h="42" measuredW="200" measuredH="80" zOrder="3" locked="false" isInGroup="-1">
+      <controlProperties>
+        <align>left</align>
+        <size>14</size>
+        <text>You%20have%20authorized%20these%20apps</text>
+      </controlProperties>
+    </control>
+    <control controlID="55" controlTypeID="com.balsamiq.mockups::Paragraph" x="96" y="235" w="219" h="47" measuredW="200" measuredH="80" zOrder="4" locked="false" isInGroup="-1">
+      <controlProperties>
+        <align>left</align>
+        <size>14</size>
+        <text>Clinic%0A%09More%20than%206%20months%20ago%09</text>
+      </controlProperties>
+    </control>
+  </controls>
+</mockup>

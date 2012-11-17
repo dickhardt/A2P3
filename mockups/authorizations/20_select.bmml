@@ -1,0 +1,33 @@
+<mockup version="1.0" skin="sketch" fontFace="Balsamiq Sans" measuredW="342" measuredH="537" mockupW="282" mockupH="510">
+  <controls>
+    <control controlID="45" controlTypeID="com.balsamiq.mockups::iPhone" x="60" y="27" w="-1" h="-1" measuredW="282" measuredH="510" zOrder="0" locked="false" isInGroup="-1"/>
+    <control controlID="50" controlTypeID="com.balsamiq.mockups::Button" x="110" y="199" w="181" h="45" measuredW="181" measuredH="27" zOrder="1" locked="false" isInGroup="-1">
+      <controlProperties>
+        <size>16</size>
+        <text>Check%20out%20Demo%20Apps</text>
+      </controlProperties>
+    </control>
+    <control controlID="51" controlTypeID="com.balsamiq.mockups::Button" x="110" y="279" w="181" h="42" measuredW="172" measuredH="27" zOrder="2" locked="false" isInGroup="-1">
+      <controlProperties>
+        <size>16</size>
+        <text>Scan%20Login%20QR%20Code</text>
+      </controlProperties>
+    </control>
+    <control controlID="52" controlTypeID="com.balsamiq.mockups::IconLabel" x="97" y="138" w="32" h="-1" measuredW="32" measuredH="47" zOrder="3" locked="false" isInGroup="-1">
+      <controlProperties>
+        <borderStyle>square</borderStyle>
+        <icon>./assets/icon_agent.png%7Cmedium</icon>
+        <size>8</size>
+        <text>%20</text>
+      </controlProperties>
+    </control>
+    <control controlID="53" controlTypeID="com.balsamiq.mockups::Button" x="110" y="351" w="181" h="42" measuredW="178" measuredH="27" zOrder="4" locked="false" isInGroup="-1">
+      <controlProperties>
+        <href>30_passcode%26bm%3B30_passcode.bmml%26bm%3B30_passcode.bmml%26bm%3B30_passcode.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%2250%2C324%2C231%2C366%22%20href%3D%2230_passcode.bmml%22%20alt%3D%2230_passcode%22%20id%3D%2253%22/%3E</map>
+        <size>16</size>
+        <text>Review%20Authorizations</text>
+      </controlProperties>
+    </control>
+  </controls>
+</mockup>

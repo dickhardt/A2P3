@@ -1,0 +1,98 @@
+<mockup version="1.0" skin="sketch" fontFace="Balsamiq Sans" measuredW="1166" measuredH="919" mockupW="1024" mockupH="807">
+  <controls>
+    <control controlID="72" controlTypeID="com.balsamiq.mockups::iPhone" x="475" y="409" w="-1" h="-1" measuredW="282" measuredH="510" zOrder="1" locked="false" isInGroup="-1"/>
+    <control controlID="76" controlTypeID="com.balsamiq.mockups::Paragraph" x="512" y="569" w="211" h="128" measuredW="200" measuredH="80" zOrder="2" locked="false" isInGroup="-1">
+      <controlProperties>
+        <align>left</align>
+        <size>14</size>
+        <text>Access%20your%20email%20address%0A%20%0AAccess%20your%20mobile%20agent%20notification%20URL</text>
+      </controlProperties>
+    </control>
+    <control controlID="77" controlTypeID="com.balsamiq.mockups::PointyButton" x="512" y="780" w="-1" h="-1" measuredW="98" measuredH="27" zOrder="3" locked="false" isInGroup="-1">
+      <controlProperties>
+        <color>5865130</color>
+        <direction>center</direction>
+        <href>45_agent%20select%26bm%3B45_agent%20select.bmml%26bm%3B45_agent%20select.bmml%26bm%3B45_agent%20select.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22370%2C668%2C468%2C695%22%20href%3D%2245_agent%2520select.bmml%22%20alt%3D%2245_agent%20select%22%20id%3D%2277%22/%3E</map>
+        <size>16</size>
+        <text>Don%27t%20Allow</text>
+      </controlProperties>
+    </control>
+    <control controlID="78" controlTypeID="com.balsamiq.mockups::PointyButton" x="634" y="780" w="85" h="-1" measuredW="44" measuredH="27" zOrder="4" locked="false" isInGroup="-1">
+      <controlProperties>
+        <color>5865130</color>
+        <direction>center</direction>
+        <href>70_agent%20processing%26bm%3B70_agent%20processing.bmml%26bm%3B70_agent%20processing.bmml%26bm%3B70_agent%20processing.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22492%2C668%2C577%2C695%22%20href%3D%2270_agent%2520processing.bmml%22%20alt%3D%2270_agent%20processing%22%20id%3D%2278%22/%3E</map>
+        <size>16</size>
+        <text>OK</text>
+      </controlProperties>
+    </control>
+    <control controlID="80" controlTypeID="com.balsamiq.mockups::IconLabel" x="512" y="512" w="32" h="-1" measuredW="32" measuredH="47" zOrder="5" locked="false" isInGroup="-1">
+      <controlProperties>
+        <borderStyle>square</borderStyle>
+        <icon>./assets/icon_agent.png%7Cmedium</icon>
+        <size>8</size>
+        <text>%20</text>
+      </controlProperties>
+    </control>
+    <control controlID="81" controlTypeID="com.balsamiq.mockups::Paragraph" x="554" y="512" w="163" h="63" measuredW="200" measuredH="80" zOrder="6" locked="false" isInGroup="-1">
+      <controlProperties>
+        <align>left</align>
+        <size>14</size>
+        <text>%22Registrar%22%20at%0Ahttps%3A//registrar.a2p3.ca%0Awould%20like%20to%3A</text>
+      </controlProperties>
+    </control>
+    <control controlID="82" controlTypeID="__group__" x="142" y="112" w="1024" h="768" measuredW="1024" measuredH="768" zOrder="0" locked="false" isInGroup="-1">
+      <groupChildrenDescriptors>
+        <control controlID="0" controlTypeID="com.balsamiq.mockups::BrowserWindow" x="0" y="0" w="1024" h="768" measuredW="450" measuredH="400" zOrder="0" locked="false" isInGroup="82">
+          <controlProperties>
+            <text>Registrar</text>
+          </controlProperties>
+        </control>
+        <control controlID="1" controlTypeID="com.balsamiq.mockups::Label" x="157" y="30" w="-1" h="-1" measuredW="242" measuredH="21" zOrder="1" locked="false" isInGroup="82">
+          <controlProperties>
+            <text>https%3A//registrar.a2p3.ca/registration/login</text>
+          </controlProperties>
+        </control>
+        <control controlID="2" controlTypeID="com.balsamiq.mockups::Paragraph" x="41" y="165" w="375" h="57" measuredW="200" measuredH="80" zOrder="2" locked="false" isInGroup="82">
+          <controlProperties>
+            <align>left</align>
+            <size>20</size>
+            <text>Please%20open%20your%20mobile%20agent%20and%20scan%20the%20QR%20Code%20below.</text>
+          </controlProperties>
+        </control>
+        <control controlID="3" controlTypeID="com.balsamiq.mockups::Image" x="41" y="237" w="360" h="352" measuredW="216" measuredH="216" zOrder="3" locked="false" isInGroup="82">
+          <controlProperties>
+            <href>40_agent%20launch%26bm%3B40_agent%20launch.bmml%26bm%3B40_agent%20launch.bmml%26bm%3B40_agent%20launch.bmml</href>
+            <map>%3Carea%20shape%3D%22rect%22%20coords%3D%2241%2C237%2C401%2C589%22%20href%3D%2240_agent%2520launch.bmml%22%20alt%3D%2240_agent%20launch%22%20id%3D%223%22/%3E</map>
+            <src>./assets/QRcode.png</src>
+            <text/>
+          </controlProperties>
+        </control>
+        <control controlID="4" controlTypeID="__group__" x="41" y="604" w="158" h="86" measuredW="158" measuredH="86" zOrder="4" locked="false" isInGroup="82">
+          <groupChildrenDescriptors>
+            <control controlID="0" controlTypeID="com.balsamiq.mockups::Link" x="0" y="62" w="-1" h="-1" measuredW="142" measuredH="24" zOrder="0" locked="false" isInGroup="4">
+              <controlProperties>
+                <size>16</size>
+                <text>Get%20a%20mobile%20agent</text>
+              </controlProperties>
+            </control>
+            <control controlID="1" controlTypeID="com.balsamiq.mockups::CheckBox" x="0" y="0" w="-1" h="-1" measuredW="158" measuredH="29" zOrder="1" locked="false" isInGroup="4">
+              <controlProperties>
+                <size>20</size>
+                <state>selected</state>
+                <text>Remember%20me</text>
+              </controlProperties>
+            </control>
+          </groupChildrenDescriptors>
+        </control>
+        <control controlID="5" controlTypeID="com.balsamiq.mockups::Title" x="40" y="110" w="-1" h="-1" measuredW="281" measuredH="50" zOrder="5" locked="false" isInGroup="82">
+          <controlProperties>
+            <text>A2P3%20Registrar</text>
+          </controlProperties>
+        </control>
+      </groupChildrenDescriptors>
+    </control>
+  </controls>
+</mockup>

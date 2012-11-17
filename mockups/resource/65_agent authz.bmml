@@ -26,7 +26,7 @@
       <controlProperties>
         <href>Agent%20Scan%26bm%3BAgent%20Scan.bmml%26bm%3BAgent%20Scan.bmml%26bm%3BAgent%20Scan.bmml</href>
         <map>%3Carea%20shape%3D%22rect%22%20coords%3D%2241%2C237%2C401%2C589%22%20href%3D%22Agent%2520Scan.bmml%22%20alt%3D%22Agent%20Scan%22%20id%3D%2216%22/%3E</map>
-        <src>../bank/assets/QRcode.png</src>
+        <src>./assets/QRcode.png</src>
         <text/>
       </controlProperties>
     </control>
@@ -42,8 +42,8 @@
       <controlProperties>
         <color>5865130</color>
         <direction>center</direction>
-        <href>75_agent%20select%26bm%3B75_agent%20select.bmml%26bm%3B75_agent%20select.bmml%26bm%3B75_agent%20select.bmml</href>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22370%2C668%2C468%2C695%22%20href%3D%2275_agent%2520select.bmml%22%20alt%3D%2275_agent%20select%22%20id%3D%2277%22/%3E</map>
+        <href>45_agent%20select%26bm%3B45_agent%20select.bmml%26bm%3B45_agent%20select.bmml%26bm%3B45_agent%20select.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22370%2C668%2C468%2C695%22%20href%3D%2245_agent%2520select.bmml%22%20alt%3D%2245_agent%20select%22%20id%3D%2277%22/%3E</map>
         <size>16</size>
         <text>Don%27t%20Allow</text>
       </controlProperties>

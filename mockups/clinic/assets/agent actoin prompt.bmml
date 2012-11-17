@@ -1,0 +1,57 @@
+<mockup version="1.0" skin="sketch" fontFace="Balsamiq Sans" measuredW="1166" measuredH="919" mockupW="1024" mockupH="807">
+  <controls>
+    <control controlID="2" controlTypeID="com.balsamiq.mockups::Title" x="183" y="212" w="-1" h="-1" measuredW="310" measuredH="50" zOrder="1" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Health%20Developer%20</text>
+      </controlProperties>
+    </control>
+    <control controlID="6" controlTypeID="com.balsamiq.mockups::BrowserWindow" x="142" y="112" w="1024" h="768" measuredW="450" measuredH="400" zOrder="0" locked="true" isInGroup="-1">
+      <controlProperties>
+        <text>Health%20Developer</text>
+      </controlProperties>
+    </control>
+    <control controlID="7" controlTypeID="com.balsamiq.mockups::Label" x="299" y="142" w="-1" h="-1" measuredW="161" measuredH="21" zOrder="2" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>https%3A//health.a2p3.ca/login</text>
+      </controlProperties>
+    </control>
+    <control controlID="15" controlTypeID="com.balsamiq.mockups::Paragraph" x="183" y="277" w="375" h="57" measuredW="200" measuredH="80" zOrder="3" locked="false" isInGroup="-1">
+      <controlProperties>
+        <align>left</align>
+        <size>20</size>
+        <text>Please%20open%20your%20mobile%20agent%20and%20scan%20the%20QR%20Code%20below.</text>
+      </controlProperties>
+    </control>
+    <control controlID="16" controlTypeID="com.balsamiq.mockups::Image" x="183" y="349" w="360" h="352" measuredW="216" measuredH="216" zOrder="4" locked="false" isInGroup="-1">
+      <controlProperties>
+        <href>Agent%20Scan%26bm%3BAgent%20Scan.bmml%26bm%3BAgent%20Scan.bmml%26bm%3BAgent%20Scan.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%2241%2C237%2C401%2C589%22%20href%3D%22Agent%2520Scan.bmml%22%20alt%3D%22Agent%20Scan%22%20id%3D%2216%22/%3E</map>
+        <src>../bank/assets/QRcode.png</src>
+        <text/>
+      </controlProperties>
+    </control>
+    <control controlID="17" controlTypeID="com.balsamiq.mockups::Link" x="183" y="741" w="-1" h="-1" measuredW="142" measuredH="24" zOrder="5" locked="false" isInGroup="-1">
+      <controlProperties>
+        <size>16</size>
+        <text>Get%20a%20mobile%20agent</text>
+      </controlProperties>
+    </control>
+    <control controlID="72" controlTypeID="__group__" x="475" y="409" w="282" h="510" measuredW="282" measuredH="510" zOrder="6" locked="false" isInGroup="-1">
+      <groupChildrenDescriptors>
+        <control controlID="0" controlTypeID="com.balsamiq.mockups::iPhone" x="0" y="0" w="-1" h="-1" measuredW="282" measuredH="510" zOrder="0" locked="false" isInGroup="72"/>
+        <control controlID="1" controlTypeID="com.balsamiq.mockups::Button" x="51" y="193" w="181" h="45" measuredW="181" measuredH="27" zOrder="1" locked="false" isInGroup="72">
+          <controlProperties>
+            <size>16</size>
+            <text>Check%20out%20Demo%20Apps</text>
+          </controlProperties>
+        </control>
+        <control controlID="2" controlTypeID="com.balsamiq.mockups::Button" x="51" y="275" w="181" h="42" measuredW="172" measuredH="27" zOrder="2" locked="false" isInGroup="72">
+          <controlProperties>
+            <size>16</size>
+            <text>Scan%20Login%20QR%20Code</text>
+          </controlProperties>
+        </control>
+      </groupChildrenDescriptors>
+    </control>
+  </controls>
+</mockup>

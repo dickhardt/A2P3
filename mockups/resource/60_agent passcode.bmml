@@ -26,7 +26,7 @@
       <controlProperties>
         <href>Agent%20Scan%26bm%3BAgent%20Scan.bmml%26bm%3BAgent%20Scan.bmml%26bm%3BAgent%20Scan.bmml</href>
         <map>%3Carea%20shape%3D%22rect%22%20coords%3D%2241%2C237%2C401%2C589%22%20href%3D%22Agent%2520Scan.bmml%22%20alt%3D%22Agent%20Scan%22%20id%3D%2216%22/%3E</map>
-        <src>../bank/assets/QRcode.png</src>
+        <src>./assets/QRcode.png</src>
         <text/>
       </controlProperties>
     </control>
@@ -68,8 +68,8 @@
         <backgroundAlpha>0.5</backgroundAlpha>
         <borderStyle>none</borderStyle>
         <color>0</color>
-        <href>authz%26bm%3Bauthz.bmml%26bm%3Bauthz.bmml%26bm%3Bauthz.bmml</href>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22357%2C564%2C591%2C721%22%20href%3D%22authz.bmml%22%20alt%3D%22authz%22%20id%3D%22115%22/%3E</map>
+        <href>65_agent%20authz%26bm%3B65_agent%20authz.bmml%26bm%3B65_agent%20authz.bmml%26bm%3B65_agent%20authz.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22357%2C564%2C591%2C721%22%20href%3D%2265_agent%2520authz.bmml%22%20alt%3D%2265_agent%20authz%22%20id%3D%22115%22/%3E</map>
       </controlProperties>
     </control>
     <control controlID="116" controlTypeID="com.balsamiq.mockups::HRule" x="500" y="714" w="233" h="-1" measuredW="100" measuredH="10" zOrder="10" locked="false" isInGroup="-1">
