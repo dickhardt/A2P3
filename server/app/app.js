@@ -8,22 +8,20 @@
 */
 
 var express = require('express')
-var http = require('http')
+  , config = require('../config')
+  , app = express()
 
-var hosts = 
-  { 'ix': require('./ix/ix').create()
-  , 'as': require('./as/as').create()
-  , 'registrar': require('./registrar/registrar').create()
-  }
+// use app server per host called
+app.use( express.vhost( 'ix.*', require('./ix/ix').app() ) )
+app.use( express.vhost( 'as.*', require('./as/as').app() ) ) 
+app.use( express.vhost( 'registrar.*', require('./registrar/registrar').app() ) ) 
 
-function hostRouter( req, res) {
-
-  var host = req.headers.host
-  host = host.split('.')[0]
-  if (hosts[host]) return hosts[host]( req, res )
+// in case we get called with a host we don't understand
+app.use( express.vhost( '*', function ( req, res, next) {
   console.error('UKNOWN HOST:'+host,' from ', req.headers.host)
-  res.send(500, 'UKNOWN HOST:'+host);
-}
+  res.send(500, 'UKNOWN HOST:'+host)
+}) )
 
-http.createServer( hostRouter ).listen(8080);
+app.listen( config.port )
 
+console.log("A2P3 running on port:",config.port)

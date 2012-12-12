@@ -23,7 +23,7 @@ function appVerify (req, res) {
 }
 
 
-exports.create = function() {
+exports.app = function() {
 	var app = express()
 	app.get("/", function(req, res){
 		console.log(req.domain);

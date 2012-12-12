@@ -23,15 +23,17 @@ var alg =
 
 // TBD dynamically figure out the following!!!
 
-var port = ':8080'
-var baseHost = '.local.a2p3.net' 
-var scheme = 'http://'
+var port = '8080'
+var baseHost = 'local.a2p3.net' 
+var scheme = 'http'
 
 Object.keys(host).forEach( function (key) {
-  host[key] = host[key] + baseHost
-  baseUrl[key] = scheme + host[key] + port
+  host[key] = host[key] +'.'+ baseHost
+  baseUrl[key] = scheme + '://' + host[key] + ':' + port
 })
 
 exports.alg = alg
 exports.host = host
+exports.port = port
+exports.scheme = scheme
 exports.baseUrl = baseUrl

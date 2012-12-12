@@ -34,10 +34,10 @@ function agentDelete (req, res) {
     res.send(501, 'NOT IMPLEMENTED');
 }
 
-exports.create = function() {
+exports.app = function() {
 	var app = express()
-
-  app.use(express.bodyParser());
+  app.use(express.limit('10kb'))  // protect against large POST attack  
+  app.use(express.bodyParser())
 
   app.post( '/di/create', request.check(vault), diCreate )
   app.post( '/exchange', request.check(vault), exchange )
