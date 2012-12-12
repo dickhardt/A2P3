@@ -20,11 +20,12 @@ var hosts =
 	{ 'ix': {}
 	, 'registrar': {}
 	, 'as': {}
+	, 'setup': {}
 	}
 
 var key
 	, kid
-	, bytesKey = 64
+	, bytesKey = 64 // TBD: rewrite to use config.alg.JWE and jwt.makeKey()
 	, bytesKid = 12
 	, vault
 	, header = "// GENERATED FILE :: DO NOT EDIT\n\nexports.keys = \n"
@@ -57,6 +58,20 @@ hosts.registrar['ix.'+base].latest.key = key
 hosts.registrar['ix.'+base].latest.kid = kid
 hosts.registrar['ix.'+base][kid] = key
 
+// ix:setup key pair
+key = b64url.safe( crypto.randomBytes( bytesKey ).toString('base64') )
+kid = b64url.safe( crypto.randomBytes( bytesKid ).toString('base64') )
+
+hosts.ix['setup.'+base] = {latest: {}}
+hosts.ix['setup.'+base].latest.key = key
+hosts.ix['setup.'+base].latest.kid = kid
+hosts.ix['setup.'+base][kid] = key
+
+hosts.setup['ix.'+base] = {latest: {}}
+hosts.setup['ix.'+base].latest.key = key
+hosts.setup['ix.'+base].latest.kid = kid
+hosts.setup['ix.'+base][kid] = key
+
 // make directory for vault files
 if (!fs.existsSync(base)) fs.mkdirSync(base)
 
@@ -68,4 +83,7 @@ fs.writeFileSync( base + '/as.' + base + '.vault.js', vault )
 
 vault = header + util.inspect( hosts.registrar, false, null )
 fs.writeFileSync( base + '/registrar.' + base + '.vault.js', vault )
+
+vault = header + util.inspect( hosts.setup, false, null )
+fs.writeFileSync( base + '/setup.' + base + '.vault.js', vault )
 

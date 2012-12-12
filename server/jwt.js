@@ -327,13 +327,15 @@ exports.jwsCrack = function (token) {
 
     var jws = {}
     try {
-        jws.header = JSON.parse(b64url.decode(parts[0]));
+        var header = b64url.decode( parts[0] )
+        jws.header = JSON.parse( header );
     }
     catch (e) {
         return jwsCrackError(e)
     }
     try {
-        jws.payload = JSON.parse(b64url.decode(parts[1]));
+        var payload = b64url.decode( parts[1] )
+        jws.payload = JSON.parse( payload );
     }
     catch (e) {
         return jwsCrackError(e)

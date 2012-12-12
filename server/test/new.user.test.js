@@ -9,7 +9,8 @@ var should = require('chai').should()
   , config = require('../config')
   , request = require('../request')
   , querystring = require('querystring')
-
+  , vault = require('../app/setup/vault')
+  , api = require('../api')
 var host = config.host.ix 
 
 describe('IX', function(){
@@ -19,7 +20,7 @@ describe('IX', function(){
       var details = 
         { host: 'ix'
         , api: '/di/create'
-        , credentials: vault.ix
+        , credentials: vault.keys[host].latest
         , payload: 
           { iss: config.host.setup
           , aud: config.host.ix

@@ -6,8 +6,9 @@
 
 var should = require('chai').should() 
   , fetchUrl = require('fetch').fetchUrl
+  , config = require('../config')
 
-var host = 'http://registrar.local.a2p3.net:8080'  // TBD: build this per environment
+var host = config.host.registrar 
 
 var options =
   { method: 'POST' }

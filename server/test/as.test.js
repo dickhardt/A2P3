@@ -6,13 +6,12 @@
 
 var should = require('chai').should() 
   , fetchUrl = require('fetch').fetchUrl
+  , config = require('../config')
 
-var host = 'http://as.local.a2p3.net:8080'  // TBD: build this per environment
+var host = config.host.as
 
 var options =
   { method: 'POST' }
-
-debugger;  
 
 describe('AS', function(){
   describe('/does-not-exist', function(){

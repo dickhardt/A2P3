@@ -7,8 +7,8 @@
 */
 
 var fetchUrl = require('fetch').fetchUrl
-  , config = require('../config')
-  , request = require('../request')
+  , config = require('./config')
+  , request = require('./request')
   , querystring = require('querystring')
   , assert = require('assert')
 
@@ -21,10 +21,12 @@ exports.call = function ( details, callback ) {
   assert( details.credentials, 'no credentials provided' )
   assert( details.payload, 'no payload provided' )
 
-  var jwt = request.create( payload, details.credentials )
+  var jwt = request.create( details.payload, details.credentials )
+
   var options =
   { method: 'POST' 
-  , body: querystring.stringify({'request': jwt})}
+  , payload: querystring.stringify({'request': jwt})
+  , headers: {'content-type': 'application/x-www-form-urlencoded'}
   }
   
   fetchUrl( baseUrl+'/di/create', options, function (error, meta, body) {
@@ -33,8 +35,8 @@ exports.call = function ( details, callback ) {
       try {
         response = JSON.parse(body)
       }
-      catch {
-        response = {'error': {code: 'INVALID_JSON'}}
+      catch (e){
+        response = {'error': {code: 'INVALID_JSON', 'e':e}}
       }
     } else {
       if (error) {

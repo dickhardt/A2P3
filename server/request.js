@@ -7,7 +7,8 @@
 */
 
 var config = require('./config')
-  , jwt = require('.jwt')
+  , jwt = require('./jwt')
+  , assert = require('assert')
 
 exports.create = function (  payload, credentials ) {
   var details =
@@ -25,10 +26,31 @@ exports.create = function (  payload, credentials ) {
 
 exports.parse = function ( jws, getCreds ) {
   var payload = jwt.decode( jws, function (header) {
-    if (header.typ !== 'JWS' || header.alg !=== config.alg.enc)
+    if (header.typ !== 'JWS' || header.alg !== config.alg.enc)
         return undefined
     else 
         return getCreds( header )
   })
   return payload
 }
+
+exports.check = function ( vault ) {
+  assert( vault, "no vault" )
+  return (function (req, res, next) {
+
+    if (!req.body || !req.body.request) {
+      // TBD ERROR LOGGING
+      next('route')
+      return undefined
+    }
+    var jws = jwt.jwsCrack(req.body.request)
+    if (!jws.payload || !jws.payload.iss || !jws.header || !jws.header.kid) next('route') // TBD add in error message to be sent back
+    var host = jws.payload.iss
+    req.a2p3 = jwt.decode( req.body.request, function (header) {
+      var credentials = {key: vault.keys && vault.keys[host] && vault.keys[host][header.kid]}
+      return credentials
+    })
+    next()
+  })
+}
+
