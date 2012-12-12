@@ -7,7 +7,6 @@
 var crypto = require('crypto');
 
 
-
 /*
 *    URL Safe Base64 routines.
 */
@@ -103,6 +102,111 @@ var decryptCMK =
     , 'dir': function () {return "";}
     };
 
+var keyCache = {}
+
+var concatKDF = function ( cmk ) {
+    // check if we have already created keys
+    if (keyCache[cmk]) return keyCache[cmk]
+
+    var hash
+      , keys = {}
+      , input
+
+    if (cmk.length === 256/8) { // 256 bit key
+      input =
+        [ Buffer([0,0,0,1])
+        , cmk
+        , Buffer([0,0,0,128, 65,49,50,56,67,66,67,43,72,83,50,53,54, 
+                  0,0,0,0, 0,0,0,0, 69,110,99,114,121,112,116,105,111,110])
+        ]
+      hash = crypto.createHash('sha256')  
+      hash.update( Buffer.concat( input ) )
+      keys.cek = new Buffer( hash.digest().slice( 0, 128/8 ), 'binary' )
+
+      input =
+        [ Buffer([0,0,0,1])
+        , cmk
+        , Buffer([0,0,1,0, 65,49,50,56,67,66,67,43,72,83,50,53,54, 
+                  0,0,0,0, 0,0,0,0, 73,110,116,101,103,114,105,116,121])
+        ]
+      hash = crypto.createHash('sha256')  
+      hash.update( Buffer.concat( input ) )
+      keys.cik = new Buffer( hash.digest(), 'binary' )
+
+    } else if (cmk.length === 512/8) { // 512 bit key
+      input =
+        [ Buffer([0,0,0,1])
+        , cmk
+        , Buffer([0,0,1,0, 65,50,53,54,67,66,67,43,72,83,53,49,50,
+                  0,0,0,0, 0,0,0,0, 69,110,99,114,121,112,116,105,111,110])
+        ]
+      hash = crypto.createHash('sha512')  
+      hash.update( Buffer.concat( input ) )
+      keys.cek = new Buffer( hash.digest().slice( 0, 256/8 ), 'binary' )
+      
+      input =
+        [ Buffer([0,0,0,1])
+        , cmk
+        , Buffer([0,0,2,0, 65,50,53,54,67,66,67,43,72,83,53,49,50, 
+                  0,0,0,0, 0,0,0,0, 73,110,116,101,103,114,105,116,121])
+        ]
+      hash = crypto.createHash('sha512')  
+      hash.update( Buffer.concat( input ) )
+      keys.cik = new Buffer( hash.digest(), 'binary' )
+    }
+    
+    keyCache[cmk] = keys
+    return keys
+} 
+
+/*
+// concatKDF tests - uncomment out to run
+// data from: http://tools.ietf.org/html/draft-ietf-jose-json-web-encryption
+// specifically, http://tools.ietf.org/html/draft-ietf-jose-json-web-encryption-07
+
+var assert = require('assert')
+  , actual
+  , expected
+
+// test 256 bit 
+expected =   
+  { cek: Buffer([203,165,180,113,62,195,22,98,91,153,210,38,112,35,230,236])
+  , cik: Buffer([218,24,160,17,160,50,235,35,216,209,100,174,155,163,10,117,
+                 180,111,172,200,127,201,206,173,40,45,58,170,35,93,9,60]) 
+  }
+actual = concatKDF( Buffer([4,211,31,197,84,157,252,254,11,100,157,250,63,170,
+            106,206,107,124,212,45,111,107,9,219,200,177,0,240,143,156,44,207]) ) 
+assert.deepEqual(actual, expected, "concat KDF failure")
+
+// check that cache works
+actual = concatKDF( Buffer([4,211,31,197,84,157,252,254,11,100,157,250,63,170,
+            106,206,107,124,212,45,111,107,9,219,200,177,0,240,143,156,44,207]) ) 
+assert.deepEqual(actual, expected, "concat KDF failure")
+
+// test 512 bit
+
+expected =   
+  { cek: Buffer([157,19,75,205,31,190,110,46,117,217,137,19,116,166,126,
+                60,18,244,226,114,38,153,78,198,26,0,181,168,113,45,149,89])
+  , cik: Buffer([81,249,131,194,25,166,147,155,47,249,146,160,200,236,115,
+                72,103,248,228,30,130,225,164,61,105,172,198,31,137,170,215,
+                141,27,247,73,236,125,113,151,33,0,251,72,53,72,63,146,117,
+                247,13,49,20,210,169,232,156,118,1,16,45,29,21,15,208]) 
+  }
+
+actual = concatKDF( Buffer([148,116,199,126,2,117,233,76,150,149,89,193,61,34,239,
+                            226,109,71,59,160,192,140,150,235,106,204,49,176,68,119,
+                            13,34,49,19,41,69,5,20,252,145,104,129,137,138,67,23,153,
+                            83,81,234,82,247,48,211,41,130,35,124,45,156,249,7,225,168]) )
+assert.deepEqual(actual, expected, "concat KDF failure")
+
+// test key cache again
+actual = concatKDF( Buffer([148,116,199,126,2,117,233,76,150,149,89,193,61,34,239,
+                            226,109,71,59,160,192,140,150,235,106,204,49,176,68,119,
+                            13,34,49,19,41,69,5,20,252,145,104,129,137,138,67,23,153,
+                            83,81,234,82,247,48,211,41,130,35,124,45,156,249,7,225,168]) )
+assert.deepEqual(actual, expected, "concat KDF failure")
+*/
 
 
 var encryptACBC = function ( details, cipher, sign, numBytes) {
@@ -112,21 +216,19 @@ var encryptACBC = function ( details, cipher, sign, numBytes) {
     var cmk = Buffer(b64url.b64(details.credentials.key), 'base64')
     if (numBytes != cmk.length) encodeError("key is not "+numBytes+" long.")    
 
-    // NOTE: we are using the same key for encryption and signing
-    // waiting for IETF JOSE WG to settle on standard
-    var cik = cmk
-    var cek = cmk.slice( 0, numBytes/2)
+    var kdf = concatKDF(cmk)
+ 
     var plainText = JSON.stringify( details. payload)
     var iv = crypto.randomBytes( 16)
     
     // encrypt
-    var cipher = crypto.createCipheriv( cipher, cek, iv)
+    var cipher = crypto.createCipheriv( cipher, kdf.cek, iv)
     var cipherText = b64url.safe( cipher.update( plainText,'binary','base64'))
     cipherText += b64url.safe( cipher.final( 'base64'))
 
     // create signature    
     var input = b64url.encode( JSON.stringify( details.header)) +'..'+ b64url.encode(iv) +'.'+ cipherText
-    var hmac = crypto.createHmac( sign, cik).update(input);
+    var hmac = crypto.createHmac( sign, kdf.cik).update(input);
     var token = input +'.'+ b64url.safe( hmac.digest('base64'))
     return token;
 }
@@ -350,21 +452,21 @@ var JWT_ALGORITHM = 'HS256';
 var OPENSSL_ALGORITHM = 'sha256';
 
 var sign = function (token, key) {
-	var hmac = crypto.createHmac(OPENSSL_ALGORITHM, key).update(token);
-	return b64url.safe(hmac.digest('base64'));
+  var hmac = crypto.createHmac(OPENSSL_ALGORITHM, key).update(token);
+  return b64url.safe(hmac.digest('base64'));
 };
 
 exports.stringify = function (header, payload, key) {
-	if (header.alg != JWT_ALGORITHM) throw ('unsupported JWT algorithm'); 
-	if (header.typ && (header.typ != 'JWT')) throw ('unsupported JWT header type'); 
-	if (!key) throw ('a key must be provided');
-		
-	header.typ = 'JWT'; 
-	header.iss = Math.round(Date.now() / 1000);
-	
-	var token = b64url.encode(JSON.stringify(header)) + '.' + b64url.encode(JSON.stringify(payload));
-	
-	return token + '.' + sign(token, key);
+  if (header.alg != JWT_ALGORITHM) throw ('unsupported JWT algorithm'); 
+  if (header.typ && (header.typ != 'JWT')) throw ('unsupported JWT header type'); 
+  if (!key) throw ('a key must be provided');
+    
+  header.typ = 'JWT'; 
+  header.iss = Math.round(Date.now() / 1000);
+  
+  var token = b64url.encode(JSON.stringify(header)) + '.' + b64url.encode(JSON.stringify(payload));
+  
+  return token + '.' + sign(token, key);
 };
 
 exports.parse = function (token, key, ttl) {
@@ -380,8 +482,8 @@ exports.parse = function (token, key, ttl) {
     var header = JSON.parse(b64url.decode(headerB64));
     var payload = JSON.parse(b64url.decode(payloadB64));
     
-	if (header.typ != 'JWT') throw ('unsupported JWT header type'); 
-	if (header.alg != JWT_ALGORITHM) throw ('unsupported JWT algorithm'); 
+  if (header.typ != 'JWT') throw ('unsupported JWT header type'); 
+  if (header.alg != JWT_ALGORITHM) throw ('unsupported JWT algorithm'); 
     if (!header.iss || ((header.iss + ttl) < Math.round(Date.now() / 1000))) throw ('expired token');
     if (signature != sign(headerB64 + '.' + payloadB64, key)) throw ('invalid signature');
     
