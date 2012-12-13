@@ -5,6 +5,9 @@
 	
 	    routes:{
 	        "" : "home",
+	        "demo" : "demo",
+	        "scan" : "scan",
+	        "authz" : "authz",
 	    },
 	
 	    initialize:function () {
@@ -25,6 +28,29 @@
 	        console.log(countItems);
 	        this.changePage(new window.Agent.HomeView());
 	    },
+
+	     /*
+	     * Demo page
+	     */
+	    demo:function () {
+	        this.changePage(new window.Agent.DemoView());
+	    },
+
+	     /*
+	     * Demo page
+	     */
+	    scan:function () {
+	        this.changePage(new window.Agent.ScanView());
+	    },
+	
+
+	 /*
+	     * Demo page
+	     */
+	    authz:function () {
+	        this.changePage(new window.Agent.AuthzView());
+	    },
+	
 	
 		/*
 		 * Common function to load page
