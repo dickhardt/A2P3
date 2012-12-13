@@ -5,9 +5,48 @@
 */
 
 var express = require('express')
+  , request = require('../request')
+  , config = require('../config')
+  , vault = require('./vault')
+  , util = require('util')
+  , db = require('../db')
+
+// Express Middleware that checks if agent token is valid
+function checkValidAgent (req, res, next) {
+    if (!req.body || !req.body.token) {
+      // TBD set ERROR and ERROR LOGGING
+      next('route')
+      return undefined
+    }
+    db.validAgent( req.body.token, function (name) {
+      if (name) {
+        req.a2p3 = {'appName': name}
+        next()
+      } else {
+        res.send({error: 
+                  { code: 'INVALID_TOKEN'
+                  , message: 'Agent Token was not recognized'
+                  } })
+      }
+    })
+}
+
+
 
 function requestVerify (req, res) {
-    res.send(501, 'NOT IMPLEMENTED');
+    if (!req.body || !req.body.request) {
+      // TBD set ERROR and ERROR LOGGING
+      next('route')
+      return undefined
+    }    
+    if (request.verify( vault, req.body.request )) {
+      res.send({result: { name: req.a2p3.appName }})
+    } else {
+      res.send({error: 
+                { code: 'INVALID_REQUEST'
+                , message: 'Request was not valid'
+                } })
+    }
 }
 
 function report (req, res) {
@@ -25,15 +64,20 @@ function appVerify (req, res) {
 
 exports.app = function() {
 	var app = express()
-	app.get("/", function(req, res){
-		console.log(req.domain);
-		console.log(req.headers);
-	    html = 'Hello World, from the Registrar!';
-	    res.send(html);    
-	});
-  app.post('/request/verify', requestVerify)
-  app.post('/report', report)
-  app.post('/authorizations/requests', authorizationsRequests)
-  app.post('/app/verify', appVerify)  
+  app.use(express.limit('10kb'))  // protect against large POST attack  
+  app.use(express.bodyParser())
+
+  app.post('/request/verify', checkValidAgent, requestVerify)
+  app.post('/report', checkValidAgent, report)
+  app.post('/authorizations/requests', checkValidAgent, authorizationsRequests)
+  app.post('/app/verify', request.check(vault), appVerify) 
+
+  app.get("/", function(req, res){
+  console.log(req.domain);
+  console.log(req.headers);
+    html = 'Hello World, from the Registrar!';
+    res.send(html);    
+  });
+
 	return app
 }

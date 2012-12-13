@@ -1,0 +1,12 @@
+
+
+ix:agent:<agent token>
+  issued
+  AS
+
+vault:<owner id>:<recipient id>:
+  <key id>
+ latestKID
+ latestKEY
+
+ 

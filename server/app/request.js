@@ -34,6 +34,17 @@ exports.parse = function ( jws, getCreds ) {
   return payload
 }
 
+exports.verify = function ( vault, request ) {
+    var jws = jwt.jwsCrack(request)
+    if (!jws.payload || !jws.payload.iss || !jws.header || !jws.header.kid) return false  // TBD 
+    var host = jws.payload.iss
+    var payload = jwt.decode( req.body.request, function (header) {
+      var credentials = {key: vault.keys && vault.keys[host] && vault.keys[host][header.kid]}
+      return credentials
+    })
+    return (payload == true)
+}
+
 
 // Express Middleware that checks signature of A2P3 Request JWS
 exports.check = function ( vault ) {
