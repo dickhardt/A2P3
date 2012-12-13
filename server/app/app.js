@@ -8,7 +8,7 @@
 */
 
 var express = require('express')
-  , config = require('../config')
+  , config = require('./config')
   , app = express()
 
 // use app server per host called

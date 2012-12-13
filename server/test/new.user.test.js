@@ -6,11 +6,11 @@
 
 var should = require('chai').should() 
   , fetchUrl = require('fetch').fetchUrl
-  , config = require('../config')
-  , request = require('../request')
+  , config = require('../app/config')
+  , request = require('../app/request')
   , querystring = require('querystring')
   , vault = require('../app/setup/vault')
-  , api = require('../api')
+  , api = require('../app/api')
 var host = config.host.ix 
 
 describe('IX', function(){

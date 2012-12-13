@@ -5,8 +5,8 @@
 */
 
 var express = require('express')
-  , request = require('../../request')
-  , config = require('../../config')
+  , request = require('../request')
+  , config = require('../config')
   , vault = require('./vault')
   , util = require('util')
 

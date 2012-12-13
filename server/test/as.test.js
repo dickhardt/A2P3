@@ -6,7 +6,7 @@
 
 var should = require('chai').should() 
   , fetchUrl = require('fetch').fetchUrl
-  , config = require('../config')
+  , config = require('../app/config')
 
 var host = config.host.as
 
