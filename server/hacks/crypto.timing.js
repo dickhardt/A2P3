@@ -61,7 +61,7 @@ timing( jweCreateParse )
 
 config.alg.JWS = 'HS256'
 config.alg.JWE = 'A128CBC+HS256'
-vault = require('../app/setup/128vault')
+vault = require('../app/setup/128.vault')
 credentials = vault.keys[config.host.ix].latest
 
 console.log(config.alg.JWS)
