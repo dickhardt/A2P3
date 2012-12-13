@@ -4,7 +4,7 @@
 * Copyright (C) Province of British Columbia 2013
 */
 
-var b64url = require('../b64url')
+var b64url = require('../app/b64url')
 	, crypto = require('crypto')
 	, fs = require('fs')
 	, util = require('util')

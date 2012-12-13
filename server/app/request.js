@@ -26,7 +26,7 @@ exports.create = function (  payload, credentials ) {
 
 exports.parse = function ( jws, getCreds ) {
   var payload = jwt.decode( jws, function (header) {
-    if (header.typ !== 'JWS' || header.alg !== config.alg.enc)
+    if (header.typ !== 'JWS' || header.alg !== config.alg.JWS)
         return undefined
     else 
         return getCreds( header )
@@ -34,6 +34,8 @@ exports.parse = function ( jws, getCreds ) {
   return payload
 }
 
+
+// Express Middleware that checks signature of A2P3 Request JWS
 exports.check = function ( vault ) {
   assert( vault, "no vault" )
   return (function (req, res, next) {

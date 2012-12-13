@@ -251,21 +251,18 @@ var decryptACBC = function ( header, input, cmkEncrypted, ivB64url, ciphertextB6
     var cmk = Buffer(b64url.b64(credentials.key), 'base64')
     if (numBytes != cmk.length) encodeError("key is not "+numBytes+" long.")    
 
-    // NOTE: we are using the same key for encryption and signing
-    // waiting for IETF JOSE WG to settle on standard
-    var cik = cmk
-    var cek = cmk.slice(0,numBytes/2)
+    var kdf = concatKDF(cmk)
     
     var iv = Buffer(b64url.b64(ivB64url), 'base64')
     
     // check integrity
-    var hmac = crypto.createHmac(sign, cik).update(input);
+    var hmac = crypto.createHmac(sign, kdf.cik).update(input);
     var inputSignature = b64url.safe(hmac.digest('base64'))
     if (inputSignature != signature) decodeError("invalid signature:"+signature)    
     
     // decrypt
     var cipherText = Buffer(b64url.b64(ciphertextB64url), 'base64')
-    var decipher = crypto.createDecipheriv( cipher, cek, iv)
+    var decipher = crypto.createDecipheriv( cipher, kdf.cek, iv)
     var plainText = b64url.safe(decipher.update(cipherText,'binary','base64'))
     plainText += b64url.safe(decipher.final('base64'))
     return plainText;

@@ -7,9 +7,9 @@
 */
 
 var config = require('./config')
-  , jwt = require('.jwt')
+  , jwt = require('./jwt')
 
-exports.create = function ( credentials, payload ) {
+exports.create = function ( payload, credentials ) {
   var details =
     { header:
       { typ: 'JWE'
@@ -26,7 +26,7 @@ exports.create = function ( credentials, payload ) {
 
 exports.parse = function ( token, getCreds ) {
   var payload = jwt.decode( token, function (header) {
-    if (header.typ !== 'JWE' || header.alg !== 'dir' || header.enc !=== config.alg.enc)
+    if (header.typ !== 'JWE' || header.alg !== 'dir' || header.enc !== config.alg.JWE)
         return undefined
     else 
         return getCreds( header )
