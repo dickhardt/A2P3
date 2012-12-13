@@ -40,12 +40,11 @@ function jweCreateParse () {
 var timing = function (func) {
   var times = []
   for (var x=0; x<10; x++) {
-    var start = new Date()
-    for (var i=0; i<10000; i++) {
+    var start = process.hrtime()
+    for (var i=0; i<1000; i++) {
       func()
     }
-    var stop = new Date()
-    times.push(stop-start)
+    times.push( Math.round( process.hrtime(start)[1]/1000000 ) )
   }
   var avg = 0
   times.forEach( function(v) {avg += v})
