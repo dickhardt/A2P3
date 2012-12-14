@@ -21,8 +21,12 @@ exports.create = function ( payload, credentials ) {
     , credentials: credentials
     }
     details.payload.iat = jwt.iat()
-    return jwt.encode( details )
+    return jwt.jwe( details )
 }
+
+/*
+
+
 
 exports.parse = function ( token, getCreds ) {
   var payload = jwt.decode( token, function (header) {
@@ -33,3 +37,4 @@ exports.parse = function ( token, getCreds ) {
   })
   return payload
 }
+*/

@@ -21,7 +21,7 @@ exports.create = function (  payload, credentials ) {
     , credentials: credentials
     }
     details.payload.iat = jwt.iat()
-    return jwt.encode( details )
+    return jwt.jwt( details )
 }
 
 exports.parse = function ( jws, getCreds ) {
@@ -34,15 +34,22 @@ exports.parse = function ( jws, getCreds ) {
   return payload
 }
 
+
+function sanityCheck( jws, vault ) {
+  if (!jws.payload.iss)
+    throw new Error('No "iss" in JWS payload')
+  if (!jws.header.kid) 
+    throw new Error('No "kid" in JWS header')
+  if (!vault[jws.payload.iss])
+    throw new Error('Unknown JWS "iss":"'+jws.payload.iss+'"')
+  if (!vault[jws.payload.iss][jws.header.kid])
+    throw new Error('Unknown JWS "kid":"'+jws.header.kid+'"')  
+}
+
 exports.verify = function ( vault, request ) {
-    var jws = jwt.jwsCrack(request)
-    if (!jws.payload || !jws.payload.iss || !jws.header || !jws.header.kid) return false  // TBD 
-    var host = jws.payload.iss
-    var payload = jwt.decode( req.body.request, function (header) {
-      var credentials = {key: vault.keys && vault.keys[host] && vault.keys[host][header.kid]}
-      return credentials
-    })
-    return (payload == true)
+  var jws = new jwt.Parse( request )
+  sanityCheck( jws, vault )
+  return jws.verify( vault.keys[host][header.kid] )
 }
 
 
@@ -50,20 +57,29 @@ exports.verify = function ( vault, request ) {
 exports.check = function ( vault ) {
   assert( vault, "no vault" )
   return (function (req, res, next) {
+    var jws, valid
 
     if (!req.body || !req.body.request) {
       // TBD ERROR LOGGING
+      console.log(e)
       next('route')
       return undefined
     }
-    var jws = jwt.jwsCrack(req.body.request)
-    if (!jws.payload || !jws.payload.iss || !jws.header || !jws.header.kid) next('route') // TBD add in error message to be sent back
-    var host = jws.payload.iss
-    req.a2p3 = jwt.decode( req.body.request, function (header) {
-      var credentials = {key: vault.keys && vault.keys[host] && vault.keys[host][header.kid]}
-      return credentials
-    })
-    next()
+    try {
+      jws = jwt.Parse( req.body.request )
+      sanityCheck( jws, vault )
+      if ( jws.verify( vault.keys[host][header.kid] ) ) {
+        req.request = jws.payload
+        next()
+      } else {
+        throw new Error("Invalid JWS signature")
+      }
+    }
+    catch (e) {
+      console.log(e)
+      next(route)
+      return undefined
+    }
   })
 }
 
