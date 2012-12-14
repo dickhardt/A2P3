@@ -22,6 +22,11 @@ app.use( express.vhost( '*', function ( req, res, next ) {
   res.send(500, 'UKNOWN HOST:'+host )
 }) )
 
+
+// app.use( function( err, req, res, next) ) // Middleware with 4 params is an error handler
+// next(err) will goto error handler
+
+
 app.listen( config.port )
 
 console.log( "A2P3 server started on port:", config.port )
