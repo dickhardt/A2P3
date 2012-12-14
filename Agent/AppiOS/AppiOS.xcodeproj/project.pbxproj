@@ -19,6 +19,7 @@
 		200E4403167BDE07007A24C9 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 200E4402167BDE07007A24C9 /* AssetsLibrary.framework */; };
 		200E4405167BDE1C007A24C9 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 200E4404167BDE1C007A24C9 /* CoreVideo.framework */; };
 		200E4407167BDE33007A24C9 /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 200E4406167BDE33007A24C9 /* libiconv.dylib */; };
+		200E440A167BEBB7007A24C9 /* AppBase in Resources */ = {isa = PBXBuildFile; fileRef = 200E4409167BEBB7007A24C9 /* AppBase */; };
 		288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
 		301BF552109A68D80062928A /* libCordova.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 301BF535109A57CC0062928A /* libCordova.a */; };
 		301BF570109A69640062928A /* www in Resources */ = {isa = PBXBuildFile; fileRef = 301BF56E109A69640062928A /* www */; };
@@ -83,6 +84,7 @@
 		200E4402167BDE07007A24C9 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
 		200E4404167BDE1C007A24C9 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		200E4406167BDE33007A24C9 /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = usr/lib/libiconv.dylib; sourceTree = SDKROOT; };
+		200E4409167BEBB7007A24C9 /* AppBase */ = {isa = PBXFileReference; lastKnownFileType = folder; name = AppBase; path = ../../../../Users/gturner/Documents/A2P3/Agent/AppBase; sourceTree = DEVELOPER_DIR; };
 		288765FC0DF74451002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		301BF52D109A57CC0062928A /* CordovaLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CordovaLib.xcodeproj; path = CordovaLib/CordovaLib.xcodeproj; sourceTree = "<group>"; };
@@ -188,10 +190,11 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				200E4409167BEBB7007A24C9 /* AppBase */,
 				200E4406167BDE33007A24C9 /* libiconv.dylib */,
+				301BF56E109A69640062928A /* www */,
 				200E4404167BDE1C007A24C9 /* CoreVideo.framework */,
 				200E4402167BDE07007A24C9 /* AssetsLibrary.framework */,
-				301BF56E109A69640062928A /* www */,
 				301BF52D109A57CC0062928A /* CordovaLib.xcodeproj */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				307C750510C5A3420062BCA9 /* Plugins */,
@@ -404,6 +407,7 @@
 				3088BBC2154F3926009F9C59 /* Default~iphone.png in Resources */,
 				D4A0D8761607E02300AEF8BB /* Default-568h@2x~iphone.png in Resources */,
 				200E4400167BDCE6007A24C9 /* README in Resources */,
+				200E440A167BEBB7007A24C9 /* AppBase in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
