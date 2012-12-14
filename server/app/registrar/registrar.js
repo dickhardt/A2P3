@@ -34,19 +34,27 @@ function checkValidAgent (req, res, next) {
 
 
 function requestVerify (req, res) {
-    if (!req.body || !req.body.request) {
-      // TBD set ERROR and ERROR LOGGING
-      next('route')
-      return undefined
-    }    
+  if (!req.body || !req.body.request) {
+    // TBD set ERROR and ERROR LOGGING
+    next('route')
+    return undefined
+  }
+  try {
     if (request.verify( vault, req.body.request )) {
       res.send({result: { name: req.a2p3.appName }})
     } else {
       res.send({error: 
                 { code: 'INVALID_REQUEST'
-                , message: 'Request was not valid'
-                } })
+                , message: 'Invalid signature'
+                } })      
     }
+  }
+  catch (e) {
+    res.send({error: 
+              { code: 'INVALID_REQUEST'
+              , message: e.message
+              } })      
+  }
 }
 
 function report (req, res) {
