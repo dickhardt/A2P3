@@ -11,6 +11,8 @@ var express = require('express')
   , config = require('./config')
   , app = express()
 
+app.use( express.static( __dirname + '/assets' ) )
+
 // use app server per host called
 app.use( express.vhost( 'ix.*', require('./ix/ix').app() ) )
 app.use( express.vhost( 'as.*', require('./as/as').app() ) ) 
