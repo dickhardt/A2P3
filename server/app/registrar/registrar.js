@@ -41,7 +41,7 @@ function requestVerify (req, res) {
   }
   try {
     if (request.verify( vault, req.body.request )) {
-      res.send({result: { name: req.a2p3.appName }})
+      res.send({result: { name: req.a2p3.appName }}) // ERRROR, fix, TBD
     } else {
       res.send({error: 
                 { code: 'INVALID_REQUEST'
