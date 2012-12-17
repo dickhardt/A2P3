@@ -34,6 +34,19 @@ window.Agent.Notify = function(message, title, button, callback) {
  	}
 };
 
+/*
+ * Javascript function called by Cordova from handleOpenURL delegate.
+ * In the iOS Agent, the custom URL schema ix.a2p3.net is registered in the XCode Info.plist.
+ * You cannot launch any interactive features like alerts in the handleOpenURL code, 
+ * if you do, your app will hang. Similarly, you should not call any Cordova APIs in 
+ * there, unless you wrap it first in a setTimeout call, with a timeout value of zero
+ *  */
+function handleOpenURL(url) {
+	
+	setTimeout(function() {
+	    window.Agent.Notify("Url = " + url, "Incoming Request", null, null)
+	}, 0);
+}
 
 
 
