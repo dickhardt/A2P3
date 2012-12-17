@@ -34,6 +34,12 @@ var payload =
 debugger;
 
 var validRequest = request.create( payload, appVault.keys[config.host.ix].latest )
+var creds = appVault.keys[config.host.ix].latest
+creds.kid ='abc'
+var badKidRequest = request.create( payload, creds )
+var creds = appVault.keys[config.host.ix].latest
+creds.key[0] = creds.key[0]+1
+var badKeyRequest = request.create( payload, creds )
 
 // console.log( validRequest )
 
@@ -109,6 +115,37 @@ describe('Registrar', function(){
       })
     })
 
+    it('should return INVALID_REQUEST when an invalid kid is provided', function (done){
+      var options =
+        { method: 'POST' 
+        , payload: querystring.stringify({'token': 'testToken', 'request': badKidRequest})
+        , headers: {'content-type': 'application/x-www-form-urlencoded'}
+        }  
+      fetchUrl( host+'/request/verify', options, function (error, meta, body) {
+        var response = JSON.parse(body)
+        should.exist(response)
+        response.should.have.property('error')
+        response.error.should.have.property('code')
+        response.error.code.should.equal('INVALID_REQUEST')
+        done()
+      })
+    })
+
+    it('should return INVALID_REQUEST when an invalid key is provided', function (done){
+      var options =
+        { method: 'POST' 
+        , payload: querystring.stringify({'token': 'testToken', 'request': badKeyRequest})
+        , headers: {'content-type': 'application/x-www-form-urlencoded'}
+        }  
+      fetchUrl( host+'/request/verify', options, function (error, meta, body) {
+        var response = JSON.parse(body)
+        should.exist(response)
+        response.should.have.property('error')
+        response.error.should.have.property('code')
+        response.error.code.should.equal('INVALID_REQUEST')
+        done()
+      })
+    })
     it('should return "App Example" when a valid request is provided', function (done){
       var options =
         { method: 'POST' 
