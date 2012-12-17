@@ -211,6 +211,9 @@ var verifyHS256 = function (input, signature, b64safeKey) {
 }
 
 var verifyHS512 = function (input, signature, b64safeKey) {
+
+debugger;
+
   return verifyHSxxx( input, signature, b64safeKey, 'sha512' )  
 }
 
@@ -226,7 +229,7 @@ var signHSxxx = function (details, alg) {
   var key = Buffer( b64url.b64(details.credentials.key), 'base64')
   var hmac = crypto.createHmac(alg, key).update(input);
   var token = input +'.'+ b64url.safe(hmac.digest('base64'))
-  return token;
+  return token.toString();
 }
 
 var signHS256 = function (details) {
@@ -237,7 +240,7 @@ var signHS512 = function (details) {
   return signHSxxx( details, 'sha512' )
 }
 
-var signJWS =
+var signAlg =
     { 'HS256': signHS256
     , 'HS512': signHS512
     }
@@ -273,7 +276,7 @@ function jws ( details ) {
     throw new Error('No header for JWS token')
   if (!details.header.alg)
     throw new Error('No JWS signing algorithm specified')  
-  if (!encryptAlg[details.header.alg])
+  if (!signAlg[details.header.alg])
     throw new Error('Unsupported JWS signing algorithm:"'+details.header.alg+'"')
   if (!details.payload)
     throw new Error('No payload for JWS token')
@@ -291,6 +294,9 @@ function jws ( details ) {
 * verified (JWS) or decrypted (JWE)
 */
 function Parse ( token ) {
+  if ( typeof token != 'string' )
+      throw new Error('JWT must be a string object')
+
   var parts = token.split('.')
 
   if (!parts.every(b64url.valid)) 
@@ -312,7 +318,7 @@ function Parse ( token ) {
         return e
     }
     this._input = parts[0] +'.'+ parts[1]
-    this.signature = b64url.decode( parts[2] )
+    this.signature = parts[2]
     return this      
   
   } else if (this.header.typ == 'JWE') {
