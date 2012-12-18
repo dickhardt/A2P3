@@ -92,6 +92,5 @@ exports.app = function() {
 
   app.use( middleware.errorHandler )
 
-  console.log( 'Registrar middleware:\n', app.stack, '\nroutes:',app.routes )
 	return app
 }

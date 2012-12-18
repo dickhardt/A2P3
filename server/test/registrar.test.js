@@ -41,8 +41,6 @@ var creds = appVault.keys[config.host.ix].latest
 creds.key[0] = creds.key[0]+1
 var badKeyRequest = request.create( payload, creds )
 
-// console.log( validRequest )
-
 // var r = request.parse( validRequest )
 // console.log( r )
 
