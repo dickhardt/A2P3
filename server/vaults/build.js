@@ -21,13 +21,13 @@ var hosts =
 	, 'registrar': {}
 	, 'as': {}
 	, 'setup': {}
+	, 'app.example.com': {}
 	}
 
 var key
 	, kid
 	, bytesKey = 64 // TBD: rewrite to use config.alg.JWE and jwt.makeKey()
 	, bytesKid = 12
-	, vault
 	, header = "// GENERATED FILE :: DO NOT EDIT\n\nexports.keys = \n"
 
 // ix:as key pair
@@ -43,6 +43,16 @@ hosts.as['ix.'+base] = {latest: {}}
 hosts.as['ix.'+base].latest.key = key
 hosts.as['ix.'+base].latest.kid = kid
 hosts.as['ix.'+base][kid] = key
+
+// as:as key pair used in registration QR code
+key = b64url.safe( crypto.randomBytes( bytesKey ).toString('base64') )
+kid = b64url.safe( crypto.randomBytes( bytesKid ).toString('base64') )
+
+hosts.as['as.'+base] = {latest: {}}
+hosts.as['as.'+base].latest.key = key
+hosts.as['as.'+base].latest.kid = kid
+hosts.as['as.'+base][kid] = key
+
 
 // ix:registrar key pair
 key = b64url.safe( crypto.randomBytes( bytesKey ).toString('base64') )
@@ -72,18 +82,33 @@ hosts.setup['ix.'+base].latest.key = key
 hosts.setup['ix.'+base].latest.kid = kid
 hosts.setup['ix.'+base][kid] = key
 
+// create AS lookup in IX
+hosts.ix.as = {}
+hosts.ix.as[hosts.ix['as.'+base].latest.kid] = hosts.ix['as.'+base].latest.key
+hosts.ix.as[hosts.ix['setup.'+base].latest.kid] = hosts.ix['setup.'+base].latest.key
+
+// Example App
+
+key = b64url.safe( crypto.randomBytes( bytesKey ).toString('base64') )
+kid = b64url.safe( crypto.randomBytes( bytesKid ).toString('base64') )
+
+hosts.ix['app.example.com'] = {latest: {}}
+hosts.ix['app.example.com'].latest.key = key
+hosts.ix['app.example.com'].latest.kid = kid
+hosts.ix['app.example.com'][kid] = key
+
+hosts['app.example.com']['ix.'+base] = {latest: {}}
+hosts['app.example.com']['ix.'+base].latest.key = key
+hosts['app.example.com']['ix.'+base].latest.kid = kid
+hosts['app.example.com']['ix.'+base][kid] = key
+
 // make directory for vault files
 if (!fs.existsSync(base)) fs.mkdirSync(base)
 
-vault = header + util.inspect( hosts.ix, false, null )
-fs.writeFileSync( base + '/ix.' + base + '.vault.js', vault )
+Object.keys(hosts).forEach( function (host) {
+	if (!fs.existsSync( base + '/' + host )) fs.mkdirSync( base + '/' + host )
+	var vault = header + util.inspect( hosts.ix, false, null )
+	fs.writeFileSync( base + '/' + host + '/vault.js', vault )
+})
 
-vault = header + util.inspect( hosts.as, false, null )
-fs.writeFileSync( base + '/as.' + base + '.vault.js', vault )
-
-vault = header + util.inspect( hosts.registrar, false, null )
-fs.writeFileSync( base + '/registrar.' + base + '.vault.js', vault )
-
-vault = header + util.inspect( hosts.setup, false, null )
-fs.writeFileSync( base + '/setup.' + base + '.vault.js', vault )
 

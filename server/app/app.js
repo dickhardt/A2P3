@@ -13,6 +13,8 @@ var express = require('express')
 
 app.use( express.static( __dirname + '/assets' ) )
 
+app.use( express.logger( ':req[host] :method :url :status time :response-time ms'))
+
 // use app server per host called
 app.use( express.vhost( 'ix.*', require('./ix/ix').app() ) )
 app.use( express.vhost( 'as.*', require('./as/as').app() ) ) 
@@ -23,11 +25,6 @@ app.use( express.vhost( '*', function ( req, res, next ) {
   console.error('UKNOWN HOST:'+host,' from ', req.headers.host )
   res.send(500, 'UKNOWN HOST:'+host )
 }) )
-
-
-// app.use( function( err, req, res, next) ) // Middleware with 4 params is an error handler
-// next(err) will goto error handler
-
 
 app.listen( config.port )
 

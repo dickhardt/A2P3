@@ -21,17 +21,12 @@ exports.create = function (  payload, credentials ) {
     , credentials: credentials
     }
     details.payload.iat = jwt.iat()
-    return jwt.jwt( details )
+    return jwt.jws( details )
 }
 
-exports.parse = function ( jws, getCreds ) {
-  var payload = jwt.decode( jws, function (header) {
-    if (header.typ !== 'JWS' || header.alg !== config.alg.JWS)
-        return undefined
-    else 
-        return getCreds( header )
-  })
-  return payload
+exports.parse = function ( request ) {
+  var jws = new jwt.Parse( request )
+  return jws
 }
 
 
@@ -40,16 +35,17 @@ function sanityCheck( jws, vault ) {
     throw new Error('No "iss" in JWS payload')
   if (!jws.header.kid) 
     throw new Error('No "kid" in JWS header')
-  if (!vault[jws.payload.iss])
+  if (!vault.keys[jws.payload.iss])
     throw new Error('Unknown JWS "iss":"'+jws.payload.iss+'"')
-  if (!vault[jws.payload.iss][jws.header.kid])
+  if (!vault.keys[jws.payload.iss][jws.header.kid])
     throw new Error('Unknown JWS "kid":"'+jws.header.kid+'"')  
 }
 
-exports.verify = function ( vault, request ) {
+exports.verifyAndId = function ( request, vault ) {
   var jws = new jwt.Parse( request )
   sanityCheck( jws, vault )
-  return jws.verify( vault.keys[host][header.kid] )
+  var valid = jws.verify( vault.keys[jws.payload.iss][jws.header.kid] )
+  return ( valid ) ? jws.payload.iss : undefined
 }
 
 
@@ -60,9 +56,9 @@ exports.check = function ( vault ) {
     var jws, valid
 
     if (!req.body || !req.body.request) {
-      // TBD ERROR LOGGING
-      console.log(e)
-      next('route')
+      e = new Error('No "request" parameter in POST')
+      e.code = 'INVALID_API_CALL'
+      next(e)
       return undefined
     }
     try {
@@ -72,13 +68,14 @@ exports.check = function ( vault ) {
         req.request = jws.payload
         next()
       } else {
-        throw new Error("Invalid JWS signature")
+        new Error('Invalid JWS signature')
+        e.code = 'INVALID_REQUEST'
+        next( e )
       }
     }
     catch (e) {
-      console.log(e)
-      next(route)
-      return undefined
+      e.code = 'INVALID_REQUEST'
+      next( e )
     }
   })
 }

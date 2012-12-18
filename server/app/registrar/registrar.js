@@ -10,50 +10,53 @@ var express = require('express')
   , vault = require('./vault')
   , util = require('util')
   , db = require('../db')
+  , middleware = require('../middleware')
 
 // Express Middleware that checks if agent token is valid
 function checkValidAgent (req, res, next) {
     if (!req.body || !req.body.token) {
-      // TBD set ERROR and ERROR LOGGING
-      next('route')
+      e = new Error("No 'token' parameter in POST")
+      e.code = 'INVALID_API_CALL'
+      next(e)
       return undefined
     }
-    db.validAgent( req.body.token, function (name) {
-      if (name) {
-        req.a2p3 = {'appName': name}
-        next()
+    db.validAgent( req.body.token, function (valid) {
+      if (!valid) {
+        e = new Error('unrecognized agent token')
+        e.code = 'INVALID_TOKEN'
+        next(e)
+        return undefined
       } else {
-        res.send({error: 
-                  { code: 'INVALID_TOKEN'
-                  , message: 'Agent Token was not recognized'
-                  } })
+        next()
       }
     })
 }
 
 
 
-function requestVerify (req, res) {
+function requestVerify (req, res, next) {
+  var appId
   if (!req.body || !req.body.request) {
-    // TBD set ERROR and ERROR LOGGING
-    next('route')
-    return undefined
+      e = new Error("No 'request' parameter in POST")
+      e.code = 'INVALID_API_CALL'
+      return next( e )
   }
   try {
-    if (request.verify( vault, req.body.request )) {
-      res.send({result: { name: req.a2p3.appName }}) // ERRROR, fix, TBD
+    appId = request.verifyAndId( req.body.request, vault )
+    if ( appId ) {
+      db.getAppName( appId, function (appName) {
+          res.send({result: { name: appName }})
+        })
+      return undefined
     } else {
-      res.send({error: 
-                { code: 'INVALID_REQUEST'
-                , message: 'Invalid signature'
-                } })      
+        e = new Error('Invalid request signature')
+        e.code = 'INVALID_REQUEST'
+        return next( e )
     }
   }
   catch (e) {
-    res.send({error: 
-              { code: 'INVALID_REQUEST'
-              , message: e.message
-              } })      
+    e.code = 'INVALID_REQUEST'
+    return next( e )
   }
 }
 
@@ -78,14 +81,16 @@ exports.app = function() {
   app.post('/request/verify', checkValidAgent, requestVerify)
   app.post('/report', checkValidAgent, report)
   app.post('/authorizations/requests', checkValidAgent, authorizationsRequests)
-  app.post('/app/verify', request.check(vault), appVerify) 
+  app.post('/app/verify', request.check(vault), appVerify)  
 
-  app.get("/", function(req, res){
+  app.get('/', function(req, res){
   console.log(req.domain);
   console.log(req.headers);
     html = 'Hello World, from the Registrar!';
     res.send(html);    
   });
+
+  app.use( middleware.errorHandler )
 
 	return app
 }
