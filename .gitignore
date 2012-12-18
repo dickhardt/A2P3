@@ -28,3 +28,7 @@ npm-debug.log
 *.xcuserstate
 
 *.xcuserstate
+
+Agent/AppiOS/AppiOS.xcodeproj/project.xcworkspace/xcuserdata/gturner.xcuserdatad/UserInterfaceState.xcuserstate
+
+*.xcuserstate
