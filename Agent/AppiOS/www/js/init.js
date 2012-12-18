@@ -44,8 +44,10 @@ window.Agent.Notify = function(message, title, button, callback) {
 function handleOpenURL(url) {
 	
 	setTimeout(function() {
-	    window.Agent.Notify("Url = " + url, "Incoming Request", null, null)
+	    window.Agent.Notify("Url (count:" + url.length + ") = " + url, "Incoming Request", null, null);
+	    //window.Agent.AppRouter.agentrequest();
 	}, 0);
+	
 }
 
 
