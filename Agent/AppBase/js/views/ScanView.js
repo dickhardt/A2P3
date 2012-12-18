@@ -10,21 +10,30 @@ $(function($) {
 		
 	    render:function (eventName) {
 	        $(this.el).html(this.template());
-	        window.plugins.barcodeScanner.scan(
-                function(result) {
-                    if (result.cancelled)
-                        alert("the user cancelled the scan")
-                    else
-                        alert("we got a barcode: " + result.text)
-                },
-                function(error) {
-                    alert("scanning failed: " + error)
-                }
-            )
+	        
 	        return this;
 	    },
 	
 		events: {
-	    },
+	    	"click a[id=add-scan]": "addScan"
+		},
+	    
+	    /*
+	     * Event handler addScan(): 
+	     */
+	    addScan: function() {
+	        window.barcodeScanner.scan(
+                function(result) {
+                    if (result.cancelled)
+                        window.SSDriver.Notify("the user cancelled the scan")
+                    else
+                        window.SSDriver.Notify("we got a barcode: " + result.text)
+                },
+                function(error) {
+                    window.SSDriver.Notify("scanning failed: " + error)
+                }
+	   		)
+	        
+		},
 	});
 });

@@ -45,6 +45,7 @@
             </div>
             <div data-role="content" class="fullarea">
                 Point your phone at the QR code
+                <a id="add-scan" data-icon="plus">Add/Scan</a>
             </div>
     </script>
 
@@ -59,6 +60,17 @@
             </div>
     </script>
 
+    <!-- Scan Page Template -->
+    <script type="text/template" id="a2p3agentrequest" >
+            <div data-role="header">
+                <h1>A2P3 Agent Request</h1>
+                
+            </div>
+            <div data-role="content" class="fullarea">
+                    URL: <%= a2p3AgentSession.Url %>
+                    
+            </div>
+    </script>
 
 
     <!-- All the Scripts -->
@@ -72,6 +84,7 @@
     <script src="js/views/DemoView.js"></script>
     <script src="js/views/ScanView.js"></script>
     <script src="js/views/AuthzView.js"></script>
+    <script src="js/views/A2P3AgentRequestView.js"></script>
     <script src="js/views/HomeView.js"></script>
 	<script src="js/routers/AppRouter.js"></script>
 	
