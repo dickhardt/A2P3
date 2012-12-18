@@ -24,9 +24,6 @@
 		 * Home page, default router
 		 */
 		home:function () {
-	        var countItems = 0;
-	       
-	        console.log(countItems);
 	        this.changePage(new window.Agent.HomeView());
 	    },
 

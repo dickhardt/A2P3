@@ -7,7 +7,6 @@ $(document).bind("mobileinit", function () {
 
     // Set default page transitions
     $.mobile.defaultPageTransition = "none"
-    //$.mobile.defaultDialogTransition = "none"
                  
     // Remove page from DOM when it's being replaced
     $('div[data-role="page"]').live('pagehide', function (event, ui) {
