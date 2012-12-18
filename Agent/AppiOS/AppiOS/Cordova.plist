@@ -31,7 +31,7 @@
 	<key>Plugins</key>
 	<dict>
 		<key>org.apache.cordova.barcodeScanner</key>
-		<string>CDVBarcodeScaner</string>
+		<string>CDVBarcodeScanner</string>
 		<key>Device</key>
 		<string>CDVDevice</string>
 		<key>Logger</key>
