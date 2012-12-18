@@ -14,23 +14,26 @@
     <!-- Home Page Template -->
     <script type="text/template" id="home" >
 	        <div data-role="header">
-	            <h1>Agent Home</h1>
-	            
+	        	<a href="#home" data-role="button" data-inline="true" data-icon="delete" data-iconpos="notext">Exit</a>
+	            <h1>Agent</h1>
+	            <a href="#settings" data-role="button" data-inline="true" data-icon="gear" data-iconpos="notext">Settings</a>
 	        </div>
 	      	<div data-role="content" class="fullarea">
-                <ul data-role="listview">
-                    <li><a href="#demo">Demo Apps</a></li>
-                    <li><a href="#scan">Scan Login QR Code</a></li>
-                    <li><a href="#authz">Review Authorizations</a></li>
+                <ul data-role="controlgroup">
+                    <a href="#demo" data-role="button" data-iconpos="right" data-icon="arrow-r">Demo Apps</a>
+                    <a href="#scan" data-role="button" data-iconpos="right" data-icon="arrow-r">Scan Login QR Code</a>
+                    <a href="#authz" data-role="button" data-iconpos="right" data-icon="arrow-r">Review Authorizations</a>
                 </ul>
 	      	</div>
     </script>
     
     <!-- Demo Page Template -->
     <script type="text/template" id="demo" >
+    		
             <div data-role="header">
+            	<a href="#home" data-role="button" data-inline="true" data-icon="home" data-iconpos="notext">Home</a>
                 <h1>Demo</h1>
-                
+                <a href="#settings" data-role="button" data-inline="true" data-icon="gear" data-iconpos="notext">Settings</a>
             </div>
             <div data-role="content" class="fullarea">
                     Demo
@@ -40,8 +43,9 @@
     <!-- Scan Page Template -->
     <script type="text/template" id="scan" >
             <div data-role="header">
+            	<a href="#home" data-role="button" data-inline="true" data-icon="home" data-iconpos="notext">Home</a>
                 <h1>Scan</h1>
-                
+                 <a href="#settings" data-role="button" data-inline="true" data-icon="gear" data-iconpos="notext">Settings</a>
             </div>
             <div data-role="content" class="fullarea">
                 Point your phone at the QR code
@@ -52,8 +56,9 @@
     <!-- Scan Page Template -->
     <script type="text/template" id="authz" >
             <div data-role="header">
+            	<a href="#home" data-role="button" data-inline="true" data-icon="home" data-iconpos="notext">Home</a>
                 <h1>Authorizations</h1>
-                
+                <a href="#settings" data-role="button" data-inline="true" data-icon="gear" data-iconpos="notext">Settings</a>
             </div>
             <div data-role="content" class="fullarea">
                     authorizations

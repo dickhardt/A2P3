@@ -4,7 +4,7 @@
 	window.Agent.AppRouter = Backbone.Router.extend({
 	
 	    routes:{
-	        "" : "home",
+	        "home" : "home",
 	        "demo" : "demo",
 	        "scan" : "scan",
 	        "authz" : "authz",
@@ -24,9 +24,6 @@
 		 * Home page, default router
 		 */
 		home:function () {
-	        var countItems = 0;
-	       
-	        console.log(countItems);
 	        this.changePage(new window.Agent.HomeView());
 	    },
 
