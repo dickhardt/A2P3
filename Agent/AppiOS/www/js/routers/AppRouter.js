@@ -8,6 +8,7 @@
 	        "demo" : "demo",
 	        "scan" : "scan",
 	        "authz" : "authz",
+	        "agentrequest/:id" : "agentrequest"
 	    },
 	
 	    initialize:function () {
@@ -37,21 +38,30 @@
 	    },
 
 	     /*
-	     * Demo page
+	     * Scan page
 	     */
 	    scan:function () {
 	        this.changePage(new window.Agent.ScanView());
 	    },
 	
 
-	 /*
-	     * Demo page
+		 /*
+	     * Authz page
 	     */
 	    authz:function () {
 	        this.changePage(new window.Agent.AuthzView());
 	    },
 	
+		/*
+		 * Agent Request
+		 */
 	
+		agentrequest:function(id) 
+		{
+			var request = A2P3AgentRequest.get(id);
+			this.changePage(new window.Agent.A2P3AgentRequestView({A2P3AgentRequest: request}));
+		},
+		
 		/*
 		 * Common function to load page
 		 */

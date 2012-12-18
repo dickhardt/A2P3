@@ -1,5 +1,5 @@
 /**
- * PhoneGap is available under *either* the terms of the modified BSD license *or* the
+ * PhoneGap/Cordova is available under *either* the terms of the modified BSD license *or* the
  * MIT License (2008). See http://opensource.org/licenses/alphabetical for full text.
  *
  * Copyright (c) Matt Kane 2010
@@ -7,10 +7,6 @@
  */
 
 ;(function(){
-
-if (PhoneGap.hasResource("barcodeScanner")) return
-
-PhoneGap.addResource("barcodeScanner")
 
 //-------------------------------------------------------------------
 var BarcodeScanner = function() {
@@ -48,7 +44,7 @@ BarcodeScanner.prototype.scan = function(success, fail, options) {
     if ( null == options ) 
       options = []
 
-    return PhoneGap.exec(successWrapper, fail, "com.phonegap.barcodeScanner", "scan", options)
+    return Cordova.exec(successWrapper, fail, "org.apache.cordova.barcodeScanner", "scan", options)
 }
 
 //-------------------------------------------------------------------
@@ -65,11 +61,12 @@ BarcodeScanner.prototype.encode = function(type, data, success, fail, options) {
         return
     }
 
-    return PhoneGap.exec(success, fail, "com.phonegap.barcodeScanner", "encode", [{type: type, data: data, options: options}])
+    return Cordova.exec(success, fail, "org.apache.cordova.barcodeScanner", "encode", [{type: type, data: data, options: options}])
 }
 
 //-------------------------------------------------------------------
-PhoneGap.addConstructor(function() {
+/*
+Cordova.addConstructor(function() {
     if (!window.plugins) window.plugins = {}
 
     if (!window.plugins.barcodeScanner) {
@@ -78,6 +75,7 @@ PhoneGap.addConstructor(function() {
     else {
         console.log("Not installing barcodeScanner: window.plugins.barcodeScanner already exists")
     }
-})
+})*/
+window.barcodeScanner = new BarcodeScanner();
 
 })();
