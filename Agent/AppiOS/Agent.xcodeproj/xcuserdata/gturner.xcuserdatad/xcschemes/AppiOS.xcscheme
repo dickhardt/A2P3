@@ -16,8 +16,8 @@
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "1D6058900D05DD3D006BFB54"
                BuildableName = "AppiOS.app"
-               BlueprintName = "AppiOS"
-               ReferencedContainer = "container:AppiOS.xcodeproj">
+               BlueprintName = "Agent"
+               ReferencedContainer = "container:Agent.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -34,15 +34,15 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "1D6058900D05DD3D006BFB54"
             BuildableName = "AppiOS.app"
-            BlueprintName = "AppiOS"
-            ReferencedContainer = "container:AppiOS.xcodeproj">
+            BlueprintName = "Agent"
+            ReferencedContainer = "container:Agent.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </TestAction>
    <LaunchAction
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      launchStyle = "1"
+      launchStyle = "0"
       useCustomWorkingDirectory = "NO"
       buildConfiguration = "Debug"
       ignoresPersistentStateOnLaunch = "NO"
@@ -53,8 +53,8 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "1D6058900D05DD3D006BFB54"
             BuildableName = "AppiOS.app"
-            BlueprintName = "AppiOS"
-            ReferencedContainer = "container:AppiOS.xcodeproj">
+            BlueprintName = "Agent"
+            ReferencedContainer = "container:Agent.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -71,8 +71,8 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "1D6058900D05DD3D006BFB54"
             BuildableName = "AppiOS.app"
-            BlueprintName = "AppiOS"
-            ReferencedContainer = "container:AppiOS.xcodeproj">
+            BlueprintName = "Agent"
+            ReferencedContainer = "container:Agent.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
