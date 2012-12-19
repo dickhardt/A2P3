@@ -23,7 +23,7 @@ $(function($) {
 	     */
 	    addScan: function() {
 	    	console.log("Begin scan");
-	        window.barcodeScanner.scan(
+	        window.plugins.barcodeScanner.scan(
                 function(result) {
                 	console.log("Scan success callback");
                     if (result.cancelled)
