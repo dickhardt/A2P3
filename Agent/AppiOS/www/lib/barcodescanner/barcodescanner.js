@@ -25,6 +25,7 @@ BarcodeScanner.Encode = {
 //-------------------------------------------------------------------
 BarcodeScanner.prototype.scan = function(success, fail, options) {
     function successWrapper(result) {
+    	
         result.cancelled = (result.cancelled == 1)
         success.call(null, result)
     }
@@ -43,7 +44,7 @@ BarcodeScanner.prototype.scan = function(success, fail, options) {
   
     if ( null == options ) 
       options = []
-
+	
     return Cordova.exec(successWrapper, fail, "org.apache.cordova.barcodeScanner", "scan", options)
 }
 
@@ -76,6 +77,9 @@ Cordova.addConstructor(function() {
         console.log("Not installing barcodeScanner: window.plugins.barcodeScanner already exists")
     }
 })*/
-window.barcodeScanner = new BarcodeScanner();
+
+if (!window.barcodeScanner) {
+	window.barcodeScanner = new BarcodeScanner();
+} 
 
 })();
