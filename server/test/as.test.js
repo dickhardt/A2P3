@@ -39,7 +39,7 @@ describe('AS', function(){
       }
     var validRequest = request.create( payload, vault.keys[config.host.as].latest )
 
-    it('should return INVALID_API_CALL when invalid JSON is passed', function (done){
+    it('should return INVALID_API_CALL when no "qr" is passed', function (done){
       options.payload = querystring.stringify( {'device': 'testDevice', 'passcode': '1234'} )
       fetchUrl( host+'/register', options, function (error, meta, body) {
         var response = JSON.parse(body)
@@ -50,8 +50,8 @@ describe('AS', function(){
         done()
       })
     })
-    it('should return INVALID_API_CALL when invalid JSON is passed', function (done){
-      options.payload = querystring.stringify( {'device': 'testDevice', 'request': validRequest} )
+    it('should return INVALID_API_CALL when no "passcode" is passed', function (done){
+      options.payload = querystring.stringify( {'device': 'testDevice', 'qr': validRequest} )
       fetchUrl( host+'/register', options, function (error, meta, body) {
         var response = JSON.parse(body)
         should.exist(response)
@@ -61,8 +61,8 @@ describe('AS', function(){
         done()
       })
     })
-    it('should return INVALID_API_CALL when invalid JSON is passed', function (done){
-      options.payload = querystring.stringify( {'request': validRequest, 'passcode': '1234'} )
+    it('should return INVALID_API_CALL when no "device" is passed', function (done){
+      options.payload = querystring.stringify( {'qr': validRequest, 'passcode': '1234'} )
       fetchUrl( host+'/register', options, function (error, meta, body) {
         var response = JSON.parse(body)
         should.exist(response)
@@ -72,13 +72,6 @@ describe('AS', function(){
         done()
       })
     })
-
-  var payload = 
-    { 'iss': config.host.as
-    , 'aud': config.host.as
-    , 'reqeuest.a2p3.org':
-      { 'register': true }
-    }
 
 
   })

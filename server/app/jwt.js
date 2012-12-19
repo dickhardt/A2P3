@@ -253,7 +253,7 @@ var signAlg =
 function jwe ( details ) {
   if (!details.header)
     throw new Error('No header for JWE token')
-  if (!details.header.alg || detail.header.alg != 'dir')
+  if (!details.header.alg || details.header.alg != 'dir')
     throw new Error('Only "dir" algorithm supported for JWE token')
   if (!details.header.enc)
     throw new Error('No JWE encryption algorithm specified')  
@@ -350,7 +350,13 @@ Parse.prototype.decrypt = function (key) {
     throw new Error('Unsupported content key algorithm in JWE token:"'+this.header.alg+'"')
   if (!decryptAlg[this.header.enc])
     throw new Error('Unsupported encryption algorithm in JWE token:"'+this.header.enc+'"')
-  this.payload = decryptAlg[this.header.alg]( this._input, this._cmk, this._iv, this._ciphertext, this.signature, key )
+  var plaintext = decryptAlg[this.header.enc]( this._input, this._cmk, this._iv, this._ciphertext, this.signature, key )
+  try {
+    this.payload = JSON.parse(plaintext)
+  }
+  catch (e) {
+    this.payload = plaintext
+  }
   return this.payload
 }
 
@@ -366,6 +372,12 @@ exports.keygen = function (alg) {
     if (!algs[alg]) return null;
     return (b64url.encode(crypto.randomBytes(algs[alg])))
 }
+
+// generates a session / handle id
+exports.handle = function () {
+    return (b64url.encode(crypto.randomBytes(15)))
+}
+
 
 // generates JWT date/time value
 exports.iat = function () {

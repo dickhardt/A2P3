@@ -107,7 +107,7 @@ if (!fs.existsSync(base)) fs.mkdirSync(base)
 
 Object.keys(hosts).forEach( function (host) {
 	if (!fs.existsSync( base + '/' + host )) fs.mkdirSync( base + '/' + host )
-	var vault = header + util.inspect( hosts.ix, false, null )
+	var vault = header + util.inspect( hosts[host], false, null )
 	fs.writeFileSync( base + '/' + host + '/vault.js', vault )
 })
 

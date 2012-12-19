@@ -83,6 +83,7 @@
 		200E4402167BDE07007A24C9 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
 		200E4404167BDE1C007A24C9 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		200E4406167BDE33007A24C9 /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = usr/lib/libiconv.dylib; sourceTree = SDKROOT; };
+		20F32B931681325B0029022F /* Agent.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Agent.entitlements; sourceTree = "<group>"; };
 		288765FC0DF74451002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		301BF52D109A57CC0062928A /* CordovaLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CordovaLib.xcodeproj; path = CordovaLib/CordovaLib.xcodeproj; sourceTree = "<group>"; };
@@ -188,6 +189,7 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				20F32B931681325B0029022F /* Agent.entitlements */,
 				200E4406167BDE33007A24C9 /* libiconv.dylib */,
 				301BF56E109A69640062928A /* www */,
 				200E4404167BDE1C007A24C9 /* CoreVideo.framework */,
@@ -491,6 +493,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ENABLE_OBJC_ARC = NO;
 				CLANG_WARN_OBJCPP_ARC_ABI = YES;
+				CODE_SIGN_ENTITLEMENTS = Agent.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer: Gregory Turner (NBVE8EG2HM)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Gregory Turner (NBVE8EG2HM)";
 				COPY_PHASE_STRIP = NO;
@@ -515,6 +518,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ENABLE_OBJC_ARC = NO;
 				CLANG_WARN_OBJCPP_ARC_ABI = YES;
+				CODE_SIGN_ENTITLEMENTS = Agent.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer: Gregory Turner (NBVE8EG2HM)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Gregory Turner (NBVE8EG2HM)";
 				COPY_PHASE_STRIP = YES;
