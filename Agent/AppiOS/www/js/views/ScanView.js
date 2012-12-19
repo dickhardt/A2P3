@@ -27,13 +27,13 @@ $(function($) {
                 function(result) {
                 	console.log("Scan success callback");
                     if (result.cancelled)
-                        window.SSDriver.Notify("the user cancelled the scan")
+                        navigator.notification.alert("the user cancelled the scan")
                     else
-                        window.SSDriver.Notify("we got a barcode: " + result.text)
+                        navigator.notification.alert("we got a barcode: " + result.text)
                 },
                 function(error) {
                 	console.log("Scan failed callback");
-                    window.SSDriver.Notify("scanning failed: " + error)
+                    navigator.notification.alert("scanning failed: " + error)
                 }
 	   		)
 	        
