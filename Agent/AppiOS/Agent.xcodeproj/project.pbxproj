@@ -19,6 +19,7 @@
 		200E4403167BDE07007A24C9 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 200E4402167BDE07007A24C9 /* AssetsLibrary.framework */; };
 		200E4405167BDE1C007A24C9 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 200E4404167BDE1C007A24C9 /* CoreVideo.framework */; };
 		200E4407167BDE33007A24C9 /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 200E4406167BDE33007A24C9 /* libiconv.dylib */; };
+		20F32B9B16837D690029022F /* PushNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = 20F32B9A16837D690029022F /* PushNotification.m */; };
 		288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
 		301BF552109A68D80062928A /* libCordova.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 301BF535109A57CC0062928A /* libCordova.a */; };
 		301BF570109A69640062928A /* www in Resources */ = {isa = PBXBuildFile; fileRef = 301BF56E109A69640062928A /* www */; };
@@ -84,6 +85,8 @@
 		200E4404167BDE1C007A24C9 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		200E4406167BDE33007A24C9 /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = usr/lib/libiconv.dylib; sourceTree = SDKROOT; };
 		20F32B931681325B0029022F /* Agent.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Agent.entitlements; sourceTree = "<group>"; };
+		20F32B9916837D690029022F /* PushNotification.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PushNotification.h; sourceTree = "<group>"; };
+		20F32B9A16837D690029022F /* PushNotification.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PushNotification.m; sourceTree = "<group>"; };
 		288765FC0DF74451002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		301BF52D109A57CC0062928A /* CordovaLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CordovaLib.xcodeproj; path = CordovaLib/CordovaLib.xcodeproj; sourceTree = "<group>"; };
@@ -186,6 +189,15 @@
 			path = es.lproj;
 			sourceTree = "<group>";
 		};
+		20F32B9816837D690029022F /* PushNotification */ = {
+			isa = PBXGroup;
+			children = (
+				20F32B9916837D690029022F /* PushNotification.h */,
+				20F32B9A16837D690029022F /* PushNotification.m */,
+			);
+			path = PushNotification;
+			sourceTree = "<group>";
+		};
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
@@ -264,6 +276,7 @@
 		307C750510C5A3420062BCA9 /* Plugins */ = {
 			isa = PBXGroup;
 			children = (
+				20F32B9816837D690029022F /* PushNotification */,
 				200E43FB167BDCE5007A24C9 /* CDVBarcodeScanner.mm */,
 				200E43FC167BDCE6007A24C9 /* README */,
 				200E43FD167BDCE6007A24C9 /* zxing-all-in-one.cpp */,
@@ -438,6 +451,7 @@
 				302D95F114D2391D003F00A1 /* MainViewController.m in Sources */,
 				200E43FF167BDCE6007A24C9 /* CDVBarcodeScanner.mm in Sources */,
 				200E4401167BDCE6007A24C9 /* zxing-all-in-one.cpp in Sources */,
+				20F32B9B16837D690029022F /* PushNotification.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -30,6 +30,8 @@
 	<array/>
 	<key>Plugins</key>
 	<dict>
+		<key>PushNotification</key>
+		<string>PushNotification</string>
 		<key>org.apache.cordova.barcodeScanner</key>
 		<string>CDVBarcodeScanner</string>
 		<key>Device</key>
