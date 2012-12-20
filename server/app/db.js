@@ -11,20 +11,62 @@ var dummyNoSql = {}
 /*
 * Registrar DB functions
 */
-exports.validAgent = function ( token, callback ) {
+exports.validAgent = function ( token, cb ) {
   // stub for now
-  process.nextTick( function () { callback( (token == 'testToken') ) } )
+  process.nextTick( function () { cb( (token == 'testToken') ) } )
+}
+
+exports.getAppName = function ( appId, cb ) {
+  // stub for now
+  process.nextTick( function () { cb( ('Example App') ) } )
+}
+
+exports.checkAppIdAvail = function ( id, cb ) {
+
+}
+
+exports.newApp = function ( id, name, cb ) {
+
+}
+
+exports.deleteApp = function ( id, cb ) {
+
+}
+
+exports.refreshAppKey = function ( id, cb ) {
+
 }
 
 
 /*
-* IX DB calls functions
+* IX DB functions
 */
-exports.getAppName = function ( appId, callback ) {
-  // stub for now
-  process.nextTick( function () { callback( ('Example App') ) } )
+exports.newUser = function ( asHost, rsHosts, cb ) {
+
+  //create entries for all AS
+  // TBD: need mechanism to add new AS to system 
+
+  // return asDI
 }
 
+exports.getRsDIfromAsDI = function ( asDI, asHost, rsHosts, cb ) {
+
+  // return [rsDIs]
+}
+
+
+
+exports.addAgent = function ( asDI, asHost, handle, name, cb ) {
+
+}
+
+exports.listAgents = function ( asDI, asHost, cb ) {
+
+}
+
+exports.deleteAgent = function ( asDI, asHost, handle, cb ) {
+
+}
 
 /*
 * AS DB functions

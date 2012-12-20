@@ -42,7 +42,7 @@ function requestVerify (req, res, next) {
       return next( e )
   }
   try {
-    appId = request.verifyAndId( req.body.request, vault )
+    appId = request.verifyAndId( req.body.request, vault.keys )
     if ( appId ) {
       db.getAppName( appId, function (appName) {
           res.send({result: { name: appName }})

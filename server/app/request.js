@@ -30,28 +30,28 @@ exports.parse = function ( request ) {
 }
 
 
-function sanityCheck( jws, vault ) {
+function sanityCheck( jws, keys ) {
   if (!jws.payload.iss)
     throw new Error('No "iss" in JWS payload')
   if (!jws.header.kid) 
     throw new Error('No "kid" in JWS header')
-  if (!vault.keys[jws.payload.iss])
+  if (!keys[jws.payload.iss])
     throw new Error('Unknown JWS "iss":"'+jws.payload.iss+'"')
-  if (!vault.keys[jws.payload.iss][jws.header.kid])
+  if (!keys[jws.payload.iss][jws.header.kid])
     throw new Error('Unknown JWS "kid":"'+jws.header.kid+'"')  
 }
 
-exports.verifyAndId = function ( request, vault ) {
+exports.verifyAndId = function ( request, keys ) {
   var jws = new jwt.Parse( request )
-  sanityCheck( jws, vault )
-  var valid = jws.verify( vault.keys[jws.payload.iss][jws.header.kid] )
+  sanityCheck( jws, keys )
+  var valid = jws.verify( keys[jws.payload.iss][jws.header.kid] )
   return ( valid ) ? jws.payload.iss : undefined
 }
 
 
 // Express Middleware that checks signature of A2P3 Request JWS
-exports.check = function ( vault ) {
-  assert( vault, "no vault" )
+exports.check = function ( keys, accessList ) {
+  assert( keys, "no keys passed in" )
   return (function (req, res, next) {
     var jws, valid
 
@@ -63,8 +63,15 @@ exports.check = function ( vault ) {
     }
     try {
       jws = jwt.Parse( req.body.request )
-      sanityCheck( jws, vault )
-      if ( jws.verify( vault.keys[host][header.kid] ) ) {
+      sanityCheck( jws, keys )
+      if ( accessList ) {
+        if ( !accessList[jws.payload.iss] ) {
+          new Error('Access not allowed')
+          e.code = 'ACCESS_DENIED'
+          next( e )          
+        }
+      }
+      if ( jws.verify( keys[host][header.kid] ) ) {
         req.request = jws.payload
         next()
       } else {

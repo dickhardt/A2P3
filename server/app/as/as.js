@@ -149,7 +149,7 @@ function registerAgent ( req, res, next ) {
       e.code = "INTERNAL_ERROR"
       return next(e)
     }
-    // return agent registration page - TBD, put in final page
+    // return agent registration page - TBD replace placeholder page with final page
     res.sendfile( '/assets/placeholder.html', { 'root': __dirname }, function (e) {
       if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
     }) 

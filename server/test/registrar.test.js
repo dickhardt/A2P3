@@ -144,22 +144,6 @@ describe('Registrar', function(){
         done()
       })
     })
-    it('should return "App Example" when a valid request is provided', function (done){
-      var options =
-        { method: 'POST' 
-        , payload: querystring.stringify({'token': 'testToken', 'request': validRequest})
-        , headers: {'content-type': 'application/x-www-form-urlencoded'}
-        }  
-      fetchUrl( host+'/request/verify', options, function (error, meta, body) {
-        var response = JSON.parse(body)
-        should.exist(response)
-        response.should.not.have.property('error')
-        response.should.have.property('result')
-        response.result.should.have.property('name')
-        response.result.name.should.equal('Example App')
-        done()
-      })
-    })
-
+    
   })
 })

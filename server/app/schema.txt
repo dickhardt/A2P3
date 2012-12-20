@@ -1,12 +1,27 @@
 
 
-ix:agent:<agent token>
+ix:'agent':<agent token>
   issued
   AS
+
+ixDI
+  agentAS:agentHandle, agentName
+
+ix:asDI -> ixDI
+
+
+Registrar
+registrar:'agent':agentToken -> ixDI
+
+
+
+as:'agentRegisterSession':id -> session hash 
+as:'agent:device':device -> agent hash
+as:'agent:handle':handle -> device id
+
+
 
 vault:<owner id>:<recipient id>:
   <key id>
  latestKID
  latestKEY
-
- 
