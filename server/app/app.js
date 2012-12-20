@@ -10,10 +10,13 @@
 var express = require('express')
   , config = require('./config')
   , app = express()
+  , mw = require('./middleware')
+
 
 app.use( express.static( __dirname + '/assets' ) )
 
-app.use( express.logger( ':req[host] :method :url :status time :response-time ms'))
+// setup logging after static files so we only log API calls
+app.use( mw.colorLogger( express ))
 
 // use app server per host called
 app.use( express.vhost( 'ix.*', require('./ix/ix').app() ) )
