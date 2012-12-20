@@ -22,15 +22,18 @@ $(function($) {
 	     * Event handler addScan(): 
 	     */
 	    addScan: function() {
-	        window.barcodeScanner.scan(
+	    	console.log("Begin scan");
+	        window.plugins.barcodeScanner.scan(
                 function(result) {
+                	console.log("Scan success callback");
                     if (result.cancelled)
-                        window.SSDriver.Notify("the user cancelled the scan")
+                        navigator.notification.alert("the user cancelled the scan")
                     else
-                        window.SSDriver.Notify("we got a barcode: " + result.text)
+                        navigator.notification.alert("we got a barcode: " + result.text)
                 },
                 function(error) {
-                    window.SSDriver.Notify("scanning failed: " + error)
+                	console.log("Scan failed callback");
+                    navigator.notification.alert("scanning failed: " + error)
                 }
 	   		)
 	        
