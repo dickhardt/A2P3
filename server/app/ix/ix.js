@@ -9,13 +9,15 @@ var express = require('express')
   , config = require('../config')
   , vault = require('./vault')
   , util = require('util')
+  , db = require('../db')
 
 function diCreate ( req, res, next ) {
-
     var AS = req.a2p3['request.a2p3.org'].AS
-    var r = {result:{dis:{}}}
-    r.result.dis[AS] = 'abcdefg' // TBD: add in real work!
-    res.send( r );
+    var rsHosts = req.a2p3['request.a2p3.org'].RS
+    db.newUser( AS, rsHosts, function ( e, dis ) {
+      if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
+      res.send( {'result': {'dis': dis}} )
+    })
 }
 
 function exchange ( req, res, next ) {

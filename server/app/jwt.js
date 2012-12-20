@@ -375,7 +375,7 @@ exports.keygen = function (alg) {
 
 // generates a session / handle id
 exports.handle = function () {
-    return (b64url.encode(crypto.randomBytes(15)))
+    return (b64url.encode(crypto.randomBytes(16))) // UUID size
 }
 
 

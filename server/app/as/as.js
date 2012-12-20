@@ -191,7 +191,8 @@ exports.app = function() {
   app.use(express.limit('10kb'))  // protect against large POST attack  
   app.use(express.bodyParser())
 
-  app.post('/agent/delete', request.check( vault ), agentDelete) 
+  app.post('/agent/delete', request.check( vault, config.roles.as ), agentDelete) 
+  
   app.post('/notify/:handle',   mw.checkParams( {'params':['handle']} ),                    notify)
   app.post('/register',         mw.checkParams( {'body':['device','passcode','qr']} ),      register)
   app.post('/register/qr',      mw.checkParams( {'body':['registerSession', 'passcode']} ), registerQR)

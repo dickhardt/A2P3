@@ -81,7 +81,7 @@ exports.app = function() {
   app.post('/request/verify', checkValidAgent, requestVerify)
   app.post('/report', checkValidAgent, report)
   app.post('/authorizations/requests', checkValidAgent, authorizationsRequests)
-  app.post('/app/verify', request.check(vault), appVerify)  
+  app.post('/app/verify', request.check(vault), appVerify)  // need to change to look at all app keys
 
   app.get('/', function(req, res){
   console.log(req.domain);

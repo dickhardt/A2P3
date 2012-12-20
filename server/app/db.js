@@ -5,6 +5,7 @@
 */
 
 var config = require('./config')
+  , di = require('./di')
 
 var dummyNoSql = {}
 
@@ -43,11 +44,23 @@ exports.refreshAppKey = function ( id, cb ) {
 */
 exports.newUser = function ( asHost, rsHosts, cb ) {
 
-  //create entries for all AS
-  // TBD: need mechanism to add new AS to system 
+  // create identifiers
+  var ixDI = di.create()
+  var dis = {}
+  rsHosts.forEach( function ( host ) {
+    dis[host] = di.map( host, ixDI )
+  })
 
-  // return asDI
+  // store DI pointers
+  dummyNoSql[config.host.ix + ':di:' + ixDI] = {}
+  config.roles.as.forEach( function (as) {
+    var asDI = di.map( as, ixDI )
+    dummyNoSql[config.host.ix + ':di:' + as + ':' + asDI] = ixDI
+  })
+
+  process.nextTick( function () { cb( null, asDI ) } )
 }
+
 
 exports.getRsDIfromAsDI = function ( asDI, asHost, rsHosts, cb ) {
 
