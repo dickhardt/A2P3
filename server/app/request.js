@@ -62,7 +62,7 @@ exports.check = function ( keys, accessList ) {
       return undefined
     }
     try {
-      jws = jwt.Parse( req.body.request )
+      jws = new jwt.Parse( req.body.request )
       sanityCheck( jws, keys )
       if ( accessList ) {
         if ( !accessList[jws.payload.iss] ) {
@@ -71,7 +71,7 @@ exports.check = function ( keys, accessList ) {
           next( e )          
         }
       }
-      if ( jws.verify( keys[host][header.kid] ) ) {
+      if ( jws.verify( keys[jws.payload.iss][jws.header.kid] ) ) {
         req.request = jws.payload
         next()
       } else {

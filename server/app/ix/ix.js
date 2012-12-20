@@ -12,8 +12,8 @@ var express = require('express')
   , db = require('../db')
 
 function diCreate ( req, res, next ) {
-    var AS = req.a2p3['request.a2p3.org'].AS
-    var rsHosts = req.a2p3['request.a2p3.org'].RS
+    var AS = req.request['request.a2p3.org'].AS
+    var rsHosts = req.request['request.a2p3.org'].RS
     db.newUser( AS, rsHosts, function ( e, dis ) {
       if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
       res.send( {'result': {'dis': dis}} )
