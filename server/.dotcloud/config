@@ -1,6 +1,0 @@
-{
-    "push_branch": null, 
-    "application": "a2p3dev", 
-    "version": "0.9.1", 
-    "push_protocol": "rsync"
-}

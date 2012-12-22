@@ -105,10 +105,28 @@ function authorizeApp ( appID, rsID, cb ) {
 
 }
 
-// boot up system with root DI
-// registrar will set a session cookie with DI and 'root' email
-// use session cookie in subsequent boot calls
+
+/*
+move core vaults
+start server
+create RS vaults
+move RS vaults
+
+hmmm ... need to restart server for those to be working ... 
+
+create app vaults
+move app vaults
+
+hmmm ... need to restart server for those to be working as well ... 
+
+*/
+
+
+
+// get Registrar session cookie to make subsequent boot calls
+// with root DI and email
 function getBootSession ( diAdmin ) {
+  console.log('getBootSession')
   var payload = 
     { iss: config.host.setup
     , aud: config.host.registrar
@@ -126,6 +144,10 @@ function getBootSession ( diAdmin ) {
     }
   
   fetchUrl( config.baseUrl.registrar+'/dashboard/boot', options, function (error, meta, body) {
+    bootUpApps( meta.cookieJar )
+    )}
+
+
 //    console.log("error:",error)
     console.log("body:", JSON.parse(body) )
 
