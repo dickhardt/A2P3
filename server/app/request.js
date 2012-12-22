@@ -53,12 +53,12 @@ exports.verifyAndId = function ( request, keys ) {
 exports.check = function ( keys, accessList ) {
   assert( keys, "no keys passed in" )
   return (function (req, res, next) {
-    var jws, valid
+    var jws, valid, err
 
     if (!req.body || !req.body.request) {
-      e = new Error('No "request" parameter in POST')
-      e.code = 'INVALID_API_CALL'
-      next(e)
+      err = new Error('No "request" parameter in POST')
+      err.code = 'INVALID_API_CALL'
+      next( err )
       return undefined
     }
     try {
@@ -66,23 +66,23 @@ exports.check = function ( keys, accessList ) {
       sanityCheck( jws, keys )
       if ( accessList ) {
         if ( !accessList[jws.payload.iss] ) {
-          new Error('Access not allowed')
-          e.code = 'ACCESS_DENIED'
-          next( e )          
+          err = new Error('Access not allowed')
+          err.code = 'ACCESS_DENIED'
+          return next( err )          
         }
       }
       if ( jws.verify( keys[jws.payload.iss][jws.header.kid] ) ) {
         req.request = jws.payload
-        next()
+        return next()
       } else {
-        new Error('Invalid JWS signature')
-        e.code = 'INVALID_REQUEST'
-        next( e )
+        err = new Error('Invalid JWS signature')
+        err.code = 'INVALID_REQUEST'
+        return next( err )
       }
     }
     catch (e) {
       e.code = 'INVALID_REQUEST'
-      next( e )
+      return next( e )
     }
   })
 }

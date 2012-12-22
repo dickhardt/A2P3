@@ -12,7 +12,7 @@ var express = require('express')
   , app = express()
   , mw = require('./middleware')
 
-
+// common assets
 app.use( express.static( __dirname + '/assets' ) )
 
 // setup logging after static files so we only log API calls

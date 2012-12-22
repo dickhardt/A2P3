@@ -213,7 +213,7 @@ exports.app = function() {
 
   app.use( mw.errorHandler )
 
-console.log( 'AS middleware:\n', app.stack, '\nroutes:',app.routes )
+// console.log( 'AS middleware:\n', app.stack, '\nroutes:',app.routes )
 
 	return app
 }

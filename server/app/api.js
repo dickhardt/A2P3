@@ -29,7 +29,7 @@ exports.call = function ( details, callback ) {
   , headers: {'content-type': 'application/x-www-form-urlencoded'}
   }
   
-  fetchUrl( baseUrl+'/di/create', options, function (error, meta, body) {
+  fetchUrl( baseUrl+details.api, options, function (error, meta, body) {
     var response
     if ( !error && meta.status == 200 ) {
       try {

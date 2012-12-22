@@ -6,6 +6,8 @@
 
 var config = require('./config')
   , di = require('./di')
+  , crypto = require('crypto')
+  , b64url = require("./b64url")
 
 var dummyNoSql = {}
 
@@ -28,45 +30,61 @@ function makeKey () {
 */
 exports.validAgent = function ( handle, cb ) {
   var valid = dummyNoSql[config.host.registrar + ':agentHandle:' + handle]
-  process.nextTick( function () { cb( ( valid ) ) } )
+  process.nextTick( function () { cb(  valid ) } )
 }
 
 exports.getAppName = function ( id, cb ) {
   var name = dummyNoSql[config.host.registrar + ':app:' + id + ':name']
-  process.nextTick( function () { cb( ('Example App') ) } )
+  process.nextTick( function () { cb('Example App') } )
 }
 
 exports.checkRegistrarAppIdTaken = function ( id, cb ) {
   var taken = dummyNoSql.hasOwnProperty( config.host.registrar + ':app:' + id + ':name' )
-  process.nextTick( function () { cb( ( null, taken ) ) } )
+  process.nextTick( function () { cb( null, taken ) } )
 }
 
-exports.newRegistrarApp = function ( id, name, admin, cb ) {
+// called when an admin logs in to link email with DI
+exports.registerAdmin = function ( adminEmail, di, cb ) {
+  dummyNoSql[config.host.registrar + ':admin:' + adminEmail + ':di'] = di
+  dummyNoSql[config.host.registrar + ':di:' + di + ':admin'] = adminEmail
+  process.nextTick( function () { cb( null ) } )
+}
+
+// called when an RS wants to know if admin is authorized for an app ID
+exports.checkAdminAuthorization = function ( id, di, cb ) {
+  var adminEmail = dummyNoSql[config.host.registrar + ':di:' + di + ':admin'] 
+  var authorized = dummyNoSql[config.host.registrar + ':app:' + id + ':admins'][adminEmail] == 'ACTIVE'
+  process.nextTick( function () { cb( null, authorized ) } )
+}
+
+
+exports.newRegistrarApp = function ( id, name, adminEmail, cb ) {
   // add to DB
   dummyNoSql[config.host.registrar + ':app:' + id + ':name'] = name
   dummyNoSql[config.host.registrar + ':app:' + id + ':admins'] = {}
-  dummyNoSql[config.host.registrar + ':app:' + id + ':admins'][admin] = 'ACTIVE'
-  dummyNoSql[config.host.registrar + ':admin:' + admin + ':apps'] = {}
-  dummyNoSql[config.host.registrar + ':admin:' + admin + ':apps'][id] = 'ACTIVE'
-  // add keys to DB Vault
+  dummyNoSql[config.host.registrar + ':app:' + id + ':admins'][adminEmail] = 'ACTIVE'
+  dummyNoSql[config.host.registrar + ':admin:' + adminEmail + ':apps'] = {}
+  dummyNoSql[config.host.registrar + ':admin:' + adminEmail + ':apps'][id] = 'ACTIVE'
+
+  // add keys to Keys Vault
   var newKey = makeKey()
   var o = {latest: newKey}
   o[newKey.kid] = newKey.key
   keys[config.host.registrar][id] = o
 
-  process.nextTick( function () { cb( ( null, newKey ) ) } )
+  process.nextTick( function () { cb( null, newKey ) } )
 }
 
 exports.addRegistrarAppAdmin = function ( id, admin, cb ) {
   dummyNoSql[config.host.registrar + ':app:' + id + ':admins'][admin] = 'ACTIVE'
   dummyNoSql[config.host.registrar + ':admin:' + admin + ':apps'][id] = 'ACTIVE'
-  process.nextTick( function () { cb( ( null ) ) } )
+  process.nextTick( function () { cb( null ) } )
 }
 
 exports.deleteRegistrarAppAdmin = function ( id, admin, cb ) {
   delete dummyNoSql[config.host.registrar + ':app:' + id + ':admins'][admin]
   delete dummyNoSql[config.host.registrar + ':admin:' + admin + ':apps'][id]
-  process.nextTick( function () { cb( ( null ) ) } )
+  process.nextTick( function () { cb( null ) } )
 }
 
 exports.deleteRegistrarApp = function ( id, cb ) {
@@ -76,7 +94,7 @@ exports.deleteRegistrarApp = function ( id, cb ) {
   admins.forEach( function (admin) {
     delete dummyNoSql[config.host.registrar + ':admin:' + admin + ':apps'][id]
   })
-  process.nextTick( function () { cb( ( null ) ) } )
+  process.nextTick( function () { cb( null ) } )
 }
 
 exports.refreshRegistrarAppKey = function ( id, cb ) {
@@ -85,12 +103,12 @@ exports.refreshRegistrarAppKey = function ( id, cb ) {
   o[newKey.kid] = newKey.key
   keys[config.host.registrar][id] = o
 
-  process.nextTick( function () { cb( ( null, newKey ) ) } )
+  process.nextTick( function () { cb( null, newKey ) } )
 }
 
 exports.getRegistrarAppKey = function ( id, cb ) {
   var key = keys[config.host.registrar][id]
-  process.nextTick( function () { cb( ( null, key ) ) } )
+  process.nextTick( function () { cb( null, key ) } )
 }
 
 /*
@@ -98,10 +116,10 @@ exports.getRegistrarAppKey = function ( id, cb ) {
 */
 // creats a new User directed identifier and stores pointers from all AS
 exports.newUser = function ( asHost, rsHosts, cb ) {
-
-  // create identifiers
+  // create and map identifiers
   var ixDI = di.create()
   var dis = {}
+  dis[asHost] = di.map( asHost, ixDI )
   rsHosts.forEach( function ( host ) {
     dis[host] = di.map( host, ixDI )
   })
@@ -112,7 +130,6 @@ exports.newUser = function ( asHost, rsHosts, cb ) {
     var asDI = di.map( asHost, ixDI )
     dummyNoSql[config.host.ix + ':di:' + asHost + ':' + asDI] = ixDI
   })
-
   process.nextTick( function () { cb( null, dis ) } )
 }
 

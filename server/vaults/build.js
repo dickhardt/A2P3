@@ -4,6 +4,11 @@
 * Copyright (C) Province of British Columbia 2013
 */
 
+
+TODO: add a cookie secret to each one that has UX
+TODO: add secrete between setup and registrar
+
+
 var b64url = require('../app/b64url')
 	, crypto = require('crypto')
 	, fs = require('fs')

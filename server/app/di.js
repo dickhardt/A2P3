@@ -16,8 +16,9 @@ exports.create = function () {
 
 // maps an IX DI to the directed id fo a host
 exports.map = function ( host, ixDI ) {
-  var input = vault.keys[config.host.registrar] + host + ixDI
+  var input = vault.keys[config.host.registrar].latest.key + host + ixDI
   var hash = crypto.createHash( 'sha1' )
   hash.update( input )
   var di = b64url.encode( hash.digest() )
+  return di
 }

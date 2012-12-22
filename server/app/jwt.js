@@ -211,9 +211,6 @@ var verifyHS256 = function (input, signature, b64safeKey) {
 }
 
 var verifyHS512 = function (input, signature, b64safeKey) {
-
-debugger;
-
   return verifyHSxxx( input, signature, b64safeKey, 'sha512' )  
 }
 
