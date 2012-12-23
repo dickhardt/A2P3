@@ -1,0 +1,22 @@
+{ "name": "a2p3"
+, "version": "0.0.1"
+, "scripts": 
+  { "start" : "node app.js"
+  , "test": "echo \"Error: no test specified\" && exit 1"
+  }
+, "dependencies":
+  { "express": "*"
+  , "fetch": "*"
+  , "chai": "*"
+  }
+, "engines" : { "node" : "0.8.x" }
+, "repository": 
+  { "type": "git"
+  , "url": "http://github.com:dickhardt/A2P3.git"
+  }
+, "config":
+  { "domain": "local.a2p3.net" }  
+, "author": "Dick Hardt dickhardt@gmail.com"
+, "license": "BSD"
+, "private": true
+}
