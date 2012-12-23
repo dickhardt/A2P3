@@ -13,11 +13,7 @@ var fs = require('fs')
 
 // Development JSON datastore  
 // create empty file if does not exist
-
-debugger;
-
 var fExist = fs.existsSync( __dirname+'/nosql.json' )
-
 if ( !fExist ) {
   fs.writeFileSync( __dirname+'/nosql.json', '{"keys": {}}' )
 }
