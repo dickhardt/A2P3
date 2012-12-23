@@ -11,16 +11,18 @@ var fs = require('fs')
   , identity = require('./identity')
   , vaultIX = require('./ix/vault')
 
-// Development JSON datastore  
+// Development JSON DB  
 // create empty file if does not exist
 var fExist = fs.existsSync( __dirname+'/nosql.json' )
 if ( !fExist ) {
-  fs.writeFileSync( __dirname+'/nosql.json', '{"keys": {}}' )
+  var nosql = {'keys': {'registrar': {}} }
+  fs.writeFileSync( __dirname+'/nosql.json', JSON.stringify( nosql ) )
 }
+// load DB
 var dummyNoSql = require('./nosql.json')  
 
 
-// save database on exit
+// save DB on exit
 process.on('exit', function() {
   fs.writeFileSync( __dirname+'/nosql.json', JSON.stringify( dummyNoSql ) )  
 })
@@ -69,6 +71,12 @@ exports.checkAdminAuthorization = function ( id, di, cb ) {
   process.nextTick( function () { cb( null, authorized ) } )
 }
 
+// generate new app keys and add to Vault
+function newRegistrarKeyObj( id ) {
+  var keyObj = identity.makeKeyObj()
+  keys.registrar[id] = keyObj
+  return keyObj
+}
 
 exports.newRegistrarApp = function ( id, name, adminEmail, cb ) {
   // add to DB
@@ -78,14 +86,8 @@ exports.newRegistrarApp = function ( id, name, adminEmail, cb ) {
   dummyNoSql[config.host.registrar + ':admin:' + adminEmail + ':apps'] = {}
   dummyNoSql[config.host.registrar + ':admin:' + adminEmail + ':apps'][id] = 'ACTIVE'
 
-  // add keys to Keys Vault
-  keys[config.host.registrar] = keys[config.host.registrar] || {}
-  var newKey = identity.makeKey()
-  var o = {latest: newKey}
-  o[newKey.kid] = newKey.key
-  keys[config.host.registrar][id] = o
-
-  process.nextTick( function () { cb( null, newKey ) } )
+  var keyObj = newRegistrarKeyObj( id )
+  process.nextTick( function () { cb( null, keyObj ) } )
 }
 
 exports.addRegistrarAppAdmin = function ( id, admin, cb ) {
@@ -111,12 +113,8 @@ exports.deleteRegistrarApp = function ( id, cb ) {
 }
 
 exports.refreshRegistrarAppKey = function ( id, cb ) {
-  var newKey = identity.makeKey()
-  var o = {latest: newKey}
-  o[newKey.kid] = newKey.key
-  keys[config.host.registrar][id] = o
-
-  process.nextTick( function () { cb( null, newKey ) } )
+  var keyObj = newRegistrarKeyObj( id )
+  process.nextTick( function () { cb( null, keyObj ) } )
 }
 
 exports.getRegistrarAppKey = function ( id, cb ) {

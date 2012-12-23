@@ -13,10 +13,18 @@ exports.createDI = function () {
     return (b64url.encode(crypto.randomBytes( config.crypto.bytesDI )))
 }
 
-exports.makeKey = function () {
+function makeKey () {
   var result = {}
   result.key = b64url.safe( crypto.randomBytes( config.crypto.bytesKey ).toString('base64') )
   result.kid = b64url.safe( crypto.randomBytes( config.crypto.bytesKid ).toString('base64') )
+  return result
+}
+exports.makeKey = makeKey
+
+exports.makeKeyObj = function () {
+  var kk = makeKey()
+  var result = {latest: kk}
+  result[kk.kid] = kk.key
   return result
 }
 

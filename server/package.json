@@ -8,6 +8,7 @@
   { "express": "*"
   , "fetch": "*"
   , "chai": "*"
+  , "async": "*"
   }
 , "engines" : { "node" : "0.8.x" }
 , "repository": 
