@@ -6,23 +6,40 @@
 
 var fs = require('fs')
   , config = require('./config')
+  , crypto = require('crypto')
+  , b64url = require('./b64url')
   , identity = require('./identity')
+  , vaultIX = require('./ix/vault')
 
 // Development JSON datastore  
 // create empty file if does not exist
-if ( !fs.existsSync( 'nosql.json' ) ) {
-  fs.writeFileSync( 'nosql.json', '{}' )
-  var dummyNoSql = require('./nosql.json')
-  dummyNoSql.keys = {}
-} else {
-  var dummyNoSql = require('./nosql.json')  
+
+debugger;
+
+var fExist = fs.existsSync( __dirname+'/nosql.json' )
+
+if ( !fExist ) {
+  fs.writeFileSync( __dirname+'/nosql.json', '{"keys": {}}' )
 }
+var dummyNoSql = require('./nosql.json')  
+
+
 // save database on exit
 process.on('exit', function() {
-  fs.writeFileSync( 'nosql.json', JSON.stringify( dummyNoSql ) )  
+  fs.writeFileSync( __dirname+'/nosql.json', JSON.stringify( dummyNoSql ) )  
 })
 
 var keys = dummyNoSql.keys
+
+// maps an IX DI to the directed id fo a host
+function mapDI ( host, ixDI ) {
+  var input = vaultIX.secret + host + ixDI
+  var hash = crypto.createHash( 'sha1' )
+  hash.update( input )
+  var di = b64url.encode( hash.digest() )
+  return di
+}
+exports.mapDI = mapDI
 
 /*
 * Registrar DB functions
@@ -119,15 +136,15 @@ exports.newUser = function ( asHost, rsHosts, cb ) {
   // create and map identifiers
   var ixDI = identity.createDI()
   var dis = {}
-  dis[asHost] = identity.mapDI( asHost, ixDI )
+  dis[asHost] = mapDI( asHost, ixDI )
   rsHosts.forEach( function ( host ) {
-    dis[host] = identity.mapDI( host, ixDI )
+    dis[host] = mapDI( host, ixDI )
   })
 
   // store DI pointers
   dummyNoSql[config.host.ix + ':di:' + ixDI] = {}
   Object.keys( config.roles.as ).forEach( function (asHost) {
-    var asDI = identity.mapDI( asHost, ixDI )
+    var asDI = mapDI( asHost, ixDI )
     dummyNoSql[config.host.ix + ':di:' + asHost + ':' + asDI] = ixDI
   })
   process.nextTick( function () { cb( null, dis ) } )

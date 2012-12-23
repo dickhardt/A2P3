@@ -2,3 +2,4 @@
 .dotcloud
 node_modules
 snapshots
+*.json

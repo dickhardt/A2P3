@@ -1,10 +1,10 @@
 /*
 * bootstrap.js - bootstraps A2P3 environment
 *
-* - initializes DB
+* - creates key / vault files for core hosts
 * - generates a root user
-* - registers all POC Apps and Resource Servers at Registrar
-* - registers all POC Apps at appropriate Resource Servers
+* - registers all POC Apps and Resource Servers at Registrar with root user
+* - registers all POC Apps at appropriate Resource Servers with root user
 * - does snapshot of all data files
 *
 * NOTES
@@ -17,9 +17,7 @@ var b64url = require('./app/b64url')
   , fs = require('fs')
   , util = require('util')
   , config = require('./app/config')
-
-
-
+  , identity = require('./app/identity')
 
  
 function syncWriteJSON ( obj, fname ) {
@@ -27,189 +25,62 @@ function syncWriteJSON ( obj, fname ) {
   fs.writeFileSync( fname, data )
 }
 
+
+// create keys for core hosts
 var coreHosts =
-  { 'ix': {}
-  , 'registrar': {}
-  , 'as': {}
-  , 'setup': {}
+  { 'ix': {'keys':{}, 'secret': identity.makeSecret()}
+  , 'registrar': {'keys':{}, 'secret': identity.makeSecret()}
+  , 'as': {'keys':{}, 'secret': identity.makeSecret()}
+  , 'setup': {'keys':{}, 'secret': identity.makeSecret()}
   }
+
+function keyPair ( a, b ) {
+  var kk = identity.makeKey()
+  coreHosts[a].keys[config.host[b]] = coreHosts[b].keys[config.host[a]] = {latest: kk}
+  coreHosts[a].keys[config.host[b]][kk.kid] = coreHosts[b].keys[config.host[a]][kk.kid] = kk.key
+}
+
+keyPair( 'ix', 'as')
+keyPair( 'ix', 'setup')
+keyPair( 'ix', 'registrar')
+keyPair( 'setup', 'registrar')
+
+// setup AS keychain for IX
+coreHosts.ix.keys.as = {}
+coreHosts.ix.keys.as[coreHosts.ix.keys[config.host.as].latest.kid] = coreHosts.ix.keys[config.host.as].latest.key
+coreHosts.ix.keys.as[coreHosts.ix.keys[config.host.setup].latest.kid] = coreHosts.ix.keys[config.host.setup].latest.key
+
+
+Object.keys( coreHosts ).forEach( function (host) {
+  coreHosts[host].private = identity.makeKey()
+  syncWriteJSON( coreHosts[host], 'app/'+host+'/vault.json' ) 
+} )
 
 // NOTE: we cannot load db until registrar keys have been created or it will fail to load
 var db = require('./app/db')          
 
+var diRootAS, diRootRegistrar
 
+db.newUser( config.host.as, [config.host.registrar], function ( e, dis ) {
+  if (e) return e
+  diRootAS = dis[config.host.as]
+  diRootRegistrar = dis[config.host.registrar]
+})
 
-// register Personal Agent at AS
-function register ( qr ) {
-  console.log('register')
-  var options =
-    { method: 'POST' 
-    , payload: querystring.stringify( {'qr': qr, 'device':'12345', 'passcode':'12345'})
-    , headers: {'content-type': 'application/x-www-form-urlencoded'}
-    }  
-  fetchUrl( config.baseUrl.as + '/register', options, function (error, meta, body) {
-    if (error) return console.log(error)
-    var r = JSON.parse(body)
-    console.log(r)
+db.registerAdmin( 'root', diRootRegistrar, function ( e ) {
 
-    // can now call registrar with handle
-  })   
-}
+})
 
-// get QR Code from AS for Personal Agent registration
-function postRegisterQR ( session ) {
-  console.log('postRegisterQR')
-  var options =
-    { method: 'POST' 
-    , payload: querystring.stringify( {'registerSession': session, 'passcode':'12345'} )
-    , headers: {'content-type': 'application/x-www-form-urlencoded'}
-    }  
-  fetchUrl( config.baseUrl.as + '/register/qr', options, function (error, meta, body) {
-    if (error) return console.log(error)
-    var r = JSON.parse(body)
-    console.log(r)
-    register( r.result.qr )
-  })  
-}
-
-// create IX Token for AS from setup to enable Personal Agent registration
-function getRegisterAgent ( req ) {
-  console.log('getRegisterAgent')
-  var jws = request.parse( req )
-  var returnUrl = jws.payload['request.a2p3.org'].returnURL
-  var session = returnUrl.substring( returnUrl.lastIndexOf('/')+1 )
-// make an IX Token
-  var payload =
-    { 'iss': config.host.setup
-    , 'aud': config.host.ix
-    , 'prn': '12345' // TBD - need to get asDI for setup to fill in here
-    , 'token.a2p3.org': 
-      { 'sar': jws.signature
-      , 'auth': 
-        { 'passcode': true
-        , 'authorization': true
-        , 'nfc': false
-        }
-      }
-    }
-  var ixToken = token.create( payload, vaultSetup.keys[config.host.ix].latest)
-  var query = querystring.stringify( {'token':ixToken} )
-  fetchUrl( returnUrl + '?' + query, {}, function (error, meta, body) {
-    if (error) return console.log(error)
-    postRegisterQR( session )
-  })   
-}
-
-// get an Agent Request from AS
-function getRequest () {
-  console.log('getRequest')
-  fetchUrl( config.baseUrl.as + '/register/request/agent', {}, function (error, meta, body) {
-    if (error) return console.log(error)
-    var r = JSON.parse( body )
-    console.log( r )
-    getRegisterAgent( r.result.request )
-  })
-
-}
-
-
-// getRequest()
-
-function registerApp ( appID, cb ) {
-
-  // call registrar and get keys
-  // write out keys
-}
-
-function authorizeApp ( appID, rsID, cb ) {
-
-}
-
+//  get list of apps, register them all
+// add key pair for standardized resources
 
 /*
-move core vaults
-start server
-create RS vaults
-move RS vaults
 
-hmmm ... need to restart server for those to be working ... 
-
-create app vaults
-move app vaults
-
-hmmm ... need to restart server for those to be working as well ... 
-
+    db.newRegistrarApp( app.host, app.name, 'root', function ( e, kk ) {
+      xxx [config.host.registrar] = { latest: kk}
+      [config.host.registrar][kk.kid] = kk.key
+    })
 */
 
+process.exit(0)
 
-
-// get Registrar session cookie to make subsequent boot calls
-// with root DI and email
-function getBootSession ( diAdmin ) {
-  console.log('getBootSession')
-  var payload = 
-    { iss: config.host.setup
-    , aud: config.host.registrar
-    , 'request.a2p3.org':
-      { 'di': diAdmin
-      , 'email': 'root' 
-      }
-    }
-  var jwt = request.create( payload, vaultSetup.keys[config.host.registrar].latest )
-
-  var options =
-    { method: 'POST' 
-    , payload: querystring.stringify({'request': jwt})
-    , headers: {'content-type': 'application/x-www-form-urlencoded'}
-    }
-  
-  fetchUrl( config.baseUrl.registrar+'/dashboard/boot', options, function (error, meta, body) {
-    bootUpApps( meta.cookieJar )
-    )}
-
-
-//    console.log("error:",error)
-    console.log("body:", JSON.parse(body) )
-
-    var cookieJar = meta.cookieJar
-
-    options =
-      { method: 'POST' 
-      , payload: querystring.stringify({'session': 'foo', 'id': 'example.com', 'name': 'Example App'})
-      , headers: {'content-type': 'application/x-www-form-urlencoded'}
-      , cookieJar: cookieJar
-      }
-    fetchUrl( config.baseUrl.registrar+'/dashboard/new/app', options, function (error, meta, body) {
-//      console.log("error:",error)
-//      console.log("meta:",meta)
-      console.log("body:", JSON.parse(body) )
-    })
-
-  })
-}  
-
-
-
-// create a root user to bootup RS and App creation
-function createRootUser () {
-  console.log('createRootUser')
-  var details = 
-    { host: 'ix'
-    , api: '/di/create'
-    , credentials: vaultSetup.keys[config.host.ix].latest
-    , payload: 
-      { iss: config.host.setup
-      , aud: config.host.ix
-      , 'request.a2p3.org':
-        { 'AS': config.host.as
-        , 'RS': [config.host.registrar] 
-        }
-      }
-    }
-  api.call( details, function (response) {
-    console.log(response)
-    getBootSession( response.result.dis[config.host.registrar] )
-  })  
-}
-
-createRootUser()

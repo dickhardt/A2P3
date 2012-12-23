@@ -59,7 +59,7 @@ roles.as[host.setup] = true
 roles.enroll[host.setup] = true
 
 // exported configuration
-exports.alg = alg
+exports.crypto = crypto
 exports.baseDomain = baseDomain
 exports.host = host
 exports.port = port
