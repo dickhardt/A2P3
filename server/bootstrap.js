@@ -12,14 +12,31 @@
 *
 */
 
-var b64url = require('../app/b64url')
+var b64url = require('./app/b64url')
   , crypto = require('crypto')
   , fs = require('fs')
   , util = require('util')
+  , config = require('./app/config')
 
+
+
+
+ 
 function syncWriteJSON ( obj, fname ) {
-
+  var data = JSON.stringify( obj )
+  fs.writeFileSync( fname, data )
 }
+
+var coreHosts =
+  { 'ix': {}
+  , 'registrar': {}
+  , 'as': {}
+  , 'setup': {}
+  }
+
+// NOTE: we cannot load db until registrar keys have been created or it will fail to load
+var db = require('./app/db')          
+
 
 
 // register Personal Agent at AS

@@ -14,7 +14,7 @@ exports.create = function ( payload, credentials ) {
     { header:
       { typ: 'JWE'
       , alg: 'dir'
-      , enc: config.alg.JWE
+      , enc: config.crypto.alg.JWE
       , kid: credentials.kid
       }
     , payload: payload

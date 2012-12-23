@@ -52,19 +52,19 @@ var timing = function (func) {
   console.log( func.name, times, avg)
 }
 
-console.log(config.alg.JWS)
+console.log(config.crypto.alg.JWS)
 timing( jwsCreate )
 timing( jwsCreateParse )
 timing( jweCreate )
 timing( jweCreateParse )
 
 
-config.alg.JWS = 'HS256'
-config.alg.JWE = 'A128CBC+HS256'
+config.crypto.alg.JWS = 'HS256'
+config.crypto.alg.JWE = 'A128CBC+HS256'
 vault = require('../app/setup/128.vault')
 credentials = vault.keys[config.host.ix].latest
 
-console.log(config.alg.JWS)
+console.log(config.crypto.alg.JWS)
 timing( jwsCreate )
 timing( jwsCreateParse )
 timing( jweCreate )

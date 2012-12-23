@@ -4,26 +4,25 @@
 * Copyright (C) Province of British Columbia, 2013
 */
 
-var config = require('./config')
-  , di = require('./di')
-  , crypto = require('crypto')
-  , b64url = require("./b64url")
+var fs = require('fs')
+  , config = require('./config')
+  , identity = require('./identity')
 
-var dummyNoSql = {}
-
-var keys = {}
-keys[config.host.registrar] = {}
-
-function makeKey () {
-  var result = {}
-    , bytesKey = 64 // TBD put this code into same place as vault/build ??
-    , bytesKid = 12
-
-  result.key = b64url.safe( crypto.randomBytes( bytesKey ).toString('base64') )
-  result.kid = b64url.safe( crypto.randomBytes( bytesKid ).toString('base64') )
-  return result
+// Development JSON datastore  
+// create empty file if does not exist
+if ( !fs.existsSync( 'nosql.json' ) ) {
+  fs.writeFileSync( 'nosql.json', '{}' )
+  var dummyNoSql = require('./nosql.json')
+  dummyNoSql.keys = {}
+} else {
+  var dummyNoSql = require('./nosql.json')  
 }
+// save database on exit
+process.on('exit', function() {
+  fs.writeFileSync( 'nosql.json', JSON.stringify( dummyNoSql ) )  
+})
 
+var keys = dummyNoSql.keys
 
 /*
 * Registrar DB functions
@@ -67,7 +66,8 @@ exports.newRegistrarApp = function ( id, name, adminEmail, cb ) {
   dummyNoSql[config.host.registrar + ':admin:' + adminEmail + ':apps'][id] = 'ACTIVE'
 
   // add keys to Keys Vault
-  var newKey = makeKey()
+  keys[config.host.registrar] = keys[config.host.registrar] || {}
+  var newKey = identity.makeKey()
   var o = {latest: newKey}
   o[newKey.kid] = newKey.key
   keys[config.host.registrar][id] = o
@@ -98,7 +98,7 @@ exports.deleteRegistrarApp = function ( id, cb ) {
 }
 
 exports.refreshRegistrarAppKey = function ( id, cb ) {
-  var newKey = makeKey()
+  var newKey = identity.makeKey()
   var o = {latest: newKey}
   o[newKey.kid] = newKey.key
   keys[config.host.registrar][id] = o
@@ -117,17 +117,17 @@ exports.getRegistrarAppKey = function ( id, cb ) {
 // creats a new User directed identifier and stores pointers from all AS
 exports.newUser = function ( asHost, rsHosts, cb ) {
   // create and map identifiers
-  var ixDI = di.create()
+  var ixDI = identity.createDI()
   var dis = {}
-  dis[asHost] = di.map( asHost, ixDI )
+  dis[asHost] = identity.mapDI( asHost, ixDI )
   rsHosts.forEach( function ( host ) {
-    dis[host] = di.map( host, ixDI )
+    dis[host] = identity.mapDI( host, ixDI )
   })
 
   // store DI pointers
   dummyNoSql[config.host.ix + ':di:' + ixDI] = {}
   Object.keys( config.roles.as ).forEach( function (asHost) {
-    var asDI = di.map( asHost, ixDI )
+    var asDI = identity.mapDI( asHost, ixDI )
     dummyNoSql[config.host.ix + ':di:' + asHost + ':' + asDI] = ixDI
   })
   process.nextTick( function () { cb( null, dis ) } )

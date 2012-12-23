@@ -6,29 +6,45 @@
 * Copyright (C) Province of British Columbia, 2013
 */
 
-var alg =
-    { JWE: 'A256CBC+HS512'
-    , JWS: 'HS512'
-    }
-   , host = 
+var provinces = ['AB', 'BC', 'MB', 'NB', 'NL', 'NS', 'NT', 'NU', 'ON', 'PE', 'QC', 'SK', 'YT']
+
+var crypto =
+        { alg:
+          { JWE: 'A256CBC+HS512'
+          , JWS: 'HS512'
+          }
+        , bytesKey: 64
+        , bytesKid: 12
+        , bytesDI: 20
+        , bytesHandle: 20
+        , bytesSecret: 20
+        }
+
+var  host = 
     { ix: 'ix'
     , registrar: 'registrar'
     , as: 'as'
     , setup: 'setup'
     , bank: 'bank'
     , clinic: 'clinic'
-    , is: 'is'
+    , si: 'si'
+    , people: 'people'
+    , health: 'health'
     }
   , baseUrl = {}
 
-// TBD dynamically figure out the following!!!
-
+// set the a2p3domain and a2p3scheme environment variables to change where the server runs
 var port = '8080'
-var baseHost = 'local.a2p3.net' 
-var scheme = 'http'
+var baseDomain = process.env.a2p3domain || 'local.a2p3.net' 
+var scheme = process.env.a2p3scheme || 'http'
+
+provinces.forEach( function ( province ) {
+  host['people.'+province] = 'people.'+province
+  host['health.'+province] = 'health.'+province
+})
 
 Object.keys(host).forEach( function (key) {
-  host[key] = host[key] +'.'+ baseHost
+  host[key] = host[key] +'.'+ baseDomain
   baseUrl[key] = scheme + '://' + host[key] + ':' + port
 })
 
@@ -44,8 +60,11 @@ roles.enroll[host.setup] = true
 
 // exported configuration
 exports.alg = alg
+exports.baseDomain = baseDomain
 exports.host = host
 exports.port = port
 exports.scheme = scheme
 exports.baseUrl = baseUrl
 exports.roles = roles
+exports.provinces = provinces
+

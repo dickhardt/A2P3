@@ -14,7 +14,7 @@ exports.create = function (  payload, credentials ) {
   var details =
     { header:
       { typ: 'JWS'
-      , alg: config.alg.JWS
+      , alg: config.crypto.alg.JWS
       , kid: credentials.kid
       }
     , payload: payload
