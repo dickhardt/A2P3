@@ -81,49 +81,49 @@ function appVerify (req, res) {
 *  registrar app APIs
 */
 function dashboardAppIdTaken ( req, res, next ) {
-  db.checRegistrarAppIdTaken( req.body.id, function ( e, taken ) {
+  db.checkRegistrarAppIdTaken( req.body.id, function ( e, taken ) {
     if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
     return res.send( {result:{'id': req.body.id, 'taken': taken}} )
   })
 }
 
 function dashboardNewApp ( req, res, next ) {
-  db.newRegistrarApp( req.body.id, req.body.name, req.session.email, function ( e, key ) {
+  db.newApp( 'registrar', req.body.id, req.body.name, req.session.email, function ( e, key ) {
     if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
     return res.send( {result:{'id': req.body.id, 'key': key}} )
   })
 }
 
 function dashboardAddAdmin ( req, res, next ) {
-  db.addRegistrarAppAdmin( req.body.id, eq.body.admin, function ( e ) {
+  db.addAppAdmin( 'registrar', req.body.id, eq.body.admin, function ( e ) {
     if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
     return res.send( {result:{'id': req.body.id, 'admin': req.body.admin}} )
   })
 }
 
 function dashboardDeleteApp ( req, res, next ) {
-  db.deleteRegistrarApp( req.body.id, function ( e ) {
+  db.deleteApp( 'registrar', req.body.id, function ( e ) {
     if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
     return res.send( {result:{'id': req.body.id,}} )
   })
 }
 
 function dashboardRefreshKey ( req, res, next ) {
-  db.refreshRegistrarAppKey( req.body.id, function ( e, key ) {
+  db.refreshAppKey( 'registrar', req.body.id, function ( e, key ) {
     if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
     return res.send( {result:{'id': req.body.id, 'key': key}} )
   })
 }
 
 function dashboardGetKey ( req, res, next ) {
-  db.getRegistrarAppKey( req.body.id, function ( e, key ) {
+  db.getAppKey( 'registrar', req.body.id, function ( e, key ) {
     if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
     return res.send( {result:{'id': req.body.id, 'key': key}} )
   })
 }
 
 function checkAdminAuthorization ( req, res, next ) {
-  db.checkAdminAuthorization( req.body.id, req.a2p3admin.di, function ( e, authorized ) {
+  db.checkAdminAuthorization( 'registrar', req.body.id, req.a2p3admin.di, function ( e, authorized ) {
     if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
     if (!authorized) {
       var err = new Error(req.a2p3admin.di+' not authorized for '+req.body.id)

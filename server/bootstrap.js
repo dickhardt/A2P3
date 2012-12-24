@@ -78,7 +78,7 @@ tasks.push( function (done) {
 })
 
 tasks.push( function (done) {
-  db.registerAdmin( 'root', diRootRegistrar, done)
+  db.registerAdmin( 'registrar', 'root', diRootRegistrar, done)
 })
 
 /*
@@ -98,7 +98,7 @@ var setupVault = require('./app/setup/vault') // we need to update setup vault w
 rsHosts.forEach( function (rs) {
   rsHostKeys[rs] = {'keys':{}, 'secret': identity.makeSecret()}
   tasks.push( function (done) {
-    db.newRegistrarApp( config.host[rs], rs, 'root', function ( e, keyObj ) {
+    db.newApp( 'registrar', config.host[rs], rs, 'root', function ( e, keyObj ) {
       if (e) return done( e )
       rsHostKeys[rs].keys[config.host.registrar] = rsHostKeys[rs].keys[config.host.ix] = keyObj
       // add key pair with setup
@@ -134,6 +134,67 @@ tasks.push( function (done) {
 tasks.push( function (done) {
   syncWriteJSON( setupVault, __dirname + '/app/setup/vault.json')
   done( null, 'wrote vault.json for setup' )
+})
+
+/*
+* register apps at each RS
+*/
+
+var appHostKeys =
+  {'clinic': { 'keys': {}, 'secret': identity.makeSecret()}
+  , 'bank': { 'keys': {}, 'secret': identity.makeSecret()}
+  }
+
+// clinic app
+config.provinces.forEach( function ( province ) {
+  tasks.push( function (done) {
+    var hReg = 'health.' + province
+    db.registerAdmin( hReg, 'root', diRootRegistrar, function (e) {
+      if (e) done (e)
+      db.newApp( hReg, config.host.clinic, 'Clinic', root, function ( e, keyObj) {
+        if (e) done (e)
+        appHostKeys.clinic.keys[config.host[hReg]] = keyObj
+        var pReg = 'people.' + province
+        db.registerAdmin( pReg, 'root', diRootRegistrar, function (e) {
+          if (e) done (e)
+          db.newApp( pReg, config.host.clinic, 'Clinic', root, function ( e, keyObj) {
+            if (e) done (e)
+            appHostKeys.clinic.keys[config.host[pReg]] = keyObj
+            done( null, 'registered clinic at '+hReg+' & '+pReg)
+          })
+        })
+      })
+    })
+  })
+})
+
+tasks.push( function (done) {
+  syncWriteJSON( appHostKeys.clinic, __dirname + '/app/clinic/vault.json')
+  done( null, 'wrote vault.json for clinic' )
+})
+
+// bank app
+config.provinces.forEach( function ( province ) {
+  tasks.push( function (done) {
+    var reg = 'people.' + province
+    db.newApp( reg, config.host.bank, 'Bank', root, function ( e, keyObj) {
+      if (e) done (e)
+      appHostKeys.bank.keys[config.host[reg]] = keyObj
+      done( null, 'registered bank at '+reg)
+    })
+  })
+})
+
+tasks.push( function (done) {
+  db.registerAdmin( 'si', 'root', diRootRegistrar, function (e) {
+    if (e) done (e)
+    db.newApp( 'si', config.host.bank, 'Bank', root, function ( e, keyObj) {
+      if (e) done (e)
+      appHostKeys.bank.keys[config.host.si] = keyObj
+      syncWriteJSON( appHostKeys.bank, __dirname + '/app/bank/vault.json')
+      done (null, 'added bank to si RS, and wrote out vault.json for bank')
+    })
+  })
 })
 
 async.series( tasks, function ( err, results ) {

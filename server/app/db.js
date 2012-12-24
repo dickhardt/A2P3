@@ -15,7 +15,7 @@ var fs = require('fs')
 // create empty file if does not exist
 var fExist = fs.existsSync( __dirname+'/nosql.json' )
 if ( !fExist ) {
-  var nosql = {'keys': {'registrar': {}} }
+  var nosql = {'keyChain': {} }
   fs.writeFileSync( __dirname+'/nosql.json', JSON.stringify( nosql ) )
 }
 // load DB
@@ -27,7 +27,7 @@ process.on('exit', function() {
   fs.writeFileSync( __dirname+'/nosql.json', JSON.stringify( dummyNoSql ) )  
 })
 
-var keys = dummyNoSql.keys
+var keyChain = dummyNoSql.keyChain
 
 // maps an IX DI to the directed id fo a host
 function mapDI ( host, ixDI ) {
@@ -43,12 +43,12 @@ exports.mapDI = mapDI
 * Registrar DB functions
 */
 exports.validAgent = function ( handle, cb ) {
-  var valid = dummyNoSql[config.host.registrar + ':agentHandle:' + handle]
+  var valid = dummyNoSql['registrar:agentHandle:' + handle]
   process.nextTick( function () { cb(  valid ) } )
 }
 
 exports.getAppName = function ( id, cb ) {
-  var name = dummyNoSql[config.host.registrar + ':app:' + id + ':name']
+  var name = dummyNoSql['registrar:app:' + id + ':name']
   process.nextTick( function () { cb('Example App') } )
 }
 
@@ -57,68 +57,74 @@ exports.checkRegistrarAppIdTaken = function ( id, cb ) {
   process.nextTick( function () { cb( null, taken ) } )
 }
 
-// called when an admin logs in to link email with DI
-exports.registerAdmin = function ( adminEmail, di, cb ) {
-  dummyNoSql[config.host.registrar + ':admin:' + adminEmail + ':di'] = di
-  dummyNoSql[config.host.registrar + ':di:' + di + ':admin'] = adminEmail
-  process.nextTick( function () { cb( null ) } )
-}
+
 
 // called when an RS wants to know if admin is authorized for an app ID
 exports.checkAdminAuthorization = function ( id, di, cb ) {
-  var adminEmail = dummyNoSql[config.host.registrar + ':di:' + di + ':admin'] 
-  var authorized = dummyNoSql[config.host.registrar + ':app:' + id + ':admins'][adminEmail] == 'ACTIVE'
+  var adminEmail = dummyNoSql['registrar:di:' + di + ':admin'] 
+  var authorized = dummyNoSql['registrar:app:' + id + ':admins'][adminEmail] == 'ACTIVE'
   process.nextTick( function () { cb( null, authorized ) } )
 }
 
+/*
+* General Registration Functions
+*/
 // generate new app keys and add to Vault
-function newRegistrarKeyObj( id ) {
+function newKeyObj( reg, id ) {
   var keyObj = identity.makeKeyObj()
-  keys.registrar[id] = keyObj
+  keyChain[reg] = keyChain[reg] = {}
+  keyChain[reg][id] = keyObj
   return keyObj
 }
 
-exports.newRegistrarApp = function ( id, name, adminEmail, cb ) {
-  // add to DB
-  dummyNoSql[config.host.registrar + ':app:' + id + ':name'] = name
-  dummyNoSql[config.host.registrar + ':app:' + id + ':admins'] = {}
-  dummyNoSql[config.host.registrar + ':app:' + id + ':admins'][adminEmail] = 'ACTIVE'
-  dummyNoSql[config.host.registrar + ':admin:' + adminEmail + ':apps'] = {}
-  dummyNoSql[config.host.registrar + ':admin:' + adminEmail + ':apps'][id] = 'ACTIVE'
+// called when an admin logs in to link email with DI
+exports.registerAdmin = function ( reg, adminEmail, di, cb ) {
+  dummyNoSql[reg + ':admin:' + adminEmail + ':di'] = di
+  dummyNoSql[reg + ':di:' + di + ':admin'] = adminEmail
+  process.nextTick( function () { cb( null ) } )
+}
 
-  var keyObj = newRegistrarKeyObj( id )
+exports.newApp = function ( reg, id, name, adminEmail, cb ) {
+  // add to DB
+  dummyNoSql[reg + ':app:' + id + ':name'] = name
+  dummyNoSql[reg + ':app:' + id + ':admins'] = {}
+  dummyNoSql[reg + ':app:' + id + ':admins'][adminEmail] = 'ACTIVE'
+  dummyNoSql[reg + ':admin:' + adminEmail + ':apps'] = {}
+  dummyNoSql[reg + ':admin:' + adminEmail + ':apps'][id] = 'ACTIVE'
+
+  var keyObj = newKeyObj( reg, id )
   process.nextTick( function () { cb( null, keyObj ) } )
 }
 
-exports.addRegistrarAppAdmin = function ( id, admin, cb ) {
-  dummyNoSql[config.host.registrar + ':app:' + id + ':admins'][admin] = 'ACTIVE'
-  dummyNoSql[config.host.registrar + ':admin:' + admin + ':apps'][id] = 'ACTIVE'
+exports.addAppAdmin = function ( reg, id, admin, cb ) {
+  dummyNoSql[reg + ':app:' + id + ':admins'][admin] = 'ACTIVE'
+  dummyNoSql[reg + ':admin:' + admin + ':apps'][id] = 'ACTIVE'
   process.nextTick( function () { cb( null ) } )
 }
 
-exports.deleteRegistrarAppAdmin = function ( id, admin, cb ) {
-  delete dummyNoSql[config.host.registrar + ':app:' + id + ':admins'][admin]
-  delete dummyNoSql[config.host.registrar + ':admin:' + admin + ':apps'][id]
+exports.deleteAppAdmin = function ( reg, id, admin, cb ) {
+  delete dummyNoSql[reg + ':app:' + id + ':admins'][admin]
+  delete dummyNoSql[reg + ':admin:' + admin + ':apps'][id]
   process.nextTick( function () { cb( null ) } )
 }
 
-exports.deleteRegistrarApp = function ( id, cb ) {
-  delete dummyNoSql[config.host.registrar + ':app:' + id + ':name']
-  delete keys[config.host.registrar][id]
-  var admins = Object( dummyNoSql[config.host.registrar + ':app:' + id + ':admins'] ).keys()
+exports.deleteApp = function ( reg, id, cb ) {
+  delete dummyNoSql[reg + ':app:' + id + ':name']
+  delete keyChain[reg][id]
+  var admins = Object( dummyNoSql[reg + ':app:' + id + ':admins'] ).keys()
   admins.forEach( function (admin) {
-    delete dummyNoSql[config.host.registrar + ':admin:' + admin + ':apps'][id]
+    delete dummyNoSql[reg + ':admin:' + admin + ':apps'][id]
   })
   process.nextTick( function () { cb( null ) } )
 }
 
-exports.refreshRegistrarAppKey = function ( id, cb ) {
-  var keyObj = newRegistrarKeyObj( id )
+exports.refreshAppKey = function ( reg, id, cb ) {
+  var keyObj = newKeyObj( reg, id )
   process.nextTick( function () { cb( null, keyObj ) } )
 }
 
-exports.getRegistrarAppKey = function ( id, cb ) {
-  var key = keys[config.host.registrar][id]
+exports.getAppKey = function ( reg, id, cb ) {
+  var key = keyChain[reg][id]
   process.nextTick( function () { cb( null, key ) } )
 }
 
@@ -136,17 +142,17 @@ exports.newUser = function ( asHost, rsHosts, cb ) {
   })
 
   // store DI pointers
-  dummyNoSql[config.host.ix + ':di:' + ixDI] = {}
+  dummyNoSql['ix:di:' + ixDI] = {}
   Object.keys( config.roles.as ).forEach( function (asHost) {
     var asDI = mapDI( asHost, ixDI )
-    dummyNoSql[config.host.ix + ':di:' + asHost + ':' + asDI] = ixDI
+    dummyNoSql['ix:di:' + asHost + ':' + asDI] = ixDI
   })
   process.nextTick( function () { cb( null, dis ) } )
 }
 
 // gets DIs for each RS from AS DI
 exports.getRsDIfromAsDI = function ( asDI, asHost, rsHosts, cb ) {
-  var ixDI = dummyNoSql[config.host.ix + ':di:' + asHost + ':' + asDI]
+  var ixDI = dummyNoSql['ix:di:' + asHost + ':' + asDI]
   var rsDI = {}
   rsHosts.forEach( function (rsHost) {
     rsDI[rsHost] = diMap( rsHost, ixDI )
@@ -158,29 +164,29 @@ exports.getRsDIfromAsDI = function ( asDI, asHost, rsHosts, cb ) {
 
 // functions to add, list and delete agents from DB
 exports.addAgent = function ( asDI, asHost, handle, name, cb ) {
-  var ixDI = dummyNoSql[config.host.ix + ':di:' + asHost + ':' + asDI]
-  dummyNoSql[config.host.ix + ':di:' + ixDI][handle] = name
-  dummyNoSql[config.host.ix + ':di:' + ixDI + ':handle:' + handle] = asHost
+  var ixDI = dummyNoSql['ix:di:' + asHost + ':' + asDI]
+  dummyNoSql['ix:di:' + ixDI][handle] = name
+  dummyNoSql['ix:di:' + ixDI + ':handle:' + handle] = asHost
 
-  dummyNoSql[config.host.registrar + ':agentHandle:' + handle] = true
+  dummyNoSql['registrar:agentHandle:' + handle] = true
 
   process.nextTick( function () { cb( null ) } )
 }
 
 exports.listAgents = function ( asDI, asHost, cb ) {
-  var ixDI = dummyNoSql[config.host.ix + ':di:' + asHost + ':' + asDI]
-  var handles = dummyNoSql[config.host.ix + ':di:' + ixDI]
+  var ixDI = dummyNoSql['ix:di:' + asHost + ':' + asDI]
+  var handles = dummyNoSql['ix:di:' + ixDI]
   process.nextTick( function () { cb( null, handles ) } )  
 }
 
 exports.deleteAgent = function ( asDI, asHost, handle, cb ) {
-  var ixDI = dummyNoSql[config.host.ix + ':di:' + asHost + ':' + asDI]
+  var ixDI = dummyNoSql['ix:di:' + asHost + ':' + asDI]
   var result = {}
-  delete dummyNoSql[config.host.ix + ':di:' + ixDI][handle]
+  delete dummyNoSql['ix:di:' + ixDI][handle]
 
-  delete dummyNoSql[config.host.registrar + ':agentHandle:' + handle]
+  delete dummyNoSql['registrar:agentHandle:' + handle]
 
-  var handleAS = dummyNoSql[config.host.ix + ':di:' + ixDI + ':handle:' + handle]
+  var handleAS = dummyNoSql['ix:di:' + ixDI + ':handle:' + handle]
   process.nextTick( function () { cb( null, handleAS ) } )  
 }
 
