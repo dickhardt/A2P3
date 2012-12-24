@@ -45,6 +45,7 @@ keyPair( 'ix', 'as')
 keyPair( 'ix', 'setup')
 keyPair( 'ix', 'registrar')
 keyPair( 'setup', 'registrar')
+keyPair( 'setup', 'as')
 
 // setup AS keychain for IX
 coreHostKeys.ix.keys.as = {}

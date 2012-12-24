@@ -4,11 +4,12 @@
 * Copyright (C) Province of British Columbia, 2013
 */
 
+debugger;
+
 var should = require('chai').should() 
   , fetchUrl = require('fetch').fetchUrl
   , querystring = require('querystring')
   , config = require('../app/config')
-  , vault = require('../app/as/vault.js')
   , jwt = require('../app/jwt')
   , request = require('../app/request')
 
@@ -31,14 +32,6 @@ describe('AS', function(){
   })
   describe('/register', function(){
 
-    var payload = 
-      { 'iss': config.host.as
-      , 'aud': config.host.as
-      , 'reqeuest.a2p3.org':
-        { 'register': true }
-      }
-    var validRequest = request.create( payload, vault.keys[config.host.as].latest )
-
     it('should return INVALID_API_CALL when no "qr" is passed', function (done){
       options.payload = querystring.stringify( {'device': 'testDevice', 'passcode': '1234'} )
       fetchUrl( host+'/register', options, function (error, meta, body) {
@@ -51,7 +44,7 @@ describe('AS', function(){
       })
     })
     it('should return INVALID_API_CALL when no "passcode" is passed', function (done){
-      options.payload = querystring.stringify( {'device': 'testDevice', 'qr': validRequest} )
+      options.payload = querystring.stringify( {'device': 'testDevice', 'qr': '{}'} )
       fetchUrl( host+'/register', options, function (error, meta, body) {
         var response = JSON.parse(body)
         should.exist(response)
