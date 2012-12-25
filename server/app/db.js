@@ -238,3 +238,21 @@ exports.deleteAgentFromHandle = function ( handle, cb) {
   process.nextTick( function () { cb( null ) } )  
 }
 
+/*
+* Resource Server DB Functions
+*/
+
+// correct model??? TBD
+
+exports.updateData = function ( rs, di, name, details, cb ) {
+
+}
+
+exports.addData = function ( rs, di, name, details, cb ) {
+
+}
+
+exports.getData = function ( rs, di, name, cb ) {
+  
+}
+
