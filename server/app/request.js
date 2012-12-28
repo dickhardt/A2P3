@@ -30,12 +30,13 @@ exports.parse = function ( request ) {
 }
 
 
-function headerCheck( jws ) {
+function paramCheck( jws ) {
   if (!jws.payload.iss)
     throw new Error('No "iss" in JWS payload')
   if (!jws.header.kid) 
     throw new Error('No "kid" in JWS header')
-}
+  if (!jws.payload['request.a2p3.org']) 
+    throw new Error('No "request.a2p3.org" in JWS payload')}
 
 function vaultKeys( jws, keys ) {
   var haveKeys = keys && keys[jws.payload.iss] && keys[jws.payload.iss][jws.header.kid]
@@ -45,7 +46,7 @@ function vaultKeys( jws, keys ) {
 
 exports.verifyAndId = function ( request, keys ) {
   var jws = new jwt.Parse( request )
-  headerCheck( jws )
+  paramCheck( jws )
   if (!vaultKeys( jws, keys )) return undefined
   var valid = jws.verify( keys[jws.payload.iss][jws.header.kid] )
   return ( valid ) ? jws.payload.iss : undefined
@@ -66,7 +67,7 @@ exports.check = function ( keys, accessList, reg ) {
     }
     try {
       jws = new jwt.Parse( req.body.request )
-      headerCheck( jws )
+      paramCheck( jws )
       if ( accessList ) {
         if ( !accessList[jws.payload.iss] ) {
           err = new Error('Access not allowed')

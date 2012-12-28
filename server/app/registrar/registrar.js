@@ -179,7 +179,9 @@ exports.app = function() {
   app.post('/request/verify', checkValidAgent, requestVerify )
   app.post('/report', checkValidAgent, report )
   app.post('/authorizations/requests', checkValidAgent, authorizationsRequests )
-  app.post('/app/verify', request.check(vault), appVerify )  // need to change to look at all app keys
+
+  // called by RS 
+  app.post('/app/verify', request.check( vault, null, 'registrar'), appVerify )
 
   // dashboard web app APIs
   app.post('/dashboard/appid/taken'

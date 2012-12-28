@@ -69,4 +69,5 @@ exports.scheme = scheme
 exports.baseUrl = baseUrl
 exports.roles = roles
 exports.provinces = provinces
+exports.maxTokenAge = 5 * 60 * 1000 // 5 minutes
 

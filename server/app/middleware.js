@@ -45,6 +45,28 @@ exports.checkParams = function checkParams ( params ) {
   }
 }
 
+// check if expected a2p3 paramaters are present
+exports.a2p3Params = function checkParams ( params ) {
+  return function paramCheck( req, res, next ) {
+    var e
+    if (!req.response || !req.response['request.a2p3.org']) { 
+      e = new Error("request.a2p3.org not found in request")
+      e.code = 'INVALID_API_CALL'
+      return next( e )
+    }
+    params.forEach( function ( param ) {
+      if (e) return
+      if (!req.response['request.a2p3.org'][param]) { 
+        e = new Error("request.a2p3.org parameter '"+param+"' not found")
+        e.code = 'INVALID_API_CALL'
+        return next( e )
+      }
+    } )
+    if (!e) return next()
+  }
+}
+
+
 // custom logger that color codes non 200 stats codes and A2P3 errors
 exports.colorLogger = function colorLogger ( express ) {
   express.logger.token( 'statusColor', function (req, res) { 

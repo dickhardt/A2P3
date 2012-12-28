@@ -86,18 +86,18 @@ exports.routes = function ( app, RS, vault ) {
     }
   }
 
-  app.use( express.limit('10kb') )  // protect against large POST attack
-  app.use( express.bodyParser() )
 
   app.use( express.cookieParser() )
+  
   var cookieOptions =
-    { // 'key': 'dashboardUser'
-    // , 
-    'secret': 'abcd'  // TBD, get from vault
+    { 'secret': vault.secret
     , 'cookie': { path: '/dashboard', httpOnly: true, maxAge: 300 }
     , 'proxy': true
     }
   app.use( express.cookieSession( cookieOptions ))
+
+  // TBD add in '/dashboard/login' that checks credentials and 
+  // if good sets cookie and redirects to /dashboard, or to error page
   
   app.post('/dashboard/new/app'
           , checkSession
@@ -129,6 +129,5 @@ exports.routes = function ( app, RS, vault ) {
           , dashboardGetKey
           )
 
-  app.use( mw.errorHandler )
 
 }
