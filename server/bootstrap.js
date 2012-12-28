@@ -92,6 +92,8 @@ config.provinces.forEach( function ( province ) {
 var rsHostKeys = {}
 
 var setupVault = require('./app/setup/vault') // we need to update setup vault with key pair for each RS
+var registrarVault = require('./app/registrar/vault') // we need to update registrar vault with key pair with email RS
+
 
 // Registrar keys and registration and setup keys
 rsHosts.forEach( function (rs) {
@@ -124,12 +126,16 @@ tasks.push( function (done) {
 // register SI as app at email RS
 tasks.push( function (done ) {
   db.registerAdmin( 'email', 'root', diRootRegistrar, function (e) {
+    if (e) done (e)
+    db.newApp( 'email', config.host.si, 'Social Insurance', root, function ( e, keyObj) {
       if (e) done (e)
-      db.newApp( 'email', config.host.si, 'Social Insurane', root, function ( e, keyObj) {
+      rsHostKeys.si.keys[config.host.email] = keyObj
+      db.newApp( 'email', config.host.registrar, 'Registrar', root, function ( e, keyObj) {
         if (e) done (e)
-        rsHostKeys.si.keys[config.host.email] = keyObj
-        done( null, 'SI registered at email RS')
+        registrarVault.keys[config.host.email] = keyObj
+        done( null, 'SI and Registrar registered at email RS')
       })
+    })
   })
 })
 
@@ -139,11 +145,11 @@ config.provinces.forEach( function ( province ) {
     var hReg = 'health.' + province
     db.newApp( 'email', config.host[hReg], hReg, root, function ( e, keyObj) {
       if (e) done (e)
-      appHostKeys[config.host[hReg]].keys.email = keyObj
+      rsHostKeys[hReg].keys[config.host.email] = keyObj
       var pReg = 'people.' + province
       db.newApp( 'email', config.host.clinic, hReg, root, function ( e, keyObj) {
         if (e) done (e)
-        appHostKeys[config.host[hReg]].keys.email = keyObj
+        rsHostKeys[hReg].keys[config.host.email] = keyObj
         done( null, 'registered '+province+ ' for people and health at email RS')
       })
     })
@@ -162,10 +168,11 @@ tasks.push( function (done) {
   done( null, result )
 })
 
-// write out updated vault file for setup
+// write out updated vault file for setup and registrar
 tasks.push( function (done) {
   syncWriteJSON( setupVault, __dirname + '/app/setup/vault.json')
-  done( null, 'wrote vault.json for setup' )
+  syncWriteJSON( registrarVault, __dirname + '/app/registrar/vault.json')
+  done( null, 'wrote vault.json for setup and registrar' )
 })
 
 /*

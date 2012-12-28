@@ -30,6 +30,7 @@ var  host =
     , si: 'si'
     , people: 'people'
     , health: 'health'
+    , email: 'email'
     }
   , baseUrl = {}
 
