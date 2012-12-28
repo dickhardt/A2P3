@@ -35,17 +35,15 @@ var coreHostKeys =
   , 'setup': {'keys':{}, 'secret': identity.makeSecret()}
   }
 
-function keyPair ( a, b ) {
-  var kk = identity.makeKey()
-  coreHostKeys[a].keys[config.host[b]] = coreHostKeys[b].keys[config.host[a]] = {latest: kk}
-  coreHostKeys[a].keys[config.host[b]][kk.kid] = coreHostKeys[b].keys[config.host[a]][kk.kid] = kk.key
+function keyPair ( hosts, a, b ) {
+  hosts[a].keys[config.host[b]] = hosts[b].keys[config.host[a]] = identity.makeKeyObj()
 }
 
-keyPair( 'ix', 'as')
-keyPair( 'ix', 'setup')
-keyPair( 'ix', 'registrar')
-keyPair( 'setup', 'registrar')
-keyPair( 'setup', 'as')
+keyPair( coreHostKeys, 'ix', 'as')
+keyPair( coreHostKeys, 'ix', 'setup')
+keyPair( coreHostKeys, 'ix', 'registrar')
+keyPair( coreHostKeys, 'setup', 'registrar')
+keyPair( coreHostKeys, 'setup', 'as')
 
 // setup AS keychain for IX
 coreHostKeys.ix.keys.as = {}
@@ -85,7 +83,7 @@ tasks.push( function (done) {
 /*
 * register each RS and build their vaults
 */
-var rsHosts = ['people','health','si']
+var rsHosts = ['people','health','si','email']
 config.provinces.forEach( function ( province ) {
   rsHosts.push('people.'+province)
   rsHosts.push('health.'+province)
@@ -95,7 +93,7 @@ var rsHostKeys = {}
 
 var setupVault = require('./app/setup/vault') // we need to update setup vault with key pair for each RS
 
-// Registrar keys and registration
+// Registrar keys and registration and setup keys
 rsHosts.forEach( function (rs) {
   rsHostKeys[rs] = {'keys':{}, 'secret': identity.makeSecret()}
   tasks.push( function (done) {
@@ -109,7 +107,9 @@ rsHosts.forEach( function (rs) {
   })
 })
 
-// standardizes resources key exchange
+
+
+// key exchange between each province RS and standard RS
 tasks.push( function (done) {
   config.provinces.forEach( function ( province ) {
     var hostHealth = 'health.'+province
@@ -119,6 +119,37 @@ tasks.push( function (done) {
   })
   done( null, 'setup standardized resources')  
 })
+
+
+// register SI as app at email RS
+tasks.push( function (done ) {
+  db.registerAdmin( 'email', 'root', diRootRegistrar, function (e) {
+      if (e) done (e)
+      db.newApp( 'email', config.host.si, 'Social Insurane', root, function ( e, keyObj) {
+        if (e) done (e)
+        rsHostKeys.si.keys[config.host.email] = keyObj
+        done( null, 'SI registered at email RS')
+      })
+  })
+})
+
+// register each standardized RS as app at email RS
+config.provinces.forEach( function ( province ) {
+  tasks.push( function (done) {
+    var hReg = 'health.' + province
+    db.newApp( 'email', config.host[hReg], hReg, root, function ( e, keyObj) {
+      if (e) done (e)
+      appHostKeys[config.host[hReg]].keys.email = keyObj
+      var pReg = 'people.' + province
+      db.newApp( 'email', config.host.clinic, hReg, root, function ( e, keyObj) {
+        if (e) done (e)
+        appHostKeys[config.host[hReg]].keys.email = keyObj
+        done( null, 'registered '+province+ ' for people and health at email RS')
+      })
+    })
+  })
+})
+
 
 // write out vault files for each RS
 tasks.push( function (done) {
