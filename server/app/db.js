@@ -89,9 +89,9 @@ exports.newApp = function ( reg, id, name, adminEmail, cb ) {
   dummyNoSql[reg + ':app:' + id + ':name'] = name
   dummyNoSql[reg + ':app:' + id + ':admins'] = {}
   dummyNoSql[reg + ':app:' + id + ':admins'][adminEmail] = 'ACTIVE'
-  dummyNoSql[reg + ':admin:' + adminEmail + ':apps'] = {}
+  dummyNoSql[reg + ':admin:' + adminEmail + ':apps'] = dummyNoSql[reg + ':admin:' + adminEmail + ':apps'] || {}
   dummyNoSql[reg + ':admin:' + adminEmail + ':apps'][id] = 'ACTIVE'
-
+  // gen key pair
   var keyObj = newKeyObj( reg, id )
   process.nextTick( function () { cb( null, keyObj ) } )
 }
@@ -194,7 +194,7 @@ exports.deleteAgent = function ( asDI, asHost, handle, cb ) {
 * AS DB functions
 */
 exports.storeAgentRegisterSessionValue = function ( id, label, data, cb ) {
-  var key = config.host.as + ':agentRegisterSession:' + id
+  var key = 'as:agentRegisterSession:' + id
   dummyNoSql[key] = dummyNoSql[key] || {}
   dummyNoSql[key][label] = data
   process.nextTick( function () { cb( null ) } )
@@ -202,38 +202,38 @@ exports.storeAgentRegisterSessionValue = function ( id, label, data, cb ) {
 
 exports.retrieveAgentRegisterSession = function ( id, cb ) {
   process.nextTick( function () {
-    var key = config.host.as + ':agentRegisterSession:' + id
+    var key = 'as:agentRegisterSession:' + id
     cb( null, dummyNoSql[key] )
   })
 }
 
 exports.storeAgent = function ( agent, cb ) {
-  var key = config.host.as + ':agent:device:' + agent.device
+  var key = 'as:agent:device:' + agent.device
   dummyNoSql[key] = agent
-  key = config.host.as + ':agent:handle:' + agent.handle
+  key = 'as:agent:handle:' + agent.handle
   dummyNoSql[key] = agent.device
   process.nextTick( function () { cb( null ) } )
 }
 
 exports.retrieveAgentFromDevice = function ( device, cb) {
-  var key = config.host.as + ':agent:device:' + device
+  var key = 'as:agent:device:' + device
   var agent = dummyNoSql[key]
   process.nextTick( function () { cb( null, agent ) } )
 }
 
 exports.retrieveAgentFromHandle = function ( handle, cb) {
-  var key = config.host.as + ':agent:handle:' + handle
+  var key = 'as:agent:handle:' + handle
   var device = dummyNoSql[key]
-  var key = config.host.as + ':agent:device:' + device
+  var key = 'as:agent:device:' + device
   var agent = dummyNoSql[key]
   process.nextTick( function () { cb( null, agent ) } )  
 }
 
 exports.deleteAgentFromHandle = function ( handle, cb) {
-  var key = config.host.as + ':agent:handle:' + handle
+  var key = 'as:agent:handle:' + handle
   var device = dummyNoSql[key]
   delete dummyNoSql[key]
-  var key = config.host.as + ':agent:device:' + device
+  var key = 'as:agent:device:' + device
   delete dummyNoSql[key]
   process.nextTick( function () { cb( null ) } )  
 }
@@ -241,18 +241,32 @@ exports.deleteAgentFromHandle = function ( handle, cb) {
 /*
 * Resource Server DB Functions
 */
-
-// correct model??? TBD
-
-exports.updateData = function ( rs, di, name, details, cb ) {
-
+exports.updateProfile = function ( rs, di, profile, cb ) {
+  var key = rs + ':di:' + di + ':profile'
+  dummyNoSql[key] = dummyNoSql[key] || {}
+  Object.keys( profile ).forEach( function (item) {
+    dummyNoSql[key][item] = profile[item]
+  })
+  process.nextTick( function () { cb( null ) } )  
 }
 
-exports.addData = function ( rs, di, name, details, cb ) {
-
+exports.getProfile = function ( rs, di, cb ) {
+  var key = rs + ':di:' + di + ':profile'
+  process.nextTick( function () { cb( null, dummyNoSql[key] ) } )    
 }
 
-exports.getData = function ( rs, di, name, cb ) {
-  
+
+exports.updateSeries = function ( rs, di, series, data, time, cb ) {
+  time = time || new Date().now()
+  var key = rs + ':di:' + di + ':series:' + series
+  dummyNoSql[key] = dummyNoSql[key] || {}
+  dummyNoSql[key][time] = data
+  process.nextTick( function () { cb( null ) } )  
+}
+
+
+exports.getSeries = function ( rs, di, series, data, cb ) {
+  var key = rs + ':di:' + di + ':series:' + series
+  process.nextTick( function () { cb( null, dummyNoSql[key] ) } )  
 }
 

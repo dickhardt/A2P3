@@ -49,14 +49,15 @@ Object.keys(host).forEach( function (key) {
   baseUrl[key] = scheme + '://' + host[key] + ':' + port
 })
 
-// roles are used for access control to APIs
+// roles are used for access control to special APIs
 var roles =
   { as: {}
   , enroll: {}
   }
+// AS roles, add other AS when they become available
 roles.as[host.as] = true
 roles.as[host.setup] = true
-// add other AS when they become available
+// setup is only enrollment app
 roles.enroll[host.setup] = true
 
 // exported configuration

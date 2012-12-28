@@ -5,10 +5,10 @@
 * - generates a root user
 * - registers all POC Apps and Resource Servers at Registrar with root user
 * - registers all POC Apps at appropriate Resource Servers with root user
-* - does snapshot of all data files
 *
 * NOTES
-*   outbound email setup must be done independantly -- will associate a google address with outbound
+*   outbound email setup must be done independantly -- will associate a google hosted address with outbound
+* TBD: directions on how to do this!
 *
 */
 
@@ -64,20 +64,20 @@ var db = require('./app/db')
 // an array of tasks and then execute them in order
 var tasks = []
 
-// globals for App and RS registration
-var diRootAS, diRootRegistrar
-
+// DI for all hosts
+var diRoot
 tasks.push( function (done) {
-  db.newUser( config.host.as, [config.host.registrar], function ( e, dis ) {
+  var hosts = []
+  for (var key in config.host) { hosts.push( config.host[ key ] ) }
+  db.newUser( config.host.as, hosts, function ( e, dis ) {
     if (e) return done( e )
-    diRootAS = dis[config.host.as]
-    diRootRegistrar = dis[config.host.registrar]
+    diRoot = dis
     done( null, "created root user")
   })  
 })
 
 tasks.push( function (done) {
-  db.registerAdmin( 'registrar', 'root', diRootRegistrar, done)
+  db.registerAdmin( 'registrar', 'root', diRoot[config.host.registrar], done)
 })
 
 /*
@@ -91,9 +91,12 @@ config.provinces.forEach( function ( province ) {
 
 var rsHostKeys = {}
 
-var setupVault = require('./app/setup/vault') // we need to update setup vault with key pair for each RS
-var registrarVault = require('./app/registrar/vault') // we need to update registrar vault with key pair with email RS
-
+// we need to update the setup vault with key pairs with all RSes 
+// and registrar vault with email RS, but needed DB before we could 
+// register them as apps at RSes
+// we get the vaults and then write them out again
+var setupVault = require('./app/setup/vault') 
+var registrarVault = require('./app/registrar/vault') 
 
 // Registrar keys and registration and setup keys
 rsHosts.forEach( function (rs) {
@@ -125,15 +128,19 @@ tasks.push( function (done) {
 
 // register SI as app at email RS
 tasks.push( function (done ) {
-  db.registerAdmin( 'email', 'root', diRootRegistrar, function (e) {
+  db.registerAdmin( 'email', 'root', diRoot[config.host.email], function (e) { 
     if (e) done (e)
-    db.newApp( 'email', config.host.si, 'Social Insurance', root, function ( e, keyObj) {
+    // add root email to root DI at email RS
+    db.updateProfile( 'email', diRoot[config.host.email], {'email':'root'}, function (e) {
       if (e) done (e)
-      rsHostKeys.si.keys[config.host.email] = keyObj
-      db.newApp( 'email', config.host.registrar, 'Registrar', root, function ( e, keyObj) {
+      db.newApp( 'email', config.host.si, 'Social Insurance', 'root', function ( e, keyObj) {
         if (e) done (e)
-        registrarVault.keys[config.host.email] = keyObj
-        done( null, 'SI and Registrar registered at email RS')
+        rsHostKeys.si.keys[config.host.email] = keyObj
+        db.newApp( 'email', config.host.registrar, 'Registrar', 'root', function ( e, keyObj) {
+          if (e) done (e)
+          registrarVault.keys[config.host.email] = keyObj
+          done( null, 'SI and Registrar registered at email RS')
+        })
       })
     })
   })
@@ -143,11 +150,11 @@ tasks.push( function (done ) {
 config.provinces.forEach( function ( province ) {
   tasks.push( function (done) {
     var hReg = 'health.' + province
-    db.newApp( 'email', config.host[hReg], hReg, root, function ( e, keyObj) {
+    db.newApp( 'email', config.host[hReg], hReg, 'root', function ( e, keyObj) {
       if (e) done (e)
       rsHostKeys[hReg].keys[config.host.email] = keyObj
       var pReg = 'people.' + province
-      db.newApp( 'email', config.host.clinic, hReg, root, function ( e, keyObj) {
+      db.newApp( 'email', config.host.clinic, pReg, 'root', function ( e, keyObj) {
         if (e) done (e)
         rsHostKeys[hReg].keys[config.host.email] = keyObj
         done( null, 'registered '+province+ ' for people and health at email RS')
@@ -188,15 +195,15 @@ var appHostKeys =
 config.provinces.forEach( function ( province ) {
   tasks.push( function (done) {
     var hReg = 'health.' + province
-    db.registerAdmin( hReg, 'root', diRootRegistrar, function (e) {
+    db.registerAdmin( hReg, 'root', diRoot[config.host[hReg]], function (e) { // TBD -- need DI for each host
       if (e) done (e)
-      db.newApp( hReg, config.host.clinic, 'Clinic', root, function ( e, keyObj) {
+      db.newApp( hReg, config.host.clinic, 'Clinic', 'root', function ( e, keyObj) {
         if (e) done (e)
         appHostKeys.clinic.keys[config.host[hReg]] = keyObj
         var pReg = 'people.' + province
-        db.registerAdmin( pReg, 'root', diRootRegistrar, function (e) {
+        db.registerAdmin( pReg, 'root', diRoot[config.host[pReg]], function (e) {
           if (e) done (e)
-          db.newApp( pReg, config.host.clinic, 'Clinic', root, function ( e, keyObj) {
+          db.newApp( pReg, config.host.clinic, 'Clinic', 'root', function ( e, keyObj) {
             if (e) done (e)
             appHostKeys.clinic.keys[config.host[pReg]] = keyObj
             done( null, 'registered clinic at '+hReg+' & '+pReg)
@@ -216,7 +223,7 @@ tasks.push( function (done) {
 config.provinces.forEach( function ( province ) {
   tasks.push( function (done) {
     var reg = 'people.' + province
-    db.newApp( reg, config.host.bank, 'Bank', root, function ( e, keyObj) {
+    db.newApp( reg, config.host.bank, 'Bank', 'root', function ( e, keyObj) {
       if (e) done (e)
       appHostKeys.bank.keys[config.host[reg]] = keyObj
       done( null, 'registered bank at '+reg)
@@ -225,9 +232,9 @@ config.provinces.forEach( function ( province ) {
 })
 
 tasks.push( function (done) {
-  db.registerAdmin( 'si', 'root', diRootRegistrar, function (e) {
+  db.registerAdmin( 'si', 'root', diRoot[config.host.si], function (e) {
     if (e) done (e)
-    db.newApp( 'si', config.host.bank, 'Bank', root, function ( e, keyObj) {
+    db.newApp( 'si', config.host.bank, 'Bank', 'root', function ( e, keyObj) {
       if (e) done (e)
       appHostKeys.bank.keys[config.host.si] = keyObj
       syncWriteJSON( appHostKeys.bank, __dirname + '/app/bank/vault.json')
