@@ -31,7 +31,7 @@ describe('Creating new User', function(){
           { iss: config.host.setup
           , aud: config.host.ix
           , 'request.a2p3.org':
-            { 'AS': config.host.as
+            { 'AS': config.host.setup
             , 'RS': [config.host.email, config.host.si, config.host['health.bc'], config.host['people.bc']]
             , 'redirects': {}
             }
@@ -44,7 +44,7 @@ describe('Creating new User', function(){
         response.should.not.have.property('error')
         response.should.have.property('result')
         response.result.should.have.property('dis')
-        response.result.dis.should.have.property(config.host.as)
+        response.result.dis.should.have.property(config.host.setup)
         response.result.dis.should.have.property(config.host.email)
         response.result.dis.should.have.property(config.host.si)
         response.result.dis.should.have.property(config.host['health.bc'])
@@ -114,7 +114,7 @@ describe('Creating new User', function(){
           , aud: config.host['health.bc']
           , 'request.a2p3.org':
             { 'sub': diList[config.host['health.bc']]
-            , 'account': '123456789'
+            , 'account': '0123456789'
             }
           }
         }
@@ -170,7 +170,7 @@ describe('Creating new User', function(){
           { 'returnURL': 'https://example.com/return' // not needed in test
           , 'resources':
             [ config.baseUrl.si + '/scope/number'
-            , config.baseUrl.email + '/email/default'
+            , config.baseUrl.email + '/scope/default'
             ]
           , 'auth': 
             { 'passcode': true 
@@ -209,6 +209,30 @@ describe('Creating new User', function(){
         response.result.should.have.property('sub')
         response.result.should.have.property('tokens')
         rsTokens = response.result.tokens
+        done()
+      })  
+    })
+  })
+
+  describe('email:/email/default', function(){
+    it('should return email address', function (done){
+      var details = 
+        { host: 'email'
+        , api: '/email/default'
+        , credentials: vaultSetup.keys[config.host.email].latest
+        , payload: 
+          { iss: config.host.setup
+          , aud: config.host.email
+          , 'request.a2p3.org':
+            { 'token': rsTokens[config.host.email]
+            }
+          }
+        }
+      api.call( details, function (response) {
+        response.should.not.have.property('error')
+        response.should.have.property('result')
+        response.result.should.have.property('email')
+        response.result.email.should.equal('dickhardt@gmail.com')
         done()
       })  
     })

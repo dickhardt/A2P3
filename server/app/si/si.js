@@ -54,7 +54,7 @@ exports.app = function() {
   app.post('/number' 
           , request.check( vault, null, 'si' )
           , mw.a2p3Params( ['token'] )
-          , token.checkRS( vault.keys, 'si', '/scope/number' )
+          , token.checkRS( vault.keys, 'si', ['/scope/number'] )
           , number 
           )
   app.use( mw.errorHandler )

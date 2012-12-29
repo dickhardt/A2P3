@@ -52,9 +52,9 @@ exports.app = function() {
           , diLink 
           )
   app.post('/email/default' 
-          , request.check( vault, null, 'email' )
+          , request.check( vault.keys, null, 'email' )
           , mw.a2p3Params( ['token'] )
-          , token.checkRS( vault.keys, 'email', '/scope/default' )
+          , token.checkRS( vault.keys, 'email', ['/scope/default'] )
           , emailDefault 
           )
   app.use( mw.errorHandler )

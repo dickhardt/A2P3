@@ -7,6 +7,7 @@
 var crypto = require('crypto')
  , b64url = require('./b64url')
  , config = require('./config')
+ , util = require('util')
 
 // Concat KDF key generation and caching
 var keyCache = {}
@@ -129,11 +130,11 @@ var encryptAxxxCBC = function ( details, cipher, sign, numBytes) {
 
   var plainText = JSON.stringify( details.payload)
   var iv = crypto.randomBytes( 16)
-  
+
   // encrypt
   var cipher = crypto.createCipheriv( cipher, kdf.cek, iv)
-  var cipherText = b64url.safe( cipher.update( plainText,'binary','base64'))
-  cipherText += b64url.safe( cipher.final( 'base64'))
+  var cipherText = b64url.safe( cipher.update( plainText, 'utf8', 'base64' ) )
+  cipherText += b64url.safe( cipher.final( 'base64')  )
 
   // create signature    
   var input = b64url.encode( JSON.stringify( details.header)) +'..'+ b64url.encode(iv) +'.'+ cipherText
@@ -157,6 +158,7 @@ var encryptAlg =
 
 
 var decryptAxxxCBC = function ( input, cmkEncrypted, ivB64url, ciphertextB64url, signature, key, cipher, sign, numBytes) {
+
   if (cmkEncrypted) 
     throw new Error('Encrypted CMK is not supported in JWE')
 
@@ -175,10 +177,10 @@ var decryptAxxxCBC = function ( input, cmkEncrypted, ivB64url, ciphertextB64url,
     throw new Error("JWE has invalid signature:"+signature)    
   
   // decrypt
-  var cipherText = Buffer(b64url.b64(ciphertextB64url), 'base64')
-  var decipher = crypto.createDecipheriv( cipher, kdf.cek, iv)
-  var plainText = b64url.safe(decipher.update(cipherText,'binary','base64'))
-  plainText += b64url.safe(decipher.final('base64'))
+  var cipherText = Buffer( b64url.b64( ciphertextB64url ), 'base64' )
+  var decipher = crypto.createDecipheriv( cipher, kdf.cek, iv )
+  var plainText = decipher.update( cipherText,'binary','utf8' )
+  plainText += decipher.final( 'utf8' )
   return plainText;
 }
 

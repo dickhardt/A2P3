@@ -28,8 +28,8 @@ exports.errorHandler = function errorHandler ( error, req, res, next ) {
 }
 
 // will check to ensure the expected paramaters are present
-exports.checkParams = function checkParams ( params ) {
-  return function paramCheck( req, res, next ) {
+exports.checkParams = function  ( params ) {
+  return function checkParams( req, res, next ) {
     var e
     Object.keys( params ).forEach( function ( key ) {
       if (e) return
@@ -53,8 +53,8 @@ exports.checkParams = function checkParams ( params ) {
 }
 
 // check if expected a2p3 paramaters are present
-exports.a2p3Params = function checkParams ( params ) {
-  return function paramCheck( req, res, next ) {
+exports.a2p3Params = function ( params ) {
+  return function a2p3Params( req, res, next ) {
     var e
 
     if (!req.request || !req.request['request.a2p3.org']) { 

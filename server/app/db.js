@@ -299,12 +299,12 @@ exports.updateProfile = function ( rs, di, profile, cb ) {
 }
 
 exports.getProfile = function ( rs, di, cb ) {
+  var key = rs + ':di:' + di + ':profile'
   if (!dummyNoSql[key]) {
     var e = new Error('unknown user')
     e.code = "UNKNOWN_USER"
     process.nextTick( function () { cb( e, null ) } )    
   }
-  var key = rs + ':di:' + di + ':profile'
   process.nextTick( function () { cb( null, dummyNoSql[key] ) } )    
 }
 

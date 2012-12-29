@@ -78,9 +78,6 @@ exports.check = function ( keys, accessList, reg ) {
       if ( jws.payload.aud != req.host ) {
         err = new Error("Request 'aud' does not match "+req.host)
         err.code = 'ACCESS_DENIED'
-
-console.log( 'payload:',jws.payload )
-
         return next( err )          
       }
       db.getAppKey( reg, jws.payload.iss, keys, function ( e, key ) {
@@ -89,7 +86,7 @@ console.log( 'payload:',jws.payload )
           return next( err )
         }
         if (!key) {
-          err = new Error('No key available for '+ jws.header.iss)
+          err = new Error('No key available for '+ jws.payload.iss)
           err.code = 'ACCESS_DENIED'
           return next( err )                    
         }          

@@ -31,7 +31,8 @@ function getHosts ( scopes ) {
   var results = {}
   scopes.forEach( function ( scope ) {
     var o = url.parse( scope )
-    results[o.hostname] = scope
+    results[o.hostname] = results[o.hostname] || []
+    results[o.hostname].push( scope )
   })
   return results
 }
@@ -40,8 +41,8 @@ function getHosts ( scopes ) {
 // exchange IX Token for RS Tokens if all is good
 function exchange ( req, res, next ) {
 
-  var jwe, jws, ixToken, rsList, hostList, rsScopes
-    , tokens = []
+  var jwe, jws, ixToken
+
 
   try {
     jwe = new jwt.Parse( req.request['request.a2p3.org'].token )
@@ -51,8 +52,6 @@ function exchange ( req, res, next ) {
       return next( e )
     }
     ixToken = jwe.decrypt( vault.keys.as[jwe.header.kid] ) // list of keys for AS
-
-// console.log('\ntoken\n', ixToken )
 
   }
   catch (e) {
@@ -72,10 +71,6 @@ function exchange ( req, res, next ) {
     return next( e )    
   }
 
-// console.log('\nJWS\n',jws )
-
-// console.log('\nIX Request\n',req.request )
-
   // make sure IX Token 'iss' matches associated 'kid'
   if (!vault.keys[ixToken.iss][jwe.header.kid]) {
       var e = new Error("'iss' does not have supplied 'kid'")
@@ -85,7 +80,7 @@ function exchange ( req, res, next ) {
   // check agent request signature matches 'sar' that AS got
   if (ixToken['token.a2p3.org'].sar != jws.signature) {
       var e = new Error("IX Token 'sar' does not match request signature")
-      e.code = 'INVALID_REQUEST'
+      e.code = 'INVALID_IXREQUEST'
       return next( e )
   }
   // check ix request and agent request are from same app
@@ -97,69 +92,54 @@ function exchange ( req, res, next ) {
   // check IX & Agent Requests and IX Token have not expired
   if ( jwt.expired( req.request.iat ) ) {
       var e = new Error("IX Request has expired")
-      e.code = 'INVALID_REQUEST'
+      e.code = 'EXPIRED_IXREQUEST'
       return next( e )
   }
   if ( jwt.expired( jws.payload.iat ) ) {
       var e = new Error("Agent Request has expired")
-      e.code = 'INVALID_REQUEST'
+      e.code = 'EXPIRED_REQUEST'
       return next( e )
   }
   if ( jwt.expired( jwe.payload.iat ) ) {
       var e = new Error("IX Token has expired")
-      e.code = 'INVALID_TOKEN'
+      e.code = 'EXPIRED_TOKEN'
       return next( e )
   }
-  rsScopes = getHosts( jws.payload['request.a2p3.org'].resources )
+  var rsScopes = getHosts( jws.payload['request.a2p3.org'].resources )
+      // need to get multiple scopes for a host in there ... 
+
   db.getStandardResourceHosts( ixToken.sub, ixToken.iss, Object.keys( rsScopes ), function ( e, redirects ) {
-    hostList = [jws.payload.iss]
+    var hostList = {}
+    hostList[jws.payload.iss] = true
     Object.keys(rsScopes).forEach( function (rs) {
-      if (redirects[rs]) {
-        hostList.push( redirects[rs] )
+      if (redirects && redirects[rs]) {
+        redirects[rs].forEach( function (host) { hostList[host] = true })
       } else {
-        hostList.push( rs )
+        hostList[rs] = true
       }
     })
-
-    // app keys are stored with registrar
-    db.getAppKeys( 'registrar', hostList, vault.keys, function ( e, keys ) {
+    // app keys for IX are stored with registrar
+    db.getAppKeys( 'registrar', Object.keys(hostList), vault.keys, function ( e, keys ) {
       if (e) return next( e )
-      db.getRsDIfromAsDI( ixToken.sub, ixToken.iss, hostList, function ( e, dis ) {
+      db.getRsDIfromAsDI( ixToken.sub, ixToken.iss, Object.keys(hostList), function ( e, dis ) {
         if (e) return next( e )
-        Object.keys( rsScopes ).forEach( function (rs) {
-          var t = 
-            { resource: rs
-            , scope: rsScopes[rs]
-            }
-
-          function makeToken ( r ) {
-            var payload = 
-              { 'iss': config.host.ix
-              , 'aud': r
-              , 'sub': dis[r]
-              , 'token.a2p3.org': 
-                { 'auth': jwe.payload['token.a2p3.org'].auth
-                , 'app': jws.payload.iss
-                , 'scope': rsScopes[r]
-                }
+        // make tokens for all resources, delete caller from list        
+        var tokens = {}
+        delete hostList[jws.payload.iss]
+        Object.keys( hostList ).forEach( function (rs) {
+          var payload = 
+            { 'iss': config.host.ix
+            , 'aud': rs
+            , 'sub': dis[rs]
+            , 'token.a2p3.org': 
+              { 'auth': jwe.payload['token.a2p3.org'].auth
+              , 'app': jws.payload.iss
+              , 'scopes': rsScopes[rs]
               }
-            return token.create( payload, keys[r].latest )  
-          } 
-
-          if (redirects[rs]) {
-            t.redirects = []
-            redirects[rs].forEach( function (rsStd) {
-              t.redirects.push(
-                { 'resource': rsStd
-                , 'token': makeToken( rsStd )
-                } ) 
-            })
-          } else {
-            t.token = makeToken( rs )
-          }
-          tokens.push( t ) 
+            }
+          tokens[rs] = token.create( payload, keys[rs].latest )  
         })
-        return res.send( { result: {'sub': dis[jws.payload.iss], 'tokens': tokens} } )
+        return res.send( { result: {'sub': dis[jws.payload.iss], 'tokens': tokens, 'redirects': redirects} } )
       })
     })
   })

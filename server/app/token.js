@@ -24,51 +24,63 @@ exports.create = function ( payload, credentials ) {
     return jwt.jwe( details )
 }
 
+function intersection ( a, b ) {
+  return a.some( function ( aI) {
+    return b.some( function (bI) { 
+      return (aI === bI)
+    })
+  })
+}
+
+function validScope ( passedScopes, baseUrl, scopePaths ) {
+  var acceptedScopes = scopePaths.map( function ( scopePath ) { return (baseUrl + scopePath); } )
+  return intersection( passedScopes, acceptedScopes )
+}
+
 // middleware that checks token is valid
 // depends on request.check middleware being called prior
-exports.checkRS = function ( vault, rs, scopePath ) {
+exports.checkRS = function ( vault, rs, scopePaths ) {
   return (function (req, res, next) {
     var jwe, err, token
-    if (!req.response['request.a2p3.org'].token) {
+    if (!req.request['request.a2p3.org'].token) {
       err = new Error("No token in 'request.a2p3.org' payload property")
       err.code = 'INVALID_TOKEN'
       return next( err )
     }  //  
     try {
-      jwe = new jwt.Parse(req.response['request.a2p3.org'].token)
-      if ( !jwe.kid || !vault.keys[config.host.ix][jwe.kid] ) {
+      jwe = new jwt.Parse(req.request['request.a2p3.org'].token)
+      if ( !jwe.header.kid || !vault[config.host.ix][jwe.header.kid] ) {
         err = new Error("No valid key for "+config.host.ix)
         err.code = 'INVALID_TOKEN'
         return next( err )
       }
-      token = jwe.decrypt( vault.keys[config.host.ix][jwe.kid] )
+      token = jwe.decrypt( vault[config.host.ix][jwe.header.kid] )
     }
     catch (e) {
       e.code = 'INVALID_TOKEN'
       return next( e )
     }
-    if (token.iss != config.host.ix) {
+    if ( token.iss != config.host.ix ) {
       err = new Error("RS Token must be signed by "+config.host.ix)
       err.code = 'INVALID_TOKEN'
       return next( err )
     }
-    if (token.aud != config.host[rs]) {
+    if ( token.aud != config.host[rs] ) {
       err = new Error("Wrong token audience. Should be "+config.host[rs])
       err.code = 'INVALID_TOKEN'
       return next( err )
     }
-    if (token['token.a2p3.org'].app != req.request.header.iss) {
+    if ( token['token.a2p3.org'].app != req.request.iss ) {
       err = new Error("Token and Request app must match")
       err.code = 'INVALID_TOKEN'
       return next( err )
     }
-    var scope = config.baseUrl[rs] + scopePath
-    if (token['token.a2p3.org'].scope != scope) {
-      err = new Error("Invalid scope. Should be '"+scope+"'")
+    if ( !validScope( token['token.a2p3.org'].scopes, config.baseUrl[rs], scopePaths ) ) {
+      err = new Error("Invalid scope.")
       err.code = 'INVALID_TOKEN'
       return next( err )
     }
-    if (!token['token.a2p3.org'].auth.passcode || !token['token.a2p3.org'].auth.authorization) {
+    if ( !token['token.a2p3.org'].auth.passcode || !token['token.a2p3.org'].auth.authorization ) {
       err = new Error("Invalid authorization. Passcode and authorization must be given.")
       err.code = 'INVALID_TOKEN'
       return next( err )
@@ -78,6 +90,7 @@ exports.checkRS = function ( vault, rs, scopePath ) {
       err.code = 'INVALID_TOKEN'
       return next( err )
     }
+    req.token = token
     next()
   })
 }
