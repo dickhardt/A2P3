@@ -378,7 +378,12 @@ exports.handle = function () {
 
 // generates JWT date/time value
 exports.iat = function () {
-  return Math.round(new Date().getTime() / 1000)
+  return Math.round( Date.now() / 1000)
+}
+
+exports.expired = function ( iatOrig ) {
+  var exp = ( (iat() - iatOrig) >= config.maxTokenAge )
+  return exp
 }
 
 // export functions defined above

@@ -48,7 +48,7 @@ function getRegisterAgent ( req ) {
   var payload =
     { 'iss': config.host.setup
     , 'aud': config.host.ix
-    , 'prn': '12345'
+    , 'sub': '12345'
     , 'token.a2p3.org': 
       { 'sar': jws.signature
       , 'auth': 

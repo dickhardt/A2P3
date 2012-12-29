@@ -45,7 +45,7 @@ function tokenHandler ( req, res, next ) {
     var payload =
       { 'iss': config.host.as
       , 'aud': config.host.ix
-      , 'prn': agent.prn
+      , 'sub': agent.sub
       , 'token.a2p3.org': 
         { 'sar': sar
         , 'auth': 

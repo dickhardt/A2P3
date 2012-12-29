@@ -62,7 +62,7 @@ function getRegisterAgent ( req ) {
   var payload =
     { 'iss': config.host.setup
     , 'aud': config.host.ix
-    , 'prn': '12345' // TBD - need to get asDI for setup to fill in here
+    , 'sub': '12345' // TBD - need to get asDI for setup to fill in here
     , 'token.a2p3.org': 
       { 'sar': jws.signature
       , 'auth': 

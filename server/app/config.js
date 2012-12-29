@@ -53,12 +53,16 @@ Object.keys(host).forEach( function (key) {
 var roles =
   { as: {}
   , enroll: {}
+  , std: {}
   }
 // AS roles, add other AS when they become available
 roles.as[host.as] = true
 roles.as[host.setup] = true
 // setup is only enrollment app
 roles.enroll[host.setup] = true
+// health and people are onlu standardized resources
+roles.std[host.health] = true
+roles.std[host.people] = true
 
 // exported configuration
 exports.crypto = crypto
@@ -69,5 +73,5 @@ exports.scheme = scheme
 exports.baseUrl = baseUrl
 exports.roles = roles
 exports.provinces = provinces
-exports.maxTokenAge = 5 * 60 * 1000 // 5 minutes
+exports.maxTokenAge = 5 * 60 // 5 minutes
 

@@ -73,8 +73,7 @@ exports.checkRS = function ( vault, rs, scopePath ) {
       err.code = 'INVALID_TOKEN'
       return next( err )
     }
-    var now = new Date.now()
-    if ( (now - token.iat) > config.maxTokenAge ) {
+    if ( jwt.expired( token.iat ) ) {
       err = new Error("The token expired.")
       err.code = 'INVALID_TOKEN'
       return next( err )
@@ -82,19 +81,3 @@ exports.checkRS = function ( vault, rs, scopePath ) {
     next()
   })
 }
-
-
-/*
-
-
-
-exports.parse = function ( token, getCreds ) {
-  var payload = jwt.decode( token, function (header) {
-    if (header.typ !== 'JWE' || header.alg !== 'dir' || header.enc !== config.alg.JWE)
-        return undefined
-    else 
-        return getCreds( header )
-  })
-  return payload
-}
-*/

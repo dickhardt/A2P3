@@ -128,11 +128,27 @@ exports.getAppKey = function ( reg, id, cb ) {
   process.nextTick( function () { cb( null, key ) } )
 }
 
+exports.getAppKeys = function ( reg, list, cb ) {
+  var keys = []
+    , notFound = false
+    , e = null
+
+  list.forEach( function (id) {
+    keys[id] = keyChain[reg][id]
+    if (!key[id]) notFound = id
+  })
+  if (notFound) {
+    e = new Error('Key not found for:'+notFound)
+    e.code = "UNKOWN_RESOURCE"
+  }
+  process.nextTick( function () { cb( e, keys ) } )  
+}
+
 /*
 * IX DB functions
 */
 // creats a new User directed identifier and stores pointers from all AS
-exports.newUser = function ( asHost, rsHosts, cb ) {
+exports.newUser = function ( asHost, rsHosts, redirects, cb ) {
   // create and map identifiers
   var ixDI = identity.createDI()
   var dis = {}
@@ -147,8 +163,30 @@ exports.newUser = function ( asHost, rsHosts, cb ) {
     var asDI = mapDI( asHost, ixDI )
     dummyNoSql['ix:di:' + asHost + ':' + asDI] = ixDI
   })
+
+  // store any redirects
+  Object.keys( redirects ).forEach( function (std) {
+    dummyNoSql['ix:redirect:di:' + asDI + ':' + std] = dummyNoSql['ix:redirect:di:' + asDI + ':' + std] = []
+    dummyNoSql['ix:redirect:di:' + asDI + ':' + std].push( redirects[std] )
+  })
+
   process.nextTick( function () { cb( null, dis ) } )
 }
+
+// gets any redirected hosts for stored for any standardized resources passed in
+exports.getStandardResourceHosts = function ( asDI, asHost, rsList, cb ) {
+  var rsStd = rsList.filter( function (rs) { return config.roles.std[rs] } )
+  if (!rsStd) {
+    return process.nextTick( function () { cb( null, null ) } )
+  }
+  var ixDI = dummyNoSql['ix:di:' + asHost + ':' + asDI]
+  var redirects = {}
+  rsStd.forEach( function ( std ) {
+    redirects[std] = dummyNoSql['ix:redirect:di:' + asDI + ':' + std] = dummyNoSql['ix:redirect:di:' + asDI + ':' + std]
+  })  
+  process.nextTick( function () { cb( null, redirects ) } )
+}
+
 
 // gets DIs for each RS from AS DI
 exports.getRsDIfromAsDI = function ( asDI, asHost, rsHosts, cb ) {
