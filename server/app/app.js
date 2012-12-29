@@ -43,4 +43,4 @@ app.use( express.vhost( '*', function ( req, res, next ) {
 
 app.listen( config.port )
 
-console.log( "A2P3 server started on port:", config.port )
+console.log( "A2P3 server started on port:", config.portListen )

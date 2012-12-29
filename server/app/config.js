@@ -38,6 +38,8 @@ var  host =
 var port = '8080'
 var baseDomain = process.env.a2p3domain || 'local.a2p3.net' 
 var scheme = process.env.a2p3scheme || 'http'
+var portListen = process.env.a2p3port || port
+
 
 provinces.forEach( function ( province ) {
   host['people.'+province] = 'people.'+province
@@ -69,6 +71,7 @@ exports.crypto = crypto
 exports.baseDomain = baseDomain
 exports.host = host
 exports.port = port
+exports.portListen = portListen
 exports.scheme = scheme
 exports.baseUrl = baseUrl
 exports.roles = roles
