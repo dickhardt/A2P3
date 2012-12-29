@@ -43,7 +43,7 @@ exports.routes = function ( app, RS, vault ) {
   }
 
   function dashboardGetKey ( req, res, next ) {
-    db.getAppKey( RS, req.body.id, function ( e, key ) {
+    db.getAppKey( RS, req.body.id, null, function ( e, key ) {
       if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
       return res.send( {result:{'id': req.body.id, 'key': key}} )
     })

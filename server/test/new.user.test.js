@@ -15,6 +15,8 @@ var should = require('chai').should()
   , jwt = require('../app/jwt')
 
 var diList
+  , rsTokens
+
 
 describe('Creating new User', function(){
 
@@ -30,13 +32,13 @@ describe('Creating new User', function(){
           , aud: config.host.ix
           , 'request.a2p3.org':
             { 'AS': config.host.as
-            , 'RS': [config.host.email, config.host.si, config.host['health.BC'], config.host['people.BC']]
+            , 'RS': [config.host.email, config.host.si, config.host['health.bc'], config.host['people.bc']]
             , 'redirects': {}
             }
           }
         }
-      details.payload['request.a2p3.org'].redirects[config.host.health] = [config.host['health.BC']]
-      details.payload['request.a2p3.org'].redirects[config.host.people] = [config.host['people.BC']]
+      details.payload['request.a2p3.org'].redirects[config.host.health] = [config.host['health.bc']]
+      details.payload['request.a2p3.org'].redirects[config.host.people] = [config.host['people.bc']]
 
       api.call( details, function (response) {
         response.should.not.have.property('error')
@@ -45,8 +47,8 @@ describe('Creating new User', function(){
         response.result.dis.should.have.property(config.host.as)
         response.result.dis.should.have.property(config.host.email)
         response.result.dis.should.have.property(config.host.si)
-        response.result.dis.should.have.property(config.host['health.BC'])
-        response.result.dis.should.have.property(config.host['people.BC'])
+        response.result.dis.should.have.property(config.host['health.bc'])
+        response.result.dis.should.have.property(config.host['people.bc'])
         diList = response.result.dis
         done()
       })  
@@ -104,14 +106,14 @@ describe('Creating new User', function(){
   describe('health.BC:/di/link', function(){
     it('should return a result property', function (done){
       var details = 
-        { host: 'health.BC'
+        { host: 'health.bc'
         , api: '/di/link'
-        , credentials: vaultSetup.keys[config.host['health.BC']].latest
+        , credentials: vaultSetup.keys[config.host['health.bc']].latest
         , payload: 
           { iss: config.host.setup
-          , aud: config.host['health.BC']
+          , aud: config.host['health.bc']
           , 'request.a2p3.org':
-            { 'sub': diList[config.host['health.BC']]
+            { 'sub': diList[config.host['health.bc']]
             , 'account': '123456789'
             }
           }
@@ -128,14 +130,14 @@ describe('Creating new User', function(){
   describe('people.BC:/di/link', function(){
     it('should return a result property', function (done){
       var details = 
-        { host: 'people.BC'
+        { host: 'people.bc'
         , api: '/di/link'
-        , credentials: vaultSetup.keys[config.host['people.BC']].latest
+        , credentials: vaultSetup.keys[config.host['people.bc']].latest
         , payload: 
           { iss: config.host.setup
-          , aud: config.host['people.BC']
+          , aud: config.host['people.bc']
           , 'request.a2p3.org':
-            { 'sub': diList[config.host['people.BC']]
+            { 'sub': diList[config.host['people.bc']]
             , 'profile': 
               { name: 'Dick Hardt' 
               , dob: 'May 28, 1963'
@@ -194,7 +196,7 @@ describe('Creating new User', function(){
         , credentials: vaultSetup.keys[config.host.ix].latest
         , payload: 
           { iss: config.host.setup
-          , aud: config.host['people.BC']
+          , aud: config.host.ix
           , 'request.a2p3.org':
             { 'token': ixToken
             , 'request': agentRequest
@@ -206,6 +208,7 @@ describe('Creating new User', function(){
         response.should.have.property('result')
         response.result.should.have.property('sub')
         response.result.should.have.property('tokens')
+        rsTokens = response.result.tokens
         done()
       })  
     })

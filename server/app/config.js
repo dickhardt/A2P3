@@ -6,7 +6,7 @@
 * Copyright (C) Province of British Columbia, 2013
 */
 
-var provinces = ['AB', 'BC', 'MB', 'NB', 'NL', 'NS', 'NT', 'NU', 'ON', 'PE', 'QC', 'SK', 'YT']
+var provinces = ['ab', 'bc', 'mb', 'nb', 'nl', 'ns', 'nt', 'nu', 'on', 'pe', 'qc', 'sk', 'yt']
 
 var crypto =
         { alg:

@@ -123,8 +123,13 @@ exports.refreshAppKey = function ( reg, id, cb ) {
   process.nextTick( function () { cb( null, keyObj ) } )
 }
 
-exports.getAppKey = function ( reg, id, cb ) {
-  var key = keyChain[reg][id]
+exports.getAppKey = function ( reg, id, vaultKeys, cb ) {
+  var key = null
+  if (reg)
+    key = keyChain[reg][id]
+  if (!key && vaultKeys) {
+    key = vaultKeys[id]
+  }
   process.nextTick( function () { cb( null, key ) } )
 }
 
@@ -135,7 +140,7 @@ exports.getAppKeys = function ( reg, list, vaultKeys, cb ) {
 
   list.forEach( function (id) {
     keys[id] = keyChain[reg][id]
-    if (!keys[id] && vaultKeys[id]) {
+    if (!keys[id] && vaultKeys && vaultKeys[id]) {
       keys[id] = vaultKeys[id]
     } 
     if (!keys[id]) notFound = id

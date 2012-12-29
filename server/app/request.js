@@ -9,6 +9,7 @@
 var config = require('./config')
   , jwt = require('./jwt')
   , assert = require('assert')
+  , db = require('./db')
 
 exports.create = function (  payload, credentials ) {
   var details =
@@ -56,9 +57,7 @@ exports.verifyAndId = function ( request, keys ) {
 // Express Middleware that checks signature of A2P3 Request JWS
 exports.check = function ( keys, accessList, reg ) {
   assert( keys, "no keys passed in" )
-
   return (function (req, res, next) {
-
     var jws, valid, err
     if (!req.body || !req.body.request) {
       err = new Error('No "request" parameter in POST')
@@ -76,46 +75,38 @@ exports.check = function ( keys, accessList, reg ) {
           return next( err )          
         }
       }
-      if (vaultKeys( jws, keys )) {
-        if ( jws.verify( keys[jws.payload.iss][jws.header.kid] ) ) {
-          req.request = jws.payload
-          return next()
-        } else {
-          err = new Error('Invalid JWS signature')
+      if ( jws.payload.aud != req.host ) {
+        err = new Error("Request 'aud' does not match "+req.host)
+        err.code = 'ACCESS_DENIED'
+
+console.log( 'payload:',jws.payload )
+
+        return next( err )          
+      }
+      db.getAppKey( reg, jws.payload.iss, keys, function ( e, key ) {
+        if (e) {
+          err.code = 'INTERNAL_ERROR'
+          return next( err )
+        }
+        if (!key) {
+          err = new Error('No key available for '+ jws.header.iss)
+          err.code = 'ACCESS_DENIED'
+          return next( err )                    
+        }          
+        if (!key[jws.header.kid]) {
+          err = new Error('Invalid KID '+ jws.header.kid)
+          err.code = 'ACCESS_DENIED'
+          return next( err )                    
+        }
+        if ( !jws.verify( key[jws.header.kid] ) ) {
+           err = new Error('Invalid JWS signature')
           err.code = 'INVALID_REQUEST'
           return next( err )
+        } else {
+          req.request = jws.payload
+          return next()
         }        
-      } else { // need to fetch keys from DB
-        if (!reg) {
-            err = new Error('No key available for '+ jws.header.iss)
-            err.code = 'ACCESS_DENIED'
-            return next( err )                              
-        }
-        db.getAppKey( reg, jws.payload.iss, function ( e, key ) {
-          if (e) {
-            err.code = 'INTERNAL_ERROR'
-            return next( err )
-          }
-          if (!key) {
-            err = new Error('No key available for '+ jws.header.iss)
-            err.code = 'ACCESS_DENIED'
-            return next( err )                    
-          }          
-          if (!key[jws.header.kid]) {
-            err = new Error('Invalid KID '+ jws.header.kid)
-            err.code = 'ACCESS_DENIED'
-            return next( err )                    
-          }
-          if ( jws.verify( key[jws.header.kid] ) ) {
-            req.request = jws.payload
-            return next()
-          } else {
-            err = new Error('Invalid JWS signature')
-            err.code = 'INVALID_REQUEST'
-            return next( err )
-          }        
-        })
-      }
+      })
     }
     catch (e) {
       e.code = 'INVALID_REQUEST'

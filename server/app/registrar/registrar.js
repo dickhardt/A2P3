@@ -116,7 +116,7 @@ function dashboardRefreshKey ( req, res, next ) {
 }
 
 function dashboardGetKey ( req, res, next ) {
-  db.getAppKey( 'registrar', req.body.id, function ( e, key ) {
+  db.getAppKey( 'registrar', req.body.id, null, function ( e, key ) {
     if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
     return res.send( {result:{'id': req.body.id, 'key': key}} )
   })

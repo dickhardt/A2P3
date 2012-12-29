@@ -190,7 +190,7 @@ exports.app = function() {
           , diCreate 
           )
   app.post('/exchange'
-          , request.check( vault.keys, null, 'ix' )
+          , request.check( vault.keys, null, 'registrar' )  // registrar holds all IX App keys
           , mw.a2p3Params( ['token', 'request'] )
           , exchange
           )  
