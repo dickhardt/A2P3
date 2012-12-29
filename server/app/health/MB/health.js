@@ -23,25 +23,25 @@ var express = require('express')
 function diLink ( province ) {
   return function diLink ( req, res, next ) {
     var params = req.request['request.a2p3.org']
-    db.updateProfile( 'health.'+province, params.sub, {'number': params.account}, function ( e ) {
+    db.updateProfile( 'health.'+province, params.sub, {'prov_number': params.account}, function ( e ) {
       if (e) return next( e )
       res.send( {result: {success: true} } )
     })
   }
 }
 
-// /number API called from a registered App
+// /prov_number API called from a registered App
 function number ( province ) {
-  return function number ( req, res, next ) {
+  return function prov_number ( req, res, next ) {
     var di = req.token.sub
     db.getProfile( 'health.'+province, di, function ( e, profile ) {
       if (e) next( e )
-      if (!profile || !profile.number) {
+      if (!profile || !profile.prov_number) {
         var e = new Error('no account for user')
-        e.code = 'NO_ACCOUNT'
+        e.code = 'NO_PROV_NUMBER'
         return next( e )
       }
-      res.send( {result: {'number': profile.number} } )
+      res.send( {result: {'prov_number': profile.prov_number} } )
     })
   }
 }
@@ -60,10 +60,10 @@ exports.app = function( province ) {
           , mw.a2p3Params( ['sub', 'account'] )
           , diLink( province )
           )
-  app.post('/number' 
+  app.post('/prov_number' 
           , request.check( vault, null, 'health.'+province )
           , mw.a2p3Params( ['token'] )
-          , token.checkRS( vault.keys, 'health.'+province, '/scope/number' )
+          , token.checkRS( vault.keys, 'health.'+province, '/scope/prov_number' )
           , number( province ) 
           )
 

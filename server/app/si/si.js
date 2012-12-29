@@ -29,11 +29,11 @@ function number ( req, res, next ) {
   db.getProfile( 'si', di, function ( e, profile ) {
     if (e) next( e )
     if (!profile || !profile.number) {
-      var e = new Error('no number for user')
-      e.code = 'NO_ACCOUNT'
+      var e = new Error('no social insurance number for user')
+      e.code = 'NO_NUMBER'
       return next( e )
     }
-    res.send( {result: {'number': profile.number} } )
+    res.send( {result: {'si': profile.number} } )
   })
 }
 

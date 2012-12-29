@@ -165,11 +165,13 @@ exports.newUser = function ( asHost, rsHosts, redirects, cb ) {
   })
 
   // store any redirects
-  Object.keys( redirects ).forEach( function (std) {
-    dummyNoSql['ix:redirect:di:' + ixDI + ':' + std] = dummyNoSql['ix:redirect:di:' + ixDI + ':' + std] || []
-    dummyNoSql['ix:redirect:di:' + ixDI + ':' + std].push( redirects[std] )
-  })
-
+  if (redirects) {
+    Object.keys( redirects ).forEach( function (std) {
+      dummyNoSql['ix:redirect:di:' + ixDI + ':' + std] = dummyNoSql['ix:redirect:di:' + ixDI + ':' + std] || []
+      dummyNoSql['ix:redirect:di:' + ixDI + ':' + std].push( redirects[std] )
+    })
+  }
+  
   process.nextTick( function () { cb( null, dis ) } )
 }
 

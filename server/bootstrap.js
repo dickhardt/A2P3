@@ -69,7 +69,7 @@ var diRoot
 tasks.push( function (done) {
   var hosts = []
   for (var key in config.host) { hosts.push( config.host[ key ] ) }
-  db.newUser( config.host.as, hosts, function ( e, dis ) {
+  db.newUser( config.host.as, hosts, null, function ( e, dis ) {
     if (e) return done( e )
     diRoot = dis
     done( null, "created root user")
