@@ -6,6 +6,11 @@
 * Copyright (C) Province of British Columbia, 2013
 */
 
+exports.trace = function trace ( req, res, next ) {
+  console.log('TRACE:',req.host,req.originalUrl)
+  next()
+}
+
 exports.errorHandler = function errorHandler ( error, req, res, next ) {
   if (!error.code) {
     error.code = "UNKNOWN"
@@ -13,7 +18,7 @@ exports.errorHandler = function errorHandler ( error, req, res, next ) {
     res.send({'error':{'code': error.code, 'message': error.message, 'stack': error.stack}})
   } else {
 
- //   console.error(error.stack)
+    console.error(error.stack)
 
     res.errorA2P3 = error // logger uses this to log A2P3 error info
     res.send({'error':{'code': error.code, 'message': error.message}})
@@ -49,14 +54,17 @@ exports.checkParams = function checkParams ( params ) {
 exports.a2p3Params = function checkParams ( params ) {
   return function paramCheck( req, res, next ) {
     var e
-    if (!req.response || !req.response['request.a2p3.org']) { 
+
+debugger;
+
+    if (!req.request || !req.request['request.a2p3.org']) { 
       e = new Error("request.a2p3.org not found in request")
       e.code = 'INVALID_API_CALL'
       return next( e )
     }
     params.forEach( function ( param ) {
       if (e) return
-      if (!req.response['request.a2p3.org'][param]) { 
+      if (!req.request['request.a2p3.org'][param]) { 
         e = new Error("request.a2p3.org parameter '"+param+"' not found")
         e.code = 'INVALID_API_CALL'
         return next( e )

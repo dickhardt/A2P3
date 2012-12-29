@@ -166,8 +166,8 @@ exports.newUser = function ( asHost, rsHosts, redirects, cb ) {
 
   // store any redirects
   Object.keys( redirects ).forEach( function (std) {
-    dummyNoSql['ix:redirect:di:' + asDI + ':' + std] = dummyNoSql['ix:redirect:di:' + asDI + ':' + std] = []
-    dummyNoSql['ix:redirect:di:' + asDI + ':' + std].push( redirects[std] )
+    dummyNoSql['ix:redirect:di:' + ixDI + ':' + std] = dummyNoSql['ix:redirect:di:' + ixDI + ':' + std] || []
+    dummyNoSql['ix:redirect:di:' + ixDI + ':' + std].push( redirects[std] )
   })
 
   process.nextTick( function () { cb( null, dis ) } )
@@ -182,7 +182,7 @@ exports.getStandardResourceHosts = function ( asDI, asHost, rsList, cb ) {
   var ixDI = dummyNoSql['ix:di:' + asHost + ':' + asDI]
   var redirects = {}
   rsStd.forEach( function ( std ) {
-    redirects[std] = dummyNoSql['ix:redirect:di:' + asDI + ':' + std] = dummyNoSql['ix:redirect:di:' + asDI + ':' + std]
+    redirects[std] = dummyNoSql['ix:redirect:di:' + ixDI + ':' + std]
   })  
   process.nextTick( function () { cb( null, redirects ) } )
 }

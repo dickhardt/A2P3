@@ -12,11 +12,16 @@ var express = require('express')
   , app = express()
   , mw = require('./middleware')
 
+
+app.use( mw.trace )
+
 // common assets
 app.use( express.static( __dirname + '/assets' ) )
 
 // setup logging after static files so we only log API calls
 app.use( mw.colorLogger( express ))
+
+
 
 // use app server per host called
 app.use( express.vhost( config.host.ix, require('./ix/ix').app() ) )
@@ -26,6 +31,7 @@ app.use( express.vhost( config.host.setup, require('./setup/setup').app() ) )
 app.use( express.vhost( config.host.bank, require('./bank/bank').app() ) ) 
 app.use( express.vhost( config.host.clinic, require('./clinic/clinic').app() ) ) 
 app.use( express.vhost( config.host.si, require('./si/si').app() ) ) 
+app.use( express.vhost( config.host.email, require('./email/email').app() ) ) 
 app.use( express.vhost( config.host.health, require('./health/healthstd').app() ) ) 
 app.use( express.vhost( config.host.people, require('./people/peoplestd').app() ) ) 
 

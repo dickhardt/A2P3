@@ -17,8 +17,8 @@ var express = require('express')
 function diCreate ( req, res, next ) {
     var AS = req.request['request.a2p3.org'].AS
     var rsHosts = req.request['request.a2p3.org'].RS
-    var redirects = req.request['request.a2p3.org'].redirect
-    db.newUser( AS, rsHosts, redirect, function ( e, dis ) {
+    var redirects = req.request['request.a2p3.org'].redirects
+    db.newUser( AS, rsHosts, redirects, function ( e, dis ) {
       if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
       res.send( {'result': {'dis': dis}} )
     })
@@ -154,8 +154,8 @@ exports.app = function() {
   app.use(express.bodyParser())
 
   app.post('/di/create'
-          , request.check( vault.keys
-          , config.roles.enroll )
+          , request.check( vault.keys, config.roles.enroll )
+          , mw.a2p3Params( ['AS', 'RS', 'redirects'] )
           , diCreate 
           )
   app.post('/exchange'
@@ -175,6 +175,8 @@ exports.app = function() {
           , request.check( vault.keys, config.roles.as )
           , agentDelete
           )
+
+  app.use( mw.errorHandler )
 
 	return app
 }

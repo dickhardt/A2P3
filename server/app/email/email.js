@@ -10,14 +10,19 @@ var express = require('express')
   , db = require('../db')
   , registration = require('../registration')
   , mw = require('../middleware')
+  , request = require('../request')
+  , token = require('../token')
 
 
 // /di/link API called from setup
 function diLink ( req, res, next ) {
   var params = req.request['request.a2p3.org']
+
+console.log( params )
+
   db.updateProfile( 'email', params.sub, {'email': params.account}, function ( e ) {
     if (e) return next( e )
-    return next ()
+    res.send( {result: {success: true} } )
   })
 }
 
@@ -38,10 +43,14 @@ function emailDefault ( req, res, next ) {
 // generate request processing stack and routes
 exports.app = function() {
 	var app = express()
+
+app.use( mw.trace )
+  
   
   app.use( express.limit('10kb') )  // protect against large POST attack
   app.use( express.bodyParser() )
-  registration.routes( app, 'email', vault )  // add in routes for the registration paths
+  
+//  registration.routes( app, 'email', vault )  // add in routes for the registration paths
 
   app.post('/di/link' 
           , request.check( vault, config.roles.enroll )

@@ -56,9 +56,10 @@ exports.verifyAndId = function ( request, keys ) {
 // Express Middleware that checks signature of A2P3 Request JWS
 exports.check = function ( keys, accessList, reg ) {
   assert( keys, "no keys passed in" )
+
+
   return (function (req, res, next) {
     var jws, valid, err
-
     if (!req.body || !req.body.request) {
       err = new Error('No "request" parameter in POST')
       err.code = 'INVALID_API_CALL'
