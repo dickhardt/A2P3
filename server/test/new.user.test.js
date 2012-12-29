@@ -8,9 +8,11 @@ var should = require('chai').should()
   , fetchUrl = require('fetch').fetchUrl
   , config = require('../app/config')
   , request = require('../app/request')
+  , token = require('../app/token')
   , querystring = require('querystring')
   , vaultSetup = require('../app/setup/vault')
   , api = require('../app/api')
+  , jwt = require('../app/jwt')
 
 var diList
 
@@ -156,10 +158,36 @@ describe('Creating new User', function(){
     })
   })
 
+  // NOTE: setup is both an AS and an App in this set of calls
   describe('ix:/exchange', function(){
     it('should return an array of RS tokens', function (done){
-      var agentRequest = 
-      var ixToken
+      var requestPayload =
+        { iss: config.host.setup
+        , aud: config.host.ix
+        , 'request.a2p3.org':
+          { 'returnURL': 'https://example.com/return' // not needed in test
+          , 'resources':
+            [ config.baseUrl.si + '/scope/number'
+            , config.baseUrl.email + '/email/default'
+            ]
+          , 'auth': 
+            { 'passcode': true 
+            , 'authorization': true
+            }
+          }
+        }
+      var agentRequest = request.create( requestPayload, vaultSetup.keys[config.host.ix].latest )
+      var jws = new jwt.Parse( agentRequest )
+      var tokenPayload =
+        { iss: config.host.setup
+        , aud: config.host.ix
+        , sub: diList[config.host.setup]
+        , 'token.a2p3.org':
+          { 'auth': requestPayload['request.a2p3.org'].auth
+          , 'sar': jws.signature
+          }
+        }
+      var ixToken = token.create( tokenPayload, vaultSetup.keys[config.host.ix].latest )
       var details = 
         { host: 'ix'
         , api: '/exchange'
@@ -176,7 +204,8 @@ describe('Creating new User', function(){
       api.call( details, function (response) {
         response.should.not.have.property('error')
         response.should.have.property('result')
-        response.result.should.have.property('success')
+        response.result.should.have.property('sub')
+        response.result.should.have.property('tokens')
         done()
       })  
     })

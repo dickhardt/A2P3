@@ -72,7 +72,7 @@ exports.checkAdminAuthorization = function ( id, di, cb ) {
 // generate new app keys and add to Vault
 function newKeyObj( reg, id ) {
   var keyObj = identity.makeKeyObj()
-  keyChain[reg] = keyChain[reg] = {}
+  keyChain[reg] = keyChain[reg] || {}
   keyChain[reg][id] = keyObj
   return keyObj
 }
@@ -128,14 +128,17 @@ exports.getAppKey = function ( reg, id, cb ) {
   process.nextTick( function () { cb( null, key ) } )
 }
 
-exports.getAppKeys = function ( reg, list, cb ) {
-  var keys = []
+exports.getAppKeys = function ( reg, list, vaultKeys, cb ) {
+  var keys = {}
     , notFound = false
     , e = null
 
   list.forEach( function (id) {
     keys[id] = keyChain[reg][id]
-    if (!key[id]) notFound = id
+    if (!keys[id] && vaultKeys[id]) {
+      keys[id] = vaultKeys[id]
+    } 
+    if (!keys[id]) notFound = id
   })
   if (notFound) {
     e = new Error('Key not found for:'+notFound)
@@ -195,7 +198,7 @@ exports.getRsDIfromAsDI = function ( asDI, asHost, rsHosts, cb ) {
   var ixDI = dummyNoSql['ix:di:' + asHost + ':' + asDI]
   var rsDI = {}
   rsHosts.forEach( function (rsHost) {
-    rsDI[rsHost] = diMap( rsHost, ixDI )
+    rsDI[rsHost] = mapDI( rsHost, ixDI )
   })
 
   process.nextTick( function () { cb( null, rsDI ) } )

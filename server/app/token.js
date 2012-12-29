@@ -62,7 +62,7 @@ exports.checkRS = function ( vault, rs, scopePath ) {
       err.code = 'INVALID_TOKEN'
       return next( err )
     }
-    var scope = config.scheme + '://' + config.host[rs] + scopePath
+    var scope = config.baseUrl[rs] + scopePath
     if (token['token.a2p3.org'].scope != scope) {
       err = new Error("Invalid scope. Should be '"+scope+"'")
       err.code = 'INVALID_TOKEN'

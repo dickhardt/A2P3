@@ -5,7 +5,8 @@
 */
 
 var crypto = require('crypto')
- , b64url = require("./b64url")
+ , b64url = require('./b64url')
+ , config = require('./config')
 
 // Concat KDF key generation and caching
 var keyCache = {}
@@ -359,7 +360,7 @@ Parse.prototype.decrypt = function (key) {
 
 
 // generates a key for the passed algorithm
-exports.keygen = function (alg) {
+function keygen (alg) {
     algs = 
         { 'HS256': 256/8
         , 'HS512': 512/8
@@ -371,17 +372,17 @@ exports.keygen = function (alg) {
 }
 
 // generates a session / handle id
-exports.handle = function () {
+function handle () {
     return (b64url.encode(crypto.randomBytes(16))) // UUID size
 }
 
 
 // generates JWT date/time value
-exports.iat = function () {
+function iat () {
   return Math.round( Date.now() / 1000)
 }
 
-exports.expired = function ( iatOrig ) {
+function expired ( iatOrig ) {
   var exp = ( (iat() - iatOrig) >= config.maxTokenAge )
   return exp
 }
@@ -390,4 +391,8 @@ exports.expired = function ( iatOrig ) {
 exports.Parse = Parse
 exports.jwe = jwe
 exports.jws = jws
+exports.keygen = keygen
+exports.handle = handle
+exports.iat = iat
+exports.expired = expired 
 

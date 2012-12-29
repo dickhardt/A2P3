@@ -7,6 +7,7 @@
 var express = require('express')
   , url = require('url')
   , request = require('../request')
+  , token = require('../token')
   , config = require('../config')
   , vault = require('./vault')
   , util = require('util')
@@ -28,9 +29,9 @@ function diCreate ( req, res, next ) {
 // parses out hosts from passed in scopes
 function getHosts ( scopes ) {
   var results = {}
-  urls.forEach( function ( scope ) {
+  scopes.forEach( function ( scope ) {
     var o = url.parse( scope )
-    results[host] = o.hostname
+    results[o.hostname] = scope
   })
   return results
 }
@@ -38,66 +39,99 @@ function getHosts ( scopes ) {
 
 // exchange IX Token for RS Tokens if all is good
 function exchange ( req, res, next ) {
-  // verify the token
-  var jwe, jws, token, rsList, hostList
+
+  var jwe, jws, ixToken, rsList, hostList, rsScopes
     , tokens = []
+
   try {
-    jwe = jwt.Parse( req.request.token )
+    jwe = new jwt.Parse( req.request['request.a2p3.org'].token )
     if ( !jwe.header.kid || !vault.keys.as[jwe.header.kid] ) {
       var e = new Error( "No AS key for 'kid' "+jwe.header.kid)
       e.code = "INVALID_TOKEN"
       return next( e )
     }
-    token = jwe.verify( vault.keys.as[jwe.header.kid] ) // list of keys for AS
+    ixToken = jwe.decrypt( vault.keys.as[jwe.header.kid] ) // list of keys for AS
+
+// console.log('\ntoken\n', ixToken )
+
   }
   catch (e) {
     e.code = 'INVALID_TOKEN'
-    next( e )
+    return next( e )
   }
-  jws = new jwt.Parse( req.body.request )  // need to look at header, so need full JWS
+  try {
+    jws = new jwt.Parse( req.request['request.a2p3.org'].request )  // agent Request
+    if ( !jws.verify( vault.keys[jws.payload.iss][jws.header.kid] ) ) {
+      var e = new Error( "Invalid Agent Request")
+      e.code = "INVALID_REQUEST"
+      return next( e )
+    }  
+  }
+  catch (e) {
+    e.code = 'INVALID_REQUEST'
+    return next( e )    
+  }
 
-  // make sure 'iss' matches associated 'kid'
-  if (!vault.keys[token.iss][jwe.header.kid]) {
+// console.log('\nJWS\n',jws )
+
+// console.log('\nIX Request\n',req.request )
+
+  // make sure IX Token 'iss' matches associated 'kid'
+  if (!vault.keys[ixToken.iss][jwe.header.kid]) {
       var e = new Error("'iss' does not have supplied 'kid'")
       e.code = 'INVALID_TOKEN'
       return next( e )
   }
-  // check request signature matches 'sar' that AS got
-  if (token['token.a2p3.org'].sar != jws.signature) {
-      var e = new Error("Token 'sar' does not match request signature")
+  // check agent request signature matches 'sar' that AS got
+  if (ixToken['token.a2p3.org'].sar != jws.signature) {
+      var e = new Error("IX Token 'sar' does not match request signature")
       e.code = 'INVALID_REQUEST'
       return next( e )
   }
-  // check request and token have not expired
+  // check ix request and agent request are from same app
+  if (req.request.iss != jws.payload.iss) {
+      var e = new Error("Agent Request 'iss' does not match IX Request 'iss'")
+      e.code = 'INVALID_REQUEST'
+      return next( e )
+  }
+  // check IX & Agent Requests and IX Token have not expired
+  if ( jwt.expired( req.request.iat ) ) {
+      var e = new Error("IX Request has expired")
+      e.code = 'INVALID_REQUEST'
+      return next( e )
+  }
   if ( jwt.expired( jws.payload.iat ) ) {
-      var e = new Error("Request has expired")
+      var e = new Error("Agent Request has expired")
       e.code = 'INVALID_REQUEST'
       return next( e )
   }
   if ( jwt.expired( jwe.payload.iat ) ) {
-      var e = new Error("Token has expired")
+      var e = new Error("IX Token has expired")
       e.code = 'INVALID_TOKEN'
       return next( e )
   }
   rsScopes = getHosts( jws.payload['request.a2p3.org'].resources )
-  db.getStandardResourceHosts( token.sub, token.iss, Object.keys( rsScopes ), function ( e, redirects ) {
-    hostList = [jws.iss]
-    Object.keys(rsScope).forEach( function (rs) {
+  db.getStandardResourceHosts( ixToken.sub, ixToken.iss, Object.keys( rsScopes ), function ( e, redirects ) {
+    hostList = [jws.payload.iss]
+    Object.keys(rsScopes).forEach( function (rs) {
       if (redirects[rs]) {
         hostList.push( redirects[rs] )
       } else {
         hostList.push( rs )
       }
     })
-    db.getAppKeys( 'ix', hostList, function ( e, keys ) {
+
+    // app keys are stored with registrar
+    db.getAppKeys( 'registrar', hostList, vault.keys, function ( e, keys ) {
       if (e) return next( e )
-      db.getRsDIfromAsDI( token.sub, token.iss, hostList, function ( e, dis ) {
+      db.getRsDIfromAsDI( ixToken.sub, ixToken.iss, hostList, function ( e, dis ) {
         if (e) return next( e )
-        Object.keys( rsScope ).forEach( function (rs) {
+        Object.keys( rsScopes ).forEach( function (rs) {
           var t = 
             { resource: rs
-            , scope: rsScope[rs]
+            , scope: rsScopes[rs]
             }
+
           function makeToken ( r ) {
             var payload = 
               { 'iss': config.host.ix
@@ -106,10 +140,10 @@ function exchange ( req, res, next ) {
               , 'token.a2p3.org': 
                 { 'auth': jwe.payload['token.a2p3.org'].auth
                 , 'app': jws.payload.iss
-                , 'scope': rsScope[r]
+                , 'scope': rsScopes[r]
                 }
               }
-            return jwt.create( payload, keys[r] )  
+            return token.create( payload, keys[r].latest )  
           } 
 
           if (redirects[rs]) {
@@ -125,13 +159,10 @@ function exchange ( req, res, next ) {
           }
           tokens.push( t ) 
         })
-        res.send( { 'sub': dis[jws.payload.iss], 'tokens': tokens } )
-
+        return res.send( { result: {'sub': dis[jws.payload.iss], 'tokens': tokens} } )
       })
     })
-
   })
-
 }
 
 
