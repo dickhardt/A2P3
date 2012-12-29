@@ -4,7 +4,6 @@
 * Copyright (C) Province of British Columbia, 2013
 */
 
-debugger;
 
 var should = require('chai').should() 
   , fetchUrl = require('fetch').fetchUrl
@@ -74,7 +73,6 @@ describe('AS', function(){
 
 /*
 
-debugger;
 
 var validRequest = request.create( payload, appVault.keys[config.host.ix].latest )
 var creds = appVault.keys[config.host.ix].latest

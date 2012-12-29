@@ -57,8 +57,6 @@ exports.a2p3Params = function checkParams ( params ) {
   return function paramCheck( req, res, next ) {
     var e
 
-debugger;
-
     if (!req.request || !req.request['request.a2p3.org']) { 
       e = new Error("request.a2p3.org not found in request")
       e.code = 'INVALID_API_CALL'

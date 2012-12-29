@@ -31,8 +31,6 @@ var payload =
     }
   }
 
-debugger;
-
 var validRequest = request.create( payload, appVault.keys[config.host.ix].latest )
 var creds = appVault.keys[config.host.ix].latest
 creds.kid ='abc'
