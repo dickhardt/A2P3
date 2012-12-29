@@ -12,16 +12,11 @@ var express = require('express')
   , app = express()
   , mw = require('./middleware')
 
-
-app.use( mw.trace )
-
 // common assets
 app.use( express.static( __dirname + '/assets' ) )
 
 // setup logging after static files so we only log API calls
 app.use( mw.colorLogger( express ))
-
-
 
 // use app server per host called
 app.use( express.vhost( config.host.ix, require('./ix/ix').app() ) )

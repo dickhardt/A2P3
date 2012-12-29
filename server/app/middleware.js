@@ -6,11 +6,13 @@
 * Copyright (C) Province of British Columbia, 2013
 */
 
+// debugging middleware to trace execution
 exports.trace = function trace ( req, res, next ) {
   console.log('TRACE:',req.host,req.originalUrl)
   next()
 }
 
+// note the four parameters which indicates this is an error handler
 exports.errorHandler = function errorHandler ( error, req, res, next ) {
   if (!error.code) {
     error.code = "UNKNOWN"

@@ -57,8 +57,10 @@ exports.verifyAndId = function ( request, keys ) {
 exports.check = function ( keys, accessList, reg ) {
   assert( keys, "no keys passed in" )
 
-
   return (function (req, res, next) {
+
+debugger;
+
     var jws, valid, err
     if (!req.body || !req.body.request) {
       err = new Error('No "request" parameter in POST')
