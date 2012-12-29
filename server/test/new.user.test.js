@@ -99,5 +99,30 @@ describe('Creating new User', function(){
     })
   })
 
+  describe('health.BC:/di/link', function(){
+    it('should return a result property', function (done){
+      var details = 
+        { host: 'health.BC'
+        , api: '/di/link'
+        , credentials: vaultSetup.keys[config.host['health.BC']].latest
+        , payload: 
+          { iss: config.host.setup
+          , aud: config.host['health.BC']
+          , 'request.a2p3.org':
+            { 'sub': diList[config.host['health.BC']]
+            , 'account': '123456789'
+            }
+          }
+        }
+      api.call( details, function (response) {
+        response.should.not.have.property('error')
+        response.should.have.property('result')
+        response.result.should.have.property('success')
+        done()
+      })  
+    })
+  })
+
+
 })
 
