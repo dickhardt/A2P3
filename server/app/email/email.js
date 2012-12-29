@@ -44,7 +44,7 @@ exports.app = function() {
   app.use( express.limit('10kb') )  // protect against large POST attack
   app.use( express.bodyParser() )
   
-//  registration.routes( app, 'email', vault )  // add in routes for the registration paths
+  registration.routes( app, 'email', vault )  // add in routes for the registration paths
 
   app.post('/di/link' 
           , request.check( vault.keys, config.roles.enroll )
