@@ -51,8 +51,6 @@ describe('Creating new User', function(){
     })
   })
 
-  // TBD -- email.local.a2p3.net needs to propogate ... 
-  
   describe('email:/di/link', function(){
     it('should return a result property', function (done){
       var details = 
@@ -65,6 +63,30 @@ describe('Creating new User', function(){
           , 'request.a2p3.org':
             { 'sub': diList[config.host.email]
             , 'account': 'dickhardt@gmail.com'
+            }
+          }
+        }
+      api.call( details, function (response) {
+        response.should.not.have.property('error')
+        response.should.have.property('result')
+        response.result.should.have.property('success')
+        done()
+      })  
+    })
+  })
+
+  describe('si:/di/link', function(){
+    it('should return a result property', function (done){
+      var details = 
+        { host: 'si'
+        , api: '/di/link'
+        , credentials: vaultSetup.keys[config.host.si].latest
+        , payload: 
+          { iss: config.host.setup
+          , aud: config.host.si
+          , 'request.a2p3.org':
+            { 'sub': diList[config.host.si]
+            , 'account': '123456789'
             }
           }
         }
