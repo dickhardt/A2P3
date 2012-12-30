@@ -16,7 +16,20 @@ var should = require('chai').should()
 
 var diList
   , rsTokens
-
+  , testUser = 
+    { 'si': '123456789'
+    , 'prov_number': '0123456789'
+    , 'email': 'john@example.com'
+    , 'profile':
+      { 'name': 'John Smith'
+      , 'address1': '100 Main Street'
+      , 'address2': 'Suite 1000'
+      , 'city': 'Victoria'
+      , 'province': 'BC'
+      , 'postal': 'V1A 1A1'
+      , 'photo': 'http://example.com/photo.jpeg'
+      }
+    }
 
 describe('Creating new User', function(){
 
@@ -66,7 +79,7 @@ describe('Creating new User', function(){
           , aud: config.host.email
           , 'request.a2p3.org':
             { 'sub': diList[config.host.email]
-            , 'account': 'dickhardt@gmail.com'
+            , 'account': testUser.email
             }
           }
         }
@@ -90,7 +103,7 @@ describe('Creating new User', function(){
           , aud: config.host.si
           , 'request.a2p3.org':
             { 'sub': diList[config.host.si]
-            , 'account': '123456789'
+            , 'account': testUser.si
             }
           }
         }
@@ -114,7 +127,7 @@ describe('Creating new User', function(){
           , aud: config.host['health.bc']
           , 'request.a2p3.org':
             { 'sub': diList[config.host['health.bc']]
-            , 'account': '0123456789'
+            , 'account': testUser.prov_number
             }
           }
         }
@@ -138,16 +151,7 @@ describe('Creating new User', function(){
           , aud: config.host['people.bc']
           , 'request.a2p3.org':
             { 'sub': diList[config.host['people.bc']]
-            , 'profile': 
-              { name: 'Dick Hardt' 
-              , dob: 'May 28, 1963'
-              , address1: '100 Main Street'
-              , address2: 'Suite 1000'
-              , city: 'Vancouver'
-              , province: 'BC'
-              , postal: 'V1A 1A1'
-              , photo: 'https://fbcdn-profile-a.akamaihd.net/hprofile-ak-snc7/369342_504347313_724043336_q.jpg'
-              }
+            , 'profile': testUser.profile
             }
           }
         }
@@ -234,7 +238,7 @@ describe('Creating new User', function(){
         response.should.not.have.property('error')
         response.should.have.property('result')
         response.result.should.have.property('si')
-        response.result.si.should.equal('123456789')
+        response.result.si.should.equal( testUser.si )
         done()
       })  
     })
@@ -258,7 +262,7 @@ describe('Creating new User', function(){
         response.should.not.have.property('error')
         response.should.have.property('result')
         response.result.should.have.property('email')
-        response.result.email.should.equal('dickhardt@gmail.com')
+        response.result.email.should.equal( testUser.email )
         done()
       })  
     })
@@ -282,7 +286,7 @@ describe('Creating new User', function(){
         response.should.not.have.property('error')
         response.should.have.property('result')
         response.result.should.have.property('prov_number')
-        response.result.prov_number.should.equal('0123456789')
+        response.result.prov_number.should.equal( testUser.prov_number )
         done()
       })  
     })
@@ -307,7 +311,8 @@ describe('Creating new User', function(){
         response.should.have.property('result')
         response.result.should.have.property('name')
         response.result.should.have.property('photo')
-        response.result.name.should.equal('Dick Hardt')
+        response.result.name.should.equal( testUser.profile.name )
+        response.result.photo.should.equal( testUser.profile.photo )
         done()
       })  
     })
