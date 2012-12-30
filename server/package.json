@@ -1,9 +1,11 @@
 { "name": "a2p3"
 , "version": "0.0.1"
-, "scripts": 
-  { "start" : "node app.js"
-  , "test": "echo \"Error: no test specified\" && exit 1"
-  }
+, "description": "A2P3 Proof of Concept"
+, "homepage": "http://a2p3.ca"
+, "author": "Dick Hardt dickhardt@gmail.com"
+, "license": "BSD"
+, "private": true
+, "config": {}
 , "dependencies":
   { "express": "*"
   , "fetch": "*"
@@ -25,10 +27,4 @@
   , "test": "./node_modules/mocha/bin/mocha"
   , "bootstrap": "node bootstrap.js"
   }  
-, "config": {}
-, "description": "A2P3 Proof of Concept"
-, "homepage": "http://a2p3.ca"
-, "author": "Dick Hardt dickhardt@gmail.com"
-, "license": "BSD"
-, "private": true
 }
