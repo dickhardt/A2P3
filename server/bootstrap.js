@@ -257,6 +257,7 @@ async.series( tasks, function ( err, results ) {
     process.exit(1)
   } else {
     console.log('Bootstrap complete.')
+    console.log('\nTo test, run "npm start" in a seperate console, then "npm test".\n')
     process.exit(0)
   }
 })

@@ -66,7 +66,7 @@ roles.enroll[host.setup] = true
 roles.std[host.health] = true
 roles.std[host.people] = true
 
-// exported configuration
+// export configuration so far
 exports.crypto = crypto
 exports.baseDomain = baseDomain
 exports.host = host
@@ -76,6 +76,8 @@ exports.scheme = scheme
 exports.baseUrl = baseUrl
 exports.roles = roles
 exports.provinces = provinces
+
+//
 exports.maxTokenAge = 5 * 60 // 5 minutes
 
 // User data used in tests as well as in mocked Setup
@@ -91,7 +93,7 @@ exports.testUser =
       , 'city': 'Victoria'
       , 'province': 'BC'
       , 'postal': 'V1A 1A1'
-      , 'photo': 'http://example.com/photo.jpeg'
+      , 'photo': baseUrl.setup + '/images/white-face.jpeg'
       }
     }
 

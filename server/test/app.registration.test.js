@@ -16,27 +16,7 @@ var should = require('chai').should()
   , jwt = require('../app/jwt')
   , db = require('../app/db')
 
-var setupDI
-
-/*
-  , rsTokens
-  , testUser = 
-    { 'si': '123456789'
-    , 'prov_number': '0123456789'
-    , 'email': 'john@example.com'
-    , 'profile':
-      { 'name': 'John Smith'
-      , 'dob': 'January 1, 1960'
-      , 'address1': '100 Main Street'
-      , 'address2': 'Suite 1000'
-      , 'city': 'Victoria'
-      , 'province': 'BC'
-      , 'postal': 'V1A 1A1'
-      , 'photo': 'http://example.com/photo.jpeg'
-      }
-    }
-*/
-
+var setupDI // root user Directed Identifier, fetched from Setup Agent storage
 
 describe('Logging into email dashboard', function(){
 
