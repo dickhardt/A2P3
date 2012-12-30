@@ -74,9 +74,17 @@ exports.a2p3Params = function ( params ) {
   }
 }
 
-
 // custom logger that color codes non 200 stats codes and A2P3 errors
 exports.colorLogger = function colorLogger ( express ) {
+
+  express.logger.token( 'wideHost', function (req, res) {
+    var wideHost = '                              '.slice(req.host.length) + req.host
+    if (res.statusCode != 200) {
+      return '\x1b[31m'+wideHost+'\x1b[0m'
+    } else
+      return wideHost
+    })
+
   express.logger.token( 'statusColor', function (req, res) { 
     if (res.statusCode != 200) {
       return '\x1b[31m'+res.statusCode+'\x1b[0m'
@@ -95,5 +103,5 @@ exports.colorLogger = function colorLogger ( express ) {
     } else
       return '-'
     })
-  return express.logger( ':req[host]\t:method\t:url\t:statusColor\t:response-time\tms\t:errorCode\t:errorMessage' )
+  return express.logger( ':wideHost\t:method\t:url\t:statusColor\t:response-time\tms\t:errorCode\t:errorMessage' )
 }
