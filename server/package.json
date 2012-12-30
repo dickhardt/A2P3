@@ -19,7 +19,7 @@
   , "url": "http://github.com:dickhardt/A2P3.git"
   }
 , "scripts":
-  { "postinstall": "node install.js"
+  { "install": "node install.js"
   , "start": "node app/app.js"
   , "pretest": "node pretest.js"
   , "test": "./node_modules/mocha/bin/mocha"
