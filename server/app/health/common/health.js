@@ -11,13 +11,14 @@
 */
 
 var express = require('express')
-  , vault = require('./vault')
   , registration = require('../../registration')
   , mw = require('../../middleware')
   , config = require('../../config')
   , request = require('../../request')
   , token = require('../../token')
   , db = require('../../db')
+
+var vault = {}  // we pull in correct vault when app() is called  
 
 // /di/link API called from setup
 function diLink ( province ) {
@@ -49,6 +50,8 @@ function number ( province ) {
 // generate request processing stack and routes
 exports.app = function( province ) {
 	var app = express()
+
+  vault = require('../'+province+'/vault.json')
 
   app.use( express.limit('10kb') )  // protect against large POST attack
   app.use( express.bodyParser() )

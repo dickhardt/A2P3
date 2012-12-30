@@ -2,4 +2,5 @@
 .dotcloud
 app/config.js
 node_modules
-*.json
+vault.json
+nosql.json

@@ -31,8 +31,8 @@ app.use( express.vhost( config.host.health, require('./health/health').app() ) )
 app.use( express.vhost( config.host.people, require('./people/people').app() ) ) 
 
 config.provinces.forEach( function ( province ) {
-  app.use( express.vhost( config.host['health.'+province], require('./health/'+province+'/health').app( province ) ) ) 
-  app.use( express.vhost( config.host['people.'+province], require('./people/'+province+'/people').app( province ) ) ) 
+  app.use( express.vhost( config.host['health.'+province], require('./health/common/health').app( province ) ) ) 
+  app.use( express.vhost( config.host['people.'+province], require('./people/common/people').app( province ) ) ) 
 })
 
 // in case we get called with a host we don't understand
@@ -41,6 +41,7 @@ app.use( express.vhost( '*', function ( req, res, next ) {
   res.send(500, 'UKNOWN HOST:'+host )
 }) )
 
-app.listen( config.port )
+app.listen( config.portListen )
 
-console.log( "A2P3 server started on port:", config.portListen )
+console.log( "A2P3 servers started on *."+config.baseDomain+':'+config.portListen)
+console.log( "Setup available at "+config.baseUrl.setup+"\n")

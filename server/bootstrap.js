@@ -26,6 +26,7 @@ function syncWriteJSON ( obj, fname ) {
   fs.writeFileSync( fname, data )
 }
 
+console.log('Bootstrapping A2P3.')
 
 // create keys for core hosts
 var coreHostKeys =
@@ -55,7 +56,6 @@ Object.keys( coreHostKeys ).forEach( function (host) {
   coreHostKeys[host].private = identity.makeKey()
   syncWriteJSON( coreHostKeys[host], 'app/'+host+'/vault.json' ) 
 } )
-
 
 // NOTE: we cannot load db until registrar keys have been created or it will fail to load
 var db = require('./app/db')          
@@ -249,11 +249,13 @@ tasks.push( function (done) {
 })
 
 async.series( tasks, function ( err, results ) {
-  console.log( results )
   if (err) {
+    console.log(results)
     console.error( err )
     process.exit(1)
   } else {
+    console.log('Bootstrap complete.')
+    console.log('\nRun "npm start" in a console to start server.\n')
     process.exit(0)
   }
 })

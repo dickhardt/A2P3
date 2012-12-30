@@ -7,16 +7,27 @@
 , "dependencies":
   { "express": "*"
   , "fetch": "*"
-  , "chai": "*"
   , "async": "*"
+  }
+, "devDependencies":
+  { "chai": "*"
+  , "mocha": "*"
   }
 , "engines" : { "node" : "0.8.x" }
 , "repository": 
   { "type": "git"
   , "url": "http://github.com:dickhardt/A2P3.git"
   }
-, "config":
-  { "domain": "local.a2p3.net" }  
+, "scripts":
+  { "install": "node install.js"
+  , "start": "node app/app.js"
+  , "pretest": "node pretest.js"
+  , "test": "./node_modules/mocha/bin/mocha"
+  , "bootstrap": "node bootstrap.js"
+  }  
+, "config": {}
+, "description": "A2P3 Proof of Concept"
+, "homepage": "http://a2p3.ca"
 , "author": "Dick Hardt dickhardt@gmail.com"
 , "license": "BSD"
 , "private": true
