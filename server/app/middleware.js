@@ -77,31 +77,34 @@ exports.a2p3Params = function ( params ) {
 // custom logger that color codes non 200 stats codes and A2P3 errors
 exports.colorLogger = function colorLogger ( express ) {
 
+  function errorStatusCode ( code ) {
+    return (code != 200 && code != 302)
+  }
+
   express.logger.token( 'wideHost', function (req, res) {
     var wideHost = '                              '.slice(req.host.length) + req.host
-    if (res.statusCode != 200) {
-      return '\x1b[31m'+wideHost+'\x1b[0m'
-    } else
-      return wideHost
+    return ( errorStatusCode( res.statusCode ) ) 
+      ? '\x1b[31m'+wideHost+'\x1b[0m'
+      : wideHost
     })
 
-  express.logger.token( 'statusColor', function (req, res) { 
-    if (res.statusCode != 200) {
-      return '\x1b[31m'+res.statusCode+'\x1b[0m'
-    } else
-      return res.statusCode 
+  express.logger.token( 'statusColor', function (req, res) {
+    return ( errorStatusCode( res.statusCode ) ) 
+      ? '\x1b[31m'+res.statusCode+'\x1b[0m' 
+      : res.statusCode 
     })
+
   express.logger.token( 'errorCode', function (req, res) {
-    if (res.errorA2P3) {
-      return '\x1b[31m'+res.errorA2P3.code+'\x1b[0m'
-    } else
-      return '-'
+    return (res.errorA2P3)
+      ? '\x1b[31m'+res.errorA2P3.code+'\x1b[0m'
+      : '-'
     })
+
   express.logger.token( 'errorMessage', function (req, res) { 
-    if (res.errorA2P3) {
-      return '\x1b[1m'+res.errorA2P3.message+'\x1b[0m'
-    } else
-      return '-'
+    return (res.errorA2P3)
+      ? '\x1b[1m'+res.errorA2P3.message+'\x1b[0m'
+      : '-'
     })
+
   return express.logger( ':wideHost\t:method\t:url\t:statusColor\t:response-time\tms\t:errorCode\t:errorMessage' )
 }
