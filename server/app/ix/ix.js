@@ -14,6 +14,7 @@ var express = require('express')
   , db = require('../db')
   , jwt = require('../jwt')
   , mw = require('../middleware')
+  , util = require('util')
 
 function diCreate ( req, res, next ) {
     var AS = req.request['request.a2p3.org'].AS
@@ -60,11 +61,11 @@ function exchange ( req, res, next ) {
   }
   try {
     jws = new jwt.Parse( req.request['request.a2p3.org'].request )  // agent Request
-    if ( !jws.verify( vault.keys[jws.payload.iss][jws.header.kid] ) ) {
+    if ( !jwt ) {
       var e = new Error( "Invalid Agent Request")
       e.code = "INVALID_REQUEST"
-      return next( e )
-    }  
+      return next( e )        
+    } 
   }
   catch (e) {
     e.code = 'INVALID_REQUEST'
@@ -106,7 +107,6 @@ function exchange ( req, res, next ) {
       return next( e )
   }
   var rsScopes = getHosts( jws.payload['request.a2p3.org'].resources )
-      // need to get multiple scopes for a host in there ... 
 
   db.getStandardResourceHosts( ixToken.sub, ixToken.iss, Object.keys( rsScopes ), function ( e, redirects ) {
     var hostList = {}
@@ -121,6 +121,16 @@ function exchange ( req, res, next ) {
     // app keys for IX are stored with registrar
     db.getAppKeys( 'registrar', Object.keys(hostList), vault.keys, function ( e, keys ) {
       if (e) return next( e )
+      if ( !keys[jws.payload.iss] || !keys[jws.payload.iss][jws.header.kid] ) {
+        var e = new Error( "Invalid Agent Request key or kid")
+        e.code = "INVALID_REQUEST"
+        return next( e )        
+      } 
+      if ( !jws.verify( keys[jws.payload.iss][jws.header.kid] ) ) {
+        var e = new Error( "Invalid Agent Request")
+        e.code = "INVALID_REQUEST"
+        return next( e )
+      } 
       db.getRsDIfromAsDI( ixToken.sub, ixToken.iss, Object.keys(hostList), function ( e, dis ) {
         if (e) return next( e )
         // make tokens for all resources, delete caller from list        

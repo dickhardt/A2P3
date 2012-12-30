@@ -14,7 +14,17 @@ var express = require('express')
 
 exports.routes = function ( app, RS, vault ) {
 
+  function dashboardlistApps ( req, res, next ) {
+    db.listApps( RS, req.session.email, function ( e, list ) {
+      if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
+      return res.send( { result: {'list': list, 'email': req.session.email } } )
+    })
+  }
+
   function dashboardNewApp ( req, res, next ) {
+
+    // TBD check that User is auth for this App at Registrar
+
     db.newApp( RS, req.body.id, req.body.name, req.session.email, function ( e, key ) {
       if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
       return res.send( {result:{'id': req.body.id, 'key': key}} )
@@ -50,10 +60,10 @@ exports.routes = function ( app, RS, vault ) {
   }
 
   function checkAdminAuthorization ( req, res, next ) {
-    db.checkAdminAuthorization( RS, req.body.id, req.a2p3admin.di, function ( e, authorized ) {
+    db.checkAdminAuthorization( RS, req.body.id, req.session.di, function ( e, authorized ) {
       if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
       if (!authorized) {
-        var err = new Error(req.a2p3admin.di+' not authorized for '+req.body.id)
+        var err = new Error( req.session.di + ' not authorized for ' + req.body.id )
         e.code = "ACCESS_DENIED"
         return next(e)
       } else 
@@ -61,14 +71,53 @@ exports.routes = function ( app, RS, vault ) {
     })
   }
 
-  // TBD: placeholder for managing access control and sessions
+  // checks session has required data, otherwise goes and gets it
   function checkSession ( req, res, next ) {
-    if (req.session.di && req.session.email) {
-      next()
-    } else {
-      var err = new Error('DI and email missing from session')
+
+    
+    function badSession( error ) {
+      req.session.bad = true
+      var err = new Error( error || 'Bad session' )
       err.code = "ACCESS_DENIED"
-      return next( err )
+      return next( err )              
+    }
+
+    if ( req.session.bad ) return badSession() // been here before
+
+    if (req.session.email) {
+      return next()
+    } else {
+      // first time through, get email from email RS
+      if ( !req.session.di ) return badSession('No DI in session')
+      // if we are email RS, then we can just fetch it ourselves
+      if (RS == 'email') {
+        return db.getProfile( RS, req.session.di, function ( e, profile ) {
+          if (e) return badSession( e.message )
+          if (!profile.email) return badSession( 'No email for user.' )
+          req.session.email = profile.email
+          return next()
+        })
+      }   
+      if ( !req.session.tokens || !req.session.tokens[config.host.registrar] ) badSession('No tokens in session')
+      var details = 
+        { host: 'email'
+        , api: '/email/default'
+        , credentials: vault.keys[config.host.email].latest
+        , payload: 
+          { iss: config.host[RS]
+          , aud: config.host.email
+          , 'request.a2p3.org': { 'token': req.session.tokens[config.host.registrar] }
+          }
+        }
+      api.call( details, function (response) { 
+        if (response.error) return badSession( response.error )
+        if (!response.result.email) badSession( 'No email for user.' )
+        req.session.email = response.result.email
+        db.registerAdmin( RS, esponse.result.email, req.session.di, function ( e ) {
+          if (e) return next (e)
+          return next()
+        })
+      })
     }
   }
 
@@ -98,33 +147,37 @@ exports.routes = function ( app, RS, vault ) {
 
   // TBD add in '/dashboard/login' that checks credentials and 
   // if good sets cookie and redirects to /dashboard, or to error page
-  
+
+  app.get('/dashboard/list/apps'
+          , checkSession
+          , dashboardlistApps
+          )  
   app.post('/dashboard/new/app'
           , checkSession
-          , mw.checkParams( {'body':['session','id','name']} )
+          , mw.checkParams( {'body':['id','name']} )
           , dashboardNewApp
           )
   app.post('/dashboard/add/admin'
           , checkSession
-          , mw.checkParams( {'body':['session','id','admin']} )
+          , mw.checkParams( {'body':['id','admin']} )
           , checkAdminAuthorization
           , dashboardAddAdmin
           )
   app.post('/dashboard/delete/app'
           , checkSession
-          , mw.checkParams( {'body':['session','id']} )
+          , mw.checkParams( {'body':['id']} )
           , checkAdminAuthorization
           , dashboardDeleteApp
           )
   app.post('/dashboard/refresh/key'
           , checkSession
-          , mw.checkParams( {'body':['session','id']} )
+          , mw.checkParams( {'body':['id']} )
           , checkAdminAuthorization
           , dashboardRefreshKey
           )
   app.post('/dashboard/getkey'
           , checkSession
-          , mw.checkParams( {'body':['session','id']} )
+          , mw.checkParams( {'body':['id']} )
           , checkAdminAuthorization
           , dashboardGetKey
           )

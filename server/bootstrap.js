@@ -243,6 +243,11 @@ tasks.push( function (done) {
   })
 })
 
+tasks.push( function (done) {
+  // store root DI for setup as agent
+  db.storeAgent( { device:'root', di: diRoot[config.host.setup] }, done )
+})
+
 async.series( tasks, function ( err, results ) {
   console.log( results )
   if (err) {

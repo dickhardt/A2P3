@@ -24,11 +24,13 @@ exports.call = function ( details, callback ) {
   var jwt = request.create( details.payload, details.credentials )
 
   var options =
-  { method: 'POST' 
-  , payload: querystring.stringify({'request': jwt})
-  , headers: {'content-type': 'application/x-www-form-urlencoded'}
-  }
+    { method: 'POST' 
+    , payload: querystring.stringify({'request': jwt})
+    , headers: {'content-type': 'application/x-www-form-urlencoded'}
+    }
   
+// TBD: use an Error object and change callback signature to be callback( e, response )
+
   fetchUrl( baseUrl+details.api, options, function (error, meta, body) {
     var response
     if ( !error && meta.status == 200 ) {

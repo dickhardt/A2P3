@@ -60,9 +60,12 @@ exports.checkRegistrarAppIdTaken = function ( id, cb ) {
 
 
 // called when an RS wants to know if admin is authorized for an app ID
-exports.checkAdminAuthorization = function ( id, di, cb ) {
-  var adminEmail = dummyNoSql['registrar:di:' + di + ':admin'] 
-  var authorized = dummyNoSql['registrar:app:' + id + ':admins'][adminEmail] == 'ACTIVE'
+exports.checkAdminAuthorization = function ( reg, id, di, cb ) {
+
+debugger;
+
+  var adminEmail = dummyNoSql[reg + ':admin:di:' + di] 
+  var authorized = dummyNoSql[reg + ':app:' + id + ':admins'][adminEmail] == 'ACTIVE'
   process.nextTick( function () { cb( null, authorized ) } )
 }
 
@@ -80,8 +83,22 @@ function newKeyObj( reg, id ) {
 // called when an admin logs in to link email with DI
 exports.registerAdmin = function ( reg, adminEmail, di, cb ) {
   dummyNoSql[reg + ':admin:' + adminEmail + ':di'] = di
-  dummyNoSql[reg + ':di:' + di + ':admin'] = adminEmail
+  dummyNoSql[reg + ':admin:di:' + di] = adminEmail
   process.nextTick( function () { cb( null ) } )
+}
+
+exports.listApps = function ( reg, admin, cb ) {
+  var apps = dummyNoSql[reg + ':admin:' + admin + ':apps']
+  var result = {}
+  if (apps) {
+    Object.keys(apps).forEach( function (id) {
+      result[id] =
+        { name: dummyNoSql[reg + ':app:' + id + ':name']
+        , admins: dummyNoSql[reg + ':app:' + id + ':admins']
+        }
+    })    
+  }
+  process.nextTick( function () { cb( null, result ) } )
 }
 
 exports.newApp = function ( reg, id, name, adminEmail, cb ) {

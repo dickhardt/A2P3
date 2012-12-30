@@ -13,6 +13,7 @@ var should = require('chai').should()
   , vaultSetup = require('../app/setup/vault')
   , api = require('../app/api')
   , jwt = require('../app/jwt')
+  , db = require('../app/db')
 
 var diList
   , rsTokens
