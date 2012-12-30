@@ -22,6 +22,7 @@ var diList
     , 'email': 'john@example.com'
     , 'profile':
       { 'name': 'John Smith'
+      , 'dob': 'January 1, 1960'
       , 'address1': '100 Main Street'
       , 'address2': 'Suite 1000'
       , 'city': 'Victoria'
@@ -164,6 +165,10 @@ describe('Creating new User', function(){
     })
   })
 
+})
+
+
+describe('Getting info on new User', function(){
   // NOTE: setup is both an AS and an App in this set of calls
   describe('ix:/exchange', function(){
     it('should return an array of RS tokens', function (done){
@@ -176,7 +181,7 @@ describe('Creating new User', function(){
             [ config.baseUrl.si + '/scope/number'
             , config.baseUrl.email + '/scope/default'
             , config.baseUrl['health.bc'] + '/scope/prov_number' 
-            , config.baseUrl['people.bc'] + '/scope/namePhoto'
+            , config.baseUrl['people.bc'] + '/scope/details'
             ]
           , 'auth': 
             { 'passcode': true 
@@ -292,6 +297,54 @@ describe('Creating new User', function(){
     })
   })
 
+  describe('people:/over19', function(){
+    it('should return over19 is true ', function (done){
+      var details = 
+        { host: 'people.bc'
+        , api: '/over19'
+        , credentials: vaultSetup.keys[config.host['people.bc']].latest
+        , payload: 
+          { iss: config.host.setup
+          , aud: config.host['people.bc']
+          , 'request.a2p3.org':
+            { 'token': rsTokens[config.host['people.bc']]
+            }
+          }
+        }
+      api.call( details, function (response) {
+        response.should.not.have.property('error')
+        response.should.have.property('result')
+        response.result.should.have.property('over19')
+        response.result.over19.should.equal( true )
+        done()
+      })  
+    })
+  })
+
+  describe('people:/under20over65', function(){
+    it('should return under20over65 is false ', function (done){
+      var details = 
+        { host: 'people.bc'
+        , api: '/under20over65'
+        , credentials: vaultSetup.keys[config.host['people.bc']].latest
+        , payload: 
+          { iss: config.host.setup
+          , aud: config.host['people.bc']
+          , 'request.a2p3.org':
+            { 'token': rsTokens[config.host['people.bc']]
+            }
+          }
+        }
+      api.call( details, function (response) {
+        response.should.not.have.property('error')
+        response.should.have.property('result')
+        response.result.should.have.property('under20over65')
+        response.result.under20over65.should.equal( false )
+        done()
+      })  
+    })
+  })
+
   describe('people:/namePhoto', function(){
     it('should return a name and URL to a photo ', function (done){
       var details = 
@@ -317,6 +370,30 @@ describe('Creating new User', function(){
       })  
     })
   })
+
+  describe('people:/details', function(){
+    it('should return a detailed profile ', function (done){
+      var details = 
+        { host: 'people.bc'
+        , api: '/details'
+        , credentials: vaultSetup.keys[config.host['people.bc']].latest
+        , payload: 
+          { iss: config.host.setup
+          , aud: config.host['people.bc']
+          , 'request.a2p3.org':
+            { 'token': rsTokens[config.host['people.bc']]
+            }
+          }
+        }
+      api.call( details, function (response) {
+        response.should.not.have.property('error')
+        response.should.have.property('result')
+        response.result.should.deep.equal( testUser.profile )
+        done()
+      })  
+    })
+  })
+
 
 })
 
