@@ -52,7 +52,7 @@ exports.app = function() {
           , diLink 
           )
   app.post('/number' 
-          , request.check( vault, null, 'si' )
+          , request.check( vault.keys, null, 'si' )
           , mw.a2p3Params( ['token'] )
           , token.checkRS( vault.keys, 'si', ['/scope/number'] )
           , number 

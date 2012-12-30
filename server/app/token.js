@@ -40,6 +40,8 @@ function validScope ( passedScopes, baseUrl, scopePaths ) {
 // middleware that checks token is valid
 // depends on request.check middleware being called prior
 exports.checkRS = function ( vault, rs, scopePaths ) {
+  if ( scopePaths instanceof String ) 
+    scopePaths = [scopePaths]
   return (function (req, res, next) {
     var jwe, err, token
     if (!req.request['request.a2p3.org'].token) {

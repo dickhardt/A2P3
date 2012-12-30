@@ -171,6 +171,8 @@ describe('Creating new User', function(){
           , 'resources':
             [ config.baseUrl.si + '/scope/number'
             , config.baseUrl.email + '/scope/default'
+            , config.baseUrl['health.bc'] + '/scope/prov_number' 
+            , config.baseUrl['people.bc'] + '/scope/namePhoto'
             ]
           , 'auth': 
             { 'passcode': true 
@@ -214,6 +216,30 @@ describe('Creating new User', function(){
     })
   })
 
+  describe('si:/number', function(){
+    it('should return SI number', function (done){
+      var details = 
+        { host: 'si'
+        , api: '/number'
+        , credentials: vaultSetup.keys[config.host.si].latest
+        , payload: 
+          { iss: config.host.setup
+          , aud: config.host.si
+          , 'request.a2p3.org':
+            { 'token': rsTokens[config.host.si]
+            }
+          }
+        }
+      api.call( details, function (response) {
+        response.should.not.have.property('error')
+        response.should.have.property('result')
+        response.result.should.have.property('si')
+        response.result.si.should.equal('123456789')
+        done()
+      })  
+    })
+  })
+
   describe('email:/email/default', function(){
     it('should return email address', function (done){
       var details = 
@@ -233,6 +259,55 @@ describe('Creating new User', function(){
         response.should.have.property('result')
         response.result.should.have.property('email')
         response.result.email.should.equal('dickhardt@gmail.com')
+        done()
+      })  
+    })
+  })
+
+  describe('health:/prov_number', function(){
+    it('should return prov_number', function (done){
+      var details = 
+        { host: 'health.bc'
+        , api: '/prov_number'
+        , credentials: vaultSetup.keys[config.host['health.bc']].latest
+        , payload: 
+          { iss: config.host.setup
+          , aud: config.host['health.bc']
+          , 'request.a2p3.org':
+            { 'token': rsTokens[config.host['health.bc']]
+            }
+          }
+        }
+      api.call( details, function (response) {
+        response.should.not.have.property('error')
+        response.should.have.property('result')
+        response.result.should.have.property('prov_number')
+        response.result.prov_number.should.equal('0123456789')
+        done()
+      })  
+    })
+  })
+
+  describe('people:/namePhoto', function(){
+    it('should return a name and URL to a photo ', function (done){
+      var details = 
+        { host: 'people.bc'
+        , api: '/namePhoto'
+        , credentials: vaultSetup.keys[config.host['people.bc']].latest
+        , payload: 
+          { iss: config.host.setup
+          , aud: config.host['people.bc']
+          , 'request.a2p3.org':
+            { 'token': rsTokens[config.host['people.bc']]
+            }
+          }
+        }
+      api.call( details, function (response) {
+        response.should.not.have.property('error')
+        response.should.have.property('result')
+        response.result.should.have.property('name')
+        response.result.should.have.property('photo')
+        response.result.name.should.equal('Dick Hardt')
         done()
       })  
     })

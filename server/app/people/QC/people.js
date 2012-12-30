@@ -61,9 +61,9 @@ exports.app = function( province ) {
           , diLink( province )
           )
   app.post('/namePhoto' 
-          , request.check( vault, null, 'people.'+province )
+          , request.check( vault.keys, null, 'people.'+province )
           , mw.a2p3Params( ['token'] )
-          , token.checkRS( vault.keys, 'people.'+province, '/scope/namePhoto' )
+          , token.checkRS( vault.keys, 'people.'+province, ['/scope/namePhoto'] )
           , namePhoto( province ) 
           )
 

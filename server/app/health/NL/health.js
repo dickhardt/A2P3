@@ -61,9 +61,9 @@ exports.app = function( province ) {
           , diLink( province )
           )
   app.post('/prov_number' 
-          , request.check( vault, null, 'health.'+province )
+          , request.check( vault.keys, null, 'health.'+province )
           , mw.a2p3Params( ['token'] )
-          , token.checkRS( vault.keys, 'health.'+province, '/scope/prov_number' )
+          , token.checkRS( vault.keys, 'health.'+province, ['/scope/prov_number'] )
           , number( province ) 
           )
 
