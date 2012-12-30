@@ -27,8 +27,8 @@ app.use( express.vhost( config.host.bank, require('./bank/bank').app() ) )
 app.use( express.vhost( config.host.clinic, require('./clinic/clinic').app() ) ) 
 app.use( express.vhost( config.host.si, require('./si/si').app() ) ) 
 app.use( express.vhost( config.host.email, require('./email/email').app() ) ) 
-app.use( express.vhost( config.host.health, require('./health/healthstd').app() ) ) 
-app.use( express.vhost( config.host.people, require('./people/peoplestd').app() ) ) 
+app.use( express.vhost( config.host.health, require('./health/health').app() ) ) 
+app.use( express.vhost( config.host.people, require('./people/people').app() ) ) 
 
 config.provinces.forEach( function ( province ) {
   app.use( express.vhost( config.host['health.'+province], require('./health/'+province+'/health').app( province ) ) ) 
