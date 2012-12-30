@@ -78,3 +78,20 @@ exports.roles = roles
 exports.provinces = provinces
 exports.maxTokenAge = 5 * 60 // 5 minutes
 
+// User data used in tests as well as in mocked Setup
+exports.testUser = 
+    { 'si': '123456789'
+    , 'prov_number': '0123456789'
+    , 'email': 'john@example.com'
+    , 'profile':
+      { 'name': 'John Smith'
+      , 'dob': 'January 1, 1960'
+      , 'address1': '100 Main Street'
+      , 'address2': 'Suite 1000'
+      , 'city': 'Victoria'
+      , 'province': 'BC'
+      , 'postal': 'V1A 1A1'
+      , 'photo': 'http://example.com/photo.jpeg'
+      }
+    }
+

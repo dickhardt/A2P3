@@ -26,7 +26,7 @@ function syncWriteJSON ( obj, fname ) {
   fs.writeFileSync( fname, data )
 }
 
-console.log('Bootstrapping A2P3.')
+console.log('Bootstrapping A2P3 to:'+config.baseDomain)
 
 // create keys for core hosts
 var coreHostKeys =
@@ -169,7 +169,9 @@ tasks.push( function (done) {
   var result = []
   rsHosts.forEach( function (rs) {
     var subdir = rs.replace( '.', '/' )
-    syncWriteJSON( rsHostKeys[rs], __dirname + '/app/' + subdir + '/vault.json')
+    var fullpath = __dirname + '/app/' + subdir
+    if (!fs.existsSync( fullpath )) fs.mkdirSync( fullpath )
+    syncWriteJSON( rsHostKeys[rs], fullpath + '/vault.json')
     result.push( 'wrote vault.json for '+rs)
   })
   done( null, result )
@@ -255,7 +257,6 @@ async.series( tasks, function ( err, results ) {
     process.exit(1)
   } else {
     console.log('Bootstrap complete.')
-    console.log('\nRun "npm start" in a console to start server.\n')
     process.exit(0)
   }
 })
