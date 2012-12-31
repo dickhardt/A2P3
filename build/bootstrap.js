@@ -26,7 +26,9 @@ function syncWriteJSON ( obj, fname ) {
   fs.writeFileSync( fname, data )
 }
 
-console.log('Bootstrapping A2P3 to:'+config.baseDomain)
+console.log('\nBootstrapping A2P3 servers with "*.'+config.baseDomain+'"')
+
+var projectRootDir = __dirname.replace(/\/build$/,'')
 
 // create keys for core hosts
 var coreHostKeys =
@@ -95,8 +97,8 @@ var rsHostKeys = {}
 // and registrar vault with email RS, but needed DB before we could 
 // register them as apps at RSes
 // we get the vaults and then write them out again
-var setupVault = require('./app/setup/vault') 
-var registrarVault = require('./app/registrar/vault') 
+var setupVault = require('../app/setup/vault') 
+var registrarVault = require('../app/registrar/vault') 
 
 // Registrar keys and registration and setup keys
 rsHosts.forEach( function (rs) {
@@ -169,7 +171,7 @@ tasks.push( function (done) {
   var result = []
   rsHosts.forEach( function (rs) {
     var subdir = rs.replace( '.', '/' )
-    var fullpath = __dirname + '/app/' + subdir
+    var fullpath = projectRootDir + '/app/' + subdir
     if (!fs.existsSync( fullpath )) fs.mkdirSync( fullpath )
     syncWriteJSON( rsHostKeys[rs], fullpath + '/vault.json')
     result.push( 'wrote vault.json for '+rs)
@@ -179,8 +181,8 @@ tasks.push( function (done) {
 
 // write out updated vault file for setup and registrar
 tasks.push( function (done) {
-  syncWriteJSON( setupVault, __dirname + '/app/setup/vault.json')
-  syncWriteJSON( registrarVault, __dirname + '/app/registrar/vault.json')
+  syncWriteJSON( setupVault, projectRootDir + '/app/setup/vault.json')
+  syncWriteJSON( registrarVault, projectRootDir + '/app/registrar/vault.json')
   done( null, 'wrote vault.json for setup and registrar' )
 })
 
@@ -217,7 +219,7 @@ config.provinces.forEach( function ( province ) {
 })
 
 tasks.push( function (done) {
-  syncWriteJSON( appHostKeys.clinic, __dirname + '/app/clinic/vault.json')
+  syncWriteJSON( appHostKeys.clinic, projectRootDir + '/app/clinic/vault.json')
   done( null, 'wrote vault.json for clinic' )
 })
 
@@ -239,7 +241,7 @@ tasks.push( function (done) {
     db.newApp( 'si', config.host.bank, 'Bank', 'root', function ( e, keyObj) {
       if (e) done (e)
       appHostKeys.bank.keys[config.host.si] = keyObj
-      syncWriteJSON( appHostKeys.bank, __dirname + '/app/bank/vault.json')
+      syncWriteJSON( appHostKeys.bank, projectRootDir + '/app/bank/vault.json')
       done (null, 'added bank to si RS, and wrote out vault.json for bank')
     })
   })
@@ -256,8 +258,7 @@ async.series( tasks, function ( err, results ) {
     console.error( err )
     process.exit(1)
   } else {
-    console.log('Bootstrap complete.')
-    console.log('\nTo test, run "npm start" in a seperate console, then "npm test".\n')
+    console.log('Bootstrap complete.\n')
     process.exit(0)
   }
 })
