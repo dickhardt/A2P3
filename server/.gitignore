@@ -1,5 +1,6 @@
 .DS_Store
 .dotcloud
+*.log
 app/config.js
 node_modules
 vault.json
