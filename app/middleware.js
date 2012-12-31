@@ -257,6 +257,21 @@ exports.loginHandler = function ( app, detailsOrig ) {
 
   // clone object as we are going to muck with it
   var details = JSON.parse(JSON.stringify(detailsOrig))
+
+  if (details.dashboard) { // setup standard dashboard settigns
+    details.baseUrl = config.baseUrl[details.app]
+    details.resources = 
+      [ config.baseUrl.email + '/email/default'
+      , config.baseUrl.registrar + '/scope/verify'
+      ]
+    details.path =
+      { 'login':      '/dashboard/login'
+      , 'return':     '/dashboard/login/return'
+      , 'error':      '/dashboard/error'
+      , 'success':    '/dashboard'
+      , 'complete':   '/dashboard/complete'  
+      }
+  }
   // create URLs to use
   details.url = {}
   Object.keys( details.path ).forEach ( function ( p ) {

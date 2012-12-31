@@ -46,6 +46,8 @@ exports.app = function() {
   
   registration.routes( app, 'si', vault )  // add in routes for the registration paths
 
+  mw.loginHandler( app, { 'app': 'si', 'vault': vault, 'dashboard': true } )
+
   app.post('/di/link' 
           , request.check( vault.keys, config.roles.enroll )
           , mw.a2p3Params( ['sub', 'account'] )

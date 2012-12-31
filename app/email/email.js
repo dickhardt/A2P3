@@ -40,28 +40,6 @@ function emailDefault ( req, res, next ) {
   })
 }
 
-
-
-var loginDetails =
-  { 'app': 'email'
-  , 'vault': vault
-  , 'baseUrl': config.baseUrl.email
-  , 'resources':
-    [ config.baseUrl.email + '/email/default'
-    , config.baseUrl.registrar + '/scope/verify'
-    ]
-  , 'path':
-    { 'login':      '/dashboard/login'
-    , 'return':     '/dashboard/login/return'
-    , 'error':      '/dashboard/error'
-    , 'success':    '/dashboard'
-    , 'complete':   '/dashboard/complete'  
-    }
-  }
-
-
-
-
 // generate request processing stack and routes
 exports.app = function() {
 	var app = express()
@@ -71,7 +49,7 @@ exports.app = function() {
   
   registration.routes( app, 'email', vault )  // add in routes for the registration paths
 
-  mw.loginHandler( app, loginDetails )
+  mw.loginHandler( app, { 'app': 'email', 'vault': vault, 'dashboard': true } )
 
   app.post('/di/link' 
           , request.check( vault.keys, config.roles.enroll )
