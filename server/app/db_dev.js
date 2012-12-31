@@ -342,3 +342,26 @@ exports.getSeries = function ( rs, di, series, data, cb ) {
   process.nextTick( function () { cb( null, dummyNoSql[key] ) } )  
 }
 
+/*
+* dev version of publish / subscribe
+* used to move IX Token between phone and desktop 
+* when using QR reader
+*/
+
+var channels = {}
+
+exports.writeChannel = function ( channel, data ) {
+  channels[channel] = data
+}
+
+exports.readChannel = function ( channel, cb) {
+  var id = setInterval( function() {
+    if (channels[channel]) {
+      clearInterval( id )
+      var data = channels[channel]
+      delete channels[channel]
+      cb( null, data )
+    }
+  }, 10)
+}
+

@@ -80,12 +80,13 @@ function login ( details ) {
     var jsonResponse = req.query && req.query.json
     var agentRequest = request.create( agentRequestPayload, details.vault.keys[config.host.ix].latest )  
     req.session.agentRequest = agentRequest
-    var redirectUrl = (req.query || req.query.returnURL) || 'a2p3.net://token'
+    var redirectUrl = (req.query && req.query.returnURL) ? req.query.returnURL : 'a2p3.net://token'
     redirectUrl += '?request=' + agentRequest
     if (jsonResponse) {  // client wants JSON, likely will generate QR code
       var state = jwt.handle()
       req.session.loginState = state
-      redirectUrl += '&state='+state
+      var statusURL = details.url.return + '?' + querystring.stringify( { 'state': state } )
+      redirectUrl += '&' + querystring.stringify( { 'statusURL': statusURL, 'state': state } )
       return res.send( { result: {'request': redirectUrl } } )
     } else {
       return res.redirect( redirectUrl )
@@ -123,30 +124,30 @@ function loginReturn ( details ) {
     })
   }
 }
+function loginStateCheck ( details ) {
+  return function loginStateCheck ( req, res, next ) {
+    if (!req.query.state) return next()
+    // we have a loginState, which means we have moved the Agent Request
+    // and IX Token using a different browser
 
-function loginStateCheck ( req, res, next ) {
-  if (!req.query.state) return next()
-  // we have a loginState, which means we have moved the Agent Request
-  // and IX Token using a different browser
-
-  if (req.query.token || req.query.error) { // we are getting token or error from the agent, publish to channel
-    db.writeChannel( req.query.state, req.query )
-    res.redirect( details.url.remoteComplete )
-    return next('route')
-  } else {
-    if (req.query.state != req.session.loginState) {
-      var e = new Error('Could not find state in session data')
-      e.code = 'UNKNOWN_ERROR'
-      return next(e)
+    if (req.query.token || req.query.error) { // we are getting token or error from the agent, publish to channel
+      db.writeChannel( req.query.state, req.query )
+      res.redirect( details.url.remoteComplete )
+      return // next('route')
+    } else {
+      if (req.query.state != req.session.loginState) {
+        var e = new Error('Could not find state in session data')
+        e.code = 'UNKNOWN_ERROR'
+        return next(e)
+      }
+      db.readChannel( req.query.state, function ( e, query ) {
+        if (e) return next( e )
+        Object.keys(query).forEach( function (k) { req.query[k] = query[k] } )
+        next()
+      })
     }
-    db.readChannel( req.query.state, function ( e, query ) {
-      if (e) return next( e )
-      req.query = query
-      next()
-    })
   }
 }
-
 
 var loginDetails =
   { 'app': 'email'
@@ -159,6 +160,7 @@ var loginDetails =
     { 'return':   config.baseUrl.email + '/dashboard/login/return'
     , 'error':      config.baseUrl.email + '/dashboard/error'
     , 'success':    config.baseUrl.email + '/dashboard'
+    , 'remoteComplete':    config.baseUrl.email + '/dashboard/complete'  
     }
   }
 
@@ -176,7 +178,7 @@ exports.app = function() {
 
   app.get('/dashboard/login', login( loginDetails ) )
 
-  app.get('/dashboard/login/return', loginStateCheck, loginReturn( loginDetails ) )
+  app.get('/dashboard/login/return', loginStateCheck( loginDetails ), loginReturn( loginDetails ) )
 
   app.post('/di/link' 
           , request.check( vault.keys, config.roles.enroll )

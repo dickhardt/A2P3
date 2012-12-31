@@ -61,9 +61,9 @@ describe('Logging into email dashboard', function(){
           }
         }
       var ixToken = token.create( tokenPayload, vaultSetup.keys[config.host.ix].latest )
-      var url = jws.payload['request.a2p3.org'].returnURL + '?token=' + ixToken
+      var returnURL = jws.payload['request.a2p3.org'].returnURL + '?token=' + ixToken
       var options = { disableRedirects: true, cookieJar: cookieJar }
-      fetchUrl( url, options, function ( error, meta, body ) {
+      fetchUrl( returnURL, options, function ( error, meta, body ) {
         should.not.exist(error)
         meta.should.have.property('status')
         meta.status.should.be.equal(302)
@@ -80,8 +80,8 @@ describe('Logging into email dashboard', function(){
   var listApps = null
   describe('/dashboard/list/apps', function(){
     it('should return a list of apps', function (done){
-      var url = config.baseUrl.email + '/dashboard/list/apps'
-      fetchUrl( url, { cookieJar: cookieJar }, function ( error, meta, body ) {
+      var returnURL = config.baseUrl.email + '/dashboard/list/apps'
+      fetchUrl( returnURL, { cookieJar: cookieJar }, function ( error, meta, body ) {
         should.not.exist(error)
         meta.should.have.property('status')
         meta.status.should.equal(200)
@@ -107,8 +107,8 @@ describe('Logging into email dashboard', function(){
           , headers: {'content-type': 'application/x-www-form-urlencoded'}
           , cookieJar: cookieJar
           }
-        , url = config.baseUrl.email + '/dashboard/getkey'
-      fetchUrl( url, options, function ( error, meta, body ) {
+        , getKeyURL = config.baseUrl.email + '/dashboard/getkey'
+      fetchUrl( getKeyURL, options, function ( error, meta, body ) {
         should.not.exist(error)
         meta.should.have.property('status')
         meta.status.should.equal(200)
@@ -122,6 +122,65 @@ describe('Logging into email dashboard', function(){
       })
     })
   })
+
+  describe('/dashboard/login?json=true', function(){
+    it('should return a JSON Agent Request and then a success URL', function (done){
+      var options = { disableRedirects: true }
+      fetchUrl( config.baseUrl.email + '/dashboard/login?json=true', options, function ( error, meta, body ) {
+        should.not.exist(error)
+        meta.should.have.property('status')
+        meta.status.should.be.equal(200)
+        meta.should.have.property('cookieJar')
+        cookieJar = meta.cookieJar
+        var response = JSON.parse(body)
+        response.should.have.property('result')
+        response.result.should.have.property('request')
+        var o = url.parse( response.result.request, true )
+        o.should.have.property('query')
+        o.query.should.have.property('request')
+        var agentRequest = o.query.request
+        o.query.should.have.property('statusURL')
+        var statusURL = o.query.statusURL        
+        o.query.should.have.property('state')
+        var state = o.query.state
+        // setup call to statusURL
+        statusURL += '&json=true'
+        fetchUrl( statusURL, { cookieJar: cookieJar, disableRedirects: true }, function ( error, meta, body ) { 
+          should.not.exist( error )
+          meta.should.have.property('status')
+          meta.status.should.be.equal(200)
+          meta.should.have.property('cookieJar')
+          cookieJar = meta.cookieJar
+          should.exist( body )
+          var response = JSON.parse(body)
+          response.should.have.property( 'result' )
+          response.result.should.have.property( 'url' )
+          done()
+        })
+        // while status call is waiting, we will send IX Token
+        var jws = new jwt.Parse( agentRequest )
+        var tokenPayload =
+          { iss: config.host.setup
+          , aud: config.host.ix
+          , sub: setupDI
+          , 'token.a2p3.org':
+            { 'auth': jws.payload['request.a2p3.org'].auth
+            , 'sar': jws.signature
+            }
+          }
+        var ixToken = token.create( tokenPayload, vaultSetup.keys[config.host.ix].latest )
+        var returnURL = jws.payload['request.a2p3.org'].returnURL + '?token=' + ixToken+'&state='+state
+        fetchUrl( returnURL, { disableRedirects: true }, function ( error, meta, body ) { 
+          should.not.exist(error)
+          meta.should.have.property('status')
+          meta.status.should.be.equal(302)
+          meta.should.have.property('responseHeaders')
+          meta.responseHeaders.should.have.property('location')
+        })
+      })
+    })
+  })
+
 
 })
 
