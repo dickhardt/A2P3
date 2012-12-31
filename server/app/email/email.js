@@ -14,6 +14,7 @@ var express = require('express')
   , token = require('../token')
   , querystring = require('querystring')
   , api = require('../api')
+  , jwt = require('../jwt')
 
 
 // /di/link API called from setup
@@ -60,7 +61,10 @@ function fetchIXToken ( agentRequest, ixToken, details, cb ) {
     api.call( apiDetails, cb )
 }
 
-// /*/login handler, generates an Agent Request and redirects to Agent
+// /*/login handler, generates an Agent Request 
+// returns to caller if 'qr' parameter provided
+// redirects to 'returnURL' if provided
+// else redirects to Agent Protocol Handler
 function login ( details ) {
   return function login ( req, res, next ) {
     // create Agent Request
@@ -73,16 +77,24 @@ function login ( details ) {
         , 'auth': { 'passcode': true, 'authorization': true }
         }
       }
+    var jsonResponse = req.query && req.query.json
     var agentRequest = request.create( agentRequestPayload, details.vault.keys[config.host.ix].latest )  
     req.session.agentRequest = agentRequest
-    var redirectUrl = details.url.agent || 'a2p3.net://token'
+    var redirectUrl = (req.query || req.query.returnURL) || 'a2p3.net://token'
     redirectUrl += '?request=' + agentRequest
-    res.redirect( redirectUrl )
-    // TBD: what if we want a QR code??? ... want to return JSON of Agent Request and state information
+    if (jsonResponse) {  // client wants JSON, likely will generate QR code
+      var state = jwt.handle()
+      req.session.loginState = state
+      redirectUrl += '&state='+state
+      return res.send( { result: {'request': redirectUrl } } )
+    } else {
+      return res.redirect( redirectUrl )
+    }
   }
 }
 
-// /*/login/return handler, gets IX Token, fetches RS Tokens and redirects to success or error urls
+// /*/login/return handler 
+// if gets IX Token, fetches RS Tokens and redirects to success or error urls
 function loginReturn ( details ) {
   return function loginReturn ( req, res, next ) {
     // check if we got IX Token
@@ -94,9 +106,6 @@ function loginReturn ( details ) {
       var errorUrl = details.url.error + '&' + querystring.stringify( {'error':code,'errorMessage':message})
       return res.redirect( errorUrl )
     }
-
-    // if we are doing a QR code login, then we need to get IX Token etc. over to other session
-
     if (!req.session.agentRequest) return sendError( "UNKNOWN", "Session information lost" )
     if (!ixToken) return sendError( errorCode, errorMessage )
 
@@ -105,10 +114,39 @@ function loginReturn ( details ) {
       req.session.di = response.result.sub
       req.session.tokens = response.result.tokens
       req.session.redirects = response.result.redirects
-      res.redirect( details.url.success )
+      var jsonResponse = req.query && req.query.json
+      if (jsonResponse) {  // client wants JSON
+        return res.send( { result: {'url': details.url.success } } )
+      } else {
+        res.redirect( details.url.success )
+      }
     })
   }
 }
+
+function loginStateCheck ( req, res, next ) {
+  if (!req.query.state) return next()
+  // we have a loginState, which means we have moved the Agent Request
+  // and IX Token using a different browser
+
+  if (req.query.token || req.query.error) { // we are getting token or error from the agent, publish to channel
+    db.writeChannel( req.query.state, req.query )
+    res.redirect( details.url.remoteComplete )
+    return next('route')
+  } else {
+    if (req.query.state != req.session.loginState) {
+      var e = new Error('Could not find state in session data')
+      e.code = 'UNKNOWN_ERROR'
+      return next(e)
+    }
+    db.readChannel( req.query.state, function ( e, query ) {
+      if (e) return next( e )
+      req.query = query
+      next()
+    })
+  }
+}
+
 
 var loginDetails =
   { 'app': 'email'
@@ -138,7 +176,7 @@ exports.app = function() {
 
   app.get('/dashboard/login', login( loginDetails ) )
 
-  app.get('/dashboard/login/return', loginReturn( loginDetails ) )
+  app.get('/dashboard/login/return', loginStateCheck, loginReturn( loginDetails ) )
 
   app.post('/di/link' 
           , request.check( vault.keys, config.roles.enroll )
