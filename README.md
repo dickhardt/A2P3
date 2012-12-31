@@ -12,7 +12,7 @@ You will need [node](http://nodejs.org/download/) 0.8.* to run the server and a 
 ##Installation
 	git clone git@github.com:dickhardt/A2P3.git
 	# or you can download the zip file from github and unzip it
-	cd A2P3\server
+	cd A2P3
 	npm install
 This will do the following:
 
