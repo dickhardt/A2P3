@@ -120,6 +120,8 @@ exports.app = function( province ) {
   app.use( express.bodyParser() )
 
   registration.routes( app, 'people.'+province, vault )  // add in routes for the registration paths
+  
+  mw.loginHandler( app, { 'app': 'people.'+province, 'vault': vault, 'dashboard': true } )
 
   app.post('/di/link' 
           , request.check( vault.keys, config.roles.enroll )

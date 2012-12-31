@@ -58,6 +58,8 @@ exports.app = function( province ) {
 
   registration.routes( app, 'health.'+province, vault )  // add in routes for the registration paths
 
+  mw.loginHandler( app, { 'app': 'health.'+province, 'vault': vault, 'dashboard': true } )
+
   app.post('/di/link' 
           , request.check( vault.keys, config.roles.enroll )
           , mw.a2p3Params( ['sub', 'account'] )
