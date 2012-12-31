@@ -58,7 +58,7 @@ Object.keys( coreHostKeys ).forEach( function (host) {
 } )
 
 // NOTE: we cannot load db until registrar keys have been created or it will fail to load
-var db = require('./app/db')          
+var db = require('../app/db')          
 
 // the rest of our bootstrap calls are not syncronous, so we create
 // an array of tasks and then execute them in order
