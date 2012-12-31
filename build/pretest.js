@@ -5,7 +5,7 @@
 */
 
 var fetchUrl = require('fetch').fetchUrl
-  , config = require('./app/config')
+  , config = require('../app/config')
 
 // fetch favicon.ico to make sure server is running
 var url = config.baseUrl.setup + '/favicon.ico'

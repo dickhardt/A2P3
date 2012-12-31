@@ -16,9 +16,9 @@ var fs = require('fs')
   , crypto = require('crypto')
   , util = require('util')
   , async = require('async')
-  , b64url = require('./app/b64url')
-  , config = require('./app/config')
-  , identity = require('./app/identity')
+  , b64url = require('../app/b64url')
+  , config = require('../app/config')
+  , identity = require('../app/identity')
 
  
 function syncWriteJSON ( obj, fname ) {
