@@ -5,6 +5,7 @@
 */
 
 var express = require('express')
+  , registration = require('../registration')
   , request = require('../request')
   , config = require('../config')
   , vault = require('./vault')
@@ -80,6 +81,8 @@ function appVerify (req, res) {
 /*
 *  registrar app APIs
 */
+
+/*
 function dashboardAppIdTaken ( req, res, next ) {
   db.checkRegistrarAppIdTaken( req.body.id, function ( e, taken ) {
     if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
@@ -159,6 +162,7 @@ function bootRegistrar ( req, res, next ) {
   }
 }
 
+*/
 
 exports.app = function() {
 	var app = express()
@@ -183,44 +187,14 @@ exports.app = function() {
   // called by RS 
   app.post('/app/verify', request.check( vault, null, 'registrar'), appVerify )
 
-  // dashboard web app APIs
-  app.post('/dashboard/appid/taken'
-          , checkSession
-          , mw.checkParams( {'body':['session','id']} )
-          , dashboardAppIdTaken
-          )
-  app.post('/dashboard/new/app'
-          , checkSession
-          , mw.checkParams( {'body':['session','id','name']} )
-          , dashboardNewApp
-          )
-  app.post('/dashboard/add/admin'
-          , checkSession
-          , mw.checkParams( {'body':['session','id','admin']} )
-          , checkAdminAuthorization
-          , dashboardAddAdmin
-          )
-  app.post('/dashboard/delete/app'
-          , checkSession
-          , mw.checkParams( {'body':['session','id']} )
-          , checkAdminAuthorization
-          , dashboardDeleteApp
-          )
-  app.post('/dashboard/refresh/key'
-          , checkSession
-          , mw.checkParams( {'body':['session','id']} )
-          , checkAdminAuthorization
-          , dashboardRefreshKey
-          )
-  app.post('/dashboard/getkey'
-          , checkSession
-          , mw.checkParams( {'body':['session','id']} )
-          , checkAdminAuthorization
-          , dashboardGetKey
-          )
+  // dashboard web APIs
+  registration.routes( app, 'registrar', vault )  // add in routes for the registration paths
+
+  // login routing
+  mw.loginHandler( app, { 'dashboard': 'registrar', 'vault': vault } )
 
   // called by setup code to boot system
-  app.post('/dashboard/boot', request.check( vault.keys, config.roles.enroll ), bootRegistrar ) 
+// TBD -- I think we can take this out now  app.post('/dashboard/boot', request.check( vault.keys, config.roles.enroll ), bootRegistrar ) 
 
 
   app.get('/', function(req, res){

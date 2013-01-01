@@ -187,9 +187,16 @@ function loginReturn ( details ) {
     var errorMessage = req.query.errorMessage
 
     function sendError ( code, message ) {
-      var errorUrl = details.url.error + '&' + querystring.stringify( {'error':code,'errorMessage':message})
-      return res.redirect( errorUrl )
+      if (req.query && req.query.json) {
+        var e = new Error( message )
+        e.code = code
+        return next( e )
+      } else {
+        var errorUrl = details.url.error + '&' + querystring.stringify( {'error':code,'errorMessage':message})
+        return res.redirect( errorUrl )        
+      }
     }
+    
     if (!req.session.agentRequest) return sendError( "UNKNOWN", "Session information lost" )
     if (!ixToken) return sendError( errorCode, errorMessage )
 

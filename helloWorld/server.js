@@ -27,7 +27,8 @@ var resources =
     { 'scope': config.baseUrl.si+'/scope/number'
     , 'api': '/number'
     , 'host': config.host.si
-    }  
+    } 
+/*    
   , 'people':
     { 'scope': config.baseUrl.people+'/scope/details'
     , 'api': '/details'
@@ -38,6 +39,7 @@ var resources =
     , 'api': '/prov_number'
     , 'host': config.host['health.bc']    // TBD - FIX!
     }
+*/    
   }
 
 

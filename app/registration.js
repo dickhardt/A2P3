@@ -14,6 +14,13 @@ var express = require('express')
 
 exports.routes = function ( app, RS, vault ) {
 
+  function dashboardAppIdTaken ( req, res, next ) {
+    db.checkRegistrarAppIdTaken( req.body.id, function ( e, taken ) {
+      if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
+      return res.send( {result:{'id': req.body.id, 'taken': taken}} )
+    })
+  }  
+
   function dashboardlistApps ( req, res, next ) {
     db.listApps( RS, req.session.email, function ( e, list ) {
       if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
@@ -23,7 +30,7 @@ exports.routes = function ( app, RS, vault ) {
 
   function dashboardNewApp ( req, res, next ) {
 
-    // TBD check that User is auth for this App at Registrar
+    // TBD check that User is auth for this App at Registrar unless we are the Registrar
 
     db.newApp( RS, req.body.id, req.body.name, req.session.email, function ( e, key ) {
       if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
@@ -145,8 +152,14 @@ exports.routes = function ( app, RS, vault ) {
     }
   app.use( express.cookieSession( cookieOptions ))
 
-  // TBD add in '/dashboard/login' that checks credentials and 
-  // if good sets cookie and redirects to /dashboard, or to error page
+  if (RS == 'registrar') { // only Registrar is allowed to check if ID is available
+
+    app.post('/dashboard/appid/taken'
+          , checkSession
+          , mw.checkParams( {'body':['id']} )
+          , dashboardAppIdTaken
+          )  
+  }
 
   app.get('/dashboard/list/apps'
           , checkSession
