@@ -16,6 +16,7 @@ var express = require('express')
   , dns = require('dns')
   , async = require('async')
   , vault = require('./vault')
+  , helloConfig = require('./config')
 
 var resources = 
   { 'email':
@@ -63,7 +64,7 @@ function profileFetch ( req, res, next ) {
         , api: resources[r].api
         , credentials: vault.keys[resources[r].host].latest
         , payload: 
-          { iss: 'helloWorld'
+          { iss: helloConfig.hostname
           , aud: config.host[r]
           , 'request.a2p3.org':
             { 'token': tokens[resources[r].host]
@@ -87,7 +88,7 @@ var scopes = []
 Object.keys( resources ).forEach( function (r) { scopes.push( resources[r].scope ) } )
 
 var loginDetails =
-  { 'host': 'helloWorld'  
+  { 'host': helloConfig.hostname  
   , 'vault': vault  
   , 'resources': scopes
   , 'path':
@@ -118,7 +119,7 @@ mw.loginHandler( app, loginDetails )
 
 app.get( '/profile/fetch', mw.checkLoggedIn, profileFetch)
 
-var port = config.helloWorld.port
+var port = helloConfig.port
 
 app.listen( port )
 

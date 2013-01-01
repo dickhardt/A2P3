@@ -39,11 +39,20 @@ exports.errorHandler = function errorHandler ( error, req, res, next ) {
 exports.checkParams = function  ( params ) {
   return function checkParams( req, res, next ) {
     var e
+
+    function dump() { // TBD make a trace of some kind??
+      console.error('\ncheckParams:\nparams:',params)
+      console.error('req.query:',req.query)
+      console.error('req.body:',req.body)
+      console.error('req.params:',req.params)
+    }
+
     Object.keys( params ).forEach( function ( key ) {
       if (e) return
       if (!req[key]) { 
         e = new Error("No "+key+" found.")
         e.code = 'INVALID_API_CALL'
+        dunp()
         return next( e )
       } else {
         params[key].forEach( function ( param ) {
@@ -51,6 +60,7 @@ exports.checkParams = function  ( params ) {
           if (!req[key][param]) { 
             e = new Error("No '"+param+"' found in "+key+".")
             e.code = 'INVALID_API_CALL'
+            dump()
             return next( e )
           }
         } )
@@ -196,7 +206,7 @@ function loginReturn ( details ) {
         return res.redirect( errorUrl )        
       }
     }
-    
+
     if (!req.session.agentRequest) return sendError( "UNKNOWN", "Session information lost" )
     if (!ixToken) return sendError( errorCode, errorMessage )
 
@@ -247,7 +257,7 @@ var details =
   { 'host': config.host.email  // app host
   , 'vault': vault  // vault for app
   , 'resources':    // array of resources wanted by app
-    [ config.baseUrl.email + '/email/default'
+    [ config.baseUrl.email + '/scope/default'
     , config.baseUrl.registrar + '/scope/verify'
     ]
   , 'path':          // paths were each step of login goes
@@ -283,7 +293,7 @@ exports.loginHandler = function ( app, detailsOrig ) {
     details.host = config.host[details.dashboard]
     details.baseUrl = config.baseUrl[details.dashboard]
     details.resources = 
-      [ config.baseUrl.email + '/email/default'
+      [ config.baseUrl.email + '/scope/default'
       , config.baseUrl.registrar + '/scope/verify'
       ]
     details.path =

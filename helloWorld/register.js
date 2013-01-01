@@ -15,6 +15,7 @@ var fetchUrl = require('fetch').fetchUrl
   , jwt = require('../app/jwt')
   , db = require('../app/db')
   , async = require('async')
+  , helloConfig = require('../helloWorld/config')
 
 var setupDI       // root user Directed Identifier, fetched from Setup Agent storage
   , tasks = []
@@ -71,6 +72,28 @@ console.log('setupDI',setupDI)
       dashboardLogin( setupDI, 'registrar', vaultSetup, function ( e, newCookies ) {
         if (e) return done( e )
         cookieJar = newCookies
+      done( null, 'ok' )
+      })
+    }
+  , function registrarRegistration ( done ) {
+      var options =
+        { method: 'POST' 
+        , cookieJar: cookieJar
+        , payload: querystring.stringify( {'id': helloConfig.hostname, 'name': helloConfig.name} )
+        , headers: {'content-type': 'application/x-www-form-urlencoded'}
+        }        
+      fetchUrl( config.baseUrl.registrar + '/dashboard/new/app', options, function ( error, meta, body ) {
+        if ( error ) return done( error )
+        cookieJar = meta.cookieJar
+        try {
+          var result = JSON.parse( body )        
+        }
+        catch (e) {
+          return done ( e, body.toString() )
+        }
+    console.log('result',result)
+        if (result.error) return done( result.error )
+        done( null, result )
       })
     }
   ]

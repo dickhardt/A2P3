@@ -34,6 +34,11 @@ function intersection ( a, b ) {
 
 function validScope ( passedScopes, baseUrl, scopePaths ) {
   var acceptedScopes = scopePaths.map( function ( scopePath ) { return (baseUrl + scopePath); } )
+  var valid = intersection( passedScopes, acceptedScopes )
+
+  // TBD -- change to a trace??
+  if (!valid) console.log('\nscopes\npassed:\t'+passedScopes+'\naccepted:\t'+acceptedScopes)
+
   return intersection( passedScopes, acceptedScopes )
 }
 

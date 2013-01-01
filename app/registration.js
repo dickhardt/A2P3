@@ -10,6 +10,7 @@ var express = require('express')
   , util = require('util')
   , db = require('./db')
   , mw = require('./middleware')
+  , api = require('./api')
 
 
 exports.routes = function ( app, RS, vault ) {
@@ -105,7 +106,7 @@ exports.routes = function ( app, RS, vault ) {
           return next()
         })
       }   
-      if ( !req.session.tokens || !req.session.tokens[config.host.registrar] ) badSession('No tokens in session')
+      if ( !req.session.tokens || !req.session.tokens[config.host.email] ) return badSession('No tokens in session')
       var details = 
         { host: 'email'
         , api: '/email/default'
@@ -113,14 +114,14 @@ exports.routes = function ( app, RS, vault ) {
         , payload: 
           { iss: config.host[RS]
           , aud: config.host.email
-          , 'request.a2p3.org': { 'token': req.session.tokens[config.host.registrar] }
+          , 'request.a2p3.org': { 'token': req.session.tokens[config.host.email] }
           }
         }
       api.call( details, function (response) { 
         if (response.error) return badSession( response.error )
         if (!response.result.email) badSession( 'No email for user.' )
         req.session.email = response.result.email
-        db.registerAdmin( RS, esponse.result.email, req.session.di, function ( e ) {
+        db.registerAdmin( RS, response.result.email, req.session.di, function ( e ) {
           if (e) return next (e)
           return next()
         })
