@@ -15,6 +15,7 @@ var express = require('express')
   , os = require('os')
   , dns = require('dns')
   , async = require('async')
+  , vault = require('./vault')
 
 var resources = 
   { 'email':
@@ -97,9 +98,19 @@ var loginDetails =
     }
   }
 
+// setup middleware and routes
+
+app.use( express.cookieParser() )
+
+var cookieOptions =
+  { 'secret': vault.secret
+  , 'cookie': { path: '/dashboard', httpOnly: true, maxAge: 300 }
+  , 'proxy': true
+  }
+app.use( express.cookieSession( cookieOptions ))  
+
 app.use( mw.colorLogger( express ))
 app.use( express.static( __dirname + '/assets' ) )
-
 
 mw.loginHandler( app, loginDetails )
 
