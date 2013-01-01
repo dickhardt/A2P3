@@ -130,7 +130,7 @@ function fetchIXToken ( agentRequest, ixToken, details, cb ) {
       , api: '/exchange'
       , credentials: details.vault.keys[config.host.ix].latest
       , payload: 
-        { iss: config.host[details.app]
+        { iss: details.host
         , aud: config.host.ix
         , 'request.a2p3.org':
           { 'token': ixToken
@@ -149,7 +149,7 @@ function login ( details ) {
   return function login ( req, res, next ) {
     // create Agent Request
     var agentRequestPayload =
-      { iss: config.host[details.app]
+      { iss: details.host
       , aud: config.host.ix
       , 'request.a2p3.org':
         { 'returnURL': details.url.return 
@@ -157,6 +157,9 @@ function login ( details ) {
         , 'auth': { 'passcode': true, 'authorization': true }
         }
       }
+
+// console.log('details',details)
+
     var jsonResponse = req.query && req.query.json
     var agentRequest = request.create( agentRequestPayload, details.vault.keys[config.host.ix].latest )  
     req.session.agentRequest = agentRequest
@@ -234,7 +237,7 @@ function loginStateCheck ( details ) {
 Sample details object
 
 var details =
-  { 'app': 'email'  // app
+  { 'host': config.host.email  // app host
   , 'vault': vault  // vault for app
   , 'resources':    // array of resources wanted by app
     [ config.baseUrl.email + '/email/default'
@@ -249,17 +252,29 @@ var details =
     , 'success':    '/dashboard'
     , 'complete':   '/dashboard/complete'  
     }
+  , dashboard: 'email'  // if present, sets up default config for dashboards
   }
 
 */
+
+exports.checkLoggedIn = function ( req, res, next ) {
+  if (!req.session || !req.session.di) {
+    var e = new Error('not logged in')
+    e.code = 'ACCESS_DENIED'
+    return next(e)
+  }
+  next()
+}
+
 
 exports.loginHandler = function ( app, detailsOrig ) {
 
   // clone object as we are going to muck with it
   var details = JSON.parse(JSON.stringify(detailsOrig))
 
-  if (details.dashboard) { // setup standard dashboard settigns
-    details.baseUrl = config.baseUrl[details.app]
+  if (details.dashboard) { // setup standard dashboard settings
+    details.host = config.host[details.dashboard]
+    details.baseUrl = config.baseUrl[details.dashboard]
     details.resources = 
       [ config.baseUrl.email + '/email/default'
       , config.baseUrl.registrar + '/scope/verify'

@@ -49,7 +49,7 @@ exports.app = function() {
   
   registration.routes( app, 'email', vault )  // add in routes for the registration paths
 
-  mw.loginHandler( app, { 'app': 'email', 'vault': vault, 'dashboard': true } )
+  mw.loginHandler( app, { 'dashboard': 'email', 'vault': vault } )
 
   app.post('/di/link' 
           , request.check( vault.keys, config.roles.enroll )
