@@ -99,6 +99,6 @@ console.log('setupDI',setupDI)
   ]
 
 async.series( tasks, function ( error, results ) {
-  console.log('error:',error)
-  console.log('results:',results)
+  console.log( 'error:', error )
+  console.log( 'results:', JSON.stringify( results ) )
 })

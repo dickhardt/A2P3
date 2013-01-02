@@ -11,11 +11,21 @@ function copyFileSync( src, dest ) {
   fs.writeFileSync( dest, data )
 }
 
-console.log('Copying default.config.js -> config.js')
 
-copyFileSync( './app/default.config.js', './app/config.js')
+if ( fs.existsSync('./app/config.js') ) {
+  console.log('Using existing ./app/config.sys')
+} else {
+  console.log('Copying ./app/default.config.js -> ./app/config.js')
+  copyFileSync( './app/default.config.js', './app/config.js')
+  console.log('Edit ./app/config.js to change local behaviour')
+}
 
-console.log('Edit config.js to change local behaviour')
-
-require('./bootstrap')  // run bootstrap to build default vaults and 
+require('./bootstrap').run( function ( e ) { // run bootstrap to build default vaults and register default apps
+  if (e) {
+    console.log(e)
+    process.exit(1)
+  } else {
+    process.exit(0)
+  }
+})  
 

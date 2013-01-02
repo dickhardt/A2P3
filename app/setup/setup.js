@@ -5,6 +5,15 @@
 */
 
 var express = require('express')
+  , config = require('config')
+
+
+
+
+if (config.facebook.appID) {  // Facebook is configured
+
+}
+
 
 exports.app = function() {
 	var app = express()

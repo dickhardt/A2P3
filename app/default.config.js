@@ -97,3 +97,10 @@ exports.testUser =
       }
     }
 
+// Facebook credentials for Setup, 
+
+exports.facebook = 
+  { appID: null
+  , appSecret: null
+  }
+
