@@ -52,7 +52,7 @@ exports.checkParams = function  ( params ) {
       if (!req[key]) { 
         e = new Error("No "+key+" found.")
         e.code = 'INVALID_API_CALL'
-        dunp()
+        dump()
         return next( e )
       } else {
         params[key].forEach( function ( param ) {

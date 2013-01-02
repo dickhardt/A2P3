@@ -323,8 +323,9 @@ exports.getProfile = function ( rs, di, cb ) {
     var e = new Error('unknown user')
     e.code = "UNKNOWN_USER"
     process.nextTick( function () { cb( e, null ) } )    
+  } else {
+    process.nextTick( function () { cb( null, dummyNoSql[key] ) } )    
   }
-  process.nextTick( function () { cb( null, dummyNoSql[key] ) } )    
 }
 
 

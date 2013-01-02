@@ -19,6 +19,7 @@ app.use( express.static( __dirname + '/assets' ) )
 app.use( mw.colorLogger( express ))
 
 // use app server per host called
+app.use( express.vhost( config.host.setup, require('./setup/setup').app() ) )
 app.use( express.vhost( config.host.ix, require('./ix/ix').app() ) )
 app.use( express.vhost( config.host.as, require('./as/as').app() ) ) 
 app.use( express.vhost( config.host.registrar, require('./registrar/registrar').app() ) )
