@@ -85,16 +85,14 @@ exports.testUser =
     { 'si': '123456789'
     , 'prov_number': '0123456789'
     , 'email': 'john@example.com'
-    , 'profile':
-      { 'name': 'John Smith'
-      , 'dob': 'January 1, 1960'
-      , 'address1': '100 Main Street'
-      , 'address2': 'Suite 1000'
-      , 'city': 'Victoria'
-      , 'province': 'BC'
-      , 'postal': 'V1A 1A1'
-      , 'photo': baseUrl.setup + '/images/white-face.jpeg'
-      }
+    , 'name': 'John Smith'
+    , 'dob': 'January 1, 1960'
+    , 'address1': '100 Main Street'
+    , 'address2': 'Suite 1000'
+    , 'city': 'Victoria'
+    , 'province': 'BC'
+    , 'postal': 'V1A 1A1'
+    , 'photo': baseUrl.setup + '/images/white-face.jpeg'
     }
 
 // Facebook credentials for Setup, 

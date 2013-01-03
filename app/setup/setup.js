@@ -19,7 +19,7 @@ if (config.facebook.appID) {  // Facebook is configured
   useFB = true
 }
 
-function loadProfile ( di, profile, req, res ) {
+function _loadProfile ( di, profile, req, res ) {
   db.getProfile( 'setup', di, function ( e, existingProfile ) {
     if (e) {
       req.session.profile = profile
@@ -37,7 +37,7 @@ function fbRedirect ( req, res, next ) {
   // make FB calls to find out who user is
   var user = null // TBD
   var profile = null // TBD
-  loadProfile( user, profile, req, res )
+  _loadProfile( user, profile, req, res )
 }
 
 
@@ -45,8 +45,46 @@ function devLogin ( req, res, next ) {
   if (useFB) return res.redirect('/')
   var profile = JSON.parse( JSON.stringify( config.testUser ))  // clone test user object
   profile.email = req.body.email
-  loadProfile( req.body.email, profile, req, res )
+  _loadProfile( req.body.email, profile, req, res )
 }
+
+
+function enrollProfile ( req, res, next ) {
+  res.send( req.session.profile )
+}
+
+function enrollRegister ( req, res, next ) {
+  var newProfile = req.body
+  var profile = req.session.profile
+
+  profile.si = newProfile.si
+  profile.prov_number = newProfile.prov_number
+  profile.name = newProfile.name
+  profile.dob = newProfile.dob
+  profile.address1 = newProfile.address1
+  profile.address2 = newProfile.address2
+  profile.city = newProfile.city
+  profile.province = newProfile.province
+  profile.postal = newProfile.postal
+  profile.photo = profile.photo || req.session.profile.photo
+
+  db.updateProfile( 'setup', profile.email, profile, function (e) {
+    if (e) return next(e)
+      // TBD create user and add to all RSes
+    req.session.enrolled = true
+    return res.send( {'response': {'success': true } } )
+  })
+}
+
+
+function dashboardAgentList ( req, res, next ) {
+
+}
+
+function dashboardAgentDelete ( req, res, next ) {
+
+}
+
 
 function tokenHandler ( req, res, next ) {
 
@@ -57,26 +95,9 @@ function agentDelete ( req, res, next ) {
 
 }
 
-function enrollRegister ( req, res, next ) {
 
-}
-
-function enrollProfile ( req, res, next ) {
-
-}
-
-function dashboardAgentList ( req, res, next ) {
-
-}
-
-function dashboardAgentDelete ( req, res, next ) {
-
-}
 
 function homepage ( req, res, next ) {
-
-console.log('got request for homepage')
-
   if (useFB) {
     res.sendfile( __dirname+'/assets/homepageFB.html' )
   } else {
@@ -85,12 +106,12 @@ console.log('got request for homepage')
 }
 
 function enroll ( req, res, next ) {
-  if (!req.session.profile) es.redirect('/')
+  if (!req.session.profile) return res.redirect('/')
   res.sendfile( __dirname+'/assets/enroll.html')
 }
 
 function dashboard ( req, res, next ) {
-  if (!req.session.enrolled) res.redirect('/')
+  if (!req.session.enrolled) return res.redirect('/')
   res.sendfile( __dirname+'/assets/dashboard.html')
 }
 
@@ -116,7 +137,7 @@ exports.app = function() {
 
   // enroll web app API
   app.post('/enroll/register'
-          , mw.checkParams( {'session':['profile'], 'body':['profile']} )
+          , mw.checkParams( {'session':['profile'], 'body':['si','prov_number','province','dob']} )
           , enrollRegister
           )
   app.post('/enroll/profile'

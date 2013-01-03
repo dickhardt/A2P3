@@ -1,9 +1,45 @@
 <!DOCTYPE html>
 <html>
 <body>
-
+  <script type="text/javascript"    src="jquery-1.8.3.js"></script>
+<!--  <script type="text/javascript"    src="setup/enroll.js"></script> -->
 <div class='title'>A2P3 Setup Enroll</div>
 
+<div id="dev"></div>
+
+<div id="profile">
+  <form id="profileForm">
+    <dt></dt><dd><label for="name_input">Name</label> 
+      <input type="text" name="name" value="" id="name_input"></dd>
+    <dt></dt><dd><label for="address1_input">Name</label> 
+      <input type="text" name="address1" value="" id="address1_input"></dd>
+    <dt></dt><dd><label for="address2_input">Name</label> 
+      <input type="text" name="address2" value="" id="address2_input"></dd>
+    <dt></dt><dd><label for="city_input">Name</label> 
+      <input type="text" name="city" value="" id="city_input"></dd>
+    <dt></dt><dd><label for="province_input">Name</label> 
+      <input type="text" name="province" value="" id="province_input"></dd>
+    <dt></dt><dd><label for="postal_input">Name</label> 
+      <input type="text" name="postal" value="" id="postal_input"></dd>
+  </form>
+</div>
+
+<script>
+  function onReady() {
+    var url = 'http://setup.local.a2p3.net:8080/enroll/profile' // TBD, construct from current document
+    $.post( url, null, function ( data, status ) {
+//      if (status == "200") {
+
+      }
+      console.log('status',status)
+      console.log('data',data)
+//      $('#name_input').val()
+
+    })
+
+  }
+  $(document).ready(onReady)
+</script>
 
 </body>
 </html>
