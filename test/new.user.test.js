@@ -40,16 +40,16 @@ describe('Creating new User', function(){
       details.payload['request.a2p3.org'].redirects[config.host.health] = [config.host['health.bc']]
       details.payload['request.a2p3.org'].redirects[config.host.people] = [config.host['people.bc']]
 
-      api.call( details, function (response) {
-        response.should.not.have.property('error')
-        response.should.have.property('result')
-        response.result.should.have.property('dis')
-        response.result.dis.should.have.property(config.host.setup)
-        response.result.dis.should.have.property(config.host.email)
-        response.result.dis.should.have.property(config.host.si)
-        response.result.dis.should.have.property(config.host['health.bc'])
-        response.result.dis.should.have.property(config.host['people.bc'])
-        diList = response.result.dis
+      api.call( details, function ( error, result) {
+        should.not.exist( error )
+        should.exist( result )
+        result.should.have.property('dis')
+        result.dis.should.have.property(config.host.setup)
+        result.dis.should.have.property(config.host.email)
+        result.dis.should.have.property(config.host.si)
+        result.dis.should.have.property(config.host['health.bc'])
+        result.dis.should.have.property(config.host['people.bc'])
+        diList = result.dis
         done()
       })  
     })
@@ -70,10 +70,10 @@ describe('Creating new User', function(){
             }
           }
         }
-      api.call( details, function (response) {
-        response.should.not.have.property('error')
-        response.should.have.property('result')
-        response.result.should.have.property('success')
+      api.call( details, function ( error, result) {
+        should.not.exist( error )
+        should.exist( result )
+        result.should.have.property('success')
         done()
       })  
     })
@@ -94,10 +94,10 @@ describe('Creating new User', function(){
             }
           }
         }
-      api.call( details, function (response) {
-        response.should.not.have.property('error')
-        response.should.have.property('result')
-        response.result.should.have.property('success')
+      api.call( details, function ( error, result) {
+        should.not.exist( error )
+        should.exist( result )
+        result.should.have.property('success')
         done()
       })  
     })
@@ -118,10 +118,10 @@ describe('Creating new User', function(){
             }
           }
         }
-      api.call( details, function (response) {
-        response.should.not.have.property('error')
-        response.should.have.property('result')
-        response.result.should.have.property('success')
+      api.call( details, function ( error, result) {
+        should.not.exist( error )
+        should.exist( result )
+        result.should.have.property('success')
         done()
       })  
     })
@@ -142,10 +142,10 @@ describe('Creating new User', function(){
             }
           }
         }
-      api.call( details, function (response) {
-        response.should.not.have.property('error')
-        response.should.have.property('result')
-        response.result.should.have.property('success')
+      api.call( details, function ( error, result) {
+        should.not.exist( error )
+        should.exist( result )
+        result.should.have.property('success')
         done()
       })  
     })
@@ -200,12 +200,12 @@ describe('Getting info on new User', function(){
             }
           }
         }
-      api.call( details, function (response) {
-        response.should.not.have.property('error')
-        response.should.have.property('result')
-        response.result.should.have.property('sub')
-        response.result.should.have.property('tokens')
-        rsTokens = response.result.tokens
+      api.call( details, function ( error, result) {
+        should.not.exist( error )
+        should.exist( result )
+        result.should.have.property('sub')
+        result.should.have.property('tokens')
+        rsTokens = result.tokens
         done()
       })  
     })
@@ -225,11 +225,11 @@ describe('Getting info on new User', function(){
             }
           }
         }
-      api.call( details, function (response) {
-        response.should.not.have.property('error')
-        response.should.have.property('result')
-        response.result.should.have.property('si')
-        response.result.si.should.equal( config.testUser.si )
+      api.call( details, function ( error, result) {
+        should.not.exist( error )
+        should.exist( result )
+        result.should.have.property('si')
+        result.si.should.equal( config.testUser.si )
         done()
       })  
     })
@@ -249,11 +249,11 @@ describe('Getting info on new User', function(){
             }
           }
         }
-      api.call( details, function (response) {
-        response.should.not.have.property('error')
-        response.should.have.property('result')
-        response.result.should.have.property('email')
-        response.result.email.should.equal( config.testUser.email )
+      api.call( details, function ( error, result) {
+        should.not.exist( error )
+        should.exist( result )
+        result.should.have.property('email')
+        result.email.should.equal( config.testUser.email )
         done()
       })  
     })
@@ -273,11 +273,11 @@ describe('Getting info on new User', function(){
             }
           }
         }
-      api.call( details, function (response) {
-        response.should.not.have.property('error')
-        response.should.have.property('result')
-        response.result.should.have.property('prov_number')
-        response.result.prov_number.should.equal( config.testUser.prov_number )
+      api.call( details, function ( error, result) {
+        should.not.exist( error )
+        should.exist( result )
+        result.should.have.property('prov_number')
+        result.prov_number.should.equal( config.testUser.prov_number )
         done()
       })  
     })
@@ -297,11 +297,11 @@ describe('Getting info on new User', function(){
             }
           }
         }
-      api.call( details, function (response) {
-        response.should.not.have.property('error')
-        response.should.have.property('result')
-        response.result.should.have.property('over19')
-        response.result.over19.should.equal( true )
+      api.call( details, function ( error, result) {
+        should.not.exist( error )
+        should.exist( result )
+        result.should.have.property('over19')
+        result.over19.should.equal( true )
         done()
       })  
     })
@@ -321,11 +321,11 @@ describe('Getting info on new User', function(){
             }
           }
         }
-      api.call( details, function (response) {
-        response.should.not.have.property('error')
-        response.should.have.property('result')
-        response.result.should.have.property('under20over65')
-        response.result.under20over65.should.equal( false )
+      api.call( details, function ( error, result) {
+        should.not.exist( error )
+        should.exist( result )
+        result.should.have.property('under20over65')
+        result.under20over65.should.equal( false )
         done()
       })  
     })
@@ -345,13 +345,13 @@ describe('Getting info on new User', function(){
             }
           }
         }
-      api.call( details, function (response) {
-        response.should.not.have.property('error')
-        response.should.have.property('result')
-        response.result.should.have.property('name')
-        response.result.should.have.property('photo')
-        response.result.name.should.equal( config.testUser.name )
-        response.result.photo.should.equal( config.testUser.photo )
+      api.call( details, function ( error, result) {
+        should.not.exist( error )
+        should.exist( result )
+        result.should.have.property('name')
+        result.should.have.property('photo')
+        result.name.should.equal( config.testUser.name )
+        result.photo.should.equal( config.testUser.photo )
         done()
       })  
     })
@@ -371,10 +371,10 @@ describe('Getting info on new User', function(){
             }
           }
         }
-      api.call( details, function (response) {
-        response.should.not.have.property('error')
-        response.should.have.property('result')
-        response.result.should.deep.equal( config.testProfile )
+      api.call( details, function ( error, result) {
+        should.not.exist( error )
+        should.exist( result )
+        result.should.deep.equal( config.testProfile )
         done()
       })  
     })

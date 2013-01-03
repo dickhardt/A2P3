@@ -186,9 +186,9 @@ function createRootUser () {
         }
       }
     }
-  api.call( details, function (response) {
-    console.log(response)
-    getBootSession( response.result.dis[config.host.registrar] )
+  api.call( details, function ( error, result ) {
+    console.log(error, result)
+    getBootSession( result.dis[config.host.registrar] )
   })  
 }
 

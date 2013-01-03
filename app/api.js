@@ -32,21 +32,20 @@ exports.call = function ( details, callback ) {
 // TBD: use an Error object and change callback signature to be callback( e, response )
 
   fetchUrl( baseUrl+details.api, options, function (error, meta, body) {
-    var response
-    if ( !error && meta.status == 200 ) {
-      try {
-        response = JSON.parse(body)
-      }
-      catch (e){
-        response = {'error': {code: 'INVALID_JSON', 'e':e}}
-      }
-    } else {
-      if (error) {
-        response = error
-      } else {
-        response =  {'error': {'code': meta.status}}
-      }
+    var response = null
+
+    if ( error || meta.status != 200 ) {
+      var err = new Error(error)
+      err.code = 'UNKNWON'
+      return callback( err, null)
     }
-    callback( response )
+    try {
+      response = JSON.parse(body)
+    }
+    catch (e){
+      e.code = 'INVALID_JSON'
+      return callback( e, null)
+    }
+    callback( null, response.result )
   })
 }

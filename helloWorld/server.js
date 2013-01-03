@@ -71,10 +71,10 @@ function profileFetch ( req, res, next ) {
             }
           }
         }
-      api.call( details, function (response) {
-        if (e) return done( e, null )
-        results[resources[r].host] = results
-        done( null, results )
+      api.call( details, function ( error, result ) {
+        if (error) return done( error, null )
+        results[resources[r].host] = result
+        done( null, result )
       })
     })
   })

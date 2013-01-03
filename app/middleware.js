@@ -210,11 +210,11 @@ function loginReturn ( details ) {
     if (!req.session.agentRequest) return sendError( "UNKNOWN", "Session information lost" )
     if (!ixToken) return sendError( errorCode, errorMessage )
 
-    fetchIXToken( req.session.agentRequest, ixToken, details, function (response) {
-      if (response.error) return sendError( response.error.code, response.error.message )
-      req.session.di = response.result.sub
-      req.session.tokens = response.result.tokens
-      req.session.redirects = response.result.redirects
+    fetchIXToken( req.session.agentRequest, ixToken, details, function ( error, result ) {
+      if (error) return sendError( response.error.code, response.error.message )
+      req.session.di = result.sub
+      req.session.tokens = result.tokens
+      req.session.redirects = result.redirects
       var jsonResponse = req.query && req.query.json
       if (jsonResponse) {  // client wants JSON
         return res.send( { result: {'url': details.url.success } } )

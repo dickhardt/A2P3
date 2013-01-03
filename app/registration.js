@@ -117,11 +117,11 @@ exports.routes = function ( app, RS, vault ) {
           , 'request.a2p3.org': { 'token': req.session.tokens[config.host.email] }
           }
         }
-      api.call( details, function (response) { 
-        if (response.error) return badSession( response.error )
-        if (!response.result.email) badSession( 'No email for user.' )
-        req.session.email = response.result.email
-        db.registerAdmin( RS, response.result.email, req.session.di, function ( e ) {
+      api.call( details, function ( error, result ) { 
+        if (error) return badSession( error )
+        if (!result.email) badSession( 'No email for user.' )
+        req.session.email = result.email
+        db.registerAdmin( RS, result.email, req.session.di, function ( e ) {
           if (e) return next (e)
           return next()
         })

@@ -5,12 +5,14 @@
 */
 
 var express = require('express')
+  , async = require('async')
   , registration = require('../registration')
   , request = require('../request')
   , config = require('../config')
   , vault = require('./vault')
   , util = require('util')
   , db = require('../db')
+  , api = require('../api')
   , mw = require('../middleware')
 
 
@@ -32,8 +34,9 @@ function _loadProfile ( di, profile, req, res ) {
   })
 }
 
-function _registerUser ( profile, complete ) {
-  var province = profile.province.lowercase()
+function _registerUser ( session, complete ) {
+  var profile = session.profile
+  var province = profile.province.toLowerCase()
   var healthHost = 'health.'+province
   var peopleHost = 'people.'+province
   var details = 
@@ -52,37 +55,46 @@ function _registerUser ( profile, complete ) {
     }
   details.payload['request.a2p3.org'].redirects[config.host.health] = [config.host[healthHost]]
   details.payload['request.a2p3.org'].redirects[config.host.people] = [config.host[peopleHost]] 
-  api.call( details, function (response) {
-    var diList = response.result.dis
+  api.call( details, function ( error, result ) {
+    if (error) complete( error, null )
+    var diList = result.dis
+    session.di = diList[config.host.setup] // we need this for registering an agent
     var linkDetails = {}
     var linkHosts = ['email','si',peopleHost,healthHost]
     function makeLinkDetails ( host ) {
-      return  { host: host
-              , api: '/di/link'
-              , credentials: vault.keys[config.host[host]].latest
-              , payload: 
-                { iss: config.host.setup
-                , aud: config.host[host]
-                , 'request.a2p3.org': { 'sub': diList[config.host[host]] }
-                }
-              }
+      linkDetails[host] = { host: host
+                        , api: '/di/link'
+                        , credentials: vault.keys[config.host[host]].latest
+                        , payload: 
+                          { iss: config.host.setup
+                          , aud: config.host[host]
+                          , 'request.a2p3.org': { 'sub': diList[config.host[host]] }
+                          }
+                        }
     }
     linkHosts.forEach( makeLinkDetails )
-    linkHosts.email.payload['request.a2p3.org'].account = profile.email
-    linkHosts.si.payload['request.a2p3.org'].account = profile.si
-    linkHosts[healthHost].payload['request.a2p3.org'].account = profile.prov_number
-    linkHosts[peopleHost].payload['request.a2p3.org'].profile = { 'name': profile.name
-                                                                , 'dob': profile.dob
-                                                                , 'address1': profile.address1
-                                                                , 'address2': profile.address2
-                                                                , 'city': profile.city
-                                                                , 'province': profile.province
-                                                                , 'postal': profile.postal
-                                                                , 'photo': profile.photo
-                                                                }
+    linkDetails.email.payload['request.a2p3.org'].account = profile.email
+    linkDetails.si.payload['request.a2p3.org'].account = profile.si
+    linkDetails[healthHost].payload['request.a2p3.org'].account = profile.prov_number
+    linkDetails[peopleHost].payload['request.a2p3.org'].profile = { 'name': profile.name
+                                                                  , 'dob': profile.dob
+                                                                  , 'address1': profile.address1
+                                                                  , 'address2': profile.address2
+                                                                  , 'city': profile.city
+                                                                  , 'province': profile.province
+                                                                  , 'postal': profile.postal
+                                                                  , 'photo': profile.photo
+                                                                  }
     var tasks = {}
-    function makeTask (host) { tasks[host] = function (done) { apicall( linkDetails[host], done ) } }
-    linkHosts.forEach( makeTast )
+    
+    linkHosts.forEach( function (host) { 
+      tasks[host] = function (done) { 
+        api.call( linkDetails[host], function ( error, result) {
+          console.log('host:',host, result)
+          done( error, result )
+        }
+      )} 
+    })
     async.parallel(tasks, function (e, result) {
       complete(e, result)
     })
@@ -124,12 +136,15 @@ function enrollRegister ( req, res, next ) {
   profile.province = newProfile.province
   profile.postal = newProfile.postal
   profile.photo = profile.photo || req.session.profile.photo
-
-  db.updateProfile( 'setup', profile.email, profile, function (e) {
+  req.session.profile = profile
+  _registerUser( req.session, function ( e ) {
     if (e) return next(e)
-      // TBD create user and add to all RSes
-    req.session.enrolled = true
-    return res.send( {'response': {'success': true } } )
+    profile.di = req.session.di // this was set in _registerUser
+    db.updateProfile( 'setup', profile.email, profile, function (e) {
+      if (e) return next(e)
+      req.session.enrolled = true
+      return res.send( {'response': {'success': true } } )
+    })
   })
 }
 
@@ -144,7 +159,33 @@ function dashboardAgentDelete ( req, res, next ) {
 
 
 function tokenHandler ( req, res, next ) {
-
+  var device = req.body.device
+    , sar = req.body.sar
+    , auth = req.body.auth
+  db.retrieveAgentFromDevice( device, function ( e, agent ) {
+    if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
+    if (!agent) {
+      e = new Error('Unknown device id.')
+      e.code = "INVALID_DEVICEID"
+      return next(e)
+    }
+    // Setup Personal Agent does not take passcode as parameter, assumes it is entered
+    var payload =
+      { 'iss': config.host.setup
+      , 'aud': config.host.ix
+      , 'sub': agent.sub
+      , 'token.a2p3.org': 
+        { 'sar': sar
+        , 'auth': 
+          { 'passcode': (auth.passcode) ? true : false
+          , 'authorization': (auth.authorization) ? true : false
+          , 'nfc': (auth.nfc) ? true : false
+          }
+        }
+      }
+    var ixToken = token.create( payload, vault.ix.latest )
+    return res.send( {'result': {'token': ixToken }})
+  })
 }
 
 
