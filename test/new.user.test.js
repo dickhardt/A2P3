@@ -17,7 +17,6 @@ var should = require('chai').should()
 
 var diList
   , rsTokens
-  , testUser = config.testUser
 
 describe('Creating new User', function(){
 
@@ -67,7 +66,7 @@ describe('Creating new User', function(){
           , aud: config.host.email
           , 'request.a2p3.org':
             { 'sub': diList[config.host.email]
-            , 'account': testUser.email
+            , 'account': config.testUser.email
             }
           }
         }
@@ -91,7 +90,7 @@ describe('Creating new User', function(){
           , aud: config.host.si
           , 'request.a2p3.org':
             { 'sub': diList[config.host.si]
-            , 'account': testUser.si
+            , 'account': config.testUser.si
             }
           }
         }
@@ -115,7 +114,7 @@ describe('Creating new User', function(){
           , aud: config.host['health.bc']
           , 'request.a2p3.org':
             { 'sub': diList[config.host['health.bc']]
-            , 'account': testUser.prov_number
+            , 'account': config.testUser.prov_number
             }
           }
         }
@@ -139,7 +138,7 @@ describe('Creating new User', function(){
           , aud: config.host['people.bc']
           , 'request.a2p3.org':
             { 'sub': diList[config.host['people.bc']]
-            , 'profile': testUser.profile
+            , 'profile': config.testProfile
             }
           }
         }
@@ -230,7 +229,7 @@ describe('Getting info on new User', function(){
         response.should.not.have.property('error')
         response.should.have.property('result')
         response.result.should.have.property('si')
-        response.result.si.should.equal( testUser.si )
+        response.result.si.should.equal( config.testUser.si )
         done()
       })  
     })
@@ -254,7 +253,7 @@ describe('Getting info on new User', function(){
         response.should.not.have.property('error')
         response.should.have.property('result')
         response.result.should.have.property('email')
-        response.result.email.should.equal( testUser.email )
+        response.result.email.should.equal( config.testUser.email )
         done()
       })  
     })
@@ -278,7 +277,7 @@ describe('Getting info on new User', function(){
         response.should.not.have.property('error')
         response.should.have.property('result')
         response.result.should.have.property('prov_number')
-        response.result.prov_number.should.equal( testUser.prov_number )
+        response.result.prov_number.should.equal( config.testUser.prov_number )
         done()
       })  
     })
@@ -351,8 +350,8 @@ describe('Getting info on new User', function(){
         response.should.have.property('result')
         response.result.should.have.property('name')
         response.result.should.have.property('photo')
-        response.result.name.should.equal( testUser.profile.name )
-        response.result.photo.should.equal( testUser.profile.photo )
+        response.result.name.should.equal( config.testUser.name )
+        response.result.photo.should.equal( config.testUser.photo )
         done()
       })  
     })
@@ -375,7 +374,7 @@ describe('Getting info on new User', function(){
       api.call( details, function (response) {
         response.should.not.have.property('error')
         response.should.have.property('result')
-        response.result.should.deep.equal( testUser.profile )
+        response.result.should.deep.equal( config.testProfile )
         done()
       })  
     })

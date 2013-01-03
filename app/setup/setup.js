@@ -32,6 +32,63 @@ function _loadProfile ( di, profile, req, res ) {
   })
 }
 
+function _registerUser ( profile, complete ) {
+  var province = profile.province.lowercase()
+  var healthHost = 'health.'+province
+  var peopleHost = 'people.'+province
+  var details = 
+    { host: 'ix'
+    , api: '/di/create'
+    , credentials: vault.keys[config.host.ix].latest
+    , payload: 
+      { iss: config.host.setup
+      , aud: config.host.ix
+      , 'request.a2p3.org':
+        { 'AS': config.host.setup
+        , 'RS': [config.host.email, config.host.si, config.host[healthHost], config.host[peopleHost]]
+        , 'redirects': {}
+        }
+      }
+    }
+  details.payload['request.a2p3.org'].redirects[config.host.health] = [config.host[healthHost]]
+  details.payload['request.a2p3.org'].redirects[config.host.people] = [config.host[peopleHost]] 
+  api.call( details, function (response) {
+    var diList = response.result.dis
+    var linkDetails = {}
+    var linkHosts = ['email','si',peopleHost,healthHost]
+    function makeLinkDetails ( host ) {
+      return  { host: host
+              , api: '/di/link'
+              , credentials: vault.keys[config.host[host]].latest
+              , payload: 
+                { iss: config.host.setup
+                , aud: config.host[host]
+                , 'request.a2p3.org': { 'sub': diList[config.host[host]] }
+                }
+              }
+    }
+    linkHosts.forEach( makeLinkDetails )
+    linkHosts.email.payload['request.a2p3.org'].account = profile.email
+    linkHosts.si.payload['request.a2p3.org'].account = profile.si
+    linkHosts[healthHost].payload['request.a2p3.org'].account = profile.prov_number
+    linkHosts[peopleHost].payload['request.a2p3.org'].profile = { 'name': profile.name
+                                                                , 'dob': profile.dob
+                                                                , 'address1': profile.address1
+                                                                , 'address2': profile.address2
+                                                                , 'city': profile.city
+                                                                , 'province': profile.province
+                                                                , 'postal': profile.postal
+                                                                , 'photo': profile.photo
+                                                                }
+    var tasks = {}
+    function makeTask (host) { tasks[host] = function (done) { apicall( linkDetails[host], done ) } }
+    linkHosts.forEach( makeTast )
+    async.parallel(tasks, function (e, result) {
+      complete(e, result)
+    })
+  })
+}     // _registerUser
+
 function fbRedirect ( req, res, next ) {
   if (!useFB) return res.redirect('/')
   // make FB calls to find out who user is
