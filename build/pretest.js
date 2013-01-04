@@ -4,12 +4,12 @@
 * Copyright (C) Province of British Columbia, 2013
 */
 
-var fetchUrl = require('fetch').fetchUrl
+var fetch = require('request')
   , config = require('../app/config')
 
 // fetch favicon.ico to make sure server is running
 var url = config.baseUrl.setup + '/favicon.ico'
-fetchUrl( url, function( error, meta, body ) {
+fetch( url, function( error, meta, body ) {
   if (error) {
     console.error('Server must be running before testing.')
     console.error('Try "npm start".')

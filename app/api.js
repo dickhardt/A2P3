@@ -6,7 +6,7 @@
 * Copyright (C) Province of British Columbia, 2013
 */
 
-var fetchUrl = require('fetch').fetchUrl
+var fetch = require('request')
   , config = require('./config')
   , request = require('./request')
   , querystring = require('querystring')
@@ -23,29 +23,26 @@ exports.call = function ( details, callback ) {
 
   var jwt = request.create( details.payload, details.credentials )
 
-  var options =
-    { method: 'POST' 
-    , payload: querystring.stringify({'request': jwt})
-    , headers: {'content-type': 'application/x-www-form-urlencoded'}
-    }
-  
-// TBD: use an Error object and change callback signature to be callback( e, response )
+  fetch.post( baseUrl+details.api, { form:{ 'request':jwt } }, function (error, response, body) {
+    var data = null
 
-  fetchUrl( baseUrl+details.api, options, function (error, meta, body) {
-    var response = null
-
-    if ( error || meta.status != 200 ) {
+    if ( error ) {
       var err = new Error(error)
       err.code = 'UNKNWON'
       return callback( err, null)
     }
+    if ( response.statusCode != 200 ) {
+      var err = new Error('Server responded with '+response.statusCode)
+      err.code = 'UNKNWON'
+      return callback( err, null)
+    }
     try {
-      response = JSON.parse(body)
+      data = JSON.parse(body)
     }
     catch (e){
       e.code = 'INVALID_JSON'
       return callback( e, null)
     }
-    callback( null, response.result )
+    callback( null, data.result )
   })
 }
