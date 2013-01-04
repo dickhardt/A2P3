@@ -148,13 +148,46 @@ function enrollRegister ( req, res, next ) {
   })
 }
 
+function _callIX ( api, params, cb ) {
+  var details = 
+    { host: 'ix'
+    , api: api
+    , credentials: vault.keys[config.host.ix].latest
+    , payload: 
+      { iss: config.host.setup
+      , aud: config.host.ix
+      , 'request.a2p3.org': params
+      }
+    }
+  api.call( details, cb )
+}
 
 function dashboardAgentList ( req, res, next ) {
+  _callRegistrar( '/agent/list', function ( e, result ) {
+    if (e) return next( e )
+    return res.send( { 'result': result } )  
+  })
+}
 
+function dashboardAgentCreate ( req, res, next ) {
+  _callRegistrar( '/agent/add', function ( e, handle ) {
+    if (e) return next( e )
+      var agent =
+        { 'device': req.request['request.a2p3.org'].device
+        , 'handle': handle
+        }
+    db.storeAgent( 'setup', agent, function (e) {
+      if (e) return next( e )
+      return res.send( { 'result': handle } )  
+    })
+  })
 }
 
 function dashboardAgentDelete ( req, res, next ) {
-
+  _callRegistrar( '/agent/delete', function ( e, result ) {
+    if (e) return next( e )
+    return res.send( { 'result': result } )  
+  })
 }
 
 
@@ -162,7 +195,7 @@ function tokenHandler ( req, res, next ) {
   var device = req.body.device
     , sar = req.body.sar
     , auth = req.body.auth
-  db.retrieveAgentFromDevice( device, function ( e, agent ) {
+  db.retrieveAgentFromDevice( 'setup', device, function ( e, agent ) {
     if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
     if (!agent) {
       e = new Error('Unknown device id.')
@@ -188,9 +221,13 @@ function tokenHandler ( req, res, next ) {
   })
 }
 
-
+// called by IX when an agent is deleted
 function agentDelete ( req, res, next ) {
-
+  var handle = req.request['request.a2p3.org'].handle
+  db.deleteAgentFromHandle( 'setup', handle, function (e) {
+    if (e) return next( e )
+    return res.send({ result: { success: true } } )
+  })
 }
 
 
@@ -262,6 +299,10 @@ exports.app = function() {
   app.post('/dashboard/agent/list'
           , mw.checkParams( {'session':['profile', 'enrolled']} )
           , dashboardAgentList
+          )
+  app.post('/dashboard/agent/create'
+          , mw.checkParams( {'session':['profile', 'enrolled'], 'body': ['name']} )
+          , dashboardAgentCreate
           )
   app.post('/dashboard/agent/delete'
           , mw.checkParams( {'session':['profile', 'enrolled'], 'body': ['handle']} )

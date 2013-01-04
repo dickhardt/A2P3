@@ -12,6 +12,7 @@ var express = require('express')
   , vault = require('./vault')
   , util = require('util')
   , db = require('../db')
+  , api = require('../api')
   , jwt = require('../jwt')
   , mw = require('../middleware')
   , util = require('util')
@@ -156,17 +157,46 @@ function exchange ( req, res, next ) {
 }
 
 
-// APIs called from agent registration page
+// APIs called from AS agent registration web app
 function agentList ( req, res, next ) {
-    res.send(501, 'NOT IMPLEMENTED');
+    db.listAgents(  req.request['request.a2p3.org'].di
+                  , req.request['request.a2p3.org'].as
+                  , function( e, handles ) {
+                      if (e) return next (e)
+                      return res.send({ result: { 'handles': handles } } )
+                    } )
 }
 
 function agentAdd ( req, res, next ) {
-    res.send(501, 'NOT IMPLEMENTED');
+    db.addAgent( req.request['request.a2p3.org'].di
+                  , req.request['request.a2p3.org'].as
+                  , req.request['request.a2p3.org'].name
+                  , function( e, handle ) {
+                      if (e) return next (e)
+                      return res.send({ result: { handle: handle } } )
+                    } )
 }
 
 function agentDelete ( req, res, next ) {
-    res.send(501, 'NOT IMPLEMENTED');
+  var di = req.request['request.a2p3.org'].di
+    , as = req.request['request.a2p3.org'].as
+    , handle = req.request['request.a2p3.org'].handle
+    db.deleteAgent( di, as, handle, function( e, AS ) {
+      var details = 
+        { host: AS
+        , api: api
+        , credentials: vault.keys[config.host[AS]].latest
+        , payload: 
+          { iss: config.host.setup
+          , aud: config.host[AS]
+          , 'request.a2p3.org': { 'handle': handle }
+          }
+        }
+      api.call( details, function ( e, result ) {
+        if (e) return next (e)
+        return res.send( { result: { success: true } } )
+    })
+  })
 }
 
 exports.app = function() {

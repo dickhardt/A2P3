@@ -12,6 +12,7 @@ var fs = require('fs')
   , b64url = require('./b64url')
   , identity = require('./identity')
   , vaultIX = require('./ix/vault')
+  , jwt = require('./jwt')
 
 // Development JSON DB  
 // create empty file if does not exist
@@ -42,12 +43,49 @@ function mapDI ( host, ixDI ) {
 exports.mapDI = mapDI
 
 /*
+* functions to add, list and delete agents from IX and Registrar DB
+*/  
+exports.addAgent = function ( asDI, asHost, name, cb ) {
+  var ixDI = dummyNoSql['ix:di:' + asHost + ':' + asDI]
+  var handle = jwt.handle()
+
+  dummyNoSql['ix:di:' + ixDI][handle] = name
+  dummyNoSql['ix:di:' + ixDI + ':handle:' + handle] = asHost
+  dummyNoSql['registrar:agentHandle:' + handle] = true
+
+  process.nextTick( function () { cb( null, handle ) } )
+}
+
+exports.listAgents = function ( asDI, asHost, cb ) {
+  var ixDI = dummyNoSql['ix:di:' + asHost + ':' + asDI]
+  var handles = dummyNoSql['ix:di:' + ixDI]
+  process.nextTick( function () { cb( null, handles ) } )  
+}
+
+exports.deleteAgent = function ( asDI, asHost, handle, cb ) {
+  var ixDI = dummyNoSql['ix:di:' + asHost + ':' + asDI]
+  var handleAS = dummyNoSql['ix:di:' + ixDI + ':handle:' + handle]
+  if (!handleAS) {
+    return cb('HANDLE_NOT_FOUND')
+  }
+
+  delete dummyNoSql['ix:di:' + ixDI][handle]
+  delete dummyNoSql['registrar:agentHandle:' + handle]
+  delete dummyNoSql['ix:di:' + ixDI + ':handle:' + handle]
+
+  process.nextTick( function () { cb( null, handleAS ) } )  
+}
+
+
+/*
 * Registrar DB functions
 */
 exports.validAgent = function ( handle, cb ) {
   var valid = dummyNoSql['registrar:agentHandle:' + handle]
   process.nextTick( function () { cb(  valid ) } )
 }
+
+
 
 exports.getAppName = function ( id, cb ) {
   var name = dummyNoSql['registrar:app:' + id + ':name']
@@ -63,16 +101,13 @@ exports.checkRegistrarAppIdTaken = function ( id, cb ) {
 
 // called when an RS wants to know if admin is authorized for an app ID
 exports.checkAdminAuthorization = function ( reg, id, di, cb ) {
-
-debugger;
-
   var adminEmail = dummyNoSql[reg + ':admin:di:' + di] 
   var authorized = dummyNoSql[reg + ':app:' + id + ':admins'][adminEmail] == 'ACTIVE'
   process.nextTick( function () { cb( null, authorized ) } )
 }
 
 /*
-* General Registration Functions
+* General App Registration Functions
 */
 // generate new app keys and add to Vault
 function newKeyObj( reg, id ) {
@@ -229,33 +264,7 @@ exports.getRsDIfromAsDI = function ( asDI, asHost, rsHosts, cb ) {
 }
 
 
-// functions to add, list and delete agents from DB
-exports.addAgent = function ( asDI, asHost, handle, name, cb ) {
-  var ixDI = dummyNoSql['ix:di:' + asHost + ':' + asDI]
-  dummyNoSql['ix:di:' + ixDI][handle] = name
-  dummyNoSql['ix:di:' + ixDI + ':handle:' + handle] = asHost
 
-  dummyNoSql['registrar:agentHandle:' + handle] = true
-
-  process.nextTick( function () { cb( null ) } )
-}
-
-exports.listAgents = function ( asDI, asHost, cb ) {
-  var ixDI = dummyNoSql['ix:di:' + asHost + ':' + asDI]
-  var handles = dummyNoSql['ix:di:' + ixDI]
-  process.nextTick( function () { cb( null, handles ) } )  
-}
-
-exports.deleteAgent = function ( asDI, asHost, handle, cb ) {
-  var ixDI = dummyNoSql['ix:di:' + asHost + ':' + asDI]
-  var result = {}
-  delete dummyNoSql['ix:di:' + ixDI][handle]
-
-  delete dummyNoSql['registrar:agentHandle:' + handle]
-
-  var handleAS = dummyNoSql['ix:di:' + ixDI + ':handle:' + handle]
-  process.nextTick( function () { cb( null, handleAS ) } )  
-}
 
 
 // TBD - delete and use channels instead
@@ -275,7 +284,7 @@ exports.retrieveAgentRegisterSession = function ( id, cb ) {
 }
 
 /*
-* Agent DB functions
+* AS DB functions for Agents
 */
 
 exports.storeAgent = function ( as, agent, cb ) {
@@ -286,18 +295,18 @@ exports.storeAgent = function ( as, agent, cb ) {
   process.nextTick( function () { cb( null ) } )
 }
 
-exports.retrieveAgentFromDevice = function ( as, device, cb) {
-  var key = as + ':agent:device:' + device
-  var agent = dummyNoSql[key]
-  process.nextTick( function () { cb( null, agent ) } )
-}
-
 exports.retrieveAgentFromHandle = function ( as, handle, cb) {
   var key = as + ':agent:handle:' + handle
   var device = dummyNoSql[key]
   var key = as + ':agent:device:' + device
   var agent = dummyNoSql[key]
   process.nextTick( function () { cb( null, agent ) } )  
+}
+
+exports.retrieveAgentFromDevice = function ( as, device, cb) {
+  var key = as + ':agent:device:' + device
+  var agent = dummyNoSql[key]
+  process.nextTick( function () { cb( null, agent ) } )
 }
 
 exports.deleteAgentFromHandle = function ( as, handle, cb) {

@@ -28,6 +28,8 @@ describe('Logging into email dashboard', function(){
     it('should return an Agent Request', function (done){
       db.retrieveAgentFromDevice( 'setup', 'root', function ( e, agent ) {
         should.not.exist(e)
+        should.exist(agent)
+        agent.should.have.property('di')
         setupDI = agent.di
         var options = { disableRedirects: true }
         fetchUrl( config.baseUrl.email + '/dashboard/login', options, function ( error, meta, body ) {
