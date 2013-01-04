@@ -105,63 +105,57 @@ fetchUrl( config.baseUrl.setup + '/dev/login', options, function ( error, meta, 
             return console.log ( e, body.toString() )
           }
           console.log('\nagent/create result',result)
+          var agentToken  = result.result.token
+          var agentDevice = result.result.device
 
+          // make an Agent Request JWT
+          var requestDetails = 
+            { 'iss': config.host.setup
+            , 'aud': config.host.ix
+            , 'reqeuest.a2p3.org':
+              { 'returnURL': 'https://app.example.com/returnURL'
+              , 'resources': 
+                [ 'https://health.a2p3.net/scope/prov_number'
+                , 'https://people.a2p3.net/scope/details'
+                ]
+              , 'auth': 
+                { 'passcode': true
+                , 'authorization': true
+                }
+              }
+            }
+
+          console.log('\nrequestDetails\n',requestDetails)
+
+          var agentRequest = request.create( requestDetails, vaultSetup.keys[config.host.ix].latest )
+
+          console.log('\nrequestDetails\n',requestDetails)
+
+          var jws = new jwt.Parse( agentRequest )
+          // call Setup as agent to exchange a token
           var options =
             { method: 'POST'
-            , cookieJar: cookieJar
-            , payload: querystring.stringify( { 'name': 'MacPro' } )
-            , headers: {'content-type': 'application/x-www-form-urlencoded'}
-            }        
-          fetchUrl( config.baseUrl.setup + '/dashboard/agent/list', options, function ( error, meta, body ) {
+            , payload: JSON.stringify( 
+              { 'device': agentDevice
+              , 'sar': jws.signature
+              , 'auth': requestDetails['reqeuest.a2p3.org'].auth 
+              } )
+            , headers: {'content-type': 'application/json'}
+            }
+
+          console.log('\n/token options:\n',options)
+
+          fetchUrl( config.baseUrl.setup + '/token', options, function ( error, meta, body ) {
             if ( error ) return done( error )
-            cookieJar = meta.cookieJar
             try {
               var result = JSON.parse( body )        
             }
             catch (e) {
               return console.log ( e, body.toString() )
             }
-            var agentHandles = result.result.handles
-            console.log('\nagent/list result', util.inspect( result, null, null ) )
-            console.log('\nagent/list agentHandles', util.inspect( agentHandles, null, null ) )
-            
-            var handleToDelete = Object.keys(agentHandles)[0]
-            var options =
-              { method: 'POST'
-              , cookieJar: cookieJar
-              , payload: querystring.stringify( { 'handle': handleToDelete } )
-              , headers: {'content-type': 'application/x-www-form-urlencoded'}
-              }
-            console.log('\ndeleting handle:',handleToDelete)          
-            fetchUrl( config.baseUrl.setup + '/dashboard/agent/delete', options, function ( error, meta, body ) {
-              if ( error ) return done( error )
-              cookieJar = meta.cookieJar
-              try {
-                var result = JSON.parse( body )        
-              }
-              catch (e) {
-                return console.log ( e, body.toString() )
-              }
-              console.log('\nagent/delete result', util.inspect( result, null, null ) )
+            var ixToken = result.result.token
+            console.log('\ntoken result', util.inspect( result, null, null ) )
 
-              var options =
-                { method: 'POST'
-                , cookieJar: cookieJar
-                , payload: querystring.stringify( { 'name': 'MacPro' } )
-                , headers: {'content-type': 'application/x-www-form-urlencoded'}
-                }        
-              fetchUrl( config.baseUrl.setup + '/dashboard/agent/list', options, function ( error, meta, body ) {
-                if ( error ) return done( error )
-                cookieJar = meta.cookieJar
-                try {
-                  var result = JSON.parse( body )        
-                }
-                catch (e) {
-                  return console.log ( e, body.toString() )
-                }
-                console.log('\nagent/list result', util.inspect( result, null, null ) )
-              })   
-            })   
           })   
         })   
       })   
