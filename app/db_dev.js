@@ -257,9 +257,9 @@ exports.deleteAgent = function ( asDI, asHost, handle, cb ) {
   process.nextTick( function () { cb( null, handleAS ) } )  
 }
 
-/*
-* AS DB functions
-*/
+
+// TBD - delete and use channels instead
+
 exports.storeAgentRegisterSessionValue = function ( id, label, data, cb ) {
   var key = 'as:agentRegisterSession:' + id
   dummyNoSql[key] = dummyNoSql[key] || {}
@@ -274,33 +274,37 @@ exports.retrieveAgentRegisterSession = function ( id, cb ) {
   })
 }
 
-exports.storeAgent = function ( agent, cb ) {
-  var key = 'as:agent:device:' + agent.device
+/*
+* Agent DB functions
+*/
+
+exports.storeAgent = function ( as, agent, cb ) {
+  var key = as + ':agent:device:' + agent.device
   dummyNoSql[key] = agent
-  key = 'as:agent:handle:' + agent.handle
+  key = as + ':agent:handle:' + agent.handle
   dummyNoSql[key] = agent.device
   process.nextTick( function () { cb( null ) } )
 }
 
-exports.retrieveAgentFromDevice = function ( device, cb) {
-  var key = 'as:agent:device:' + device
+exports.retrieveAgentFromDevice = function ( as, device, cb) {
+  var key = as + ':agent:device:' + device
   var agent = dummyNoSql[key]
   process.nextTick( function () { cb( null, agent ) } )
 }
 
-exports.retrieveAgentFromHandle = function ( handle, cb) {
-  var key = 'as:agent:handle:' + handle
+exports.retrieveAgentFromHandle = function ( as, handle, cb) {
+  var key = as + ':agent:handle:' + handle
   var device = dummyNoSql[key]
-  var key = 'as:agent:device:' + device
+  var key = as + ':agent:device:' + device
   var agent = dummyNoSql[key]
   process.nextTick( function () { cb( null, agent ) } )  
 }
 
-exports.deleteAgentFromHandle = function ( handle, cb) {
-  var key = 'as:agent:handle:' + handle
+exports.deleteAgentFromHandle = function ( as, handle, cb) {
+  var key = as + ':agent:handle:' + handle
   var device = dummyNoSql[key]
   delete dummyNoSql[key]
-  var key = 'as:agent:device:' + device
+  var key = as + ':agent:device:' + device
   delete dummyNoSql[key]
   process.nextTick( function () { cb( null ) } )  
 }

@@ -61,7 +61,7 @@ console.log('we are now logged into '+config.host[rs])
 
 var tasks =
   [ function getDI ( done ) {
-      db.retrieveAgentFromDevice( 'root', function ( e, agent ) {
+      db.retrieveAgentFromDevice( 'setup', 'root', function ( e, agent ) {
         if ( e ) return done( e ) 
         setupDI = agent.di
 console.log('setupDI',setupDI)      

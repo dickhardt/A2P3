@@ -14,6 +14,22 @@ var express = require('express')
   , mw = require('../middleware')
   , jwt = require('../jwt')
 
+/*
+
+
+TBD
+
+rework device registration session management
+
+rework state management to use cookies while in dashboard
+
+
+
+
+*/
+
+
+
 
 // called by IX when agent is to be deleted
 function agentDelete ( req, res, next ) {
@@ -30,7 +46,7 @@ function tokenHandler ( req, res, next ) {
   var device = req.body.device
     , sar = req.body.sar
     , auth = req.body.auth
-  db.retrieveAgentFromDevice( device, function ( e, agent ) {
+  db.retrieveAgentFromDevice( 'as', device, function ( e, agent ) {
     if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
     if (!agent) {
       e = new Error('Unknown device id.')
@@ -88,7 +104,7 @@ function register ( req, res, next ) {
       , 'passcode': session.passcode
       , 'handle': 'xyz'
       }
-    db.storeAgent( agent, function ( e ) {
+    db.storeAgent( 'as', agent, function ( e ) {
       if (e) {
         e.code = "INTERNAL_ERROR"
         return next(e)

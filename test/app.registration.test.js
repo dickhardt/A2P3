@@ -26,7 +26,7 @@ describe('Logging into email dashboard', function(){
 
   describe('/dashboard/login', function(){
     it('should return an Agent Request', function (done){
-      db.retrieveAgentFromDevice( 'root', function ( e, agent ) {
+      db.retrieveAgentFromDevice( 'setup', 'root', function ( e, agent ) {
         should.not.exist(e)
         setupDI = agent.di
         var options = { disableRedirects: true }
