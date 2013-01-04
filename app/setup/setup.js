@@ -163,30 +163,46 @@ function _callIX ( api, params, cb ) {
 }
 
 function dashboardAgentList ( req, res, next ) {
-  _callRegistrar( '/agent/list', function ( e, result ) {
+  var params = 
+    { di: req.session.di
+    , as: 'setup'
+    }
+  _callIX( '/agent/list', params, function ( e, result ) {
     if (e) return next( e )
     return res.send( { 'result': result } )  
-  })
-}
-
-function dashboardAgentCreate ( req, res, next ) {
-  _callRegistrar( '/agent/add', function ( e, handle ) {
-    if (e) return next( e )
-      var agent =
-        { 'device': req.request['request.a2p3.org'].device
-        , 'handle': handle
-        }
-    db.storeAgent( 'setup', agent, function (e) {
-      if (e) return next( e )
-      return res.send( { 'result': handle } )  
-    })
   })
 }
 
 function dashboardAgentDelete ( req, res, next ) {
-  _callRegistrar( '/agent/delete', function ( e, result ) {
+  var params = 
+    { di: req.session.di
+    , as: 'setup'
+    , handle: req.request['request.a2p3.org'].handle
+    }
+  _callIX( '/agent/delete', params, function ( e, result ) {
     if (e) return next( e )
     return res.send( { 'result': result } )  
+  })
+}
+
+
+// create a CLI agent for Setup AS
+function dashboardAgentCreate ( req, res, next ) {
+  var params = 
+    { di: req.session.di
+    , as: 'setup'
+    , name: req.request['request.a2p3.org'].name
+    }
+  _callIX( '/agent/add', params, function ( e, handle ) {
+    if (e) return next( e )
+      var agent =
+        { 'device': jwt.handle()
+        , 'handle': handle
+        }
+    db.storeAgent( 'setup', agent, function (e) {
+      if (e) return next( e )
+      return res.send( { 'result': agent } )  
+    })
   })
 }
 
