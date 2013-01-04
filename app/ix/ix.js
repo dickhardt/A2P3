@@ -171,9 +171,9 @@ function agentAdd ( req, res, next ) {
     db.addAgent( req.request['request.a2p3.org'].di
                   , req.request['request.a2p3.org'].as
                   , req.request['request.a2p3.org'].name
-                  , function( e, handle ) {
+                  , function( e, token ) {
                       if (e) return next (e)
-                      return res.send({ result: { handle: handle } } )
+                      return res.send({ result: { token: token } } )
                     } )
 }
 
@@ -184,10 +184,10 @@ function agentDelete ( req, res, next ) {
     db.deleteAgent( di, as, handle, function( e, AS ) {
       var details = 
         { host: AS
-        , api: api
+        , api: '/agent/delete'
         , credentials: vault.keys[config.host[AS]].latest
         , payload: 
-          { iss: config.host.setup
+          { iss: config.host.ix
           , aud: config.host[AS]
           , 'request.a2p3.org': { 'handle': handle }
           }

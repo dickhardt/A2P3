@@ -91,10 +91,14 @@ exports.facebook =
 
 // roles are used for access control to special APIs
 var roles =
-  { as: {}
+  { ix: {}
+  , as: {}
   , enroll: {}
   , std: {}
   }
+
+// IX roles, should just be the one!
+roles.ix[host.ix] = true
 
 // AS roles, add other AS when they become available
 roles.as[host.as] = true

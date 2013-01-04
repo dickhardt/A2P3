@@ -91,7 +91,6 @@ function _registerUser ( session, complete ) {
     linkHosts.forEach( function (host) { 
       tasks[host] = function (done) { 
         api.call( linkDetails[host], function ( error, result) {
-          console.log('host:',host, result)
           done( error, result )
         }
       )} 
@@ -202,7 +201,7 @@ function dashboardAgentCreate ( req, res, next ) {
     if (e) return next( e )
       var agent =
         { 'device': jwt.handle()
-        , 'handle': result.handle
+        , 'token': result.token
         }
     db.storeAgent( 'setup', agent, function (e) {
       if (e) return next( e )
@@ -308,7 +307,7 @@ exports.app = function() {
           )
   // called from IX when an agent is deleted
   app.post('/agent/delete'
-          , request.check( vault, config.host.ix )
+          , request.check( vault.keys, config.roles.ix )
           , agentDelete 
           )
 

@@ -48,40 +48,52 @@ exports.mapDI = mapDI
 exports.addAgent = function ( asDI, asHost, name, cb ) {
   var ixDI = dummyNoSql['ix:di:' + asHost + ':' + asDI]
   var handle = jwt.handle()
+  var token = jwt.handle()
   dummyNoSql['ix:di:' + ixDI] = dummyNoSql['ix:di:' + ixDI] || {}
-  dummyNoSql['ix:di:' + ixDI][handle] = name
-  dummyNoSql['ix:di:' + ixDI + ':handle:' + handle] = asHost
-  dummyNoSql['registrar:agentHandle:' + handle] = true
+  dummyNoSql['ix:di:' + ixDI][handle] = { 'name': name, 'AS': asHost, 'created': Date.now() }
+  dummyNoSql['ix:di:' + ixDI + ':handle:' + handle + ':token'] = token
+  dummyNoSql['registrar:agentHandle:' + token] = true
 
-  process.nextTick( function () { cb( null, handle ) } )
+  process.nextTick( function () { cb( null, token ) } )
 }
 
 exports.listAgents = function ( asDI, asHost, cb ) {
   var ixDI = dummyNoSql['ix:di:' + asHost + ':' + asDI]
-  var handles = dummyNoSql['ix:di:' + ixDI]
-  process.nextTick( function () { cb( null, handles ) } )  
+  var agents = dummyNoSql['ix:di:' + ixDI]
+  if (!agents) {
+    return process.nextTick( function () { cb( null, {} ) } )  
+  }
+  // don't want to share agent AS with other AS, just return what is needed for User to decide
+  var results = {}
+  Object.keys(agents).forEach( function ( handle ) { 
+    results[handle] = 
+      { name: agents[handle].name
+      , created: agents[handle].created
+      }
+  })
+  process.nextTick( function () { cb( null, results ) } )  
 }
 
 exports.deleteAgent = function ( asDI, asHost, handle, cb ) {
   var ixDI = dummyNoSql['ix:di:' + asHost + ':' + asDI]
-  var handleAS = dummyNoSql['ix:di:' + ixDI + ':handle:' + handle]
-  if (!handleAS) {
+  var agentAS = dummyNoSql['ix:di:' + ixDI][handle] && dummyNoSql['ix:di:' + ixDI][handle].AS
+  if (!agentAS) {
     return cb('HANDLE_NOT_FOUND')
   }
-
+  var token = dummyNoSql['ix:di:' + ixDI + ':handle:' + handle + ':token']
   delete dummyNoSql['ix:di:' + ixDI][handle]
-  delete dummyNoSql['registrar:agentHandle:' + handle]
-  delete dummyNoSql['ix:di:' + ixDI + ':handle:' + handle]
+  delete dummyNoSql['ix:di:' + ixDI + ':handle:' + handle + ':token']
+  delete dummyNoSql['registrar:agentHandle:' + token]
 
-  process.nextTick( function () { cb( null, handleAS ) } )  
+  process.nextTick( function () { cb( null, agentAS ) } )  
 }
 
 
 /*
 * Registrar DB functions
 */
-exports.validAgent = function ( handle, cb ) {
-  var valid = dummyNoSql['registrar:agentHandle:' + handle]
+exports.validAgent = function ( token, cb ) {
+  var valid = dummyNoSql['registrar:agentHandle:' + token]
   process.nextTick( function () { cb(  valid ) } )
 }
 
