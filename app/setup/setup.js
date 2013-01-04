@@ -8,6 +8,7 @@ var express = require('express')
   , async = require('async')
   , registration = require('../registration')
   , request = require('../request')
+  , token = require('../token')
   , config = require('../config')
   , vault = require('./vault')
   , util = require('util')
@@ -236,7 +237,7 @@ function tokenHandler ( req, res, next ) {
           }
         }
       }
-    var ixToken = token.create( payload, vault.ix.latest )
+    var ixToken = token.create( payload, vault.keys[config.host.ix].latest )
     return res.send( {'result': {'token': ixToken }})
   })
 }
@@ -254,20 +255,20 @@ function agentDelete ( req, res, next ) {
 
 function homepage ( req, res, next ) {
   if (useFB) {
-    res.sendfile( __dirname+'/assets/homepageFB.html' )
+    res.sendfile( __dirname+'/html/homepageFB.html' )
   } else {
-    res.sendfile( __dirname+'/assets/homepageDev.html' )
+    res.sendfile( __dirname+'/html/homepageDev.html' )
   }
 }
 
 function enroll ( req, res, next ) {
   if (!req.session.profile) return res.redirect('/')
-  res.sendfile( __dirname+'/assets/enroll.html')
+  res.sendfile( __dirname+'/html/enroll.html')
 }
 
 function dashboard ( req, res, next ) {
   if (!req.session.enrolled) return res.redirect('/')
-  res.sendfile( __dirname+'/assets/dashboard.html')
+  res.sendfile( __dirname+'/html/dashboard.html')
 }
 
 exports.app = function() {
