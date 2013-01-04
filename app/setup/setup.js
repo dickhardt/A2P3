@@ -13,6 +13,7 @@ var express = require('express')
   , util = require('util')
   , db = require('../db')
   , api = require('../api')
+  , jwt = require('../jwt')
   , mw = require('../middleware')
 
 
@@ -148,10 +149,10 @@ function enrollRegister ( req, res, next ) {
   })
 }
 
-function _callIX ( api, params, cb ) {
+function _callIX ( apiPath, params, cb ) {
   var details = 
     { host: 'ix'
-    , api: api
+    , api: apiPath
     , credentials: vault.keys[config.host.ix].latest
     , payload: 
       { iss: config.host.setup
@@ -161,6 +162,10 @@ function _callIX ( api, params, cb ) {
     }
   api.call( details, cb )
 }
+
+/*
+* Dashboard web app API
+*/
 
 function dashboardAgentList ( req, res, next ) {
   var params = 
@@ -177,7 +182,7 @@ function dashboardAgentDelete ( req, res, next ) {
   var params = 
     { di: req.session.di
     , as: 'setup'
-    , handle: req.request['request.a2p3.org'].handle
+    , handle: req.body.handle
     }
   _callIX( '/agent/delete', params, function ( e, result ) {
     if (e) return next( e )
@@ -191,13 +196,13 @@ function dashboardAgentCreate ( req, res, next ) {
   var params = 
     { di: req.session.di
     , as: 'setup'
-    , name: req.request['request.a2p3.org'].name
+    , name: req.body.name
     }
-  _callIX( '/agent/add', params, function ( e, handle ) {
+  _callIX( '/agent/add', params, function ( e, result ) {
     if (e) return next( e )
       var agent =
         { 'device': jwt.handle()
-        , 'handle': handle
+        , 'handle': result.handle
         }
     db.storeAgent( 'setup', agent, function (e) {
       if (e) return next( e )
@@ -206,7 +211,7 @@ function dashboardAgentCreate ( req, res, next ) {
   })
 }
 
-
+// generate an IX token for CLI agent
 function tokenHandler ( req, res, next ) {
   var device = req.body.device
     , sar = req.body.sar

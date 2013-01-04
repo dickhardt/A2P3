@@ -48,7 +48,7 @@ exports.mapDI = mapDI
 exports.addAgent = function ( asDI, asHost, name, cb ) {
   var ixDI = dummyNoSql['ix:di:' + asHost + ':' + asDI]
   var handle = jwt.handle()
-
+  dummyNoSql['ix:di:' + ixDI] = dummyNoSql['ix:di:' + ixDI] || {}
   dummyNoSql['ix:di:' + ixDI][handle] = name
   dummyNoSql['ix:di:' + ixDI + ':handle:' + handle] = asHost
   dummyNoSql['registrar:agentHandle:' + handle] = true
