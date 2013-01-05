@@ -71,7 +71,7 @@ function tokenHandler ( req, res, next ) {
           }
         }
       }
-    var ixToken = token.create( payload, vault.ix.latest )
+    var ixToken = token.create( payload, vault.keys[config.host.ix].latest )
     return res.send( {'result': {'token': ixToken }})
   })
 }

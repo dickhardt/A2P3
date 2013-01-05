@@ -68,7 +68,7 @@ exports.app = function( province ) {
   app.post('/prov_number' 
           , request.check( vault.keys, null, 'health.'+province )
           , mw.a2p3Params( ['token'] )
-          , token.checkRS( vault.keys, 'health.'+province, ['/scope/prov_number'] )
+          , token.checkRS( vault.keys, 'health.'+province, ['/scope/prov_number'], 'health' )
           , number( province ) 
           )
 

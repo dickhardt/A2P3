@@ -131,25 +131,25 @@ exports.app = function( province ) {
   app.post('/over19' 
           , request.check( vault.keys, null, 'people.'+province )
           , mw.a2p3Params( ['token'] )
-          , token.checkRS( vault.keys, 'people.'+province, ['/scope/over19','/scope/details'] )
+          , token.checkRS( vault.keys, 'people.'+province, ['/scope/over19','/scope/details'], 'people' )
           , over19( province ) 
           )
   app.post('/under20over65' 
           , request.check( vault.keys, null, 'people.'+province )
           , mw.a2p3Params( ['token'] )
-          , token.checkRS( vault.keys, 'people.'+province, ['/scope/under20over65','/scope/details'] )
+          , token.checkRS( vault.keys, 'people.'+province, ['/scope/under20over65','/scope/details'], 'people' )
           , under20over65( province ) 
           )
   app.post('/namePhoto' 
           , request.check( vault.keys, null, 'people.'+province )
           , mw.a2p3Params( ['token'] )
-          , token.checkRS( vault.keys, 'people.'+province, ['/scope/namePhoto','/scope/details'] )
+          , token.checkRS( vault.keys, 'people.'+province, ['/scope/namePhoto','/scope/details'], 'people' )
           , namePhoto( province ) 
           )
   app.post('/details' 
           , request.check( vault.keys, null, 'people.'+province )
           , mw.a2p3Params( ['token'] )
-          , token.checkRS( vault.keys, 'people.'+province, ['/scope/details'] )
+          , token.checkRS( vault.keys, 'people.'+province, ['/scope/details'], 'people' )
           , details( province ) 
           )
 

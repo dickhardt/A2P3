@@ -23,6 +23,69 @@ if (config.facebook.appID) {  // Facebook is configured
   useFB = true
 }
 
+// fetch name and photo from People to show on Dashboard
+function _fetchProfile ( di, complete ) {
+  // build an Agent Request and IX Token, get RS Tokens, then call People RS to get name and photo
+  var agentRequestDetails =
+  { 'iss': config.host.setup
+  , 'aud': config.host.ix
+  , 'request.a2p3.org':
+   { 'resources':
+      [ config.baseUrl.people + '/scope/namePhoto' ]
+    , 'auth': 
+      { 'passcode': true
+      , 'authorization': true
+      }
+    , 'returnURL': config.baseUrl.setup + '/dashboard/return'
+    }
+  }
+  var agentRequest = request.create( agentRequestDetails, vault.keys[config.host.ix].latest )
+  var jws = new jwt.Parse( agentRequest )
+  var ixTokenDetails =
+    { 'iss': config.host.setup
+    , 'aud': config.host.ix
+    , 'sub': di
+    , 'token.a2p3.org': 
+      { 'sar': jws.signature
+      , 'auth': agentRequestDetails['request.a2p3.org'].auth
+      }
+    }
+  var ixToken = token.create( ixTokenDetails, vault.keys[config.host.ix].latest )
+  var details = 
+    { host: 'ix'
+    , api: '/exchange'
+    , credentials: vault.keys[config.host.ix].latest
+    , payload: 
+      { iss: config.host.setup
+      , aud: config.host.ix
+      , 'request.a2p3.org':
+        { 'request': agentRequest
+        , 'token': ixToken
+        }
+      }
+    }
+
+
+  api.call( details, function ( e, result ) {
+    if (e) return next( e )
+    var peopleHost = Object.keys(result.tokens)[0]  
+    var peopleToken = result.tokens[peopleHost]
+    var peopleDetails =
+      { host: config.reverseHost[peopleHost]
+      , api: '/namePhoto'
+      , credentials: vault.keys[peopleHost].latest
+      , payload: 
+        { iss: config.host.setup
+        , aud: peopleHost
+        , 'request.a2p3.org': { 'token': peopleToken }
+        }
+      }
+    api.call( peopleDetails, function ( e, result ) {
+      if (e) return complete( e , null )
+      complete( null, result )
+    })
+  })
+}
 
 function _registerUser ( profile, complete ) {
   var province = profile.province.toLowerCase()
@@ -172,7 +235,10 @@ function _callIX ( apiPath, params, cb ) {
 
 function dashboardProfile ( req, res, next ) {
   var di = req.session.di
-  res.send( { 'error': { code: 'NOT_IMPLEMENTED' } } )
+  _fetchProfile( di, function ( e, profile ) {
+    if (e) return next( e )
+    return res.send( { 'result': profile } )          
+  })
 }
 
 

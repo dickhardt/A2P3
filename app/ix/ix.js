@@ -108,13 +108,15 @@ function exchange ( req, res, next ) {
       return next( e )
   }
   var rsScopes = getHosts( jws.payload['request.a2p3.org'].resources )
-
   db.getStandardResourceHosts( ixToken.sub, ixToken.iss, Object.keys( rsScopes ), function ( e, redirects ) {
     var hostList = {}
     hostList[jws.payload.iss] = true
     Object.keys(rsScopes).forEach( function (rs) {
       if (redirects && redirects[rs]) {
-        redirects[rs].forEach( function (host) { hostList[host] = true })
+        redirects[rs].forEach( function (host) { 
+          hostList[host] = true
+          rsScopes[host] = rsScopes[rs] // redirected host has scope of standardized resource 
+        })
       } else {
         hostList[rs] = true
       }

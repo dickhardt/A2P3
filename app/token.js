@@ -8,6 +8,7 @@
 
 var config = require('./config')
   , jwt = require('./jwt')
+  , underscore = require('underscore')
 
 exports.create = function ( payload, credentials ) {
   var details =
@@ -24,29 +25,28 @@ exports.create = function ( payload, credentials ) {
     return jwt.jwe( details )
 }
 
-function intersection ( a, b ) {
-  return a.some( function ( aI) {
-    return b.some( function (bI) { 
-      return (aI === bI)
-    })
-  })
-}
-
-function validScope ( passedScopes, baseUrl, scopePaths ) {
-  var acceptedScopes = scopePaths.map( function ( scopePath ) { return (baseUrl + scopePath); } )
-  var valid = intersection( passedScopes, acceptedScopes )
-
-  // TBD -- change to a trace??
-  if (!valid) console.log('\nscopes\npassed:\t'+passedScopes+'\naccepted:\t'+acceptedScopes)
-
-  return intersection( passedScopes, acceptedScopes )
+function validScope ( passedScopes, acceptedScopes ) {
+  var valid = underscore.intersection( passedScopes, acceptedScopes )
+  if (!valid) console.log('\ninvalid scope\npassed:\t'+passedScopes+'\naccepted:\t'+acceptedScopes)
+  return valid
 }
 
 // middleware that checks token is valid
 // depends on request.check middleware being called prior
-exports.checkRS = function ( vault, rs, scopePaths ) {
+exports.checkRS = function ( vault, rs, scopePaths, stdRS ) {
+  // build list of acceptable scopes
   if ( scopePaths instanceof String ) 
     scopePaths = [scopePaths]
+  var acceptedScopes = scopePaths && scopePaths.map( function ( scopePath ) { 
+    return (config.baseUrl[rs] + scopePath) 
+    })
+  if (acceptedScopes && stdRS) {
+    var stdAcceptedScopes = scopePaths.map( function ( scopePath ) { 
+      return (config.baseUrl[stdRS] + scopePath) 
+    })
+    acceptedScopes.push( stdAcceptedScopes )
+  }
+
   return (function (req, res, next) {
     var jwe, err, token
     if (!req.request['request.a2p3.org'].token) {
@@ -82,7 +82,12 @@ exports.checkRS = function ( vault, rs, scopePaths ) {
       err.code = 'INVALID_TOKEN'
       return next( err )
     }
-    if ( !validScope( token['token.a2p3.org'].scopes, config.baseUrl[rs], scopePaths ) ) {
+    if ( acceptedScopes && !token['token.a2p3.org'].scopes ) {
+      err = new Error("No scope provided.")
+      err.code = 'INVALID_TOKEN'
+      return next( err )
+    }    
+    if ( acceptedScopes && !validScope( token['token.a2p3.org'].scopes, acceptedScopes ) ) {
       err = new Error("Invalid scope.")
       err.code = 'INVALID_TOKEN'
       return next( err )
