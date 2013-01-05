@@ -24,8 +24,7 @@ if (config.facebook.appID) {  // Facebook is configured
 }
 
 
-function _registerUser ( session, complete ) {
-  var profile = session.profile
+function _registerUser ( profile, complete ) {
   var province = profile.province.toLowerCase()
   var healthHost = 'health.'+province
   var peopleHost = 'people.'+province
@@ -48,7 +47,6 @@ function _registerUser ( session, complete ) {
   api.call( details, function ( error, result ) {
     if (error) complete( error, null )
     var diList = result.dis
-    session.di = diList[config.host.setup] // we need this for registering an agent
     var linkDetails = {}
     var linkHosts = ['email','si',peopleHost,healthHost]
     function makeLinkDetails ( host ) {
@@ -85,32 +83,30 @@ function _registerUser ( session, complete ) {
       )} 
     })
     async.parallel(tasks, function (e, result) {
-      complete(e, result)
+      complete(e, diList[config.host.setup])
     })
   })
 }     // _registerUser
 
 function enrollRegister ( req, res, next ) {
-  var newProfile = req.body
-  var profile = req.session.profile
-
-  profile.si = newProfile.si
-  profile.prov_number = newProfile.prov_number
-  profile.name = newProfile.name
-  profile.dob = newProfile.dob
-  profile.address1 = newProfile.address1
-  profile.address2 = newProfile.address2
-  profile.city = newProfile.city
-  profile.province = newProfile.province
-  profile.postal = newProfile.postal
+  var passedProfile = req.body
+  var profile = {}
+  profile.email = req.session.profile.email
+  profile.si = passedProfile.si
+  profile.prov_number = passedProfile.prov_number
+  profile.name = passedProfile.name
+  profile.dob = passedProfile.dob
+  profile.address1 = passedProfile.address1
+  profile.address2 = passedProfile.address2
+  profile.city = passedProfile.city
+  profile.province = passedProfile.province
+  profile.postal = passedProfile.postal
   profile.photo = profile.photo || req.session.profile.photo
-  req.session.profile = profile
-  _registerUser( req.session, function ( e ) {
+  _registerUser( profile, function ( e, di ) {
     if (e) return next(e)
-    profile.di = req.session.di // this was set in _registerUser
-    db.updateProfile( 'setup', profile.email, profile, function (e) {
+    db.updateProfile( 'setup', profile.email, {di: di}, function ( e ) {
       if (e) return next(e)
-      req.session.enrolled = true
+      req.session.di = di // indicates we have enrolled user
       if (req.body.json) {
         return res.send( {'response': {'success': true } } )
       } else {
@@ -121,14 +117,13 @@ function enrollRegister ( req, res, next ) {
 }
 
 
-function _loadProfile ( di, profile, req, res ) {
-  db.getProfile( 'setup', di, function ( e, existingProfile ) {
+function _loadProfile ( id, profile, req, res ) {
+  db.getProfile( 'setup', id, function ( e, existingProfile ) {
     if (e) {
       req.session.profile = profile
       return res.redirect( '/enroll' )
     } else {
-      req.session.profile = existingProfile
-      req.session.enrolled = true
+      req.session.di = existingProfile.di
       return res.redirect( '/dashboard' )      
     }
   })
@@ -137,9 +132,9 @@ function _loadProfile ( di, profile, req, res ) {
 function fbRedirect ( req, res, next ) {
   if (!useFB) return res.redirect('/')
   // make FB calls to find out who user is
-  var user = null // TBD
+  var userID = null // TBD
   var profile = null // TBD
-  _loadProfile( user, profile, req, res )
+  _loadProfile( userID, profile, req, res )
 }
 
 
@@ -173,6 +168,13 @@ function _callIX ( apiPath, params, cb ) {
 /*
 * Dashboard web app API
 */
+
+
+function dashboardProfile ( req, res, next ) {
+  var di = req.session.di
+  res.send( { 'error': { code: 'NOT_IMPLEMENTED' } } )
+}
+
 
 function dashboardAgentList ( req, res, next ) {
   var params = 
@@ -258,6 +260,7 @@ function agentDelete ( req, res, next ) {
 
 
 function homepage ( req, res, next ) {
+
   if (useFB) {
     res.sendfile( __dirname+'/html/homepageFB.html' )
   } else {
@@ -271,7 +274,7 @@ function enroll ( req, res, next ) {
 }
 
 function dashboard ( req, res, next ) {
-  if (!req.session.enrolled) return res.redirect('/')
+  if (!req.session.di) return res.redirect('/')
   res.sendfile( __dirname+'/html/dashboard.html')
 }
 
@@ -321,19 +324,19 @@ exports.app = function() {
 
   // dashboard API
   app.post('/dashboard/profile'
-          , mw.checkParams( {'session':['profile', 'enrolled']} )
-          , enrollProfile // getting profile for dashboard works same as in enroll
+          , mw.checkParams( {'session':['di']} )
+          , dashboardProfile
           )
   app.post('/dashboard/agent/list'
-          , mw.checkParams( {'session':['profile', 'enrolled']} )
+          , mw.checkParams( {'session':['di']} )
           , dashboardAgentList
           )
   app.post('/dashboard/agent/create'
-          , mw.checkParams( {'session':['profile', 'enrolled'], 'body': ['name']} )
+          , mw.checkParams( {'session':['di'], 'body': ['name']} )
           , dashboardAgentCreate
           )
   app.post('/dashboard/agent/delete'
-          , mw.checkParams( {'session':['profile', 'enrolled'], 'body': ['handle']} )
+          , mw.checkParams( {'session':['di'], 'body': ['handle']} )
           , dashboardAgentDelete
           )
   // TBD - REMOVE THIS! ... used by XHR to test

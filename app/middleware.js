@@ -99,7 +99,7 @@ exports.a2p3Params = function ( params ) {
 exports.colorLogger = function colorLogger ( express ) {
 
   function errorStatusCode ( code ) {
-    return (code != 200 && code != 302)
+    return (code != 200 && code != 302 && code != 304)
   }
 
   express.logger.token( 'wideHost', function (req, res) {
