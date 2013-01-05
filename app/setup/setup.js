@@ -23,18 +23,6 @@ if (config.facebook.appID) {  // Facebook is configured
   useFB = true
 }
 
-function _loadProfile ( di, profile, req, res ) {
-  db.getProfile( 'setup', di, function ( e, existingProfile ) {
-    if (e) {
-      req.session.profile = profile
-      return res.redirect( '/enroll' )
-    } else {
-      req.session.enrolled = true
-      req.session.profile = profile
-      return res.redirect( '/dashboard' )      
-    }
-  })
-}
 
 function _registerUser ( session, complete ) {
   var profile = session.profile
@@ -102,27 +90,6 @@ function _registerUser ( session, complete ) {
   })
 }     // _registerUser
 
-function fbRedirect ( req, res, next ) {
-  if (!useFB) return res.redirect('/')
-  // make FB calls to find out who user is
-  var user = null // TBD
-  var profile = null // TBD
-  _loadProfile( user, profile, req, res )
-}
-
-
-function devLogin ( req, res, next ) {
-  if (useFB) return res.redirect('/')
-  var profile = JSON.parse( JSON.stringify( config.testUser ))  // clone test user object
-  profile.email = req.body.email
-  _loadProfile( req.body.email, profile, req, res )
-}
-
-
-function enrollProfile ( req, res, next ) {
-  res.send( req.session.profile )
-}
-
 function enrollRegister ( req, res, next ) {
   var newProfile = req.body
   var profile = req.session.profile
@@ -148,6 +115,42 @@ function enrollRegister ( req, res, next ) {
     })
   })
 }
+
+
+function _loadProfile ( di, profile, req, res ) {
+  db.getProfile( 'setup', di, function ( e, existingProfile ) {
+    if (e) {
+      req.session.profile = profile
+      return res.redirect( '/enroll' )
+    } else {
+      req.session.profile = existingProfile
+      req.session.enrolled = true
+      return res.redirect( '/dashboard' )      
+    }
+  })
+}
+
+function fbRedirect ( req, res, next ) {
+  if (!useFB) return res.redirect('/')
+  // make FB calls to find out who user is
+  var user = null // TBD
+  var profile = null // TBD
+  _loadProfile( user, profile, req, res )
+}
+
+
+function devLogin ( req, res, next ) {
+  if (useFB) return res.redirect('/')
+  var profile = JSON.parse( JSON.stringify( config.testUser ))  // clone test user object
+  profile.email = req.body.email
+  _loadProfile( req.body.email, profile, req, res )
+}
+
+
+function enrollProfile ( req, res, next ) {
+  res.send( req.session.profile )
+}
+
 
 function _callIX ( apiPath, params, cb ) {
   var details = 
@@ -276,11 +279,14 @@ exports.app = function() {
   app.use( express.limit('10kb') )  // protect against large POST attack
   app.use( express.bodyParser() )  
   app.use( express.cookieParser() )
+/*
   var cookieOptions =
     { 'secret': vault.secret
     , 'cookie': { path: '/', httpOnly: true, maxAge: 300 }
     , 'proxy': true
     }
+*/
+  var cookieOptions = { 'secret': vault.secret, 'cookie': { path: '/' } }
   app.use( express.cookieSession( cookieOptions ))
 
   // FB response
@@ -329,6 +335,11 @@ exports.app = function() {
           , mw.checkParams( {'session':['profile', 'enrolled'], 'body': ['handle']} )
           , dashboardAgentDelete
           )
+  // TBD - REMOVE THIS! ... used by XHR to test
+  app.post('/ping', function( req, res, next ) { 
+    console.log('\nping session:\n',req.session )
+    res.send(req.session) 
+  } )
 
   // static pages
 	app.get('/', homepage )

@@ -41,10 +41,12 @@ exports.checkParams = function  ( params ) {
     var e
 
     function dump() { // TBD make a trace of some kind??
-      console.error('\ncheckParams:\nparams:',params)
+      console.error('\ncheckParams FAILED, expected params:\n',params,'\npassed in:')
+
       console.error('req.query:',req.query)
       console.error('req.body:',req.body)
       console.error('req.params:',req.params)
+      console.error('req.session:',req.session)
     }
 
     Object.keys( params ).forEach( function ( key ) {

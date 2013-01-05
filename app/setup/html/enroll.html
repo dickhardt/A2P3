@@ -26,11 +26,12 @@
 
 <script>
   function onReady() {
-    var url = 'http://setup.local.a2p3.net:8080/enroll/profile' // TBD, construct from current document
+    debugger;
+    var url = 'http://setup.local.a2p3.net:8080/ping' // TBD, construct host from current document URL
     $.post( url, null, function ( data, status ) {
 //      if (status == "200") {
 
-      }
+//      }
       console.log('status',status)
       console.log('data',data)
 //      $('#name_input').val()

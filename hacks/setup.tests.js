@@ -38,6 +38,7 @@ function done ( error, result ) { console.log('error,result:', error, result) }
 fetchUrl( config.baseUrl.setup + '/dev/login', options, function ( error, meta, body ) {
   if ( error ) return done( error )
   cookieJar = meta.cookieJar
+console.log('\ncookieJar:\n',util.inspect( cookieJar, null, null ) )
   var options =
     { method: 'POST'
     , cookieJar: cookieJar
@@ -48,6 +49,7 @@ fetchUrl( config.baseUrl.setup + '/dev/login', options, function ( error, meta, 
   fetchUrl( config.baseUrl.setup + '/enroll/profile', options, function ( error, meta, body ) {
     if ( error ) return done( error )
     cookieJar = meta.cookieJar
+  console.log('\ncookieJar:\n',util.inspect( cookieJar, null, null ) )
     try {
       var profile = JSON.parse( body )        
     }
@@ -65,6 +67,7 @@ fetchUrl( config.baseUrl.setup + '/dev/login', options, function ( error, meta, 
     fetchUrl( config.baseUrl.setup + '/enroll/register', options, function ( error, meta, body ) {
       if ( error ) return done( error )
       cookieJar = meta.cookieJar
+    console.log('\ncookieJar:\n',util.inspect( cookieJar, null, null ) )
       try {
         var result = JSON.parse( body )        
       }
@@ -82,6 +85,7 @@ fetchUrl( config.baseUrl.setup + '/dev/login', options, function ( error, meta, 
       fetchUrl( config.baseUrl.setup + '/dashboard/agent/list', options, function ( error, meta, body ) {
         if ( error ) return done( error )
         cookieJar = meta.cookieJar
+      console.log('\ncookieJar:\n',util.inspect( cookieJar, null, null ) )
         try {
           var result = JSON.parse( body )        
         }
@@ -98,6 +102,7 @@ fetchUrl( config.baseUrl.setup + '/dev/login', options, function ( error, meta, 
         fetchUrl( config.baseUrl.setup + '/dashboard/agent/create', options, function ( error, meta, body ) {
           if ( error ) return done( error )
           cookieJar = meta.cookieJar
+        console.log('\ncookieJar:\n',util.inspect( cookieJar, null, null ) )
           try {
             var result = JSON.parse( body )        
           }
