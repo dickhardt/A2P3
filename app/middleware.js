@@ -13,6 +13,7 @@ var config = require('./config')
   , api = require('./api')
   , jwt = require('./jwt')
   , querystring = require('querystring')
+  , util = require('util')
   , db = require('./db')
 
 exports.trace = function trace ( req, res, next ) {
@@ -43,10 +44,10 @@ exports.checkParams = function  ( params ) {
     function dump() { // TBD make a trace of some kind??
       console.error('\ncheckParams FAILED, expected params:\n',params,'\npassed in:')
 
-      console.error('req.query:',req.query)
-      console.error('req.body:',req.body)
-      console.error('req.params:',req.params)
-      console.error('req.session:',req.session)
+      console.error('req.query:', util.inspect( req.query, null, null ) )
+      console.error('req.body:', util.inspect( req.body, null, null ) )
+      console.error('req.params:', util.inspect( req.params, null, null ) )
+      console.error('req.session:', util.inspect( req.session, null, null ) )
     }
 
     Object.keys( params ).forEach( function ( key ) {

@@ -62,7 +62,7 @@ var profile =
     , 'city': 'Victoria'
     , 'province': 'BC'
     , 'postal': 'V1A 1A1'
-    , 'photo': baseUrl.setup + '/images/white-face.jpeg'
+    , 'photo': baseUrl.setup + '/images/white-face.jpg'
     }
 exports.testProfile =
     { 'name': profile.name
