@@ -14,6 +14,9 @@ var fetch = require('request')
 
 exports.call = function ( details, callback ) {
 
+// details.host only works if we already know the host
+// this likely will need to be reworked :(
+
   var baseUrl = details.host && config.baseUrl[details.host]
 
   assert( baseUrl, 'unknown host passed in:' + details.host )

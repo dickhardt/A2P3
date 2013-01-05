@@ -1,9 +1,151 @@
 <!DOCTYPE html>
 <html>
+<head>
+  <style>
+        .agentCLI{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:300px; height:130px; position: absolute; top:75px; left:50%; margin-left:-125px; padding:10px; border-radius:4px;}
+  </style>
+</head>
 <body>
+  <script type="text/javascript"    src="jquery-1.8.3.js"></script>
 
-<div class='title'>A2P3 Setup Dashboard</div>
+<H1>A2P3 Personal Agent Dashboard</H1>
+<hr>
+  <dl>
+    <div id="agents"></div>
+  </dl>
+<hr>
+<a id="agentCLI" href="">Create CLI Agent (for developers!)</a>
+
+<div id="agentCLI_form" class="agentCLI">
+    <span class="form_title">Create CLI Agent</span>
+    <form id="agentCLI_form_input">
+        <dl>
+            <dt></dt><dd><label for="agentCLI_username_input">Agent Name</label> <input type="text" name="agentCLI_name" value="" id="agentCLI_name_input" class="popup_form_input_field"></dd>
+        </dl>
+        <p><input id="agentCLI_cancel" type="button" value="Cancel">
+            <input id="agentCLI_create" type="button" value="Create">
+          </p>
+    </form>
+</div>
+
+<div id="agentCLI_success" class="agentCLI">
+    <span class="form_title">CLI Agent created, save the values</span>
+        <dl>
+            <dt></dt><dd><label id="agentCLI_device">&nbsp;</label></dd>
+            <dt></dt><dd><label id="agentCLI_token">&nbsp;</label></dd>
+        </dl>
+        <p><input id="agentCLI_close" type="button" value="Close">
+          </p>
+    </form>
+</div>
+
+<div id="agentCLI_delete" class="agentCLI">
+    <span class="form_title">Delete CLI Agent</span>
+        <dl>
+            <dt></dt><dd><label id="agentCLI_delete_name">&nbsp;</label></dd>
+            <dt></dt><dd><label id="agentCLI_delete_created">&nbsp;</label></dd>
+            <dt></dt><dd><label id="agentCLI_delete_handle">&nbsp;</label></dd>
+        </dl>
+        <p><input id="agentCLI_delete_cancel" type="button" value="Cancel">
+            <input id="agentCLI_delete_confirm" type="button" value="Delete">
+          </p>
+    </form>
+</div>
 
 
+
+<script>
+
+  function deleteAgent(e) {
+    var handle = e.target.id
+    $('#agentCLI_delete_handle').hide()
+    $('#agentCLI_delete').fadeIn('fast')
+    $('#agentCLI_delete_name').text( $('#'+handle+'_name').text() )
+    $('#agentCLI_delete_created').text( $('#'+handle+'_created').text() )
+    $('#agentCLI_delete_handle').text( handle )
+    return false
+  }
+
+  function refreshAgents() {
+    $.post( 'dashboard/agent/list', null, function ( data, status ) {
+      $('#agents').html("")
+      if (status == 'success') {
+        var handles = data.result.handles
+        if (handles) {
+          Object.keys(handles).forEach( function (handle) {
+            var name = handles[handle].name
+            var created = new Date( handles[handle].created )
+            var html  = '<dt><a class="agent_delete" href="" id="' + handle + '">delete </a>'
+                      + '<b id="' + handle + '_name">&nbsp;' + name + '</b>'
+                      + '<dd id="' + handle + '_created">' 
+                      + 'created '+created.toISOString() + '</dd>'
+            $('#agents').append( html )
+          })
+          $('.agent_delete').click( deleteAgent )
+        } else {
+          $('#agents').append('<p>You have no personal agents. Enroll one below.</p>')          
+        }
+      }
+    })
+  }      
+
+  function onReady() {
+    refreshAgents()
+    $('#agentCLI_form').hide()
+    $('#agentCLI_success').hide()
+    $('#agentCLI_delete').hide()
+    
+    $('#agentCLI_cancel').click( function() {
+        $('#agentCLI_form').fadeOut('fast')
+        return false
+    })
+
+    $('#agentCLI_create').click( function (){                   
+      // create a CLI Agent and add it to list of Personal Agents
+      var name = $('#agentCLI_name_input').val()
+      $.post( 'dashboard/agent/create', {name: name}, function ( data, status ) {
+        if (status == 'success') {
+          $('#agentCLI_device').text('device: ' + data.result.device) 
+          $('#agentCLI_token').text('token: ' + data.result.token)
+        } else {
+          $('#agentCLI_device').text = 'Error creating CLI Agent'
+        }
+        $('#agentCLI_name_input').val("")
+        $('#agentCLI_form').fadeOut('fast')
+        $('#agentCLI_success').fadeIn('fast')
+      })
+      return false
+    }) 
+    
+    $('#agentCLI_close').click( function (){                   
+        $('#agentCLI_success').fadeOut('fast')
+        refreshAgents()
+        return false
+    }) 
+
+    $('#agentCLI').click( function (e) {
+      $('#agentCLI_form').fadeIn('fast')
+      $('#agentCLI_name').focus()
+      return false
+    })
+
+    $('#agentCLI_delete_cancel').click( function() {
+      $('#agentCLI_delete').fadeOut('fast')
+      return false    
+    })
+
+    $('#agentCLI_delete_confirm').click( function() {
+      var handle = $('#agentCLI_delete_handle').text()
+      $.post( 'dashboard/agent/delete', {handle: handle}, function ( data, status ) {
+        $('#agentCLI_delete').fadeOut('fast')
+        refreshAgents()
+      })
+      return false    
+    })
+  }
+
+  $(document).ready(onReady)
+
+</script>
 </body>
 </html>

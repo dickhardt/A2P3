@@ -36,6 +36,7 @@ var  host =
   , email: 'email'
   }
 , baseUrl = {}
+, reverseHost = {}
 
 provinces.forEach( function ( province ) {
   host['people.'+province] = 'people.'+province
@@ -43,6 +44,7 @@ provinces.forEach( function ( province ) {
 })
 Object.keys(host).forEach( function (key) {
   host[key] = host[key] +'.'+ baseDomain
+  reverseHost[host[key]] = key
   baseUrl[key] = scheme + '://' + host[key] 
   if (port && port != '80')
     baseUrl[key] += ':' + port
@@ -136,6 +138,7 @@ var crypto =
 exports.crypto = crypto
 exports.baseDomain = baseDomain
 exports.host = host
+exports.reverseHost = reverseHost
 exports.port = port
 exports.portListen = portListen
 exports.scheme = scheme

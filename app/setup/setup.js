@@ -111,7 +111,11 @@ function enrollRegister ( req, res, next ) {
     db.updateProfile( 'setup', profile.email, profile, function (e) {
       if (e) return next(e)
       req.session.enrolled = true
-      return res.send( {'response': {'success': true } } )
+      if (req.body.json) {
+        return res.send( {'response': {'success': true } } )
+      } else {
+        return res.redirect( '/dashboard' )              
+      }
     })
   })
 }
@@ -173,7 +177,6 @@ function _callIX ( apiPath, params, cb ) {
 function dashboardAgentList ( req, res, next ) {
   var params = 
     { di: req.session.di
-    , as: 'setup'
     }
   _callIX( '/agent/list', params, function ( e, result ) {
     if (e) return next( e )
@@ -184,7 +187,6 @@ function dashboardAgentList ( req, res, next ) {
 function dashboardAgentDelete ( req, res, next ) {
   var params = 
     { di: req.session.di
-    , as: 'setup'
     , handle: req.body.handle
     }
   _callIX( '/agent/delete', params, function ( e, result ) {
@@ -198,7 +200,6 @@ function dashboardAgentDelete ( req, res, next ) {
 function dashboardAgentCreate ( req, res, next ) {
   var params = 
     { di: req.session.di
-    , as: 'setup'
     , name: req.body.name
     }
   _callIX( '/agent/add', params, function ( e, result ) {

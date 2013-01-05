@@ -53,15 +53,14 @@ exports.addAgent = function ( asDI, asHost, name, cb ) {
   dummyNoSql['ix:di:' + ixDI][handle] = { 'name': name, 'AS': asHost, 'created': Date.now() }
   dummyNoSql['ix:di:' + ixDI + ':handle:' + handle + ':token'] = token
   dummyNoSql['registrar:agentHandle:' + token] = true
-
   process.nextTick( function () { cb( null, token ) } )
 }
 
 exports.listAgents = function ( asDI, asHost, cb ) {
   var ixDI = dummyNoSql['ix:di:' + asHost + ':' + asDI]
   var agents = dummyNoSql['ix:di:' + ixDI]
-  if (!agents) {
-    return process.nextTick( function () { cb( null, {} ) } )  
+  if (!agents || !Object.keys(agents).length) {
+    return process.nextTick( function () { cb( null, null ) } )  
   }
   // don't want to share agent AS with other AS, just return what is needed for User to decide
   var results = {}

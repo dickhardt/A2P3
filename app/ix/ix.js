@@ -160,7 +160,7 @@ function exchange ( req, res, next ) {
 // APIs called from AS agent registration web app
 function agentList ( req, res, next ) {
     db.listAgents(  req.request['request.a2p3.org'].di
-                  , req.request['request.a2p3.org'].as
+                  , req.request.iss
                   , function( e, handles ) {
                       if (e) return next (e)
                       return res.send({ result: { 'handles': handles } } )
@@ -169,7 +169,7 @@ function agentList ( req, res, next ) {
 
 function agentAdd ( req, res, next ) {
     db.addAgent( req.request['request.a2p3.org'].di
-                  , req.request['request.a2p3.org'].as
+                  , req.request.iss
                   , req.request['request.a2p3.org'].name
                   , function( e, token ) {
                       if (e) return next (e)
@@ -179,16 +179,16 @@ function agentAdd ( req, res, next ) {
 
 function agentDelete ( req, res, next ) {
   var di = req.request['request.a2p3.org'].di
-    , as = req.request['request.a2p3.org'].as
+    , as = req.request.iss
     , handle = req.request['request.a2p3.org'].handle
     db.deleteAgent( di, as, handle, function( e, AS ) {
       var details = 
-        { host: AS
+        { host: config.reverseHost[AS]  // hack because of how api.call works currently TBD :(
         , api: '/agent/delete'
-        , credentials: vault.keys[config.host[AS]].latest
+        , credentials: vault.keys[AS].latest
         , payload: 
           { iss: config.host.ix
-          , aud: config.host[AS]
+          , aud: AS
           , 'request.a2p3.org': { 'handle': handle }
           }
         }

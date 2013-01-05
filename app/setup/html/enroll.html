@@ -2,13 +2,12 @@
 <html>
 <body>
   <script type="text/javascript"    src="jquery-1.8.3.js"></script>
-<!--  <script type="text/javascript"    src="setup/enroll.js"></script> -->
-<div class='title'>A2P3 Setup Enroll</div>
+<H1>A2P3 User Enrollment</H1>
 <hr>
 <div id="error"></div>
 
 <div id="profile">
-  <form id="profileForm">
+  <form id="profileForm" action="/enroll/register" method="post">
     <dt>Email Resource Server</dt><dd><label for="email_input" id="email">Email</label> 
       </dd>
     <dt>People Resource Server</dt><dd><label for="name_input">Name</label> 
@@ -23,18 +22,22 @@
       <input type="text" name="province" value="" id="province_input"></dd>
     <dt></dt><dd><label for="postal_input">Postal</label> 
       <input type="text" name="postal" value="" id="postal_input"></dd>
-    <dt></dt><img src="https://secure.gravatar.com/avatar/918b627daf7d848cd40770ed6cd15233" alt="" width="48" height="48" id="photo"></dd>  
+    <dt></dt><dd><label for="dob_input">DOB</label> 
+      <input type="text" name="dob" value="" id="dob_input"></dd>
+    <dt></dt><dd>Image<img src="https://secure.gravatar.com/avatar/918b627daf7d848cd40770ed6cd15233" alt="" width="48" height="48" id="photo" border="1"></dd>  
     <dt>Social Insurance Resource Server</dt><dd><label for="si_input">SIN</label> 
       <input type="text" name="si" value="" id="si_input"></dd>
     <dt>Health Resource Server</dt><dd><label for="si_input">Health Number</label> 
       <input type="text" name="prov_number" value="" id="prov_number_input"></dd>
+    <hr>
+    <dt></dt><input type="submit" value="Submit">
   </form>
 </div>
 
 <script>
   function onReady() {
-    debugger;
-    var url = 'http://setup.local.a2p3.net:8080/enroll/profile' // TBD, construct host from current document URL
+    // debugger;
+    var url = 'enroll/profile'
     $.post( url, null, function ( data, status ) {
       if (status == 'success') {
         Object.keys(data).forEach( function (key) {
