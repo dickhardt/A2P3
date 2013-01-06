@@ -20,6 +20,14 @@ if ( fs.existsSync('./app/config.js') ) {
   console.log('Edit ./app/config.js to change local behaviour')
 }
 
+// safe to pull in config now
+var config = require('./app/config')
+
+if ( !config.db && fs.existsSync('./app/nosql.json') ) {
+  console.log('Copying ./app/default.nosql.json -> ./app/nosql.json')
+  copyFileSync( './app/default.nosql.json', './app/nosql.json')
+}
+
 require('./bootstrap').run( function ( e ) { // run bootstrap to build default vaults and register default apps
   if (e) {
     console.log(e)
