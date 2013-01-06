@@ -105,11 +105,8 @@ var loginDetails =
 
 app.use( express.cookieParser() )
 
-var cookieOptions =
-  { 'secret': vault.secret
-  , 'cookie': { path: '/dashboard', httpOnly: true, maxAge: 300 }
-  , 'proxy': true
-  }
+var cookieOptions = { 'secret': vault.secret, 'cookie': { path: '/dashboard' } }
+
 app.use( express.cookieSession( cookieOptions ))  
 
 app.use( mw.colorLogger( express ))

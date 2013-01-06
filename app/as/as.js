@@ -28,8 +28,26 @@ rework state management to use cookies while in dashboard
 
 */
 
+// creates an Agent Request for registering agent
+function _makeAgentRequest ( returnURL ) {
+  var agentRequest =
+    { 'iss': config.host.as
+    , 'aud': config.host.ix
+    , 'request.a2p3.org':
+     { 'resources':
+        [ config.host.ix + '/scope/register/agent' ]
+      , 'auth': 
+        { 'passcode': true
+        , 'authorization': true
+        }
+      , 'returnURL': config.baseUrl.as + returnURL
+      }
+    }
+  var jws = request.create( agentRequest, vault.keys[config.host.ix].latest )
+  return jws
+}
 
-
+/******** OLD CODE **********/
 
 // called by IX when agent is to be deleted
 function agentDelete ( req, res, next ) {
@@ -198,6 +216,69 @@ function registerAgentDelete ( req, res, next ) {
   })
 }
 
+/********* NEW CODE *********/
+
+// called by Setup to create an Agent Request
+function setupRequest ( req, res, next ) {
+  var agentRequest = _makeAgentRequest ( '/register/login' )
+  req.session.agentRequest = agentRequest
+  res.redirect( config.baseUrl.setup + '/dashboard/agent/token?request=' + agentRequest)
+}
+
+// returnURL for Agent Request for registration
+function registerLogin  ( req, res, next ) {
+  var agentRequest = req.session.agentRequest
+  if (!agentRequest) return res.redirect('/')
+  var errorCode = req.query.errorCode
+  var errorMessage = req.query.errorMessage
+  if (errorCode) {
+    console.log('Setup returned Agent Request error:',errorCode,errorMessage)
+    return res.redirect('/')
+  }
+  var ixToken = req.query.token
+  if (!ixToken) {
+    console.log('Setup returned no IX Token')
+    return res.redirect('/')
+  }
+  var details = 
+    { host: 'ix'
+    , api: '/exchange'
+    , credentials: vault.keys[config.host.ix].latest
+    , payload: 
+      { iss: config.host.as
+      , aud: config.host.ix
+      , 'request.a2p3.org':
+        { 'request': agentRequest
+        , 'token': ixToken
+        }
+      }
+    }
+  api.call( details, function ( e, result ) {
+    if (e) {
+      console.log('IX returned', e )
+      return res.redirect('/')      
+    }
+    req.session.di = result.sub
+    req.session.ixRStoken = result.tokens[config.host.ix]
+    req.session.ixRStokenCreated = Date.now()
+    return res.redirect('/register')
+  })
+}
+
+// static page serving
+function homepage ( req, res, next ) {
+    res.sendfile( __dirname+'/html/homepage.html' )
+}
+
+function register ( req, res, next ) {
+  if (!req.session.di) return res.redirect('/')
+  res.sendfile( __dirname+'/html/register.html')
+}
+
+function dashboard ( req, res, next ) {
+  if (!req.session.di) return res.redirect('/')
+  res.sendfile( __dirname+'/html/dashboard.html')
+}
 
 
 // setup AS middleware
@@ -206,7 +287,11 @@ exports.app = function() {
 
   app.use(express.limit('10kb'))  // protect against large POST attack  
   app.use(express.bodyParser())
+  app.use( express.cookieParser() )
+  var cookieOptions = { 'secret': vault.secret, 'cookie': { path: '/' } }
+  app.use( express.cookieSession( cookieOptions ))
 
+ /* 
   app.post('/agent/delete', request.check( vault, config.host.ix ), agentDelete) 
   
   app.post('/notify/:handle',   mw.checkParams( {'params':['handle']} ),                    notify)
@@ -220,13 +305,17 @@ exports.app = function() {
 
   app.post('/register/agent/list',    mw.checkParams( {'body':['registerSession']} ), registerAgentList)
   app.post('/register/agent/delete',  mw.checkParams( {'body':['registerSession','handle']} ), registerAgentDelete)
+*/
 
-  app.get('/', function(req, res){
-    console.log(req.domain);
-    console.log(req.headers);
-      html = 'Hello World, from AS!';
-      res.send(html);    
-  });
+// new entry points
+
+  app.get('/setup/request', setupRequest )
+  app.get('/register/login', registerLogin )
+
+  // static pages
+  app.get('/', homepage )
+  app.get('/register', register )
+  app.get('/dashboard', dashboard )  
 
   app.use( mw.errorHandler )
 

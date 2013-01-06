@@ -170,13 +170,7 @@ exports.app = function() {
   app.use( express.bodyParser() )
 
   app.use( express.cookieParser() )
-  var cookieOptions =
-    { // 'key': 'dashboardUser'
-    // , 
-    'secret': 'abcd'  // TBD, get from vault
-    , 'cookie': { path: '/dashboard', httpOnly: true, maxAge: 300 }
-    , 'proxy': true
-    }
+  var cookieOptions = { 'secret': vault.secret, 'cookie': { path: '/dashboard' } }
   app.use( express.cookieSession( cookieOptions ))
   
   // called by personal agents

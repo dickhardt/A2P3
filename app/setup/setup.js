@@ -64,8 +64,6 @@ function _fetchProfile ( di, complete ) {
         }
       }
     }
-
-
   api.call( details, function ( e, result ) {
     if (e) return next( e )
     var peopleHost = Object.keys(result.tokens)[0]  
@@ -324,7 +322,25 @@ function agentDelete ( req, res, next ) {
 }
 
 
+// Agent enrollment end points
 
+function agentBasic ( req, res, next ) {
+  // sends browser over to AS to generate an Agent Request
+  // which then redirects back to /dashboard/agent/token agentToken()
+  // user must be authenticated
+  if (!req.session.di) return res.redirect('/')
+  res.redirect( config.baseUrl.as + '/setup/request')
+}
+
+function agentToken ( req, res, next ) {
+  // acts as an agent for AS for enrolling a Personal Agent
+  // creates an IX Token for Agent Request and sends result back
+  // user must be authenticated
+  if (!req.session.di) return res.redirect('/')
+
+}
+
+// static page serving
 function homepage ( req, res, next ) {
 
   if (useFB) {
@@ -344,18 +360,13 @@ function dashboard ( req, res, next ) {
   res.sendfile( __dirname+'/html/dashboard.html')
 }
 
+
+
 exports.app = function() {
 	var app = express()
   app.use( express.limit('10kb') )  // protect against large POST attack
   app.use( express.bodyParser() )  
   app.use( express.cookieParser() )
-/*
-  var cookieOptions =
-    { 'secret': vault.secret
-    , 'cookie': { path: '/', httpOnly: true, maxAge: 300 }
-    , 'proxy': true
-    }
-*/
   var cookieOptions = { 'secret': vault.secret, 'cookie': { path: '/' } }
   app.use( express.cookieSession( cookieOptions ))
 
@@ -377,12 +388,12 @@ exports.app = function() {
           , enrollProfile  
           )
 
-  // CLI agent token exchange
+  // CLI agent token exchange API
   app.post('/token'
           , mw.checkParams( {'body':['device', 'sar', 'auth']} )
           , tokenHandler
           )
-  // called from IX when an agent is deleted
+  // protocol API called from IX when an agent is deleted
   app.post('/agent/delete'
           , request.check( vault.keys, config.roles.ix )
           , agentDelete 
@@ -405,11 +416,11 @@ exports.app = function() {
           , mw.checkParams( {'session':['di'], 'body': ['handle']} )
           , dashboardAgentDelete
           )
-  // TBD - REMOVE THIS! ... used by XHR to test
-  app.post('/ping', function( req, res, next ) { 
-    console.log('\nping session:\n',req.session )
-    res.send(req.session) 
-  } )
+ 
+
+  // AS redirection pages
+  app.get('/dashboard/agent/basic', agentBasic )
+  app.get('/dashboard/agent/token', agentToken )
 
   // static pages
 	app.get('/', homepage )

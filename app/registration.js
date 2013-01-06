@@ -146,11 +146,7 @@ exports.routes = function ( app, RS, vault ) {
 
   app.use( express.cookieParser() )
   
-  var cookieOptions =
-    { 'secret': vault.secret
-    , 'cookie': { path: '/dashboard', httpOnly: true, maxAge: 300 }
-    , 'proxy': true
-    }
+  var cookieOptions = { 'secret': vault.secret, 'cookie': { path: '/dashboard' } }
   app.use( express.cookieSession( cookieOptions ))
 
   if (RS == 'registrar') { // only Registrar is allowed to check if ID is available
