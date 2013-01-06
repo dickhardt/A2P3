@@ -12,6 +12,7 @@
   , "async": "*"
   , "request": "*"
   , "underscore": "*"
+  , "marked": "*"
   }
 , "devDependencies":
   { "chai": "*"

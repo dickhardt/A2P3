@@ -236,6 +236,9 @@ exports.app = function() {
           , agentDelete
           )
 
+  // show README.md as documentation
+  app.get('/documentation', mw.md( __dirname+'/README.md' ) )
+  
   app.use( mw.errorHandler )
 
 	return app

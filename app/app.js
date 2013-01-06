@@ -18,19 +18,19 @@ app.use( express.static( __dirname + '/assets' ) )
 // setup logging after static files so we only log API calls
 app.use( mw.colorLogger( express ))
 
-// use app server per host called
-app.use( express.vhost( config.host.setup, require('./setup/setup').app() ) )
-app.use( express.vhost( config.host.ix, require('./ix/ix').app() ) )
+// use app server per host called (alphabetical so we can check we did not miss one!)
 app.use( express.vhost( config.host.as, require('./as/as').app() ) ) 
-app.use( express.vhost( config.host.registrar, require('./registrar/registrar').app() ) )
-app.use( express.vhost( config.host.setup, require('./setup/setup').app() ) ) 
 app.use( express.vhost( config.host.bank, require('./bank/bank').app() ) ) 
 app.use( express.vhost( config.host.clinic, require('./clinic/clinic').app() ) ) 
-app.use( express.vhost( config.host.si, require('./si/si').app() ) ) 
 app.use( express.vhost( config.host.email, require('./email/email').app() ) ) 
 app.use( express.vhost( config.host.health, require('./health/health').app() ) ) 
+app.use( express.vhost( config.host.ix, require('./ix/ix').app() ) )
 app.use( express.vhost( config.host.people, require('./people/people').app() ) ) 
+app.use( express.vhost( config.host.registrar, require('./registrar/registrar').app() ) )
+app.use( express.vhost( config.host.setup, require('./setup/setup').app() ) ) 
+app.use( express.vhost( config.host.si, require('./si/si').app() ) ) 
 
+// add in standardized resource servers
 config.provinces.forEach( function ( province ) {
   app.use( express.vhost( config.host['health.'+province], require('./health/common/health').app( province ) ) ) 
   app.use( express.vhost( config.host['people.'+province], require('./people/common/people').app( province ) ) ) 

@@ -354,6 +354,9 @@ exports.app = function() {
     res.send(req.session) 
   } ) 
 
+  // show README.md as documentation
+  app.get('/documentation', mw.md( __dirname+'/README.md' ) )
+
   app.use( mw.errorHandler )
 
 // console.log( 'AS middleware:\n', app.stack, '\nroutes:',app.routes )

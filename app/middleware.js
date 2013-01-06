@@ -15,6 +15,8 @@ var config = require('./config')
   , querystring = require('querystring')
   , util = require('util')
   , db = require('./db')
+  , fs = require('fs')
+  , marked = require('marked')
 
 exports.trace = function trace ( req, res, next ) {
   console.log('TRACE:',req.host,req.originalUrl)
@@ -253,8 +255,57 @@ function loginStateCheck ( details ) {
 }
 
 /*
+* md() renders passed in Markdown file as HTML with /css/github.css styling
+*
+* Used to show README.md files that are in source to document servers
+*/
+function md2html ( file ) {
+ // var options = { breaks: false }    
+  var options = { }    
+  var markdown = fs.readFileSync( file, 'utf8' )
+  var tokens = marked.lexer( markdown, options )
+  var html = marked.parser( tokens, options )
+  // add in github flavoured markdown CSS so it looks like it does on github.com
+  // also add in link to root at top TBD: modify to fit into rest of theme
+  html  = '<!DOCTYPE html><head><link rel="stylesheet" href="/css/github.css"></head><body>'
+        + '<p><a  alt="Home" href="/">Home</a></p>'
+        + html
+        + '</body></html>'
+  return html
+}
 
-Sample details object
+exports.md = function ( file, dontCache ) {
+  var cache = !dontCache
+  if (cache) { // we will cache the HTML and then save in cache
+    // parse and cache HTML
+    try {
+      cache = md2html( file )
+    }
+    catch (e) { 
+      return function( req, res, next) { next( e ) }
+    }
+  }
+  return function markdown ( req, res, next ) {
+    var html
+    if (cache) {
+      html = cache
+    } else {
+      try {
+        html = md2html( file )
+      }
+      catch (e) { 
+        next( e )
+      }
+    }
+    res.send( html )
+  }
+}
+
+
+
+/*
+
+Sample details object for loginHandler
 
 var details =
   { 'host': config.host.email  // app host

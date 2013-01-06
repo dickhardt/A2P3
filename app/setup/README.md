@@ -1,3 +1,3 @@
 #A2P3 Setup
 
-	here is a code example
+just a placeholder for now to test out server docs
