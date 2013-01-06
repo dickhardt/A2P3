@@ -3,17 +3,17 @@
 <head>
   <style>
         #passcodeForm{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:300px; height:130px; position: absolute; top:75px; left:50%; margin-left:-125px; padding:10px; border-radius:4px;}
-        #qrcodeForm{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:300px; height:130px; position: absolute; top:75px; left:50%; margin-left:-125px; padding:10px; border-radius:4px;}
+        #qrcodeForm{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:300px; height:320px; position: absolute; top:75px; left:50%; margin-left:-125px; padding:10px; border-radius:4px;}
   </style>
 </head>
 <body>
   <script type="text/javascript"    src="jquery-1.8.3.js"></script>
+  <script type="text/javascript"    src="jquery.qrcode.min.js"></script>
 <H1>Personal Agent Enrollment</H1>
 <hr>
 You will need to have a Personal Agent installed on your iOS device.
-<p>If you are running this on a PC, <a id="QRinstall" href="">click here</a>.
-<p>If you are running this site on your iOS device, <a id="iOSinstall" href="">click here</a>.
-<p>test showing QR code <a id="qrcodeForm_show" href="">click here</a>.
+<p>If you are running this on a PC, <a id="QRinstall" href="">click here</a>.</p>
+<p>If you are running this site on your iOS device, <a id="iOSinstall" href="">click here</a>.</p>
 
 <div id="passcodeForm">
     <span class="form_title">Personal Agent Passcode</span>
@@ -38,7 +38,7 @@ You will need to have a Personal Agent installed on your iOS device.
 
 <script>
   var iOSinstall = false
-  var code = null
+
   function showPasscodeForm () {
     $('#passcodeForm').fadeIn('fast')
     $('#passcode_input').val('').focus()
@@ -74,12 +74,6 @@ You will need to have a Personal Agent installed on your iOS device.
     $('#passcodeForm').hide()  
     $('#qrcodeForm').hide()  
 
-/*
-    $.post( '/ping', null, function ( data, status ) {
-      console.log('status',status)
-      console.log('data',data)
-    })
-*/
     $('#QRinstall').click( function () {
       iOSinstall = false
       showPasscodeForm()
@@ -88,12 +82,7 @@ You will need to have a Personal Agent installed on your iOS device.
 
     $('#iOSinstall').click( function () {
       iOSinstall = true
-      showPasscodeForm()
-      return false
-    })
-
-    $('#qrcodeForm_show').click( function () {
-      $('#qrcodeForm').fadeIn('fast')
+      showPasscodeForm( )
       return false
     })
 
@@ -103,10 +92,14 @@ You will need to have a Personal Agent installed on your iOS device.
     })
 
     $('#passcode_input').bind('input', function () {
+      debugger;
       // strip out non-numeric
       $('#passcode_input').val($('#passcode_input').val().replace(/[^\d]+/g, ''))
       // move focus to next input if done
-      if ($('#passcode_input').val().length >= 4) $('#passcode_input2').focus()
+      if ($('#passcode_input').val().length >= 4) {
+        // Safari does not seem to want to execute this focus change, but will do others ... hmmmm
+        $('#passcode_input2').focus() 
+      }
       comparePasscodes( true )
     })
 
@@ -124,30 +117,28 @@ You will need to have a Personal Agent installed on your iOS device.
       $.post( '/register/agent/code', {'passcode':passcode}, function ( data, status ) {
         // TBD deal with errors  data.error exists ... 
         if (data.error) {
-          console.log(data)
           $('#passcodeForm').fadeOut('fast')
         }
-        code = data.result.code
+        var code = data.result.code
 
         console.log('code:',code)
 
         // TBD check we really got a code!!!
         if (iOSinstall) { // launch Personal Agent on iOS device!!! cross your fingers!
-          location='a2p3.net://enroll?code='+code
+          var agentURL = 'a2p3.net://enroll?code='+code
+          console.log('sending User to:'+agentURL)
+          window.location = agentURL
         } else {
           $('#passcodeForm').fadeOut('fast')
-          // TBD -- adjust qrcode to be as large as possible to ease scanning
+          /// TBD - adjust size of popup and QR code to screen
           $('#qrcodeForm').fadeIn('fast')
-
+          $('#qrcode').qrcode({width: 300,height: 300,text: code}) 
 
         }        
       })
       return false
     })
   }
-
-// QR code generator
-
 
   $(document).ready(onReady)
 </script>

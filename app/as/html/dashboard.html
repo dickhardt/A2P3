@@ -105,6 +105,15 @@
   }      
 
   function onReady() {
+
+/*
+    $.post( '/ping', null, function ( data, status ) {
+      console.log('status',status)
+      console.log('data',data)
+    })
+*/
+
+    
     fetchNamePhoto()
     refreshAgents()
     $('#agentCLI_form').hide()

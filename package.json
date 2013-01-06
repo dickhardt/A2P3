@@ -10,6 +10,7 @@
   { "express": "*"
   , "fetch": "*"
   , "async": "*"
+  , "request": "*"
   , "underscore": "*"
   }
 , "devDependencies":
