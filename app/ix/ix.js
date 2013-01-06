@@ -107,6 +107,10 @@ function exchange ( req, res, next ) {
       e.code = 'EXPIRED_TOKEN'
       return next( e )
   }
+
+console.log('\njwe\n', util.inspect( jwe, null, null ) )
+console.log('\njws\n', util.inspect( jws, null, null ) )
+
   var rsScopes = getHosts( jws.payload['request.a2p3.org'].resources )
   db.getStandardResourceHosts( ixToken.sub, ixToken.iss, Object.keys( rsScopes ), function ( e, redirects ) {
     var hostList = {}
@@ -121,6 +125,9 @@ function exchange ( req, res, next ) {
         hostList[rs] = true
       }
     })
+
+console.log('\nhostList\n',hostList)
+
     // app keys for IX are stored with registrar
     db.getAppKeys( 'registrar', Object.keys(hostList), vault.keys, function ( e, keys ) {
       if (e) return next( e )

@@ -336,8 +336,38 @@ function agentToken ( req, res, next ) {
   // acts as an agent for AS for enrolling a Personal Agent
   // creates an IX Token for Agent Request and sends result back
   // user must be authenticated
-  if (!req.session.di) return res.redirect('/')
 
+  // TBD error handling -- should create errorCode and errorMessage to send back to AS
+
+  var di = req.session.di
+  if (!di) {
+    console.log('No DI in session.')
+    return res.redirect('/')
+  }
+  var agentRequest = req.query.request
+  if (!agentRequest) {
+    console.log('No Agent Request was passed.')
+    return res.redirect('/')
+  }
+  try {
+    var jws = new jwt.Parse( agentRequest )
+  }
+  catch (e) {
+    console.log('Invalid Agent Request was passed.', e )
+    return res.redirect('/')      
+  }
+
+  var payload =
+    { 'iss': config.host.setup
+    , 'aud': config.host.ix
+    , 'sub': di
+    , 'token.a2p3.org': 
+      { 'sar': jws.signature
+      , 'auth': jws.payload['request.a2p3.org'].auth
+      }
+    }
+  var ixToken = token.create( payload, vault.keys[config.host.ix].latest )
+  return res.redirect( jws.payload['request.a2p3.org'].returnURL +'?token='+ixToken )
 }
 
 // static page serving

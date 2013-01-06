@@ -46,6 +46,11 @@ exports.call = function ( details, callback ) {
       e.code = 'INVALID_JSON'
       return callback( e, null)
     }
+    if (data.error) {
+      var apiError = new Error(data.error.message + data.error.stack)
+      apiError.code = data.error.code
+      callback( apiError, null)
+    }
     callback( null, data.result )
   })
 }

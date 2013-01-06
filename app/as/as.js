@@ -13,6 +13,7 @@ var express = require('express')
   , db = require('../db')
   , mw = require('../middleware')
   , jwt = require('../jwt')
+  , api = require('../api')
 
 /*
 
@@ -34,8 +35,7 @@ function _makeAgentRequest ( returnURL ) {
     { 'iss': config.host.as
     , 'aud': config.host.ix
     , 'request.a2p3.org':
-     { 'resources':
-        [ config.host.ix + '/scope/register/agent' ]
+     { 'resources': []
       , 'auth': 
         { 'passcode': true
         , 'authorization': true
@@ -259,8 +259,6 @@ function registerLogin  ( req, res, next ) {
       return res.redirect('/')      
     }
     req.session.di = result.sub
-    req.session.ixRStoken = result.tokens[config.host.ix]
-    req.session.ixRStokenCreated = Date.now()
     return res.redirect('/register')
   })
 }
@@ -315,7 +313,13 @@ exports.app = function() {
   // static pages
   app.get('/', homepage )
   app.get('/register', register )
-  app.get('/dashboard', dashboard )  
+  app.get('/dashboard', dashboard )
+
+   // TBD - REMOVE THIS! ... used by XHR to test
+  app.post('/ping', function( req, res, next ) { 
+    console.log('\nping session:\n',req.session )
+    res.send(req.session) 
+  } ) 
 
   app.use( mw.errorHandler )
 
