@@ -24,7 +24,6 @@ Create = function ( options ) {
   } else {
     return this
   }
-
 }
 
 // return an IX Token for passed Agent Request
@@ -33,17 +32,20 @@ Create.prototype.token = function ( agentRequest ) {
 }
 
 // list all apps with long term resource access
-Create.prototype.list = function ( ) {
-
+// passed a list of resource servers
+// TBD Q: remember which resource servers we have been called with
+Create.prototype.listAuthorizations = function ( list ) {
+  // call Registrar and then each 
 }
 
 // revoke long term resource access for app
-Create.prototype.delete = function ( handle ) {
+// handle was obtained from listAuthorizations
+Create.prototype.deleteAuthorization = function ( handle ) {
 
 }
 
 // report an app for abuse
-Create.prototype.report = function ( app ) {
+Create.prototype.report = function ( agentRequest ) {
 
 }
 
