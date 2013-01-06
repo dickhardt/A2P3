@@ -399,6 +399,7 @@ exports.app = function() {
   app.use( express.cookieParser() )
   var cookieOptions = { 'secret': vault.secret, 'cookie': { path: '/' } }
   app.use( express.cookieSession( cookieOptions ))
+  app.engine('md', require('marked-engine').renderFile)
 
   // FB response
   app.get('/fb/redirect', fbRedirect )
@@ -456,6 +457,8 @@ exports.app = function() {
 	app.get('/', homepage )
   app.get('/enroll', enroll )
   app.get('/dashboard', dashboard )
+
+  app.get('/documentation', function ( req, res ) { res.render( __dirname+'/README.md') } )
 
 	return app
 }
