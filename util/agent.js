@@ -17,7 +17,7 @@ Create = function ( options ) {
   var error = null
   var this.host = options || options.host || config || config.host || error = new Error('No host provided')
   var this.device = options || options.device || config || config.device || error = new Error('No device provided')
-  var this.handle = options || options.handle || config || config.handle || error = new Error('No handle provided')
+  var this.token = options || options.token || config || config.token || error = new Error('No token provided')
   if (error) {
     console.error( error )
     return null
