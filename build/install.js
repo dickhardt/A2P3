@@ -21,7 +21,7 @@ if ( fs.existsSync('./app/config.js') ) {
 }
 
 // safe to pull in config now
-var config = require('./app/config')
+var config = require('../app/config')
 
 if ( !config.db && fs.existsSync('./app/nosql.json') ) {
   console.log('Copying ./app/default.nosql.json -> ./app/nosql.json')
