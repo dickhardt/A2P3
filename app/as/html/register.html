@@ -2,7 +2,8 @@
 <html>
 <head>
   <style>
-        .passcodeForm{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:300px; height:130px; position: absolute; top:75px; left:50%; margin-left:-125px; padding:10px; border-radius:4px;}
+        #passcodeForm{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:300px; height:130px; position: absolute; top:75px; left:50%; margin-left:-125px; padding:10px; border-radius:4px;}
+        #qrcodeForm{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:300px; height:130px; position: absolute; top:75px; left:50%; margin-left:-125px; padding:10px; border-radius:4px;}
   </style>
 </head>
 <body>
@@ -10,16 +11,144 @@
 <H1>Personal Agent Enrollment</H1>
 <hr>
 You will need to have a Personal Agent installed on your iOS device.
-<p>If you are running this site on your iOS device, <a id="iOSinstall" href="">click here</a>.
 <p>If you are running this on a PC, <a id="QRinstall" href="">click here</a>.
+<p>If you are running this site on your iOS device, <a id="iOSinstall" href="">click here</a>.
+<p>test showing QR code <a id="qrcodeForm_show" href="">click here</a>.
+
+<div id="passcodeForm">
+    <span class="form_title">Personal Agent Passcode</span>
+    <form id="passcode_form_input">
+        <dl>
+            <dt></dt><dd><span id="status">&nbsp;</span></dd>
+            <dt></dt><dd><label for="passcode_input">passcode</label> 
+              <input type="password" size="4" maxlength="4" name="passcode" value="" id="passcode_input"> </dd>
+            <dt></dt><dd><label for="passcode_input2">again</label> 
+              <input type="password" size="4" maxlength="4" name="passcode2" value="" id="passcode_input2"> </dd>
+        </dl>
+        <p><input id="passcode_cancel" type="button" value="Cancel">
+            <input id="passcode_next" type="button" value="Next">
+          </p>
+    </form>
+</div>
+
+<div id="qrcodeForm">
+    <span class="form_title">Scan the QR Code with your Personal Agent</span>
+    <div id="qrcode"></div>
+</div>
 
 <script>
+  var iOSinstall = false
+  var code = null
+  function showPasscodeForm () {
+    $('#passcodeForm').fadeIn('fast')
+    $('#passcode_input').val('').focus()
+    $('#passcode_input2').val('')
+    $('#status').text('please enter four digits').css('color','black')
+    $('#passcode_next').attr("disabled", "disabled")
+  }
+
+  function comparePasscodes ( fromPasscode ) {
+    var passcode = $('#passcode_input').val()
+    var passcode2 = $('#passcode_input2').val()
+    if ( (passcode.length == passcode2.length) && (passcode.length == 4) ) {
+      if (passcode == passcode2) {
+        $('#status').text('matching passcodes entered')
+        $('#passcode_next').removeAttr("disabled").focus()
+      } else {
+        if (fromPasscode) {
+          $('#passcode_input2').val('')
+          $('#status').text('please enter four digits').css('color','black')      
+          $('#passcode_next').attr("disabled", "disabled")
+        } else {
+          $('#status').text("PASSCODES DON'T MATCH").css('color','red')      
+          $('#passcode_next').attr("disabled", "disabled")
+        }
+      }
+    } else {
+      $('#status').text('please enter four digits').css('color','black')      
+      $('#passcode_next').attr("disabled", "disabled")
+    }
+  }
+
   function onReady() {
+    $('#passcodeForm').hide()  
+    $('#qrcodeForm').hide()  
+
+/*
     $.post( '/ping', null, function ( data, status ) {
       console.log('status',status)
       console.log('data',data)
     })
+*/
+    $('#QRinstall').click( function () {
+      iOSinstall = false
+      showPasscodeForm()
+      return false
+    })  
+
+    $('#iOSinstall').click( function () {
+      iOSinstall = true
+      showPasscodeForm()
+      return false
+    })
+
+    $('#qrcodeForm_show').click( function () {
+      $('#qrcodeForm').fadeIn('fast')
+      return false
+    })
+
+    $('#passcode_cancel').click( function () {
+      $('#passcodeForm').fadeOut('fast')      
+      return false
+    })
+
+    $('#passcode_input').bind('input', function () {
+      // strip out non-numeric
+      $('#passcode_input').val($('#passcode_input').val().replace(/[^\d]+/g, ''))
+      // move focus to next input if done
+      if ($('#passcode_input').val().length >= 4) $('#passcode_input2').focus()
+      comparePasscodes( true )
+    })
+
+    $('#passcode_input2').bind('input', function () {
+      // strip out non-numeric
+      $('#passcode_input2').val($('#passcode_input2').val().replace(/[^\d]+/g, ''))
+      // move focus to next input if done
+      if ($('#passcode_input2').val().length >= 4) $('#passcode_input').focus()
+      comparePasscodes()
+    })
+
+    $('#passcode_next').click( function () {
+      // get passcode
+      var passcode = $('#passcode_input').val()
+      $.post( '/register/agent/code', {'passcode':passcode}, function ( data, status ) {
+        // TBD deal with errors  data.error exists ... 
+        if (data.error) {
+          console.log(data)
+          $('#passcodeForm').fadeOut('fast')
+        }
+        code = data.result.code
+
+        console.log('code:',code)
+
+        // TBD check we really got a code!!!
+        if (iOSinstall) { // launch Personal Agent on iOS device!!! cross your fingers!
+          location='a2p3.net://enroll?code='+code
+        } else {
+          $('#passcodeForm').fadeOut('fast')
+          // TBD -- adjust qrcode to be as large as possible to ease scanning
+          $('#qrcodeForm').fadeIn('fast')
+
+
+        }        
+      })
+      return false
+    })
   }
+
+// QR code generator
+
+
   $(document).ready(onReady)
 </script>
 

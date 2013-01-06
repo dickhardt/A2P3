@@ -218,6 +218,32 @@ function registerAgentDelete ( req, res, next ) {
 
 /********* NEW CODE *********/
 
+
+// API called by agent to register itself
+
+
+function registerAgent ( req, res, next ) {
+
+// TBD -- STILL NEEDS TO BE DONE !!!!
+
+  // clear out data associated with the code
+  db.updateProfile( 'as', code, {}, function ( e ) {
+    if (e) return next( e )
+  })
+
+}
+
+// API called by register web app to generate an agent registration code
+function registerAgentCode ( req, res, next ) {
+  var passcode = req.body.passcode
+  var di = req.session.di
+  var code = jwt.handle()
+  db.updateProfile( 'as', code, {'passcode': passcode, 'di': di }, function ( e ) {
+    if (e) return next( e )
+    return res.send( { result: {code: code } } )
+  } )
+}
+
 // called by Setup to create an Agent Request
 function setupRequest ( req, res, next ) {
   var agentRequest = _makeAgentRequest ( '/register/login' )
@@ -305,7 +331,14 @@ exports.app = function() {
   app.post('/register/agent/delete',  mw.checkParams( {'body':['registerSession','handle']} ), registerAgentDelete)
 */
 
-// new entry points
+  // register API
+
+  app.post('/register/agent/code'
+          , mw.checkParams( { 'session':['di'], 'body':['passcode'] } )
+          , registerAgentCode 
+          ) 
+
+  // new entry points
 
   app.get('/setup/request', setupRequest )
   app.get('/register/login', registerLogin )
