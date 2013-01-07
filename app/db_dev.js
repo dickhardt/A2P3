@@ -369,20 +369,28 @@ exports.getSeries = function ( rs, di, series, data, cb ) {
 * when using QR reader
 */
 
-var channels = {}
+
+
+var EventEmitter = require('events').EventEmitter
+var channels = new EventEmitter()
 
 exports.writeChannel = function ( channel, data ) {
-  channels[channel] = data
+
+  if (typeof data === 'object') {
+    data = JSON.stringify( data)
+  }
+  channels.emit( channel, data )
 }
 
 exports.readChannel = function ( channel, cb) {
-  var id = setInterval( function() {
-    if (channels[channel]) {
-      clearInterval( id )
-      var data = channels[channel]
-      delete channels[channel]
+  channels.once( channel, function ( data ) {
+    try {
+      data = JSON.parse( data )
+    }
+    catch (e) {
       cb( null, data )
     }
-  }, 10)
+    cb( null, data )
+  })
 }
 

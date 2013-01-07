@@ -236,6 +236,7 @@ function loginStateCheck ( details ) {
     // and IX Token using a different browser
 
     if (req.query.token || req.query.error) { // we are getting token or error from the agent, publish to channel
+      // var channelData = JSON.stringify( req.query )
       db.writeChannel( req.query.state, req.query )
       res.redirect( details.url.complete )
       return // next('route')

@@ -54,3 +54,24 @@ exports.call = function ( details, callback ) {
     callback( null, data.result )
   })
 }
+
+
+/*
+
+TBD
+
+have constructor that takes callers details and stores them in object to simplify what is passed in
+  vault or key finding callback
+  caller host
+  host being called
+
+parameters
+  path
+  params
+
+exports.Standard
+
+Standard.prototype.call = function ( path, params )
+
+
+*/
