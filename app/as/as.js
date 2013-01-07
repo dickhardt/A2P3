@@ -119,7 +119,7 @@ function registerAgent ( req, res, next ) {
         // aync clear out data associated with the code
         db.updateProfile( 'as', code, {}, function ( e ) {
           if (e) console.log("Profile update error:\n", e )
-        }
+        })
         return res.send( { 'result': {'token': result.token } } )  
       })
     })
