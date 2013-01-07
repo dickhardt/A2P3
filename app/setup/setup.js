@@ -271,12 +271,17 @@ function dashboardAgentCreate ( req, res, next ) {
   _callIX( '/agent/add', params, function ( e, result ) {
     if (e) return next( e )
       var agent =
-        { 'device': jwt.handle()
-        , 'token': result.token
+        { 'device': jwt.handle()  // CLI Agent device is created here rather than at device
+        , 'handle': result.handle
+        , 'sub': req.session.diList   // no passcode is used with CLI Agents
         }
     db.storeAgent( 'setup', agent, function (e) {
+      var results =
+        { 'device': agent.device
+        , 'token': result.token
+        }
       if (e) return next( e )
-      return res.send( { 'result': agent } )  
+      return res.send( { 'result': results } )  
     })
   })
 }
@@ -321,8 +326,7 @@ function agentDelete ( req, res, next ) {
   })
 }
 
-
-// Agent enrollment end points
+// AS Agent enrollment end points
 
 function agentBasic ( req, res, next ) {
   // sends browser over to AS to generate an Agent Request

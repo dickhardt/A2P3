@@ -53,7 +53,7 @@ exports.addAgent = function ( asDI, asHost, name, cb ) {
   dummyNoSql['ix:di:' + ixDI][handle] = { 'name': name, 'AS': asHost, 'created': Date.now() }
   dummyNoSql['ix:di:' + ixDI + ':handle:' + handle + ':token'] = token
   dummyNoSql['registrar:agentHandle:' + token] = true
-  process.nextTick( function () { cb( null, token ) } )
+  process.nextTick( function () { cb( null, token, handle ) } )
 }
 
 exports.listAgents = function ( asDI, asHost, cb ) {
@@ -96,8 +96,6 @@ exports.validAgent = function ( token, cb ) {
   process.nextTick( function () { cb(  valid ) } )
 }
 
-
-
 exports.getAppName = function ( id, cb ) {
   var name = dummyNoSql['registrar:app:' + id + ':name']
   process.nextTick( function () { cb('Example App') } )
@@ -107,8 +105,6 @@ exports.checkRegistrarAppIdTaken = function ( id, cb ) {
   var taken = dummyNoSql.hasOwnProperty( config.host.registrar + ':app:' + id + ':name' )
   process.nextTick( function () { cb( null, taken ) } )
 }
-
-
 
 // called when an RS wants to know if admin is authorized for an app ID
 exports.checkAdminAuthorization = function ( reg, id, di, cb ) {

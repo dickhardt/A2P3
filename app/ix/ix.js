@@ -180,9 +180,9 @@ function agentAdd ( req, res, next ) {
     db.addAgent( req.request['request.a2p3.org'].di
                   , req.request.iss
                   , req.request['request.a2p3.org'].name
-                  , function( e, token ) {
+                  , function( e, token, handle ) {
                       if (e) return next (e)
-                      return res.send({ result: { token: token } } )
+                      return res.send({ result: { token: token, handle: handle } } )
                     } )
 }
 
@@ -238,7 +238,7 @@ exports.app = function() {
 
   // show README.md as documentation
   app.get('/documentation', mw.md( __dirname+'/README.md' ) )
-  
+
   app.use( mw.errorHandler )
 
 	return app
