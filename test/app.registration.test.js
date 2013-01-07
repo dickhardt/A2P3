@@ -159,7 +159,8 @@ describe('Logging into email dashboard', function(){
           response.result.should.have.property( 'url' )
           done()
         })
-        // while status call is waiting, we will send IX Token, have a delay so that reading happens first
+        // while status call is waiting, we will send IX Token, 
+        // done with a delay so that the call above happens first (which it would always do in real world)
         function sendIXToken () {
           var jws = new jwt.Parse( agentRequest )
           var tokenPayload =

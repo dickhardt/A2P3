@@ -195,11 +195,6 @@ function register ( req, res, next ) {
   res.sendfile( __dirname+'/html/register.html')
 }
 
-function dashboard ( req, res, next ) {
-  if (!req.session.di) return res.redirect('/')
-  res.sendfile( __dirname+'/html/dashboard.html')
-}
-
 
 // setup AS middleware
 exports.app = function() {
@@ -243,7 +238,6 @@ exports.app = function() {
   // static pages
   app.get('/', homepage )
   app.get('/register', register )
-  app.get('/dashboard', dashboard )
 
    // TBD - REMOVE THIS! ... used by XHR to test
   app.post('/ping', function( req, res, next ) { 

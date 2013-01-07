@@ -369,8 +369,6 @@ exports.getSeries = function ( rs, di, series, data, cb ) {
 * when using QR reader
 */
 
-
-
 var EventEmitter = require('events').EventEmitter
 var channels = new EventEmitter()
 
