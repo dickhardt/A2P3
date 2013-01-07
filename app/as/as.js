@@ -116,7 +116,7 @@ function registerAgent ( req, res, next ) {
 
         // TBD: let listener on channel know that QR code was read successfully
 
-        // aync clear out data associated with the code
+        // async clear out data associated with the code
         db.updateProfile( 'as', code, {}, function ( e ) {
           if (e) console.log("Profile update error:\n", e )
         })

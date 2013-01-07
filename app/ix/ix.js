@@ -108,8 +108,8 @@ function exchange ( req, res, next ) {
       return next( e )
   }
 
-console.log('\njwe\n', util.inspect( jwe, null, null ) )
-console.log('\njws\n', util.inspect( jws, null, null ) )
+// console.log('\njwe\n', util.inspect( jwe, null, null ) )
+// console.log('\njws\n', util.inspect( jws, null, null ) )
 
   var rsScopes = getHosts( jws.payload['request.a2p3.org'].resources )
   db.getStandardResourceHosts( ixToken.sub, ixToken.iss, Object.keys( rsScopes ), function ( e, redirects ) {
@@ -126,7 +126,7 @@ console.log('\njws\n', util.inspect( jws, null, null ) )
       }
     })
 
-console.log('\nhostList\n',hostList)
+// console.log('\nhostList\n',hostList)
 
     // app keys for IX are stored with registrar
     db.getAppKeys( 'registrar', Object.keys(hostList), vault.keys, function ( e, keys ) {
