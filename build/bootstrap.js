@@ -26,8 +26,7 @@ function syncWriteJSON ( obj, fname ) {
   fs.writeFileSync( fname, data )
 }
 
-
-var projectRootDir = __dirname.replace(/\/build$/,'')
+var projectRootDir = __dirname.replace(/[\/\\]build$/,'')
 
 var coreHostKeys =
   { 'ix': {'keys':{}, 'secret': identity.makeSecret()}
