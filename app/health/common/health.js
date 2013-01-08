@@ -1,4 +1,4 @@
-/* 
+/*
 * Health.* Server code
 *
 * Copyright (C) Province of British Columbia, 2013
@@ -6,7 +6,7 @@
 
 /*
 * NOTE: this is a hardlinked file in each of the province subdirectories
-* edit the file in the health directory, but don't reference it as the 
+* edit the file in the health directory, but don't reference it as the
 * require() statements are expecting to in the province subdirectory
 */
 
@@ -18,7 +18,7 @@ var express = require('express')
   , token = require('../../token')
   , db = require('../../db')
 
-var vault = {}  // we pull in correct vault when app() is called  
+var vault = {}  // we pull in correct vault when app() is called
 
 // /di/link API called from setup
 function diLink ( province ) {
@@ -60,16 +60,16 @@ exports.app = function( province ) {
 
   mw.loginHandler( app, { 'app': 'health.'+province, 'vault': vault, 'dashboard': true } )
 
-  app.post('/di/link' 
+  app.post('/di/link'
           , request.check( vault.keys, config.roles.enroll )
           , mw.a2p3Params( ['sub', 'account'] )
           , diLink( province )
           )
-  app.post('/prov_number' 
+  app.post('/prov_number'
           , request.check( vault.keys, null, 'health.'+province )
           , mw.a2p3Params( ['token'] )
           , token.checkRS( vault.keys, 'health.'+province, ['/scope/prov_number'], 'health' )
-          , number( province ) 
+          , number( province )
           )
 
   app.use( mw.errorHandler )

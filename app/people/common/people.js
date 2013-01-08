@@ -1,4 +1,4 @@
-/* 
+/*
 * People.* Server code
 *
 * Copyright (C) Province of British Columbia, 2013
@@ -6,7 +6,7 @@
 
 /*
 * NOTE: this is a hardlinked file in each of the province subdirectories
-* edit the file in the people directory, but don't reference it as the 
+* edit the file in the people directory, but don't reference it as the
 * require() statements are expecting to in the province subdirectory
 */
 
@@ -49,8 +49,8 @@ function over19 ( province ) {
     db.getProfile( 'people.'+province, di, function ( e, profile ) {
       if (e) next( e )
       if (!profile || !profile.dob) {
-        var e = new Error('no DOB for user')
-        e.code = 'NO_PROFILE'
+        var err = new Error('no DOB for user')
+        err.code = 'NO_PROFILE'
         return next( e )
       }
       var over19 = ageYears( profile.dob ) >= 19
@@ -66,8 +66,8 @@ function under20over65 ( province ) {
     db.getProfile( 'people.'+province, di, function ( e, profile ) {
       if (e) next( e )
       if (!profile || !profile.dob) {
-        var e = new Error('no DOB for user')
-        e.code = 'NO_PROFILE'
+        var err = new Error('no DOB for user')
+        err.code = 'NO_PROFILE'
         return next( e )
       }
       var age = ageYears( profile.dob )
@@ -84,8 +84,8 @@ function namePhoto ( province ) {
     db.getProfile( 'people.'+province, di, function ( e, profile ) {
       if (e) next( e )
       if (!profile || !profile.name || !profile.photo) {
-        var e = new Error('no name and/or photo for user')
-        e.code = 'NO_PROFILE'
+        var err = new Error('no name and/or photo for user')
+        err.code = 'NO_PROFILE'
         return next( e )
       }
       res.send( {result: {'name': profile.name, 'photo': profile.photo} } )
@@ -100,8 +100,8 @@ function details ( province ) {
     db.getProfile( 'people.'+province, di, function ( e, profile ) {
       if (e) next( e )
       if (!profile) {
-        var e = new Error('no profile for user')
-        e.code = 'NO_PROFILE'
+        var err = new Error('no profile for user')
+        err.code = 'NO_PROFILE'
         return next( e )
       }
       res.send( {'result': profile } )
@@ -120,37 +120,37 @@ exports.app = function( province ) {
   app.use( express.bodyParser() )
 
   registration.routes( app, 'people.'+province, vault )  // add in routes for the registration paths
-  
+
   mw.loginHandler( app, { 'app': 'people.'+province, 'vault': vault, 'dashboard': true } )
 
-  app.post('/di/link' 
+  app.post('/di/link'
           , request.check( vault.keys, config.roles.enroll )
           , mw.a2p3Params( ['sub', 'profile'] )
           , diLink( province )
           )
-  app.post('/over19' 
+  app.post('/over19'
           , request.check( vault.keys, null, 'people.'+province )
           , mw.a2p3Params( ['token'] )
           , token.checkRS( vault.keys, 'people.'+province, ['/scope/over19','/scope/details'], 'people' )
-          , over19( province ) 
+          , over19( province )
           )
-  app.post('/under20over65' 
+  app.post('/under20over65'
           , request.check( vault.keys, null, 'people.'+province )
           , mw.a2p3Params( ['token'] )
           , token.checkRS( vault.keys, 'people.'+province, ['/scope/under20over65','/scope/details'], 'people' )
-          , under20over65( province ) 
+          , under20over65( province )
           )
-  app.post('/namePhoto' 
+  app.post('/namePhoto'
           , request.check( vault.keys, null, 'people.'+province )
           , mw.a2p3Params( ['token'] )
           , token.checkRS( vault.keys, 'people.'+province, ['/scope/namePhoto','/scope/details'], 'people' )
-          , namePhoto( province ) 
+          , namePhoto( province )
           )
-  app.post('/details' 
+  app.post('/details'
           , request.check( vault.keys, null, 'people.'+province )
           , mw.a2p3Params( ['token'] )
           , token.checkRS( vault.keys, 'people.'+province, ['/scope/details'], 'people' )
-          , details( province ) 
+          , details( province )
           )
 
   app.use( mw.errorHandler )

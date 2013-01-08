@@ -1,4 +1,4 @@
-/* 
+/*
 * request.js
 *
 * creates and parses A2P3 requests
@@ -34,9 +34,9 @@ exports.parse = function ( request ) {
 function paramCheck( jws ) {
   if (!jws.payload.iss)
     throw new Error('No "iss" in JWS payload')
-  if (!jws.header.kid) 
+  if (!jws.header.kid)
     throw new Error('No "kid" in JWS header')
-  if (!jws.payload['request.a2p3.org']) 
+  if (!jws.payload['request.a2p3.org'])
     throw new Error('No "request.a2p3.org" in JWS payload')}
 
 function vaultKeys( jws, keys ) {
@@ -58,7 +58,7 @@ exports.verifyAndId = function ( request, keys ) {
 exports.check = function ( keys, accessList, reg ) {
   assert( keys, "no keys passed in" )
   return (function (req, res, next) {
-    var jws, valid, err
+    var jws, err
     if (!req.body || !req.body.request) {
       err = new Error('No "request" parameter in POST')
       err.code = 'INVALID_API_CALL'
@@ -72,13 +72,13 @@ exports.check = function ( keys, accessList, reg ) {
         if ( !accessList[jws.payload.iss] ) {
           err = new Error('Access not allowed')
           err.code = 'ACCESS_DENIED'
-          return next( err )          
+          return next( err )
         }
       }
       if ( jws.payload.aud != req.host ) {
         err = new Error("Request 'aud' does not match "+req.host)
         err.code = 'ACCESS_DENIED'
-        return next( err )          
+        return next( err )
       }
       db.getAppKey( reg, jws.payload.iss, keys, function ( e, key ) {
         if (e) {
@@ -88,12 +88,12 @@ exports.check = function ( keys, accessList, reg ) {
         if (!key) {
           err = new Error('No key available for '+ jws.payload.iss)
           err.code = 'ACCESS_DENIED'
-          return next( err )                    
-        }          
+          return next( err )
+        }
         if (!key[jws.header.kid]) {
           err = new Error('Invalid KID '+ jws.header.kid)
           err.code = 'ACCESS_DENIED'
-          return next( err )                    
+          return next( err )
         }
         if ( !jws.verify( key[jws.header.kid] ) ) {
            err = new Error('Invalid JWS signature')
@@ -102,7 +102,7 @@ exports.check = function ( keys, accessList, reg ) {
         } else {
           req.request = jws.payload
           return next()
-        }        
+        }
       })
     }
     catch (e) {

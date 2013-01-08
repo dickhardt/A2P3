@@ -1,5 +1,5 @@
 /*
-* Resource Server App Registration code
+* Standardized Resource Server App Registration code
 *
 * Copyright (C) Province of British Columbia, 2013
 */
@@ -15,21 +15,6 @@ var express = require('express')
 
 exports.routes = function ( app, RS, vault ) {
 
-    // only called at Registrar Dashboard
-    function dashboardAddAdmin ( req, res, next ) {
-      db.addAppAdmin( RS, req.body.id, req.body.admin, function ( e ) {
-        if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
-        return res.send( {result:{'id': req.body.id, 'admin': req.body.admin}} )
-      })
-    }
-
-  // only called at Registrar Dashboard
-  function dashboardAppIdTaken ( req, res, next ) {
-    db.checkRegistrarAppIdTaken( req.body.id, function ( e, taken ) {
-      if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
-      return res.send( {result:{'id': req.body.id, 'taken': taken}} )
-    })
-  }
 
   function dashboardlistApps ( req, res, next ) {
     db.listApps( RS, req.session.email, function ( e, list ) {
@@ -42,22 +27,30 @@ exports.routes = function ( app, RS, vault ) {
 
     // TBD check that User is auth for this App at Registrar unless we are the Registrar
 
+
+// call all resources
+
     db.newApp( RS, req.body.id, req.body.name, req.session.email, function ( e, key ) {
       if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
       return res.send( {result:{'id': req.body.id, 'key': key}} )
     })
   }
 
-
-
   function dashboardDeleteApp ( req, res, next ) {
+
+
+// call all resources
+
     db.deleteApp( RS, req.body.id, function ( e ) {
       if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
-      return res.send( {result:{'id': req.body.id}} )
+      return res.send( {result:{'id': req.body.id,}} )
     })
   }
 
   function dashboardRefreshKey ( req, res, next ) {
+
+// call all resources
+
     db.refreshAppKey( RS, req.body.id, function ( e, key ) {
       if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
       return res.send( {result:{'id': req.body.id, 'key': key}} )
@@ -65,6 +58,10 @@ exports.routes = function ( app, RS, vault ) {
   }
 
   function dashboardGetKey ( req, res, next ) {
+
+
+// call all resources
+
     db.getAppKey( RS, req.body.id, null, function ( e, key ) {
       if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
       return res.send( {result:{'id': req.body.id, 'key': key}} )
@@ -76,38 +73,12 @@ exports.routes = function ( app, RS, vault ) {
       if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
       if (!authorized) {
         var err = new Error( req.session.di + ' not authorized for ' + req.body.id )
-        err.code = "ACCESS_DENIED"
-        return next(err)
+        e.code = "ACCESS_DENIED"
+        return next(e)
       } else
         next()
     })
   }
-
-// reformat parameters from standard resource host to fit
-// dashboard calls
-  function stdNewApp ( req, res, next ) {
-    req.body.id = req.request['request.a2p3.org'].id
-    req.body.name = req.request['request.a2p3.org'].name
-    req.session = {}
-    req.session.email = req.request['request.a2p3.org'].email
-    dashboardNewApp( req, res, next )
-  }
-
-  function stdDeleteApp ( req, res, next ) {
-    req.body.id = req.request['request.a2p3.org'].id
-    dashboardDeleteApp( req, res, next )
-  }
-
-  function stdRefreshKey ( req, res, next ) {
-    req.body.id = req.request['request.a2p3.org'].id
-    dashboardRefreshKey( req, res, next )
-  }
-
-  function stdGetKey ( req, res, next ) {
-    req.body.id = req.request['request.a2p3.org'].id
-    dashboardGetKey( req, res, next )
-  }
-
 
   // checks session has required data, otherwise goes and gets it
   function checkSession ( req, res, next ) {
@@ -127,16 +98,7 @@ exports.routes = function ( app, RS, vault ) {
     } else {
       // first time through, get email from email RS
       if ( !req.session.di ) return badSession('No DI in session')
-      // if we are email RS, then we can just fetch it ourselves
-      if (RS == 'email') {
-        return db.getProfile( RS, req.session.di, function ( e, profile ) {
-          if (e) return badSession( e.message )
-          if (!profile.email) return badSession( 'No email for user.' )
-          req.session.email = profile.email
-          return next()
-        })
-      }
-      if ( !req.session.tokens || !req.session.tokens[config.host.email] ) return badSession('No tokens in session')
+      if ( !req.session.tokens ) return badSession('No tokens in session')
       var details =
         { host: 'email'
         , api: '/email/default'
@@ -164,20 +126,6 @@ exports.routes = function ( app, RS, vault ) {
   var cookieOptions = { 'secret': vault.secret, 'cookie': { path: '/dashboard' } }
   app.use( express.cookieSession( cookieOptions ))
 
-  if (RS == 'registrar') { // only Registrar is allowed to check if ID is available
-    app.post('/dashboard/appid/taken'
-            , checkSession
-            , mw.checkParams( {'body':['id']} )
-            , dashboardAppIdTaken
-            )
-    app.post('/dashboard/add/admin'
-            , checkSession
-            , mw.checkParams( {'body':['id','admin']} )
-            , checkAdminAuthorization
-            , dashboardAddAdmin
-            )
-  } // if registrar
-
   app.get('/dashboard/list/apps'
           , checkSession
           , dashboardlistApps
@@ -193,40 +141,17 @@ exports.routes = function ( app, RS, vault ) {
           , checkAdminAuthorization
           , dashboardDeleteApp
           )
-  app.post('/dashboard/refresh/key'
+  app.post('/dashboard/refresh/keys'
           , checkSession
           , mw.checkParams( {'body':['id']} )
           , checkAdminAuthorization
           , dashboardRefreshKey
           )
-  app.post('/dashboard/getkey'
+  app.post('/dashboard/getkeys'
           , checkSession
           , mw.checkParams( {'body':['id']} )
           , checkAdminAuthorization
           , dashboardGetKey
-          )
-// API calls from Standardized Resource Manager
-  var std = RS.replace(/\.??$/,'')
-
-  app.post('/std/new/app'
-          , request.check( vault.keys, [config.host[std]], config.host[RS])
-          , mw.a2p3Params( ['id', 'name'] )
-          , stdNewApp
-          )
-  app.post('/std/delete/app'
-          , request.check( vault.keys, [config.host[std]], config.host[RS])
-          , mw.a2p3Params( ['id'] )
-          , stdDeleteApp
-          )
-  app.post('/std/refresh/key'
-          , request.check( vault.keys, [config.host[std]], config.host[RS])
-          , mw.a2p3Params( ['id'] )
-          , stdRefreshKey
-          )
-  app.post('/std/getkey'
-          , request.check( vault.keys, [config.host[std]], config.host[RS])
-          , mw.a2p3Params( ['id'] )
-          , stdGetKey
           )
 
 }

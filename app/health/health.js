@@ -1,18 +1,24 @@
-/* 
+/*
 * Standardized Health Server code
 *
 * Copyright (C) Province of British Columbia, 2013
 */
 
 var express = require('express')
+  , stdRegistration = require('../stdRegistration')
+  , mw = require('../middleware')
+  , vault = require('./vault')
 
-exports.app = function() {
-	var app = express()
-	app.get("/", function(req, res){
-		console.log(req.domain);
-		console.log(req.headers);
-	    html = 'Hello World, from Health!';
-	    res.send(html);    
-	});
-	return app
+exports.app = function( ) {
+  var app = express()
+
+  app.use( express.limit('10kb') )  // protect against large POST attack
+  app.use( express.bodyParser() )
+
+  stdRegistration.routes( app, 'health', vault )  // add in routes for the registration paths
+
+  mw.loginHandler( app, { 'app': 'health', 'vault': vault, 'dashboard': true } )
+
+  app.use( mw.errorHandler )
+  return app
 }

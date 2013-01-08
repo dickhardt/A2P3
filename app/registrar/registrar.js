@@ -1,4 +1,4 @@
-/* 
+/*
 * Registrar Server code
 *
 * Copyright (C) Province of British Columbia, 2013
@@ -132,7 +132,7 @@ function checkAdminAuthorization ( req, res, next ) {
       var err = new Error(req.a2p3admin.di+' not authorized for '+req.body.id)
       e.code = "ACCESS_DENIED"
       return next(e)
-    } else 
+    } else
       next()
   })
 }
@@ -150,7 +150,7 @@ function checkSession ( req, res, next ) {
 
 // sets session cookie values
 function bootRegistrar ( req, res, next ) {
-  if (req.request && req.request['request.a2p3.org'] && 
+  if (req.request && req.request['request.a2p3.org'] &&
       req.request['request.a2p3.org'].di && req.request['request.a2p3.org'].email) {
     req.session.di = req.request['request.a2p3.org'].di
     req.session.email = req.request['request.a2p3.org'].email
@@ -172,13 +172,13 @@ exports.app = function() {
   app.use( express.cookieParser() )
   var cookieOptions = { 'secret': vault.secret, 'cookie': { path: '/dashboard' } }
   app.use( express.cookieSession( cookieOptions ))
-  
+
   // called by personal agents
   app.post('/request/verify', checkValidAgent, requestVerify )
   app.post('/report', checkValidAgent, report )
   app.post('/authorizations/requests', checkValidAgent, authorizationsRequests )
 
-  // called by RS 
+  // called by RS
   app.post('/app/verify', request.check( vault, null, 'registrar'), appVerify )
 
   // dashboard web APIs
@@ -186,17 +186,6 @@ exports.app = function() {
 
   // login routing
   mw.loginHandler( app, { 'dashboard': 'registrar', 'vault': vault } )
-
-  // called by setup code to boot system
-// TBD -- I think we can take this out now  app.post('/dashboard/boot', request.check( vault.keys, config.roles.enroll ), bootRegistrar ) 
-
-
-  app.get('/', function(req, res){
-  console.log(req.domain);
-  console.log(req.headers);
-    html = 'Hello World, from the Registrar!';
-    res.send(html);    
-  });
 
   app.use( mw.errorHandler )
 
