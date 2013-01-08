@@ -82,6 +82,7 @@ function registerAgent ( req, res, next ) {
   var code = req.body.code
     , passcode = req.body.passcode
     , name = req.body.name
+    , device = req.body.device
 
   db.getProfile( 'as', code, function ( e, profile ) {
     if (e) return next( e )
@@ -106,7 +107,7 @@ function registerAgent ( req, res, next ) {
     api.call( details, function ( e, result ) {
       if (e) return next( e )
         var agent =
-          { 'device': req.body.device
+          { 'device': device
           , 'handle': result.handle
           , 'sub': profile.di
           , 'passcode': passcode
@@ -225,7 +226,7 @@ exports.app = function() {
           ) 
   // called by agent 
   app.post('/register/agent'
-          , mw.checkParams( { 'body': ['passcode', 'code', 'name'] } )
+          , mw.checkParams( { 'body': ['passcode', 'code', 'name', 'device' ] } )
           , registerAgent
           ) 
   // new entry points
