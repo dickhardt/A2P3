@@ -1,7 +1,7 @@
 #Authentication Server (AS)
 
 ##Overview
-The [Authentication Server](../as) (AS) has a key pair with the [Identity Exchange](../ix) (IX) and is trusted by the IX to authenticate the user. The Agent interacts with the user, and then sends components of the request from an App to the AS to encrypt and sign for the IX.
+The Authentication Server (AS) has a key pair with the [Identity Exchange](https://github.com/dickhardt/A2P3/tree/master/app/ix) (IX) and is trusted by the IX to authenticate the user. The [Agent](https://github.com/dickhardt/A2P3_agent) interacts with the user, and then sends components of the request from an App to the AS to encrypt and sign for the IX.
 
 In the POC, the user authenticates and enrolls at the Setup Server and then is sent to the AS. The AS generates an Agent Request that is redirected back to Setup, that generates an IX that is redirected back to the AS that then calls the IX to get the AS Directed Identifier for the User.
 
