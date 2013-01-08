@@ -1,10 +1,13 @@
-/* 
+/*
 * New User Test code
 *
 * Copyright (C) Province of British Columbia, 2013
 */
+// Mocha globals to expect
+/*global describe:true, it:true */
 
-var should = require('chai').should() 
+
+var should = require('chai').should()
   , fetchUrl = require('fetch').fetchUrl
   , config = require('../app/config')
   , request = require('../app/request')
@@ -23,11 +26,11 @@ describe('Creating new User', function(){
   describe('ix:/di/create', function(){
     it('should return a result property', function (done){
 
-      var details = 
+      var details =
         { host: 'ix'
         , api: '/di/create'
         , credentials: vaultSetup.keys[config.host.ix].latest
-        , payload: 
+        , payload:
           { iss: config.host.setup
           , aud: config.host.ix
           , 'request.a2p3.org':
@@ -51,17 +54,17 @@ describe('Creating new User', function(){
         result.dis.should.have.property(config.host['people.bc'])
         diList = result.dis
         done()
-      })  
+      })
     })
   })
 
   describe('email:/di/link', function(){
     it('should return a result property', function (done){
-      var details = 
+      var details =
         { host: 'email'
         , api: '/di/link'
         , credentials: vaultSetup.keys[config.host.email].latest
-        , payload: 
+        , payload:
           { iss: config.host.setup
           , aud: config.host.email
           , 'request.a2p3.org':
@@ -75,17 +78,17 @@ describe('Creating new User', function(){
         should.exist( result )
         result.should.have.property('success')
         done()
-      })  
+      })
     })
   })
 
   describe('si:/di/link', function(){
     it('should return a result property', function (done){
-      var details = 
+      var details =
         { host: 'si'
         , api: '/di/link'
         , credentials: vaultSetup.keys[config.host.si].latest
-        , payload: 
+        , payload:
           { iss: config.host.setup
           , aud: config.host.si
           , 'request.a2p3.org':
@@ -99,17 +102,17 @@ describe('Creating new User', function(){
         should.exist( result )
         result.should.have.property('success')
         done()
-      })  
+      })
     })
   })
 
   describe('health.BC:/di/link', function(){
     it('should return a result property', function (done){
-      var details = 
+      var details =
         { host: 'health.bc'
         , api: '/di/link'
         , credentials: vaultSetup.keys[config.host['health.bc']].latest
-        , payload: 
+        , payload:
           { iss: config.host.setup
           , aud: config.host['health.bc']
           , 'request.a2p3.org':
@@ -123,17 +126,17 @@ describe('Creating new User', function(){
         should.exist( result )
         result.should.have.property('success')
         done()
-      })  
+      })
     })
   })
 
   describe('people.BC:/di/link', function(){
     it('should return a result property', function (done){
-      var details = 
+      var details =
         { host: 'people.bc'
         , api: '/di/link'
         , credentials: vaultSetup.keys[config.host['people.bc']].latest
-        , payload: 
+        , payload:
           { iss: config.host.setup
           , aud: config.host['people.bc']
           , 'request.a2p3.org':
@@ -147,7 +150,7 @@ describe('Creating new User', function(){
         should.exist( result )
         result.should.have.property('success')
         done()
-      })  
+      })
     })
   })
 
@@ -166,11 +169,11 @@ describe('Getting info on new User', function(){
           , 'resources':
             [ config.baseUrl.si + '/scope/number'
             , config.baseUrl.email + '/scope/default'
-            , config.baseUrl['health.bc'] + '/scope/prov_number' 
+            , config.baseUrl['health.bc'] + '/scope/prov_number'
             , config.baseUrl['people.bc'] + '/scope/details'
             ]
-          , 'auth': 
-            { 'passcode': true 
+          , 'auth':
+            { 'passcode': true
             , 'authorization': true
             }
           }
@@ -187,11 +190,11 @@ describe('Getting info on new User', function(){
           }
         }
       var ixToken = token.create( tokenPayload, vaultSetup.keys[config.host.ix].latest )
-      var details = 
+      var details =
         { host: 'ix'
         , api: '/exchange'
         , credentials: vaultSetup.keys[config.host.ix].latest
-        , payload: 
+        , payload:
           { iss: config.host.setup
           , aud: config.host.ix
           , 'request.a2p3.org':
@@ -207,17 +210,17 @@ describe('Getting info on new User', function(){
         result.should.have.property('tokens')
         rsTokens = result.tokens
         done()
-      })  
+      })
     })
   })
 
   describe('si:/number', function(){
     it('should return SI number', function (done){
-      var details = 
+      var details =
         { host: 'si'
         , api: '/number'
         , credentials: vaultSetup.keys[config.host.si].latest
-        , payload: 
+        , payload:
           { iss: config.host.setup
           , aud: config.host.si
           , 'request.a2p3.org':
@@ -231,17 +234,17 @@ describe('Getting info on new User', function(){
         result.should.have.property('si')
         result.si.should.equal( config.testUser.si )
         done()
-      })  
+      })
     })
   })
 
   describe('email:/email/default', function(){
     it('should return email address', function (done){
-      var details = 
+      var details =
         { host: 'email'
         , api: '/email/default'
         , credentials: vaultSetup.keys[config.host.email].latest
-        , payload: 
+        , payload:
           { iss: config.host.setup
           , aud: config.host.email
           , 'request.a2p3.org':
@@ -255,17 +258,17 @@ describe('Getting info on new User', function(){
         result.should.have.property('email')
         result.email.should.equal( config.testUser.email )
         done()
-      })  
+      })
     })
   })
 
   describe('health:/prov_number', function(){
     it('should return prov_number', function (done){
-      var details = 
+      var details =
         { host: 'health.bc'
         , api: '/prov_number'
         , credentials: vaultSetup.keys[config.host['health.bc']].latest
-        , payload: 
+        , payload:
           { iss: config.host.setup
           , aud: config.host['health.bc']
           , 'request.a2p3.org':
@@ -279,17 +282,17 @@ describe('Getting info on new User', function(){
         result.should.have.property('prov_number')
         result.prov_number.should.equal( config.testUser.prov_number )
         done()
-      })  
+      })
     })
   })
 
   describe('people:/over19', function(){
     it('should return over19 is true ', function (done){
-      var details = 
+      var details =
         { host: 'people.bc'
         , api: '/over19'
         , credentials: vaultSetup.keys[config.host['people.bc']].latest
-        , payload: 
+        , payload:
           { iss: config.host.setup
           , aud: config.host['people.bc']
           , 'request.a2p3.org':
@@ -303,17 +306,17 @@ describe('Getting info on new User', function(){
         result.should.have.property('over19')
         result.over19.should.equal( true )
         done()
-      })  
+      })
     })
   })
 
   describe('people:/under20over65', function(){
     it('should return under20over65 is false ', function (done){
-      var details = 
+      var details =
         { host: 'people.bc'
         , api: '/under20over65'
         , credentials: vaultSetup.keys[config.host['people.bc']].latest
-        , payload: 
+        , payload:
           { iss: config.host.setup
           , aud: config.host['people.bc']
           , 'request.a2p3.org':
@@ -327,17 +330,17 @@ describe('Getting info on new User', function(){
         result.should.have.property('under20over65')
         result.under20over65.should.equal( false )
         done()
-      })  
+      })
     })
   })
 
   describe('people:/namePhoto', function(){
     it('should return a name and URL to a photo ', function (done){
-      var details = 
+      var details =
         { host: 'people.bc'
         , api: '/namePhoto'
         , credentials: vaultSetup.keys[config.host['people.bc']].latest
-        , payload: 
+        , payload:
           { iss: config.host.setup
           , aud: config.host['people.bc']
           , 'request.a2p3.org':
@@ -353,17 +356,17 @@ describe('Getting info on new User', function(){
         result.name.should.equal( config.testUser.name )
         result.photo.should.equal( config.testUser.photo )
         done()
-      })  
+      })
     })
   })
 
   describe('people:/details', function(){
     it('should return a detailed profile ', function (done){
-      var details = 
+      var details =
         { host: 'people.bc'
         , api: '/details'
         , credentials: vaultSetup.keys[config.host['people.bc']].latest
-        , payload: 
+        , payload:
           { iss: config.host.setup
           , aud: config.host['people.bc']
           , 'request.a2p3.org':
@@ -376,7 +379,7 @@ describe('Getting info on new User', function(){
         should.exist( result )
         result.should.deep.equal( config.testProfile )
         done()
-      })  
+      })
     })
   })
 

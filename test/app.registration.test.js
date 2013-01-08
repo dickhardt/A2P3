@@ -1,10 +1,12 @@
-/* 
+/*
 * App Registration Test code
 *
 * Copyright (C) Province of British Columbia, 2013
 */
+// Mocha globals to expect
+/*global describe:true, it:true */
 
-var should = require('chai').should() 
+var should = require('chai').should()
   , fetchUrl = require('fetch').fetchUrl
   , config = require('../app/config')
   , request = require('../app/request')
@@ -21,7 +23,6 @@ var setupDI // root user Directed Identifier, fetched from Setup Agent storage
 describe('Logging into email dashboard', function(){
 
   var agentRequest
-    , rsTokens
     , cookieJar
 
   describe('/dashboard/login', function(){
@@ -104,7 +105,7 @@ describe('Logging into email dashboard', function(){
     it('should return key for an app', function (done){
       var rs = Object.keys(listApps)[0]
       var options =
-          { method: 'POST' 
+          { method: 'POST'
           , payload: querystring.stringify({'id': rs })
           , headers: {'content-type': 'application/x-www-form-urlencoded'}
           , cookieJar: cookieJar
@@ -142,12 +143,12 @@ describe('Logging into email dashboard', function(){
         o.query.should.have.property('request')
         var agentRequest = o.query.request
         o.query.should.have.property('statusURL')
-        var statusURL = o.query.statusURL        
+        var statusURL = o.query.statusURL
         o.query.should.have.property('state')
         var state = o.query.state
         // setup call to statusURL
         statusURL += '&json=true'
-        fetchUrl( statusURL, { cookieJar: cookieJar, disableRedirects: true }, function ( error, meta, body ) { 
+        fetchUrl( statusURL, { cookieJar: cookieJar, disableRedirects: true }, function ( error, meta, body ) {
           should.not.exist( error )
           meta.should.have.property('status')
           meta.status.should.be.equal(200)
@@ -159,7 +160,7 @@ describe('Logging into email dashboard', function(){
           response.result.should.have.property( 'url' )
           done()
         })
-        // while status call is waiting, we will send IX Token, 
+        // while status call is waiting, we will send IX Token,
         // done with a delay so that the call above happens first (which it would always do in real world)
         function sendIXToken () {
           var jws = new jwt.Parse( agentRequest )
@@ -174,13 +175,13 @@ describe('Logging into email dashboard', function(){
             }
           var ixToken = token.create( tokenPayload, vaultSetup.keys[config.host.ix].latest )
           var returnURL = jws.payload['request.a2p3.org'].returnURL + '?token=' + ixToken+'&state='+state
-          fetchUrl( returnURL, { disableRedirects: true }, function ( error, meta, body ) { 
+          fetchUrl( returnURL, { disableRedirects: true }, function ( error, meta, body ) {
             should.not.exist(error)
             meta.should.have.property('status')
             meta.status.should.be.equal(302)
             meta.should.have.property('responseHeaders')
             meta.responseHeaders.should.have.property('location')
-          })          
+          })
         }
         setTimeout( sendIXToken, 10)
       })
