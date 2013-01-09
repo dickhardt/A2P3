@@ -1,4 +1,4 @@
-/* 
+/*
 * IX Server code
 *
 * Copyright (C) Province of British Columbia, 2013
@@ -65,12 +65,12 @@ function exchange ( req, res, next ) {
     if ( !jwt ) {
       var e = new Error( "Invalid Agent Request")
       e.code = "INVALID_REQUEST"
-      return next( e )        
-    } 
+      return next( e )
+    }
   }
   catch (e) {
     e.code = 'INVALID_REQUEST'
-    return next( e )    
+    return next( e )
   }
 
   // make sure IX Token 'iss' matches associated 'kid'
@@ -117,9 +117,9 @@ function exchange ( req, res, next ) {
     hostList[jws.payload.iss] = true
     Object.keys(rsScopes).forEach( function (rs) {
       if (redirects && redirects[rs]) {
-        redirects[rs].forEach( function (host) { 
+        redirects[rs].forEach( function (host) {
           hostList[host] = true
-          rsScopes[host] = rsScopes[rs] // redirected host has scope of standardized resource 
+          rsScopes[host] = rsScopes[rs] // redirected host has scope of standardized resource
         })
       } else {
         hostList[rs] = true
@@ -134,30 +134,30 @@ function exchange ( req, res, next ) {
       if ( !keys[jws.payload.iss] || !keys[jws.payload.iss][jws.header.kid] ) {
         var e = new Error( "Invalid Agent Request key or kid")
         e.code = "INVALID_REQUEST"
-        return next( e )        
-      } 
+        return next( e )
+      }
       if ( !jws.verify( keys[jws.payload.iss][jws.header.kid] ) ) {
         var e = new Error( "Invalid Agent Request")
         e.code = "INVALID_REQUEST"
         return next( e )
-      } 
+      }
       db.getRsDIfromAsDI( ixToken.sub, ixToken.iss, Object.keys(hostList), function ( e, dis ) {
         if (e) return next( e )
-        // make tokens for all resources, delete caller from list        
+        // make tokens for all resources, delete caller from list
         var tokens = {}
         delete hostList[jws.payload.iss]
         Object.keys( hostList ).forEach( function (rs) {
-          var payload = 
+          var payload =
             { 'iss': config.host.ix
             , 'aud': rs
             , 'sub': dis[rs]
-            , 'token.a2p3.org': 
+            , 'token.a2p3.org':
               { 'auth': jwe.payload['token.a2p3.org'].auth
               , 'app': jws.payload.iss
               , 'scopes': rsScopes[rs]
               }
             }
-          tokens[rs] = token.create( payload, keys[rs].latest )  
+          tokens[rs] = token.create( payload, keys[rs].latest )
         })
         return res.send( { result: {'sub': dis[jws.payload.iss], 'tokens': tokens, 'redirects': redirects} } )
       })
@@ -191,11 +191,11 @@ function agentDelete ( req, res, next ) {
     , as = req.request.iss
     , handle = req.request['request.a2p3.org'].handle
     db.deleteAgent( di, as, handle, function( e, AS ) {
-      var details = 
+      var details =
         { host: config.reverseHost[AS]  // hack because of how api.call works currently TBD :(
         , api: '/agent/delete'
         , credentials: vault.keys[AS].latest
-        , payload: 
+        , payload:
           { iss: config.host.ix
           , aud: AS
           , 'request.a2p3.org': { 'handle': handle }
@@ -210,19 +210,19 @@ function agentDelete ( req, res, next ) {
 
 exports.app = function() {
 	var app = express()
-  app.use(express.limit('10kb'))  // protect against large POST attack  
+  app.use(express.limit('10kb'))  // protect against large POST attack
   app.use(express.bodyParser())
 
   app.post('/di/create'
           , request.check( vault.keys, config.roles.enroll )
           , mw.a2p3Params( ['AS', 'RS', 'redirects'] )
-          , diCreate 
+          , diCreate
           )
   app.post('/exchange'
           , request.check( vault.keys, null, 'registrar' )  // registrar holds all IX App keys
           , mw.a2p3Params( ['token', 'request'] )
           , exchange
-          )  
+          )
   app.post('/agent/list'
           , request.check( vault.keys, config.roles.as )
           , agentList
@@ -230,7 +230,7 @@ exports.app = function() {
   app.post('/agent/add'
           , request.check( vault.keys, config.roles.as )
           , agentAdd
-          )  
+          )
   app.post('/agent/delete'
           , request.check( vault.keys, config.roles.as )
           , agentDelete

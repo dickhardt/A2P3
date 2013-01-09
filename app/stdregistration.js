@@ -5,15 +5,28 @@
 */
 
 var express = require('express')
-  , request = require('./request')
+  , api = require('./api')
   , config = require('./config')
-  , util = require('util')
+  , async = require('async')
   , db = require('./db')
   , mw = require('./middleware')
   , api = require('./api')
 
-
+// main function that sets up all the routes
 exports.routes = function ( app, RS, vault ) {
+
+var stdApi = new api.Standard( RS, vault )
+
+  function _callAllResources ( api, params, callback ) {
+    var tasks = {}
+    config.provinces.forEach( function ( province ) {
+      var host = RS + '.' + province
+      tasks[host] = function( done ) {
+        stdApi.call( host, api, params, done )
+      }
+    })
+    async.parallel( tasks, callback )
+  }
 
 
   function dashboardlistApps ( req, res, next ) {
@@ -24,47 +37,63 @@ exports.routes = function ( app, RS, vault ) {
   }
 
   function dashboardNewApp ( req, res, next ) {
-
-    // TBD check that User is auth for this App at Registrar unless we are the Registrar
-
-
-// call all resources
-
-    db.newApp( RS, req.body.id, req.body.name, req.session.email, function ( e, key ) {
+    stdApi.call( 'registrar', '/'
+                , {id: req.body.id, token: req.session.tokens[config.host.registrar]}
+                , function ( e ) {
       if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
-      return res.send( {result:{'id': req.body.id, 'key': key}} )
+      db.newApp( RS, req.body.id, req.body.name, req.session.email, function ( e ) {
+        if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
+        _callAllResources( '/std/new/app', {id: req.body.id, name: req.body.name}, function ( e, results ) {
+          if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
+          var keys = {}
+          Object.keys( results ).forEach( function ( host ) {
+            keys[host] =
+              { kid: results[host].result.key.kid
+              , key: results[host].result.key.key
+              }
+          })
+          return res.send( {result: keys} )
+        })
+      })
     })
   }
 
   function dashboardDeleteApp ( req, res, next ) {
-
-
-// call all resources
-
-    db.deleteApp( RS, req.body.id, function ( e ) {
+    _callAllResources( '/std/delete/app', {id: req.body.id}, function ( e ) {
       if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
-      return res.send( {result:{'id': req.body.id,}} )
+      db.deleteApp( RS, req.body.id, function ( e ) {
+        if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
+        return res.send( {result:{success: true }} )
+      })
     })
   }
 
   function dashboardRefreshKey ( req, res, next ) {
-
-// call all resources
-
-    db.refreshAppKey( RS, req.body.id, function ( e, key ) {
+    _callAllResources( '/std/refresh/key', {id: req.body.id}, function ( e, results ) {
       if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
-      return res.send( {result:{'id': req.body.id, 'key': key}} )
+      var keys = {}
+      Object.keys( results ).forEach( function ( host ) {
+        keys[host] =
+          { kid: results[host].result.key.kid
+          , key: results[host].result.key.key
+          }
+      })
+      return res.send( {result: keys} )
     })
   }
 
   function dashboardGetKey ( req, res, next ) {
-
-
-// call all resources
-
-    db.getAppKey( RS, req.body.id, null, function ( e, key ) {
+    _callAllResources( '/std/getkey', {id: req.body.id}, function ( e, results ) {
       if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
-      return res.send( {result:{'id': req.body.id, 'key': key}} )
+      if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
+      var keys = {}
+      Object.keys( results ).forEach( function ( host ) {
+        keys[host] =
+          { kid: results[host].result.key.kid
+          , key: results[host].result.key.key
+          }
+      })
+      return res.send( {result: keys} )
     })
   }
 
@@ -73,8 +102,8 @@ exports.routes = function ( app, RS, vault ) {
       if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
       if (!authorized) {
         var err = new Error( req.session.di + ' not authorized for ' + req.body.id )
-        e.code = "ACCESS_DENIED"
-        return next(e)
+        err.code = "ACCESS_DENIED"
+        return next(err)
       } else
         next()
     })
@@ -82,7 +111,6 @@ exports.routes = function ( app, RS, vault ) {
 
   // checks session has required data, otherwise goes and gets it
   function checkSession ( req, res, next ) {
-
 
     function badSession( error ) {
       req.session.bad = true
@@ -125,6 +153,8 @@ exports.routes = function ( app, RS, vault ) {
 
   var cookieOptions = { 'secret': vault.secret, 'cookie': { path: '/dashboard' } }
   app.use( express.cookieSession( cookieOptions ))
+
+  mw.loginHandler( app, { 'dashboard': RS, 'vault': vault })
 
   app.get('/dashboard/list/apps'
           , checkSession

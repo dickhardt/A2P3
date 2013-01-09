@@ -1,8 +1,8 @@
-/* 
+/*
 * helloWorld.js
-* 
+*
 * simple app that runs on IP of host
-* useful for logging into from mobile agent 
+* useful for logging into from mobile agent
 * see README.md for more details
 *
 * Copyright (C) Province of British Columbia, 2013
@@ -17,8 +17,9 @@ var express = require('express')
   , async = require('async')
   , vault = require('./vault')
   , helloConfig = require('./config')
+  , api = require('../app/api')
 
-var resources = 
+var resources =
   { 'email':
     { 'scope': config.baseUrl.email+'/scope/default'
     , 'api': '/email/default'
@@ -28,19 +29,19 @@ var resources =
     { 'scope': config.baseUrl.si+'/scope/number'
     , 'api': '/number'
     , 'host': config.host.si
-    } 
-/*    
+    }
+/*
   , 'people':
     { 'scope': config.baseUrl.people+'/scope/details'
     , 'api': '/details'
-    , 'host': config.host['people.bc']  // TBD -- need to fill these in from redirects    
-    }  
+    , 'host': config.host['people.bc']  // TBD -- need to fill these in from redirects
+    }
   , 'health':
     { 'scope': config.baseUrl.health+'/scope/prov_number'
     , 'api': '/prov_number'
     , 'host': config.host['health.bc']    // TBD - FIX!
     }
-*/    
+*/
   }
 
 
@@ -59,11 +60,11 @@ function profileFetch ( req, res, next ) {
   var tasks = []
   Object.keys( resources ).forEach( function ( r ) {
     tasks.push( function( done ) {
-      var details = 
+      var details =
         { host: resources[r].host
         , api: resources[r].api
         , credentials: vault.keys[resources[r].host].latest
-        , payload: 
+        , payload:
           { iss: helloConfig.hostname
           , aud: config.host[r]
           , 'request.a2p3.org':
@@ -88,16 +89,16 @@ var scopes = []
 Object.keys( resources ).forEach( function (r) { scopes.push( resources[r].scope ) } )
 
 var loginDetails =
-  { 'host': helloConfig.hostname  
-  , 'vault': vault  
+  { 'host': helloConfig.hostname
+  , 'vault': vault
   , 'resources': scopes
   , 'path':
     { 'login':      '/profile/login'
     , 'return':     '/profile/login/return'
     // the following are static pages located in /assets
-    , 'error':      '/profile/error'        
+    , 'error':      '/profile/error'
     , 'success':    '/profile'
-    , 'complete':   '/profile/complete'  
+    , 'complete':   '/profile/complete'
     }
   }
 
@@ -107,12 +108,12 @@ app.use( express.cookieParser() )
 
 var cookieOptions = { 'secret': vault.secret, 'cookie': { path: '/dashboard' } }
 
-app.use( express.cookieSession( cookieOptions ))  
+app.use( express.cookieSession( cookieOptions ))
 
 app.use( mw.colorLogger( express ))
 app.use( express.static( __dirname + '/assets' ) )
 
-mw.loginHandler( app, loginDetails )
+mw.loginHandler( app, loginDetails ) // TBD this is incorrect
 
 app.get( '/profile/fetch', mw.checkLoggedIn, profileFetch)
 

@@ -5,7 +5,7 @@
 */
 
 /*
-* NOTE: this is a hardlinked file in each of the province subdirectories
+* NOTE: this is a symlinked file in each of the province subdirectories
 * edit the file in the people directory, but don't reference it as the
 * require() statements are expecting to in the province subdirectory
 */
@@ -121,7 +121,7 @@ exports.app = function( province ) {
 
   registration.routes( app, 'people.'+province, vault )  // add in routes for the registration paths
 
-  mw.loginHandler( app, { 'app': 'people.'+province, 'vault': vault, 'dashboard': true } )
+  mw.loginHandler( app, { 'dashboard': 'people.'+province, 'vault': vault } )
 
   app.post('/di/link'
           , request.check( vault.keys, config.roles.enroll )

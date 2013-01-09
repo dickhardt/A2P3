@@ -1,4 +1,4 @@
-/* 
+/*
 * token.js
 *
 * creates and parses A2P3 tokens
@@ -35,14 +35,14 @@ function validScope ( passedScopes, acceptedScopes ) {
 // depends on request.check middleware being called prior
 exports.checkRS = function ( vault, rs, scopePaths, stdRS ) {
   // build list of acceptable scopes
-  if ( scopePaths instanceof String ) 
+  if ( scopePaths instanceof String )
     scopePaths = [scopePaths]
-  var acceptedScopes = scopePaths && scopePaths.map( function ( scopePath ) { 
-    return (config.baseUrl[rs] + scopePath) 
+  var acceptedScopes = scopePaths && scopePaths.map( function ( scopePath ) {
+    return (config.baseUrl[rs] + scopePath)
     })
   if (acceptedScopes && stdRS) {
-    var stdAcceptedScopes = scopePaths.map( function ( scopePath ) { 
-      return (config.baseUrl[stdRS] + scopePath) 
+    var stdAcceptedScopes = scopePaths.map( function ( scopePath ) {
+      return (config.baseUrl[stdRS] + scopePath)
     })
     acceptedScopes.push( stdAcceptedScopes )
   }
@@ -53,7 +53,7 @@ exports.checkRS = function ( vault, rs, scopePaths, stdRS ) {
       err = new Error("No token in 'request.a2p3.org' payload property")
       err.code = 'INVALID_TOKEN'
       return next( err )
-    }  //  
+    }  //
     try {
       jwe = new jwt.Parse(req.request['request.a2p3.org'].token)
       if ( !jwe.header.kid || !vault[config.host.ix][jwe.header.kid] ) {
@@ -86,7 +86,7 @@ exports.checkRS = function ( vault, rs, scopePaths, stdRS ) {
       err = new Error("No scope provided.")
       err.code = 'INVALID_TOKEN'
       return next( err )
-    }    
+    }
     if ( acceptedScopes && !validScope( token['token.a2p3.org'].scopes, acceptedScopes ) ) {
       err = new Error("Invalid scope.")
       err.code = 'INVALID_TOKEN'

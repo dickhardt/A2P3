@@ -17,7 +17,7 @@ exports.app = function( ) {
 
   stdRegistration.routes( app, 'health', vault )  // add in routes for the registration paths
 
-  mw.loginHandler( app, { 'app': 'health', 'vault': vault, 'dashboard': true } )
+  mw.loginHandler( app, { 'dashboard': 'health', 'vault': vault } )
 
   app.use( mw.errorHandler )
   return app

@@ -1,6 +1,6 @@
-/* 
+/*
 * Development Database layer
-* 
+*
 * NOTE: will not work with cluster or other multi-process!!!
 *
 * Copyright (C) Province of British Columbia, 2013
@@ -14,7 +14,7 @@ var fs = require('fs')
   , vaultIX = require('./ix/vault')
   , jwt = require('./jwt')
 
-// Development JSON DB  
+// Development JSON DB
 // create empty file if does not exist
 var fExist = fs.existsSync( __dirname+'/nosql.json' )
 if ( !fExist ) {
@@ -22,12 +22,12 @@ if ( !fExist ) {
   fs.writeFileSync( __dirname+'/nosql.json', JSON.stringify( nosql ) )
 }
 // load DB
-var dummyNoSql = require('./nosql.json')  
+var dummyNoSql = require('./nosql.json')
 
 
 // save DB on exit
 process.on('exit', function() {
-  fs.writeFileSync( __dirname+'/nosql.json', JSON.stringify( dummyNoSql ) )  
+  fs.writeFileSync( __dirname+'/nosql.json', JSON.stringify( dummyNoSql ) )
 })
 
 var keyChain = dummyNoSql.keyChain
@@ -44,7 +44,7 @@ exports.mapDI = mapDI
 
 /*
 * functions to add, list and delete agents from IX and Registrar DB
-*/  
+*/
 exports.addAgent = function ( asDI, asHost, name, cb ) {
   var ixDI = dummyNoSql['ix:di:' + asHost + ':' + asDI]
   var handle = jwt.handle()
@@ -60,17 +60,17 @@ exports.listAgents = function ( asDI, asHost, cb ) {
   var ixDI = dummyNoSql['ix:di:' + asHost + ':' + asDI]
   var agents = dummyNoSql['ix:di:' + ixDI]
   if (!agents || !Object.keys(agents).length) {
-    return process.nextTick( function () { cb( null, null ) } )  
+    return process.nextTick( function () { cb( null, null ) } )
   }
   // don't want to share agent AS with other AS, just return what is needed for User to decide
   var results = {}
-  Object.keys(agents).forEach( function ( handle ) { 
-    results[handle] = 
+  Object.keys(agents).forEach( function ( handle ) {
+    results[handle] =
       { name: agents[handle].name
       , created: agents[handle].created
       }
   })
-  process.nextTick( function () { cb( null, results ) } )  
+  process.nextTick( function () { cb( null, results ) } )
 }
 
 exports.deleteAgent = function ( asDI, asHost, handle, cb ) {
@@ -84,7 +84,7 @@ exports.deleteAgent = function ( asDI, asHost, handle, cb ) {
   delete dummyNoSql['ix:di:' + ixDI + ':handle:' + handle + ':token']
   delete dummyNoSql['registrar:agentHandle:' + token]
 
-  process.nextTick( function () { cb( null, agentAS ) } )  
+  process.nextTick( function () { cb( null, agentAS ) } )
 }
 
 
@@ -108,7 +108,7 @@ exports.checkRegistrarAppIdTaken = function ( id, cb ) {
 
 // called when an RS wants to know if admin is authorized for an app ID
 exports.checkAdminAuthorization = function ( reg, id, di, cb ) {
-  var adminEmail = dummyNoSql[reg + ':admin:di:' + di] 
+  var adminEmail = dummyNoSql[reg + ':admin:di:' + di]
   var authorized = dummyNoSql[reg + ':app:' + id + ':admins'][adminEmail] == 'ACTIVE'
   process.nextTick( function () { cb( null, authorized ) } )
 }
@@ -140,7 +140,7 @@ exports.listApps = function ( reg, admin, cb ) {
         { name: dummyNoSql[reg + ':app:' + id + ':name']
         , admins: dummyNoSql[reg + ':app:' + id + ':admins']
         }
-    })    
+    })
   }
   process.nextTick( function () { cb( null, result ) } )
 }
@@ -203,14 +203,14 @@ exports.getAppKeys = function ( reg, list, vaultKeys, cb ) {
     keys[id] = keyChain[reg][id]
     if (!keys[id] && vaultKeys && vaultKeys[id]) {
       keys[id] = vaultKeys[id]
-    } 
+    }
     if (!keys[id]) notFound = id
   })
   if (notFound) {
     e = new Error('Key not found for:'+notFound)
     e.code = "UNKOWN_RESOURCE"
   }
-  process.nextTick( function () { cb( e, keys ) } )  
+  process.nextTick( function () { cb( e, keys ) } )
 }
 
 /*
@@ -240,7 +240,7 @@ exports.newUser = function ( asHost, rsHosts, redirects, cb ) {
       dummyNoSql['ix:redirect:di:' + ixDI + ':' + std].push( redirects[std] )
     })
   }
-  
+
   process.nextTick( function () { cb( null, dis ) } )
 }
 
@@ -254,7 +254,7 @@ exports.getStandardResourceHosts = function ( asDI, asHost, rsList, cb ) {
   var redirects = {}
   rsStd.forEach( function ( std ) {
     redirects[std] = dummyNoSql['ix:redirect:di:' + ixDI + ':' + std]
-  })  
+  })
   process.nextTick( function () { cb( null, redirects ) } )
 }
 
@@ -305,9 +305,9 @@ exports.storeAgent = function ( as, agent, cb ) {
 exports.retrieveAgentFromHandle = function ( as, handle, cb) {
   var key = as + ':agent:handle:' + handle
   var device = dummyNoSql[key]
-  var key = as + ':agent:device:' + device
+  key = as + ':agent:device:' + device
   var agent = dummyNoSql[key]
-  process.nextTick( function () { cb( null, agent ) } )  
+  process.nextTick( function () { cb( null, agent ) } )
 }
 
 exports.retrieveAgentFromDevice = function ( as, device, cb) {
@@ -320,9 +320,9 @@ exports.deleteAgentFromHandle = function ( as, handle, cb) {
   var key = as + ':agent:handle:' + handle
   var device = dummyNoSql[key]
   delete dummyNoSql[key]
-  var key = as + ':agent:device:' + device
+  key = as + ':agent:device:' + device
   delete dummyNoSql[key]
-  process.nextTick( function () { cb( null ) } )  
+  process.nextTick( function () { cb( null ) } )
 }
 
 /*
@@ -334,7 +334,7 @@ exports.updateProfile = function ( rs, di, profile, cb ) {
   Object.keys( profile ).forEach( function (item) {
     dummyNoSql[key][item] = profile[item]
   })
-  process.nextTick( function () { cb( null ) } )  
+  process.nextTick( function () { cb( null ) } )
 }
 
 exports.getProfile = function ( rs, di, cb ) {
@@ -342,9 +342,9 @@ exports.getProfile = function ( rs, di, cb ) {
   if (!dummyNoSql[key]) {
     var e = new Error('unknown user')
     e.code = "UNKNOWN_USER"
-    process.nextTick( function () { cb( e, null ) } )    
+    process.nextTick( function () { cb( e, null ) } )
   } else {
-    process.nextTick( function () { cb( null, dummyNoSql[key] ) } )    
+    process.nextTick( function () { cb( null, dummyNoSql[key] ) } )
   }
 }
 
@@ -354,18 +354,18 @@ exports.updateSeries = function ( rs, di, series, data, time, cb ) {
   var key = rs + ':di:' + di + ':series:' + series
   dummyNoSql[key] = dummyNoSql[key] || {}
   dummyNoSql[key][time] = data
-  process.nextTick( function () { cb( null ) } )  
+  process.nextTick( function () { cb( null ) } )
 }
 
 
 exports.getSeries = function ( rs, di, series, data, cb ) {
   var key = rs + ':di:' + di + ':series:' + series
-  process.nextTick( function () { cb( null, dummyNoSql[key] ) } )  
+  process.nextTick( function () { cb( null, dummyNoSql[key] ) } )
 }
 
 /*
 * dev version of publish / subscribe
-* used to move IX Token between phone and desktop 
+* used to move IX Token between phone and desktop
 * when using QR reader
 */
 
@@ -390,5 +390,57 @@ exports.readChannel = function ( channel, cb) {
     }
     cb( null, data )
   })
+}
+
+/*
+* OAuth Access Tokens and permissions
+*
+*/
+// create an OAuth access token
+exports.oauthCreate = function ( rs, appID, di, details, cb) {
+  var accessToken = jwt.handle()
+  var keyAccess = rs + ':oauth:' + accessToken
+  dummyNoSql[keyAccess] = details
+  var keyDI = rs + ':oauthGrants:' + di
+  dummyNoSql[keyDI] = dummyNoSql[keyDI] || {}
+  dummyNoSql[keyDI][appID] = dummyNoSql[keyDI][appID] || {}
+  dummyNoSql[keyDI][appID][accessToken] = Date.now()
+  process.nextTick( function () { cb( null, accessToken ) } )
+    process.nextTick( function () { cb( null ) } )
+
+}
+
+// retrieve an OAuth access token
+exports.oauthRetrieve = function ( rs, accessToken, cb ) {
+  var keyAccess = rs + ':oauth:' + accessToken
+  process.nextTick( function () { cb( null, dummyNoSql[keyAccess] ) } )
+}
+
+// list which apps have been granted OAuth access tokens
+exports.oauthList = function ( rs, di, cb ) {
+  var keyDI = rs + ':oauthGrants:' + di
+  var grants = dummyNoSql[keyDI]
+  if (!grants) process.nextTick( function () { cb( null ) } )
+  var results = {}
+  Object.keys( grants ).forEach( function ( appID ) {
+    var latest = 0
+    Object.keys( dummyNoSql[keyDI][appID] ).forEach( function ( token) {
+      if ( dummyNoSql[keyDI][appID][token] > latest ) latest = dummyNoSql[keyDI][appID][token]
+    })
+    results[appID] = latest
+  })
+  process.nextTick( function () { cb( null, results ) } )
+}
+
+// delete all OAuth access tokens granted to an app
+exports.oauthDelete = function ( rs, di, appID, cb ) {
+  var keyDI = rs + ':oauthGrants:' + di
+  var tokens = dummyNoSql[keyDI][appID]
+  Object.keys( tokens ).forEach( function ( accessToken ) {
+    var keyAccess = rs + ':oauth:' + accessToken
+    delete dummyNoSql[keyAccess]
+  })
+  delete dummyNoSql[keyDI][appID]
+  process.nextTick( function () { cb( null ) } )
 }
 

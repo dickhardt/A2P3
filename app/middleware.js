@@ -1,7 +1,7 @@
-/* 
+/*
 * middleware.js
-* 
-* connect / express middleware functions 
+*
+* connect / express middleware functions
 *
 * Copyright (C) Province of British Columbia, 2013
 */
@@ -54,7 +54,7 @@ exports.checkParams = function  ( params ) {
 
     Object.keys( params ).forEach( function ( key ) {
       if (e) return
-      if (!req[key]) { 
+      if (!req[key]) {
         e = new Error("No "+key+" found.")
         e.code = 'INVALID_API_CALL'
         dump()
@@ -62,7 +62,7 @@ exports.checkParams = function  ( params ) {
       } else {
         params[key].forEach( function ( param ) {
           if (e) return
-          if (!req[key][param]) { 
+          if (!req[key][param]) {
             e = new Error("No '"+param+"' found in "+key+".")
             e.code = 'INVALID_API_CALL'
             dump()
@@ -80,14 +80,14 @@ exports.a2p3Params = function ( params ) {
   return function a2p3Params( req, res, next ) {
     var e
 
-    if (!req.request || !req.request['request.a2p3.org']) { 
+    if (!req.request || !req.request['request.a2p3.org']) {
       e = new Error("request.a2p3.org not found in request")
       e.code = 'INVALID_API_CALL'
       return next( e )
     }
     params.forEach( function ( param ) {
       if (e) return
-      if (!req.request['request.a2p3.org'][param]) { 
+      if (!req.request['request.a2p3.org'][param]) {
         e = new Error("request.a2p3.org parameter '"+param+"' not found")
         e.code = 'INVALID_API_CALL'
         return next( e )
@@ -106,15 +106,15 @@ exports.colorLogger = function colorLogger ( express ) {
 
   express.logger.token( 'wideHost', function (req, res) {
     var wideHost = '                              '.slice(req.host.length) + req.host
-    return ( errorStatusCode( res.statusCode ) ) 
+    return ( errorStatusCode( res.statusCode ) )
       ? '\x1b[31m'+wideHost+'\x1b[0m'
       : wideHost
     })
 
   express.logger.token( 'statusColor', function (req, res) {
-    return ( errorStatusCode( res.statusCode ) ) 
-      ? '\x1b[31m'+res.statusCode+'\x1b[0m' 
-      : res.statusCode 
+    return ( errorStatusCode( res.statusCode ) )
+      ? '\x1b[31m'+res.statusCode+'\x1b[0m'
+      : res.statusCode
     })
 
   express.logger.token( 'errorCode', function (req, res) {
@@ -123,7 +123,7 @@ exports.colorLogger = function colorLogger ( express ) {
       : '-'
     })
 
-  express.logger.token( 'errorMessage', function (req, res) { 
+  express.logger.token( 'errorMessage', function (req, res) {
     return (res.errorA2P3)
       ? '\x1b[1m'+res.errorA2P3.message+'\x1b[0m'
       : '-'
@@ -136,7 +136,7 @@ exports.colorLogger = function colorLogger ( express ) {
 * login middleware
 *
 * general middleware for logging into a site and getting resource tokens
-*/ 
+*/
 
 
 function fetchIXToken ( agentRequest, ixToken, details, cb ) {
@@ -144,7 +144,7 @@ function fetchIXToken ( agentRequest, ixToken, details, cb ) {
       { host: 'ix'
       , api: '/exchange'
       , credentials: details.vault.keys[config.host.ix].latest
-      , payload: 
+      , payload:
         { iss: details.host
         , aud: config.host.ix
         , 'request.a2p3.org':
@@ -156,7 +156,7 @@ function fetchIXToken ( agentRequest, ixToken, details, cb ) {
     api.call( apiDetails, cb )
 }
 
-// /*/login handler, generates an Agent Request 
+// /*/login handler, generates an Agent Request
 // returns to caller if 'qr' parameter provided
 // redirects to 'returnURL' if provided
 // else redirects to Agent Protocol Handler
@@ -167,7 +167,7 @@ function login ( details ) {
       { iss: details.host
       , aud: config.host.ix
       , 'request.a2p3.org':
-        { 'returnURL': details.url.return 
+        { 'returnURL': details.url.response
         , 'resources': details.resources
         , 'auth': { 'passcode': true, 'authorization': true }
         }
@@ -176,14 +176,14 @@ function login ( details ) {
 // console.log('details',details)
 
     var jsonResponse = req.query && req.query.json
-    var agentRequest = request.create( agentRequestPayload, details.vault.keys[config.host.ix].latest )  
+    var agentRequest = request.create( agentRequestPayload, details.vault.keys[config.host.ix].latest )
     req.session.agentRequest = agentRequest
     var redirectUrl = (req.query && req.query.returnURL) ? req.query.returnURL : 'a2p3.net://token'
     redirectUrl += '?request=' + agentRequest
     if (jsonResponse) {  // client wants JSON, likely will generate QR code
       var state = jwt.handle()
       req.session.loginState = state
-      var statusURL = details.url.return + '?' + querystring.stringify( { 'state': state } )
+      var statusURL = details.url.response + '?' + querystring.stringify( { 'state': state } )
       redirectUrl += '&' + querystring.stringify( { 'statusURL': statusURL, 'state': state } )
       return res.send( { result: {'request': redirectUrl } } )
     } else {
@@ -192,7 +192,7 @@ function login ( details ) {
   }
 }
 
-// /*/login/return handler 
+// /*/login/return handler
 // if gets IX Token, fetches RS Tokens and redirects to success or error urls
 function loginReturn ( details ) {
   return function loginReturn ( req, res, next ) {
@@ -208,7 +208,7 @@ function loginReturn ( details ) {
         return next( e )
       } else {
         var errorUrl = details.url.error + '&' + querystring.stringify( {'error':code,'errorMessage':message})
-        return res.redirect( errorUrl )        
+        return res.redirect( errorUrl )
       }
     }
 
@@ -255,54 +255,6 @@ function loginStateCheck ( details ) {
   }
 }
 
-/*
-* md() renders passed in Markdown file as HTML with /css/github.css styling
-*
-* Used to show README.md files that are in source to document servers
-*/
-function md2html ( file ) {
- // var options = { breaks: false }    
-  var options = { }    
-  var markdown = fs.readFileSync( file, 'utf8' )
-  var tokens = marked.lexer( markdown, options )
-  var html = marked.parser( tokens, options )
-  // add in github flavoured markdown CSS so it looks like it does on github.com
-  // also add in link to root at top TBD: modify to fit into rest of theme
-  html  = '<!DOCTYPE html><head><link rel="stylesheet" href="/css/github.css"></head><body>'
-        + '<p><a  alt="Home" href="/">Home</a></p>'
-        + html
-        + '</body></html>'
-  return html
-}
-
-exports.md = function ( file, dontCache ) {
-  var cache = !dontCache
-  if (cache) { // we will cache the HTML and then save in cache
-    // parse and cache HTML
-    try {
-      cache = md2html( file )
-    }
-    catch (e) { 
-      return function( req, res, next) { next( e ) }
-    }
-  }
-  return function markdown ( req, res, next ) {
-    var html
-    if (cache) {
-      html = cache
-    } else {
-      try {
-        html = md2html( file )
-      }
-      catch (e) { 
-        next( e )
-      }
-    }
-    res.send( html )
-  }
-}
-
-
 
 /*
 
@@ -316,13 +268,13 @@ var details =
     , config.baseUrl.registrar + '/scope/verify'
     ]
   , 'path':          // paths were each step of login goes
-        // these paths are managed here 
+        // these paths are managed here
     { 'login':      '/dashboard/login'
     , 'return':     '/dashboard/login/return'
         // these are static pages that should map to somewhere TBD, generic?
-    , 'error':      '/dashboard/error'        
+    , 'error':      '/dashboard/error'
     , 'success':    '/dashboard'
-    , 'complete':   '/dashboard/complete'  
+    , 'complete':   '/dashboard/complete'
     }
   , dashboard: 'email'  // if present, sets up default config for dashboards
   }
@@ -347,26 +299,77 @@ exports.loginHandler = function ( app, detailsOrig ) {
   if (details.dashboard) { // setup standard dashboard settings
     details.host = config.host[details.dashboard]
     details.baseUrl = config.baseUrl[details.dashboard]
-    details.resources = 
+    details.resources =
       [ config.baseUrl.email + '/scope/default'
       , config.baseUrl.registrar + '/scope/verify'
       ]
     details.path =
       { 'login':      '/dashboard/login'
-      , 'return':     '/dashboard/login/return'
+      , 'response':   '/dashboard/login/response'
       , 'error':      '/dashboard/error'
       , 'success':    '/dashboard'
-      , 'complete':   '/dashboard/complete'  
+      , 'complete':   '/dashboard/complete'
       }
   }
   // create URLs to use
   details.url = {}
   Object.keys( details.path ).forEach ( function ( p ) {
-    details.url[p] = details.baseUrl + details.path[p] 
+    details.url[p] = details.baseUrl + details.path[p]
   })
 
   app.get( details.path.login, login( details ) )
 
-  app.get( details.path.return, loginStateCheck( details ), loginReturn( details ) )
+  app.get( details.path.response, loginStateCheck( details ), loginReturn( details ) )
 
 }
+
+
+
+/*
+* md() renders passed in Markdown file as HTML with /css/github.css styling
+*
+* Used to show README.md files that are in source to document servers
+*/
+function _md2html ( file ) {
+ // var options = { breaks: false }
+  var options = { }
+  var markdown = fs.readFileSync( file, 'utf8' )
+  var tokens = marked.lexer( markdown, options )
+  var html = marked.parser( tokens, options )
+  // add in github flavoured markdown CSS so it looks like it does on github.com
+  // also add in link to root at top TBD: modify to fit into rest of theme
+  html  = '<!DOCTYPE html><head><link rel="stylesheet" href="/css/github.css"></head><body>'
+        + '<p><a  alt="Home" href="/">Home</a></p>'
+        + html
+        + '</body></html>'
+  return html
+}
+
+exports.md = function ( file, dontCache ) {
+  var cache = !dontCache
+  if (cache) { // we will cache the HTML and then save in cache
+    // parse and cache HTML
+    try {
+      cache = _md2html( file )
+    }
+    catch (e) {
+      return function( req, res, next) { next( e ) }
+    }
+  }
+  return function markdown ( req, res, next ) {
+    var html
+    if (cache) {
+      html = cache
+    } else {
+      try {
+        html = _md2html( file )
+      }
+      catch (e) {
+        next( e )
+      }
+    }
+    res.send( html )
+  }
+}
+
+

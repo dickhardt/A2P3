@@ -1,4 +1,4 @@
-/* 
+/*
 * config.js
 *
 * A2P3 Server Configuration Information
@@ -21,9 +21,9 @@ var portListen = port
 *   The following builds out the configuration for all the hosts
 *   No configurable information is here
 */
-var provinces = 
+var provinces =
   ['ab', 'bc', 'mb', 'nb', 'nl', 'ns', 'nt', 'nu', 'on', 'pe', 'qc', 'sk', 'yt']
-var  host = 
+var  host =
   { ix: 'ix'
   , registrar: 'registrar'
   , as: 'as'
@@ -45,7 +45,7 @@ provinces.forEach( function ( province ) {
 Object.keys(host).forEach( function (key) {
   host[key] = host[key] +'.'+ baseDomain
   reverseHost[host[key]] = key
-  baseUrl[key] = scheme + '://' + host[key] 
+  baseUrl[key] = scheme + '://' + host[key]
   if (port && port != '80')
     baseUrl[key] += ':' + port
 })
@@ -53,7 +53,7 @@ Object.keys(host).forEach( function (key) {
 /*
 * Edit information below if you want a different defailt user installed
 */
-var profile = 
+var profile =
     { 'si': '123456789'
     , 'prov_number': '0123456789'
     , 'email': 'john@example.com'
@@ -75,14 +75,14 @@ exports.testProfile =
     , 'province': profile.province
     , 'postal': profile.postal
     , 'photo': profile.photo
-    } 
-exports.testUser = profile  
+    }
+exports.testUser = profile
 
 
 /*
 *   Insert Facebook App credentials if you want to Setup to use Facebook to gather data
-*/  
-exports.facebook = 
+*/
+exports.facebook =
   { appID: null
   , appSecret: null
   }
@@ -111,9 +111,7 @@ roles.enroll[host.setup] = true
 
 // health and people are POC standardized resources
 roles.std[host.health] = true
-roles.std[host.people] = true  
-
-
+roles.std[host.people] = true
 
 /********************************************************************
 *  Don't edit below here unless you know what you are doing!!!      *

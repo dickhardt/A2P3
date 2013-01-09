@@ -14,6 +14,8 @@ var express = require('express')
 
 
 exports.routes = function ( app, RS, vault ) {
+    var std = RS.replace(/\.??$/,'')
+    if (std == RS) std = null // std is set if we are doing a province standardized resource
 
     // only called at Registrar Dashboard
     function dashboardAddAdmin ( req, res, next ) {
@@ -39,12 +41,26 @@ exports.routes = function ( app, RS, vault ) {
   }
 
   function dashboardNewApp ( req, res, next ) {
-
-    // TBD check that User is auth for this App at Registrar unless we are the Registrar
-
-    db.newApp( RS, req.body.id, req.body.name, req.session.email, function ( e, key ) {
+    function newApp() {
+      db.newApp( RS, req.body.id, req.body.name, req.session.email, function ( e, key ) {
+        if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
+        return res.send( {result:{'id': req.body.id, 'key': key}} )
+      })
+    }
+    // check that User is auth for this App at Registrar unless we are the Registrar
+    // or this is an API call from a Standardized Resource
+    if ( ( RS == 'registar' ) || req.request ) return db.newApp()
+    if (!req.session && !req.session.tokens && !req.session.tokens[config.host.registrar]) {
+      var e = new Error('No RS Token for Registrar found')
+      e.code = 'INTERNAL_ERROR'
+      return next( e )
+    }
+    var stdApi = new api.Standard( RS, vault )
+    stdApi.call( 'registrar', '/'
+                , {id: req.body.id, token: req.session.tokens[config.host.registrar]}
+                , function ( e ) {
       if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
-      return res.send( {result:{'id': req.body.id, 'key': key}} )
+      newApp()
     })
   }
 
@@ -53,7 +69,7 @@ exports.routes = function ( app, RS, vault ) {
   function dashboardDeleteApp ( req, res, next ) {
     db.deleteApp( RS, req.body.id, function ( e ) {
       if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
-      return res.send( {result:{'id': req.body.id}} )
+      return res.send( {result:{success: true }} )
     })
   }
 
@@ -83,8 +99,8 @@ exports.routes = function ( app, RS, vault ) {
     })
   }
 
-// reformat parameters from standard resource host to fit
-// dashboard calls
+// reformat parameters from standard resource host API calls
+// to fit existing dashboard calls
   function stdNewApp ( req, res, next ) {
     req.body.id = req.request['request.a2p3.org'].id
     req.body.name = req.request['request.a2p3.org'].name
@@ -207,26 +223,28 @@ exports.routes = function ( app, RS, vault ) {
           )
 // API calls from Standardized Resource Manager
   var std = RS.replace(/\.??$/,'')
+  if (std != RS) {  // we are settign up a standardized resource
+    app.post('/std/new/app'
+            , request.check( vault.keys, [config.host[std]], config.host[RS])
+            , mw.a2p3Params( ['id', 'name'] )
+            , stdNewApp
+            )
+    app.post('/std/delete/app'
+            , request.check( vault.keys, [config.host[std]], config.host[RS])
+            , mw.a2p3Params( ['id'] )
+            , stdDeleteApp
+            )
+    app.post('/std/refresh/key'
+            , request.check( vault.keys, [config.host[std]], config.host[RS])
+            , mw.a2p3Params( ['id'] )
+            , stdRefreshKey
+            )
+    app.post('/std/getkey'
+            , request.check( vault.keys, [config.host[std]], config.host[RS])
+            , mw.a2p3Params( ['id'] )
+            , stdGetKey
+            )
+  }
 
-  app.post('/std/new/app'
-          , request.check( vault.keys, [config.host[std]], config.host[RS])
-          , mw.a2p3Params( ['id', 'name'] )
-          , stdNewApp
-          )
-  app.post('/std/delete/app'
-          , request.check( vault.keys, [config.host[std]], config.host[RS])
-          , mw.a2p3Params( ['id'] )
-          , stdDeleteApp
-          )
-  app.post('/std/refresh/key'
-          , request.check( vault.keys, [config.host[std]], config.host[RS])
-          , mw.a2p3Params( ['id'] )
-          , stdRefreshKey
-          )
-  app.post('/std/getkey'
-          , request.check( vault.keys, [config.host[std]], config.host[RS])
-          , mw.a2p3Params( ['id'] )
-          , stdGetKey
-          )
 
 }
