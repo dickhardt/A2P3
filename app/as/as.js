@@ -96,7 +96,7 @@ function registerAgent ( req, res, next ) {
       , api: '/agent/add'
       , credentials: vault.keys[config.host.ix].latest
       , payload:
-        { iss: config.host.setup
+        { iss: config.host.as
         , aud: config.host.ix
         , 'request.a2p3.org':
           { di: req.session.di

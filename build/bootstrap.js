@@ -20,7 +20,7 @@ var fs = require('fs')
   , config = require('../app/config')
   , identity = require('../app/identity')
 
- 
+
 function syncWriteJSON ( obj, fname ) {
   var data = JSON.stringify( obj )
   fs.writeFileSync( fname, data )
@@ -61,11 +61,11 @@ function run ( complete ) {
   //  write out vault.json files for coreHostKeys
   Object.keys( coreHostKeys ).forEach( function (host) {
     coreHostKeys[host].private = identity.makeKey()
-    syncWriteJSON( coreHostKeys[host], 'app/'+host+'/vault.json' ) 
+    syncWriteJSON( coreHostKeys[host], 'app/'+host+'/vault.json' )
   } )
 
   // NOTE: we cannot load db until registrar keys have been created or it will fail to load
-  var db = require('../app/db')          
+  var db = require('../app/db')
 
   // the rest of our bootstrap calls are not syncronous, so we create
   // an array of tasks and then execute them in order
@@ -80,7 +80,7 @@ function run ( complete ) {
       if (e) return done( e )
       diRoot = dis
       done( null, "created root user")
-    })  
+    })
   })
 
   tasks.push( function (done) {
@@ -98,12 +98,12 @@ function run ( complete ) {
 
   var rsHostKeys = {}
 
-  // we need to update the setup vault with key pairs with all RSes 
-  // and registrar vault with email RS, but needed DB before we could 
+  // we need to update the setup vault with key pairs with all RSes
+  // and registrar vault with email RS, but needed DB before we could
   // register them as apps at RSes
   // we get the vaults and then write them out again
-  var setupVault = require('../app/setup/vault') 
-  var registrarVault = require('../app/registrar/vault') 
+  var setupVault = require('../app/setup/vault')
+  var registrarVault = require('../app/registrar/vault')
 
   // Registrar keys and registration and setup keys
   rsHosts.forEach( function (rs) {
@@ -129,13 +129,13 @@ function run ( complete ) {
       var hostPeople = 'people.'+province
       rsHostKeys.people.keys[config.host[hostPeople]] = rsHostKeys[hostPeople].keys[config.host.people] = identity.makeKeyObj()
     })
-    done( null, 'setup standardized resources')  
+    done( null, 'setup standardized resources')
   })
 
 
   // register SI as app at email RS
   tasks.push( function (done ) {
-    db.registerAdmin( 'email', 'root', diRoot[config.host.email], function (e) { 
+    db.registerAdmin( 'email', 'root', diRoot[config.host.email], function (e) {
       if (e) done (e)
       // add root email to root DI at email RS
       db.updateProfile( 'email', diRoot[config.host.email], {'email':'root'}, function (e) {
@@ -256,7 +256,7 @@ function run ( complete ) {
     // store root DI for setup as agent
 
     // TBD, can we get rid of this now???
-    
+
     db.storeAgent( 'setup', { device:'root', di: diRoot[config.host.setup] }, done )
   })
 

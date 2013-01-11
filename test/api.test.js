@@ -299,12 +299,45 @@ describe('Enrolling agent at AS', function () {
         should.exist( r )
         r.should.have.property('result')
         r.result.should.have.property('code')
+        // save code for next step
         code = r.result.code
         done( null )
       })
     })
   })
 
+  // save cookie as we are pretending to be the mobile device sending the code
+  var asCookie = cookieJar[config.baseUrl.as]
+  cookieJar[config.baseUrl.as] = {}
+  // parameters for creating Personal Agent
+  var nameAgent = 'My Test Phone'
+    , device = jwt.handle()
+    , token = null
+
+  describe('AS /register/agent', function () {
+    it('should return a handle for the agent', function (done) {
+      var options =
+        { url: config.baseUrl.as + '/register/agent'
+        , form: { passcode: passcode, name: nameAgent, device: device, code: code }
+        , method: 'POST'
+        }
+      fetch( options, function ( e, response, body ) {
+        should.not.exist( e )
+        should.exist( response )
+        response.statusCode.should.equal( 200 )
+        should.exist( body )
+        var r = JSON.parse( body )
+        should.exist( r )
+        r.should.have.property('result')
+        r.result.should.have.property('token')
+        // save code for next step
+        token = r.result.token
+        done( null )
+      })
+    })
+  })
+
+  cookieJar[config.baseUrl.as] = asCookie
 
 })
 
