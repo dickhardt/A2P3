@@ -173,7 +173,15 @@ function login ( details ) {
         }
       }
 
-// console.log('details',details)
+//  console.log('details',details)
+
+
+// console.log('\n req.session:\n', req.session )
+
+// console.log('\n req.body:\n', req.body )
+
+// console.log('\n req.query:\n', req.query )
+
 
     var jsonResponse = req.query && req.query.json
     var agentRequest = request.create( agentRequestPayload, details.vault.keys[config.host.ix].latest )

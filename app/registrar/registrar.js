@@ -189,5 +189,7 @@ exports.app = function() {
 
   app.use( mw.errorHandler )
 
+// console.log( '\nroutes\n', util.inspect( app.routes, null, null ) )
+
 	return app
 }

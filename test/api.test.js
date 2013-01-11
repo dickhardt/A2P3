@@ -58,6 +58,14 @@ var devUser =
     }
   , vault = {}
 
+var PASSCODE = '1234'
+
+/*
+* Enroll the Dev and Test users in Setup and generate a CLI agent for both
+*
+*/
+
+
 function createUser ( user ) {
   describe('Setup ' + user.label + ' User Enroll', function () {
     describe('/dev/login', function () {
@@ -188,11 +196,14 @@ function createUser ( user ) {
 createUser( devUser )
 createUser( testUser )
 
+/*
+*   Enroll a Mobile Agent for Test User (last user to be at Setup) at AS
+*/
+
+
 describe('Enrolling agent at AS', function () {
   var agentRequest = null
     , ixToken = null
-
-
 
   describe('AS /dev/login', function () {
     it('should generate an Agent Request and redirect to Setup', function (done) {
@@ -280,7 +291,7 @@ describe('Enrolling agent at AS', function () {
     })
   })
 
-  var passcode = '1234'
+  var passcode = PASSCODE
     , code = null
 
   describe('AS /register/agent/code', function () {
@@ -341,6 +352,96 @@ describe('Enrolling agent at AS', function () {
 
 })
 
+function registerDemoApp ( rs ) {
+  describe('Registering Demo App at '+rs, function () {
+    cookieJar = {}  // clear cookieJar so we are like clean browser
+    var agentRequest = null
+      , ixToken = null
+      , jws = null
+    describe( ' /dashboard/login', function () {
+      it('should return an Agent Request', function ( done ) {
+        var options =
+          { url: config.baseUrl[rs] + '/dashboard/login'
+          , method: 'GET'
+          , qs: { json: true }
+          , followRedirect: false
+          }
+        fetch( options, function ( e, response, body ) {
+          should.not.exist( e )
+          should.exist( response )
+          response.statusCode.should.equal( 200 )
+          should.exist( body )
+          var r = JSON.parse( body )
+          should.exist( r )
+          r.should.have.property('result')
+          r.result.should.have.property('request')
+          // save Agent Request and parse it for next call
+          var agentUrl = r.result.request
+          should.exist( agentUrl )
+          var u = urlParse( agentUrl, true )
+          should.exist( u )
+          u.should.have.property('query')
+          u.query.should.have.property('request')
+          agentRequest = u.query.request
+          jws = new jwt.Parse( agentRequest )
+          should.exist( jws )
+          done( null )
+        })
+      })
+    })
+
+    describe('Setup /token', function () {
+      it('should return an IX Token', function (done) {
+        var options =
+          { url: config.baseUrl.setup + '/token'
+          , method: 'POST'
+          , json:
+            { device: devUser.agent.device
+            , sar: jws.signature
+            , auth:
+              { passcode: PASSCODE
+              , authorization: true
+              }
+            }
+          }
+        fetch( options, function ( e, response, json ) {
+          should.not.exist( e )
+          should.exist( response )
+          response.statusCode.should.equal( 200 )
+          should.exist( json )
+          json.should.have.property('result')
+          json.result.should.have.property('token')
+          // save code for next step
+          ixToken = json.result.token
+          done( null )
+        })
+      })
+    })
+
+    describe( rs + ' /dashboard/login/return', function () {
+      it('should redirect to /dashboard', function ( done ) {
+        var options =
+          { url: jws.payload['request.a2p3.org'].returnURL
+          , method: 'GET'
+          , qs: { token: ixToken }
+          , followRedirect: false
+          }
+        fetch( options, function ( e, response ) {
+          should.not.exist( e )
+          should.exist( response )
+          response.statusCode.should.equal( 302 )
+          response.headers.should.exist
+          response.headers.should.have.property( 'location', config.baseUrl[rs] + '/dashboard')
+          done( null )
+        })
+      })
+    })
+
+
+  })
+}
+
+registerDemoApp( 'registrar' )
 
 // console.log('\n =>options\n', options)
 
@@ -351,5 +452,9 @@ describe('Enrolling agent at AS', function () {
 
 //console.log('\nredirect\n', util.inspect( redirect, null, null ) )
 // console.log('cookieJar 2\n', util.inspect( cookieJar, null, null ) )
+
+
+// console.log('\njws\n',jws)
+// console.log('\noptions\n',options)
 
 
