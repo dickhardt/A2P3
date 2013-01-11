@@ -1,4 +1,4 @@
-/* 
+/*
 * AS Server code
 *
 * Copyright (C) Province of British Columbia, 2013
@@ -22,7 +22,7 @@ function _makeAgentRequest ( returnURL ) {
     , 'aud': config.host.ix
     , 'request.a2p3.org':
      { 'resources': []
-      , 'auth': 
+      , 'auth':
         { 'passcode': true
         , 'authorization': true
         }
@@ -63,9 +63,9 @@ function tokenHandler ( req, res, next ) {
       { 'iss': config.host.as
       , 'aud': config.host.ix
       , 'sub': agent.sub
-      , 'token.a2p3.org': 
+      , 'token.a2p3.org':
         { 'sar': sar
-        , 'auth': 
+        , 'auth':
           { 'passcode': (auth.passcode) ? true : false
           , 'authorization': (auth.authorization) ? true : false
           , 'nfc': (auth.nfc) ? true : false
@@ -89,16 +89,16 @@ function registerAgent ( req, res, next ) {
     if ( passcode != profile.passcode ) {
       var err = new Error('Passcode does not match')
       e.code = 'INVALID_PASSCODE'
-      return next( err ) 
+      return next( err )
     }
-    var details = 
+    var details =
       { host: 'ix'
       , api: '/agent/add'
       , credentials: vault.keys[config.host.ix].latest
-      , payload: 
+      , payload:
         { iss: config.host.setup
         , aud: config.host.ix
-        , 'request.a2p3.org':     
+        , 'request.a2p3.org':
           { di: req.session.di
           , name: name
           }
@@ -121,7 +121,7 @@ function registerAgent ( req, res, next ) {
         db.updateProfile( 'as', code, {}, function ( e ) {
           if (e) console.log("Profile update error:\n", e )
         })
-        return res.send( { 'result': {'token': result.token } } )  
+        return res.send( { 'result': {'token': result.token } } )
       })
     })
   })
@@ -133,7 +133,7 @@ function registerAgentCode ( req, res, next ) {
   var passcode = req.body.passcode
   var di = req.session.di
   var code = jwt.handle()
-  db.updateProfile( 'as', code, 
+  db.updateProfile( 'as', code,
                   {'passcode': passcode, 'di': di }
                   , function ( e ) {
     if (e) return next( e )
@@ -163,11 +163,11 @@ function registerLogin  ( req, res, next ) {
     console.log('Setup returned no IX Token')
     return res.redirect('/')
   }
-  var details = 
+  var details =
     { host: 'ix'
     , api: '/exchange'
     , credentials: vault.keys[config.host.ix].latest
-    , payload: 
+    , payload:
       { iss: config.host.as
       , aud: config.host.ix
       , 'request.a2p3.org':
@@ -179,7 +179,7 @@ function registerLogin  ( req, res, next ) {
   api.call( details, function ( e, result ) {
     if (e) {
       console.log('IX returned', e )
-      return res.redirect('/')      
+      return res.redirect('/')
     }
     req.session.di = result.sub
     return res.redirect('/register')
@@ -201,7 +201,7 @@ function register ( req, res, next ) {
 exports.app = function() {
 	var app = express()
 
-  app.use(express.limit('10kb'))  // protect against large POST attack  
+  app.use(express.limit('10kb'))  // protect against large POST attack
   app.use(express.bodyParser())
   app.use( express.cookieParser() )
   var cookieOptions = { 'secret': vault.secret, 'cookie': { path: '/' } }
@@ -216,19 +216,19 @@ exports.app = function() {
   // A2P3 Protocol API  called from IX when an agent is deleted
   app.post('/agent/delete'
           , request.check( vault.keys, config.roles.ix )
-          , agentDelete 
+          , agentDelete
           )
 
   // register API
   app.post('/register/agent/code'
           , mw.checkParams( { 'session': ['di'], 'body': ['passcode'] } )
-          , registerAgentCode 
-          ) 
-  // called by agent 
+          , registerAgentCode
+          )
+  // called by agent
   app.post('/register/agent'
           , mw.checkParams( { 'body': ['passcode', 'code', 'name', 'device' ] } )
           , registerAgent
-          ) 
+          )
   // new entry points
   // called by Setup to create an Agent Request
   app.get('/setup/request', setupRequest )
@@ -241,10 +241,10 @@ exports.app = function() {
   app.get('/register', register )
 
    // TBD - REMOVE THIS! ... used by XHR to test
-  app.post('/ping', function( req, res, next ) { 
+  app.post('/ping', function( req, res, next ) {
     console.log('\nping session:\n',req.session )
-    res.send(req.session) 
-  } ) 
+    res.send(req.session)
+  } )
 
   // show README.md as documentation
   app.get('/documentation', mw.md( __dirname+'/README.md' ) )

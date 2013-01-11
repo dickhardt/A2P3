@@ -358,7 +358,7 @@ exports.updateSeries = function ( rs, di, series, data, time, cb ) {
 }
 
 
-exports.getSeries = function ( rs, di, series, data, cb ) {
+exports.retrieveSeries = function ( rs, di, series, data, cb ) {
   var key = rs + ':di:' + di + ':series:' + series
   process.nextTick( function () { cb( null, dummyNoSql[key] ) } )
 }

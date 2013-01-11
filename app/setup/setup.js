@@ -1,4 +1,4 @@
-/* 
+/*
 * Setup Server code
 *
 * Copyright (C) Province of British Columbia, 2013
@@ -32,7 +32,7 @@ function _fetchProfile ( di, complete ) {
   , 'request.a2p3.org':
    { 'resources':
       [ config.baseUrl.people + '/scope/namePhoto' ]
-    , 'auth': 
+    , 'auth':
       { 'passcode': true
       , 'authorization': true
       }
@@ -45,17 +45,17 @@ function _fetchProfile ( di, complete ) {
     { 'iss': config.host.setup
     , 'aud': config.host.ix
     , 'sub': di
-    , 'token.a2p3.org': 
+    , 'token.a2p3.org':
       { 'sar': jws.signature
       , 'auth': agentRequestDetails['request.a2p3.org'].auth
       }
     }
   var ixToken = token.create( ixTokenDetails, vault.keys[config.host.ix].latest )
-  var details = 
+  var details =
     { host: 'ix'
     , api: '/exchange'
     , credentials: vault.keys[config.host.ix].latest
-    , payload: 
+    , payload:
       { iss: config.host.setup
       , aud: config.host.ix
       , 'request.a2p3.org':
@@ -65,14 +65,14 @@ function _fetchProfile ( di, complete ) {
       }
     }
   api.call( details, function ( e, result ) {
-    if (e) return next( e )
-    var peopleHost = Object.keys(result.tokens)[0]  
+    if (e) return complete( e )
+    var peopleHost = Object.keys(result.tokens)[0]
     var peopleToken = result.tokens[peopleHost]
     var peopleDetails =
       { host: config.reverseHost[peopleHost]
       , api: '/namePhoto'
       , credentials: vault.keys[peopleHost].latest
-      , payload: 
+      , payload:
         { iss: config.host.setup
         , aud: peopleHost
         , 'request.a2p3.org': { 'token': peopleToken }
@@ -89,11 +89,11 @@ function _registerUser ( profile, complete ) {
   var province = profile.province.toLowerCase()
   var healthHost = 'health.'+province
   var peopleHost = 'people.'+province
-  var details = 
+  var details =
     { host: 'ix'
     , api: '/di/create'
     , credentials: vault.keys[config.host.ix].latest
-    , payload: 
+    , payload:
       { iss: config.host.setup
       , aud: config.host.ix
       , 'request.a2p3.org':
@@ -104,7 +104,7 @@ function _registerUser ( profile, complete ) {
       }
     }
   details.payload['request.a2p3.org'].redirects[config.host.health] = [config.host[healthHost]]
-  details.payload['request.a2p3.org'].redirects[config.host.people] = [config.host[peopleHost]] 
+  details.payload['request.a2p3.org'].redirects[config.host.people] = [config.host[peopleHost]]
   api.call( details, function ( error, result ) {
     if (error) complete( error, null )
     var diList = result.dis
@@ -114,7 +114,7 @@ function _registerUser ( profile, complete ) {
       linkDetails[host] = { host: host
                         , api: '/di/link'
                         , credentials: vault.keys[config.host[host]].latest
-                        , payload: 
+                        , payload:
                           { iss: config.host.setup
                           , aud: config.host[host]
                           , 'request.a2p3.org': { 'sub': diList[config.host[host]] }
@@ -135,13 +135,13 @@ function _registerUser ( profile, complete ) {
                                                                   , 'photo': profile.photo
                                                                   }
     var tasks = {}
-    
-    linkHosts.forEach( function (host) { 
-      tasks[host] = function (done) { 
+
+    linkHosts.forEach( function (host) {
+      tasks[host] = function (done) {
         api.call( linkDetails[host], function ( error, result) {
           done( error, result )
         }
-      )} 
+      )}
     })
     async.parallel(tasks, function (e, result) {
       complete(e, diList[config.host.setup])
@@ -171,7 +171,7 @@ function enrollRegister ( req, res, next ) {
       if (req.body.json) {
         return res.send( {'response': {'success': true } } )
       } else {
-        return res.redirect( '/dashboard' )              
+        return res.redirect( '/dashboard' )
       }
     })
   })
@@ -185,7 +185,7 @@ function _loadProfile ( id, profile, req, res ) {
       return res.redirect( '/enroll' )
     } else {
       req.session.di = existingProfile.di
-      return res.redirect( '/dashboard' )      
+      return res.redirect( '/dashboard' )
     }
   })
 }
@@ -213,11 +213,11 @@ function enrollProfile ( req, res, next ) {
 
 
 function _callIX ( apiPath, params, cb ) {
-  var details = 
+  var details =
     { host: 'ix'
     , api: apiPath
     , credentials: vault.keys[config.host.ix].latest
-    , payload: 
+    , payload:
       { iss: config.host.setup
       , aud: config.host.ix
       , 'request.a2p3.org': params
@@ -235,36 +235,36 @@ function dashboardProfile ( req, res, next ) {
   var di = req.session.di
   _fetchProfile( di, function ( e, profile ) {
     if (e) return next( e )
-    return res.send( { 'result': profile } )          
+    return res.send( { 'result': profile } )
   })
 }
 
 
 function dashboardAgentList ( req, res, next ) {
-  var params = 
+  var params =
     { di: req.session.di
     }
   _callIX( '/agent/list', params, function ( e, result ) {
     if (e) return next( e )
-    return res.send( { 'result': result } )  
+    return res.send( { 'result': result } )
   })
 }
 
 function dashboardAgentDelete ( req, res, next ) {
-  var params = 
+  var params =
     { di: req.session.di
     , handle: req.body.handle
     }
   _callIX( '/agent/delete', params, function ( e, result ) {
     if (e) return next( e )
-    return res.send( { 'result': result } )  
+    return res.send( { 'result': result } )
   })
 }
 
 
 // create a CLI agent for Setup AS
 function dashboardAgentCreate ( req, res, next ) {
-  var params = 
+  var params =
     { di: req.session.di
     , name: req.body.name
     }
@@ -281,7 +281,7 @@ function dashboardAgentCreate ( req, res, next ) {
         , 'token': result.token
         }
       if (e) return next( e )
-      return res.send( { 'result': results } )  
+      return res.send( { 'result': results } )
     })
   })
 }
@@ -303,9 +303,9 @@ function tokenHandler ( req, res, next ) {
       { 'iss': config.host.setup
       , 'aud': config.host.ix
       , 'sub': agent.sub
-      , 'token.a2p3.org': 
+      , 'token.a2p3.org':
         { 'sar': sar
-        , 'auth': 
+        , 'auth':
           { 'passcode': (auth.passcode) ? true : false
           , 'authorization': (auth.authorization) ? true : false
           , 'nfc': (auth.nfc) ? true : false
@@ -343,7 +343,14 @@ function agentToken ( req, res, next ) {
 
   // TBD error handling -- should create errorCode and errorMessage to send back to AS
 
+//console.log('\n req.session:\n', req.session )
+
+// console.log('\n req.body:\n', req.body )
+
+// console.log('\n req.query:\n', req.query )
+
   var di = req.session.di
+  var jws
   if (!di) {
     console.log('No DI in session.')
     return res.redirect('/')
@@ -354,18 +361,18 @@ function agentToken ( req, res, next ) {
     return res.redirect('/')
   }
   try {
-    var jws = new jwt.Parse( agentRequest )
+    jws = new jwt.Parse( agentRequest )
   }
   catch (e) {
     console.log('Invalid Agent Request was passed.', e )
-    return res.redirect('/')      
+    return res.redirect('/')
   }
 
   var payload =
     { 'iss': config.host.setup
     , 'aud': config.host.ix
     , 'sub': di
-    , 'token.a2p3.org': 
+    , 'token.a2p3.org':
       { 'sar': jws.signature
       , 'auth': jws.payload['request.a2p3.org'].auth
       }
@@ -399,11 +406,11 @@ function dashboard ( req, res, next ) {
 exports.app = function() {
 	var app = express()
   app.use( express.limit('10kb') )  // protect against large POST attack
-  app.use( express.bodyParser() )  
+  app.use( express.bodyParser() )
   app.use( express.cookieParser() )
   var cookieOptions = { 'secret': vault.secret, 'cookie': { path: '/' } }
   app.use( express.cookieSession( cookieOptions ))
-  
+
   // FB response
   app.get('/fb/redirect', fbRedirect )
 
@@ -419,7 +426,7 @@ exports.app = function() {
           )
   app.post('/enroll/profile'
           , mw.checkParams( {'session':['profile']} )
-          , enrollProfile  
+          , enrollProfile
           )
 
   // CLI agent token exchange API
@@ -430,7 +437,7 @@ exports.app = function() {
   // protocol API called from IX when an agent is deleted
   app.post('/agent/delete'
           , request.check( vault.keys, config.roles.ix )
-          , agentDelete 
+          , agentDelete
           )
 
   // dashboard API
@@ -450,7 +457,7 @@ exports.app = function() {
           , mw.checkParams( {'session':['di'], 'body': ['handle']} )
           , dashboardAgentDelete
           )
- 
+
 
   // AS redirection pages
   app.get('/dashboard/agent/basic', agentBasic )

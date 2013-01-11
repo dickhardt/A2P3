@@ -1,4 +1,4 @@
-/* 
+/*
 * Setup test script
 *
 * Copyright (C) Province of British Columbia, 2013
@@ -7,22 +7,12 @@
 var fetchUrl = require('fetch').fetchUrl
   , config = require('../app/config')
   , request = require('../app/request')
-  , token = require('../app/token')
   , querystring = require('querystring')
-  , url = require('url')
   , vaultSetup = require('../app/setup/vault')
-  , api = require('../app/api')
   , jwt = require('../app/jwt')
-  , db = require('../app/db')
-  , async = require('async')
   , util = require('util')
-  , helloConfig = require('../helloWorld/config')
 
-var setupDI       // root user Directed Identifier, fetched from Setup Agent storage
-  , tasks = []
-  , agentRequest
-  , rsTokens
-  , cookieJar
+var cookieJar
 
 
 var options =
@@ -44,14 +34,14 @@ console.log('\ncookieJar:\n',util.inspect( cookieJar, null, null ) )
     , cookieJar: cookieJar
     , disableRedirects: true
     , headers: {'content-type': 'application/x-www-form-urlencoded'}
-    }        
+    }
 
   fetchUrl( config.baseUrl.setup + '/enroll/profile', options, function ( error, meta, body ) {
     if ( error ) return done( error )
     cookieJar = meta.cookieJar
   console.log('\ncookieJar:\n',util.inspect( cookieJar, null, null ) )
     try {
-      var profile = JSON.parse( body )        
+      var profile = JSON.parse( body )
     }
     catch (e) {
       return console.log ( e, body.toString() )
@@ -63,13 +53,13 @@ console.log('\ncookieJar:\n',util.inspect( cookieJar, null, null ) )
       , disableRedirects: true
       , payload: querystring.stringify( profile )
       , headers: {'content-type': 'application/x-www-form-urlencoded'}
-      }        
+      }
     fetchUrl( config.baseUrl.setup + '/enroll/register', options, function ( error, meta, body ) {
       if ( error ) return done( error )
       cookieJar = meta.cookieJar
     console.log('\ncookieJar:\n',util.inspect( cookieJar, null, null ) )
       try {
-        var result = JSON.parse( body )        
+        var result = JSON.parse( body )
       }
       catch (e) {
         return console.log ( e, body.toString() )
@@ -81,13 +71,13 @@ console.log('\ncookieJar:\n',util.inspect( cookieJar, null, null ) )
         , cookieJar: cookieJar
         , payload: querystring.stringify( { 'name': 'MacPro' } )
         , headers: {'content-type': 'application/x-www-form-urlencoded'}
-        }        
+        }
       fetchUrl( config.baseUrl.setup + '/dashboard/agent/list', options, function ( error, meta, body ) {
         if ( error ) return done( error )
         cookieJar = meta.cookieJar
       console.log('\ncookieJar:\n',util.inspect( cookieJar, null, null ) )
         try {
-          var result = JSON.parse( body )        
+          var result = JSON.parse( body )
         }
         catch (e) {
           return console.log ( e, body.toString() )
@@ -98,13 +88,13 @@ console.log('\ncookieJar:\n',util.inspect( cookieJar, null, null ) )
           , cookieJar: cookieJar
           , payload: querystring.stringify( { 'name': 'MacPro' } )
           , headers: {'content-type': 'application/x-www-form-urlencoded'}
-          }        
+          }
         fetchUrl( config.baseUrl.setup + '/dashboard/agent/create', options, function ( error, meta, body ) {
           if ( error ) return done( error )
           cookieJar = meta.cookieJar
         console.log('\ncookieJar:\n',util.inspect( cookieJar, null, null ) )
           try {
-            var result = JSON.parse( body )        
+            var result = JSON.parse( body )
           }
           catch (e) {
             return console.log ( e, body.toString() )
@@ -114,16 +104,16 @@ console.log('\ncookieJar:\n',util.inspect( cookieJar, null, null ) )
           var agentDevice = result.result.device
 
           // make an Agent Request JWT
-          var requestDetails = 
+          var requestDetails =
             { 'iss': config.host.setup
             , 'aud': config.host.ix
             , 'reqeuest.a2p3.org':
               { 'returnURL': 'https://app.example.com/returnURL'
-              , 'resources': 
+              , 'resources':
                 [ 'https://health.a2p3.net/scope/prov_number'
                 , 'https://people.a2p3.net/scope/details'
                 ]
-              , 'auth': 
+              , 'auth':
                 { 'passcode': true
                 , 'authorization': true
                 }
@@ -140,10 +130,10 @@ console.log('\ncookieJar:\n',util.inspect( cookieJar, null, null ) )
           // call Setup as agent to exchange a token
           var options =
             { method: 'POST'
-            , payload: JSON.stringify( 
+            , payload: JSON.stringify(
               { 'device': agentDevice
               , 'sar': jws.signature
-              , 'auth': requestDetails['reqeuest.a2p3.org'].auth 
+              , 'auth': requestDetails['reqeuest.a2p3.org'].auth
               } )
             , headers: {'content-type': 'application/json'}
             }
@@ -153,7 +143,7 @@ console.log('\ncookieJar:\n',util.inspect( cookieJar, null, null ) )
           fetchUrl( config.baseUrl.setup + '/token', options, function ( error, meta, body ) {
             if ( error ) return done( error )
             try {
-              var result = JSON.parse( body )        
+              var result = JSON.parse( body )
             }
             catch (e) {
               return console.log ( e, body.toString() )
@@ -161,9 +151,9 @@ console.log('\ncookieJar:\n',util.inspect( cookieJar, null, null ) )
             var ixToken = result.result.token
             console.log('\ntoken result', util.inspect( result, null, null ) )
 
-          })   
-        })   
-      })   
-    })   
+          })
+        })
+      })
+    })
   })
 })

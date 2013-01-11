@@ -255,6 +255,25 @@ function loginStateCheck ( details ) {
   }
 }
 
+/* in case we need this ... otherwise, delete TBD
+exports.checkLoggedIn = function ( req, res, next ) {
+  if (!req.session || !req.session.di) {
+    var e = new Error('not logged in')
+    e.code = 'ACCESS_DENIED'
+    return next(e)
+  }
+  next()
+}
+*/
+
+function loginCheck ( req, res, next ) {
+  if (!req.session || !req.session.di) {
+    var e = new Error('not logged in')
+    e.code = 'ACCESS_DENIED'
+    return next(e)
+  }
+  return res.send( { result: {'user': req.session.email } } )
+}
 
 /*
 
@@ -281,15 +300,6 @@ var details =
 
 */
 
-exports.checkLoggedIn = function ( req, res, next ) {
-  if (!req.session || !req.session.di) {
-    var e = new Error('not logged in')
-    e.code = 'ACCESS_DENIED'
-    return next(e)
-  }
-  next()
-}
-
 
 exports.loginHandler = function ( app, detailsOrig ) {
 
@@ -304,11 +314,12 @@ exports.loginHandler = function ( app, detailsOrig ) {
       , config.baseUrl.registrar + '/scope/verify'
       ]
     details.path =
-      { 'login':      '/dashboard/login'
-      , 'response':   '/dashboard/login/response'
-      , 'error':      '/dashboard/error'
-      , 'success':    '/dashboard'
-      , 'complete':   '/dashboard/complete'
+      { 'login':      '/dashboard/login'          // page loaded to initate login
+      , 'response':   '/dashboard/login/response' // page where we redirect to
+      , 'error':      '/dashboard/error'          // HTML to be provided where we send user when an error
+      , 'success':    '/dashboard'                // HTML to be provided which is success
+      , 'complete':   '/dashboard/complete'       // HTML to be provided to show on mobile after success
+      , 'loginCheck': '/dashboard/login/check'    // API called to see which, if any user is logged in
       }
   }
   // create URLs to use
@@ -320,6 +331,8 @@ exports.loginHandler = function ( app, detailsOrig ) {
   app.get( details.path.login, login( details ) )
 
   app.get( details.path.response, loginStateCheck( details ), loginReturn( details ) )
+
+  app.get( details.path.loginCheck, loginStateCheck( details ), loginCheck )
 
 }
 
