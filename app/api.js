@@ -14,6 +14,8 @@ var fetch = require('request')
   , assert = require('assert')
   , jwt = require('./jwt')
 
+// This call() was the original, don't be confused with the one later on
+// that is part of the Standard object!
 exports.call = function ( details, callback ) {
 
 // details.host only works if we already know the host

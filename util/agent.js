@@ -32,7 +32,7 @@ Create.prototype.ixToken = function ( agentRequest , cb ) {
       { device: this.device
       , sar: jws.signature
       , auth:
-        { passcode: ""  // not needed for CLI agents
+        { passcode: true  // not needed for CLI agents
         , authorization: true
         }
       }

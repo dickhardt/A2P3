@@ -40,7 +40,7 @@ var should = require('chai').should()
   , request = require('../app/request')
   , querystring = require('querystring')
   , url = require('url')
-  , api = require('../app/api')
+  , API = require('../app/api')
   , jwt = require('../app/jwt')
   , util = require('util')
   , urlParse = require('url').parse
@@ -524,8 +524,10 @@ describe('Demo App calling ', function () {
          { 'resources':
               [ config.baseUrl.si + '/scope/number'
               , config.baseUrl.email + '/scope/default'
-              , config.baseUrl['health.bc'] + '/scope/prov_number'
               , config.baseUrl['people.bc'] + '/scope/details'
+              , config.baseUrl['health.bc'] + '/scope/prov_number'
+              , config.baseUrl['health.bc'] + '/scope/series/weight/update'
+              , config.baseUrl['health.bc'] + '/scope/series/weight/retrieve'
               ]
           , 'auth':
             { 'passcode': true
@@ -547,10 +549,10 @@ describe('Demo App calling ', function () {
     })
   })
 
+  var api = new API.Standard( 'demo', vault )
   describe('getting RS Tokens', function () {
     it('should return a list of RS Tokens', function (done) {
-      var ix = new api.Standard( 'demo', vault )
-      ix.call( 'ix', '/exchange', { request: agentRequest, token: ixToken }, function ( e, result ){
+      api.call( 'ix', '/exchange', { request: agentRequest, token: ixToken }, function ( e, result ){
         should.not.exist( e )
         should.exist( result )
         result.should.have.property('sub')
@@ -565,174 +567,103 @@ describe('Demo App calling ', function () {
     })
   })
 
-  // describe('si:/number', function(){
-  //   it('should return SI number', function (done){
-  //     var details =
-  //       { host: 'si'
-  //       , api: '/number'
-  //       , credentials: vaultSetup.keys[config.host.si].latest
-  //       , payload:
-  //         { iss: config.host.setup
-  //         , aud: config.host.si
-  //         , 'request.a2p3.org':
-  //           { 'token': rsTokens[config.host.si]
-  //           }
-  //         }
-  //       }
-  //     api.call( details, function ( error, result) {
-  //       should.not.exist( error )
-  //       should.exist( result )
-  //       result.should.have.property('si')
-  //       result.si.should.equal( config.testUser.si )
-  //       done()
-  //     })
-  //   })
-  // })
+  describe('si:/number', function(){
+    it('should return SI number', function (done){
+      api.call( 'si', '/number', { token: rsTokens[config.host.si] }, function ( error, result) {
+        should.not.exist( error )
+        should.exist( result )
+        result.should.have.property('si')
+        result.si.should.equal( config.testUser.si )
+        done()
+      })
+    })
+  })
 
-  // describe('email:/email/default', function(){
-  //   it('should return email address', function (done){
-  //     var details =
-  //       { host: 'email'
-  //       , api: '/email/default'
-  //       , credentials: vaultSetup.keys[config.host.email].latest
-  //       , payload:
-  //         { iss: config.host.setup
-  //         , aud: config.host.email
-  //         , 'request.a2p3.org':
-  //           { 'token': rsTokens[config.host.email]
-  //           }
-  //         }
-  //       }
-  //     api.call( details, function ( error, result) {
-  //       should.not.exist( error )
-  //       should.exist( result )
-  //       result.should.have.property('email')
-  //       result.email.should.equal( config.testUser.email )
-  //       done()
-  //     })
-  //   })
-  // })
+  describe('email:/email/default', function(){
+    it('should return email address', function (done){
+      api.call( 'email', '/email/default', { token: rsTokens[config.host.email] }, function ( error, result) {
+        should.not.exist( error )
+        should.exist( result )
+        result.should.have.property('email')
+        result.email.should.equal( testUser.email )
+        done()
+      })
+    })
+  })
 
-  // describe('health:/prov_number', function(){
-  //   it('should return prov_number', function (done){
-  //     var details =
-  //       { host: 'health.bc'
-  //       , api: '/prov_number'
-  //       , credentials: vaultSetup.keys[config.host['health.bc']].latest
-  //       , payload:
-  //         { iss: config.host.setup
-  //         , aud: config.host['health.bc']
-  //         , 'request.a2p3.org':
-  //           { 'token': rsTokens[config.host['health.bc']]
-  //           }
-  //         }
-  //       }
-  //     api.call( details, function ( error, result) {
-  //       should.not.exist( error )
-  //       should.exist( result )
-  //       result.should.have.property('prov_number')
-  //       result.prov_number.should.equal( config.testUser.prov_number )
-  //       done()
-  //     })
-  //   })
-  // })
+  describe('people:/over19', function(){
+    it('should return over19 is true ', function (done){
+      api.call( 'people.bc', '/over19', { token: rsTokens[config.host['people.bc']] }, function ( error, result) {
+        should.not.exist( error )
+        should.exist( result )
+        result.should.have.property('over19')
+        result.over19.should.equal( true )
+        done()
+      })
+    })
+  })
 
-  // describe('people:/over19', function(){
-  //   it('should return over19 is true ', function (done){
-  //     var details =
-  //       { host: 'people.bc'
-  //       , api: '/over19'
-  //       , credentials: vaultSetup.keys[config.host['people.bc']].latest
-  //       , payload:
-  //         { iss: config.host.setup
-  //         , aud: config.host['people.bc']
-  //         , 'request.a2p3.org':
-  //           { 'token': rsTokens[config.host['people.bc']]
-  //           }
-  //         }
-  //       }
-  //     api.call( details, function ( error, result) {
-  //       should.not.exist( error )
-  //       should.exist( result )
-  //       result.should.have.property('over19')
-  //       result.over19.should.equal( true )
-  //       done()
-  //     })
-  //   })
-  // })
+  describe('people:/under20over65', function(){
+    it('should return under20over65 is false ', function (done){
+      api.call( 'people.bc', '/under20over65', { token: rsTokens[config.host['people.bc']] }, function ( error, result) {
+        should.not.exist( error )
+        should.exist( result )
+        result.should.have.property('under20over65')
+        result.under20over65.should.equal( false )
+        done()
+      })
+    })
+  })
 
-  // describe('people:/under20over65', function(){
-  //   it('should return under20over65 is false ', function (done){
-  //     var details =
-  //       { host: 'people.bc'
-  //       , api: '/under20over65'
-  //       , credentials: vaultSetup.keys[config.host['people.bc']].latest
-  //       , payload:
-  //         { iss: config.host.setup
-  //         , aud: config.host['people.bc']
-  //         , 'request.a2p3.org':
-  //           { 'token': rsTokens[config.host['people.bc']]
-  //           }
-  //         }
-  //       }
-  //     api.call( details, function ( error, result) {
-  //       should.not.exist( error )
-  //       should.exist( result )
-  //       result.should.have.property('under20over65')
-  //       result.under20over65.should.equal( false )
-  //       done()
-  //     })
-  //   })
-  // })
+  describe('people:/namePhoto', function(){
+    it('should return a name and URL to a photo ', function (done){
+      api.call( 'people.bc', '/namePhoto', { token: rsTokens[config.host['people.bc']] }, function ( error, result) {
+        should.not.exist( error )
+        should.exist( result )
+        result.should.have.property('name')
+        result.should.have.property('photo')
+        result.name.should.equal( config.testUser.name )
+        result.photo.should.equal( config.testUser.photo )
+        done()
+      })
+    })
+  })
 
-  // describe('people:/namePhoto', function(){
-  //   it('should return a name and URL to a photo ', function (done){
-  //     var details =
-  //       { host: 'people.bc'
-  //       , api: '/namePhoto'
-  //       , credentials: vaultSetup.keys[config.host['people.bc']].latest
-  //       , payload:
-  //         { iss: config.host.setup
-  //         , aud: config.host['people.bc']
-  //         , 'request.a2p3.org':
-  //           { 'token': rsTokens[config.host['people.bc']]
-  //           }
-  //         }
-  //       }
-  //     api.call( details, function ( error, result) {
-  //       should.not.exist( error )
-  //       should.exist( result )
-  //       result.should.have.property('name')
-  //       result.should.have.property('photo')
-  //       result.name.should.equal( config.testUser.name )
-  //       result.photo.should.equal( config.testUser.photo )
-  //       done()
-  //     })
-  //   })
-  // })
+  describe('people:/details', function(){
+    it('should return a detailed profile ', function (done){
+      api.call( 'people.bc', '/details', { token: rsTokens[config.host['people.bc']] }, function ( error, result) {
+        should.not.exist( error )
+        should.exist( result )
+        result.should.deep.equal( config.testProfile )
+        done()
+      })
+    })
+  })
 
-  // describe('people:/details', function(){
-  //   it('should return a detailed profile ', function (done){
-  //     var details =
-  //       { host: 'people.bc'
-  //       , api: '/details'
-  //       , credentials: vaultSetup.keys[config.host['people.bc']].latest
-  //       , payload:
-  //         { iss: config.host.setup
-  //         , aud: config.host['people.bc']
-  //         , 'request.a2p3.org':
-  //           { 'token': rsTokens[config.host['people.bc']]
-  //           }
-  //         }
-  //       }
-  //     api.call( details, function ( error, result) {
-  //       should.not.exist( error )
-  //       should.exist( result )
-  //       result.should.deep.equal( config.testProfile )
-  //       done()
-  //     })
-  //   })
-  // })
+  describe('health:/prov_number', function(){
+    it('should return prov_number', function (done){
+      api.call( 'health.bc', '/prov_number', { token: rsTokens[config.host['health.bc']] }, function ( error, result) {
+        should.not.exist( error )
+        should.exist( result )
+        result.should.have.property('prov_number')
+        result.prov_number.should.equal( config.testUser.prov_number )
+        done()
+      })
+    })
+  })
+
+  var access_token = null
+  describe('health:/oauth', function(){
+    it('should return an OAuth access token ', function (done){
+      api.call( 'health.bc', '/oauth', { token: rsTokens[config.host['health.bc']] }, function ( error, result) {
+        should.not.exist( error )
+        should.exist( result )
+        result.should.have.property( 'access_token' )
+        access_token = result.access_token
+        done()
+      })
+    })
+  })
 
 })
 

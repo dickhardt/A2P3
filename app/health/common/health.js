@@ -18,6 +18,7 @@ var express = require('express')
   , token = require('../../token')
   , db = require('../../db')
   , underscore = require('underscore')
+  , util = require('util')
 
 var vault = {}  // we pull in correct vault when app() is called
 
@@ -86,7 +87,7 @@ function oauthCheck ( vault, province ) {
     db.oauthRetrieve( 'health.'+province, accessToken, function ( e, details ) {
       if (e) return next( e )
       var series = req.body.series || req.query.series
-      var scopeError = _checkScope( province, series, req.path, details.scpopes )
+      var scopeError = _checkScope( province, series, req.path, details.scopes )
       if (scopeError) {
         var error = new Error( scopeError )
         err.code = 'ACCESS_DENIED'
@@ -170,5 +171,6 @@ exports.app = function( province ) {
           )
 
   app.use( mw.errorHandler )
+
 	return app
 }
