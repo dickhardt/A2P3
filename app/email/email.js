@@ -19,9 +19,6 @@ var express = require('express')
 
 // /di/link API called from setup
 function diLink ( req, res, next ) {
-
-debugger;
-
   var params = req.request['request.a2p3.org']
   db.updateProfile( 'email', params.sub, {'email': params.account}, function ( e ) {
     if (e) return next( e )
@@ -31,9 +28,6 @@ debugger;
 
 // /email/default API called from a registered App
 function emailDefault ( req, res, next ) {
-
-debugger;
-
   var di = req.token.sub
   db.getProfile( 'email', di, function ( e, profile ) {
     if (e) next( e )

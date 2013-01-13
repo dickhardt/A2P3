@@ -486,6 +486,8 @@ function registerDemoApp ( rs ) {
 }
 
 registerDemoApp( 'registrar' )
+registerDemoApp( 'email' )
+registerDemoApp( 'si' )
 
 // console.log('\n =>options\n', options)
 

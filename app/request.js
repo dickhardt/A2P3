@@ -91,6 +91,10 @@ exports.check = function ( keys, accessList, reg ) {
           return next( err )
         }
         if (!key[jws.header.kid]) {
+
+console.error('\nrequest.check jws\n',jws)
+console.error('key:\n',key)
+
           err = new Error('Invalid KID '+ jws.header.kid)
           err.code = 'ACCESS_DENIED'
           return next( err )

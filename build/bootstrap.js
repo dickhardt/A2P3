@@ -103,7 +103,7 @@ function run ( complete ) {
   // register them as apps at RSes
   // we get the vaults and then write them out again
   var setupVault = require('../app/setup/vault')
-  var registrarVault = require('../app/registrar/vault')
+  // Q: var registrarVault = require('../app/registrar/vault')
 
   // Registrar keys and registration and setup keys
   rsHosts.forEach( function (rs) {
@@ -143,11 +143,11 @@ function run ( complete ) {
         db.newApp( 'email', config.host.si, 'Social Insurance', 'root', function ( e, keyObj) {
           if (e) done (e)
           rsHostKeys.si.keys[config.host.email] = keyObj
-          db.newApp( 'email', config.host.registrar, 'Registrar', 'root', function ( e, keyObj) {
-            if (e) done (e)
-            registrarVault.keys[config.host.email] = keyObj
+          // db.newApp( 'email', config.host.registrar, 'Registrar', 'root', function ( e, keyObj) {
+          //   if (e) done (e)
+          //   registrarVault.keys[config.host.email] = keyObj
             done( null, 'SI and Registrar registered at email RS')
-          })
+//          })
         })
       })
     })
@@ -187,7 +187,7 @@ function run ( complete ) {
   // write out updated vault file for setup and registrar
   tasks.push( function (done) {
     syncWriteJSON( setupVault, projectRootDir + '/app/setup/vault.json')
-    syncWriteJSON( registrarVault, projectRootDir + '/app/registrar/vault.json')
+//    syncWriteJSON( registrarVault, projectRootDir + '/app/registrar/vault.json')
     done( null, 'wrote vault.json for setup and registrar' )
   })
 

@@ -153,23 +153,25 @@ exports.routes = function ( app, RS, vault, cwd ) {
         })
       }
       if ( !req.session.tokens || !req.session.tokens[config.host.email] ) return badSession('No tokens in session')
-      var details =
-        { host: 'email'
-        , api: '/email/default'
-        , credentials: vault.keys[config.host.email].latest
-        , payload:
-          { iss: config.host[RS]
-          , aud: config.host.email
-          , 'request.a2p3.org': { 'token': req.session.tokens[config.host.email] }
+      db.getAppKey( 'registrar', config.host.email, vault.keys, function ( e, keys ) {
+        var details =
+          { host: 'email'
+          , api: '/email/default'
+          , credentials: keys.latest
+          , payload:
+            { iss: config.host[RS]
+            , aud: config.host.email
+            , 'request.a2p3.org': { 'token': req.session.tokens[config.host.email] }
+            }
           }
-        }
-      api.call( details, function ( error, result ) {
-        if (error) return badSession( error )
-        if (!result.email) badSession( 'No email for user.' )
-        req.session.email = result.email
-        db.registerAdmin( RS, result.email, req.session.di, function ( e ) {
-          if (e) return next (e)
-          return next()
+        api.call( details, function ( error, result ) {
+          if (error) return badSession( error )
+          if (!result.email) badSession( 'No email for user.' )
+          req.session.email = result.email
+          db.registerAdmin( RS, result.email, req.session.di, function ( e ) {
+            if (e) return next (e)
+            return next()
+          })
         })
       })
     }
@@ -221,7 +223,7 @@ exports.routes = function ( app, RS, vault, cwd ) {
           , checkAdminAuthorization
           , dashboardGetKey
           )
-  app.get('/dashboard', function( req, res ) { res.sendfile( cwd + '/html/dashboard.html' ) } )
+  app.get('/dashboard', function( req, res ) { res.sendfile( __dirname + '/html/dashboard.html' ) } )
 
 // API calls from Standardized Resource Manager
   if (std) {  // we are settign up a standardized resource

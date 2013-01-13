@@ -146,6 +146,9 @@ exports.listApps = function ( reg, admin, cb ) {
 }
 
 exports.newApp = function ( reg, id, name, adminEmail, cb ) {
+
+debugger;
+
   // add to DB
   dummyNoSql[reg + ':app:' + id + ':name'] = name
   dummyNoSql[reg + ':app:' + id + ':admins'] = {}
@@ -158,6 +161,9 @@ exports.newApp = function ( reg, id, name, adminEmail, cb ) {
 }
 
 exports.checkApp = function ( reg, id, di, cb) {
+
+debugger;
+
   var e = null
     , ok = null
   var email = dummyNoSql[reg + ':admin:di:' + di]

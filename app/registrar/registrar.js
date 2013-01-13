@@ -75,7 +75,7 @@ function authorizationsRequests (req, res) {
 
 // /app/verify
 function appVerify ( req, res, next ) {
-  db.checkApp( config.reverseHosts[req.request.iss], req.request['request.a2p3.org'].id, req.token.payload.sub, function ( e, ok ) {
+  db.checkApp( 'registrar', req.request['request.a2p3.org'].id, req.token.sub, function ( e, ok ) {
     if (e) return next( e )
     if (ok) return res.send( { result: { success: true } } )
     var err = new Error('UNKNOWN')
