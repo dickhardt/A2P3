@@ -360,7 +360,8 @@ exports.getProfile = function ( rs, di, cb ) {
 
 
 exports.updateSeries = function ( rs, di, series, data, time, cb ) {
-  time = time || new Date().now()
+  if (time instanceof String) time = Date.parse(time)
+  time = time || Date().now()
   var key = rs + ':di:' + di + ':series:' + series
   dummyNoSql[key] = dummyNoSql[key] || {}
   dummyNoSql[key][time] = data
@@ -368,7 +369,7 @@ exports.updateSeries = function ( rs, di, series, data, time, cb ) {
 }
 
 
-exports.retrieveSeries = function ( rs, di, series, data, cb ) {
+exports.retrieveSeries = function ( rs, di, series, cb ) {
   var key = rs + ':di:' + di + ':series:' + series
   process.nextTick( function () { cb( null, dummyNoSql[key] ) } )
 }

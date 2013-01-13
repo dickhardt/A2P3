@@ -665,6 +665,52 @@ describe('Demo App calling ', function () {
     })
   })
 
+  describe('health:/series/update', function(){
+    it('should return success on update ', function (done){
+      var options =
+        { url: config.baseUrl['health.bc'] + '/series/update'
+        , form: { access_token: access_token, series: 'weight', data: '200' }
+        , method: 'POST'
+        }
+      fetch( options, function ( e, response, body ) {
+        should.not.exist( e )
+        should.exist( response )
+        response.statusCode.should.equal( 200 )
+        should.exist( body )
+        var r = JSON.parse( body )
+        should.exist( r )
+        r.should.not.have.property('error')
+        r.should.have.property('result')
+        r.result.should.have.property( 'success', true )
+        done()
+      })
+    })
+  })
+
+  describe('health:/series/retrieve', function(){
+    it('should return weight on retrieve ', function (done){
+      var options =
+        { url: config.baseUrl['health.bc'] + '/series/retrieve'
+        , form: { access_token: access_token, series: 'weight' }
+        , method: 'POST'
+        }
+      fetch( options, function ( e, response, body ) {
+        should.not.exist( e )
+        should.exist( response )
+        response.statusCode.should.equal( 200 )
+        should.exist( body )
+        var r = JSON.parse( body )
+        should.exist( r )
+        r.should.not.have.property('error')
+        r.should.have.property('result')
+        var time = Object.keys( r.result )[0] // get first item
+        r.result.should.have.property( time, '200' )
+        done()
+      })
+    })
+  })
+
+
 })
 
 // console.log('\n =>options\n', options)

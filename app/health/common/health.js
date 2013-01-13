@@ -78,22 +78,17 @@ function _checkScope( province, series, api, scopes ) {
 // checks that caller has an authorized OAuth token
 function oauthCheck ( vault, province ) {
   return function oauthCheck ( req, res, next ) {
-    var accessToken = req.body.access_token || req.query.access_token
-    if (!accessToken) {
-      var err = new Error('No access_token found in body or query string.')
-      err.code = 'INVALID_REQUEST'
-      return next( err )
-    }
+    var accessToken = req.body.access_token
     db.oauthRetrieve( 'health.'+province, accessToken, function ( e, details ) {
       if (e) return next( e )
-      var series = req.body.series || req.query.series
+      var series = req.body.series
       var scopeError = _checkScope( province, series, req.path, details.scopes )
       if (scopeError) {
-        var error = new Error( scopeError )
+        var err = new Error( scopeError )
         err.code = 'ACCESS_DENIED'
-        return next( error )
+        return next( err )
       }
-      req.oath =
+      req.oauth =
         { sub: details.sub
         , series: series
         }
@@ -103,8 +98,8 @@ function oauthCheck ( vault, province ) {
 }
 
 // updates data in a time series
-function postSeries ( vault, province ) {
-  return function postSeries ( req, res, next ) {
+function updateSeries ( vault, province ) {
+  return function updateSeries ( req, res, next ) {
     var time = req.body.time || Date.now()
     db.updateSeries( 'health.'+province
                     , req.oauth.sub
@@ -121,6 +116,7 @@ function postSeries ( vault, province ) {
 // gets a time series of data
 function retrieveSeries ( vault, province ) {
   return function retrieveSeries ( req, res, next ) {
+    // TBD confirm we got required parameters
     db.retrieveSeries( 'health.'+province
                 , req.oauth.sub
                 , req.oauth.series
@@ -162,10 +158,12 @@ exports.app = function( province ) {
           , oauth( vault, province )
           )
   app.post('/series/update'  // add to a time series of data
+          , mw.checkParams( {'body':['access_token','series','data']} )
           , oauthCheck( vault, province )
-          , postSeries( vault, province )
+          , updateSeries( vault, province )
           )
   app.post('/series/retrieve'   // retrieve a time series of data
+          , mw.checkParams( {'body':['access_token','series']} )
           , oauthCheck( vault, province )
           , retrieveSeries( vault, province )
           )
