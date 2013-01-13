@@ -1,4 +1,4 @@
-/* 
+/*
 * JSON Web Token code
 *
 * Copyright (C) Dick Hardt dickhardt@gmail.com, 2012
@@ -6,7 +6,7 @@
 
 var crypto = require('crypto')
  , b64url = require('./b64url')
- , config = require('./config')
+ , config = require('../config')
  , util = require('util')
 
 // Concat KDF key generation and caching
@@ -24,20 +24,20 @@ var concatKDF = function ( cmk ) {
       input =
         [ Buffer([0,0,0,1])
         , cmk
-        , Buffer([0,0,0,128, 65,49,50,56,67,66,67,43,72,83,50,53,54, 
+        , Buffer([0,0,0,128, 65,49,50,56,67,66,67,43,72,83,50,53,54,
                   0,0,0,0, 0,0,0,0, 69,110,99,114,121,112,116,105,111,110])
         ]
-      hash = crypto.createHash('sha256')  
+      hash = crypto.createHash('sha256')
       hash.update( Buffer.concat( input ) )
       keys.cek = new Buffer( hash.digest().slice( 0, 128/8 ), 'binary' )
 
       input =
         [ Buffer([0,0,0,1])
         , cmk
-        , Buffer([0,0,1,0, 65,49,50,56,67,66,67,43,72,83,50,53,54, 
+        , Buffer([0,0,1,0, 65,49,50,56,67,66,67,43,72,83,50,53,54,
                   0,0,0,0, 0,0,0,0, 73,110,116,101,103,114,105,116,121])
         ]
-      hash = crypto.createHash('sha256')  
+      hash = crypto.createHash('sha256')
       hash.update( Buffer.concat( input ) )
       keys.cik = new Buffer( hash.digest(), 'binary' )
 
@@ -48,24 +48,24 @@ var concatKDF = function ( cmk ) {
         , Buffer([0,0,1,0, 65,50,53,54,67,66,67,43,72,83,53,49,50,
                   0,0,0,0, 0,0,0,0, 69,110,99,114,121,112,116,105,111,110])
         ]
-      hash = crypto.createHash('sha512')  
+      hash = crypto.createHash('sha512')
       hash.update( Buffer.concat( input ) )
       keys.cek = new Buffer( hash.digest().slice( 0, 256/8 ), 'binary' )
-      
+
       input =
         [ Buffer([0,0,0,1])
         , cmk
-        , Buffer([0,0,2,0, 65,50,53,54,67,66,67,43,72,83,53,49,50, 
+        , Buffer([0,0,2,0, 65,50,53,54,67,66,67,43,72,83,53,49,50,
                   0,0,0,0, 0,0,0,0, 73,110,116,101,103,114,105,116,121])
         ]
-      hash = crypto.createHash('sha512')  
+      hash = crypto.createHash('sha512')
       hash.update( Buffer.concat( input ) )
       keys.cik = new Buffer( hash.digest(), 'binary' )
     }
-    
+
     keyCache[cmk] = keys
     return keys
-} 
+}
 
 /*
 // concatKDF tests - uncomment out to run
@@ -76,30 +76,30 @@ var assert = require('assert')
   , actual
   , expected
 
-// test 256 bit 
-expected =   
+// test 256 bit
+expected =
   { cek: Buffer([203,165,180,113,62,195,22,98,91,153,210,38,112,35,230,236])
   , cik: Buffer([218,24,160,17,160,50,235,35,216,209,100,174,155,163,10,117,
-                 180,111,172,200,127,201,206,173,40,45,58,170,35,93,9,60]) 
+                 180,111,172,200,127,201,206,173,40,45,58,170,35,93,9,60])
   }
 actual = concatKDF( Buffer([4,211,31,197,84,157,252,254,11,100,157,250,63,170,
-            106,206,107,124,212,45,111,107,9,219,200,177,0,240,143,156,44,207]) ) 
+            106,206,107,124,212,45,111,107,9,219,200,177,0,240,143,156,44,207]) )
 assert.deepEqual(actual, expected, "concat KDF failure")
 
 // check that cache works
 actual = concatKDF( Buffer([4,211,31,197,84,157,252,254,11,100,157,250,63,170,
-            106,206,107,124,212,45,111,107,9,219,200,177,0,240,143,156,44,207]) ) 
+            106,206,107,124,212,45,111,107,9,219,200,177,0,240,143,156,44,207]) )
 assert.deepEqual(actual, expected, "concat KDF failure")
 
 // test 512 bit
 
-expected =   
+expected =
   { cek: Buffer([157,19,75,205,31,190,110,46,117,217,137,19,116,166,126,
                 60,18,244,226,114,38,153,78,198,26,0,181,168,113,45,149,89])
   , cik: Buffer([81,249,131,194,25,166,147,155,47,249,146,160,200,236,115,
                 72,103,248,228,30,130,225,164,61,105,172,198,31,137,170,215,
                 141,27,247,73,236,125,113,151,33,0,251,72,53,72,63,146,117,
-                247,13,49,20,210,169,232,156,118,1,16,45,29,21,15,208]) 
+                247,13,49,20,210,169,232,156,118,1,16,45,29,21,15,208])
   }
 
 actual = concatKDF( Buffer([148,116,199,126,2,117,233,76,150,149,89,193,61,34,239,
@@ -121,10 +121,10 @@ assert.deepEqual(actual, expected, "concat KDF failure")
 */
 
 var encryptAxxxCBC = function ( details, cipher, sign, numBytes) {
-    
+
   var cmk = Buffer( b64url.b64( details.credentials.key ), 'base64' )
-  if (numBytes != cmk.length) 
-    throw new Error("key is not "+numBytes+" long.")    
+  if (numBytes != cmk.length)
+    throw new Error("key is not "+numBytes+" long.")
 
   var kdf = concatKDF(cmk)
 
@@ -136,7 +136,7 @@ var encryptAxxxCBC = function ( details, cipher, sign, numBytes) {
   var cipherText = b64url.safe( cipher.update( plainText, 'utf8', 'base64' ) )
   cipherText += b64url.safe( cipher.final( 'base64')  )
 
-  // create signature    
+  // create signature
   var input = b64url.encode( JSON.stringify( details.header)) +'..'+ b64url.encode(iv) +'.'+ cipherText
   var hmac = crypto.createHmac( sign, kdf.cik).update(input);
   var token = input +'.'+ b64url.safe( hmac.digest('base64'))
@@ -159,23 +159,23 @@ var encryptAlg =
 
 var decryptAxxxCBC = function ( input, cmkEncrypted, ivB64url, ciphertextB64url, signature, key, cipher, sign, numBytes) {
 
-  if (cmkEncrypted) 
+  if (cmkEncrypted)
     throw new Error('Encrypted CMK is not supported in JWE')
 
   var cmk = Buffer(b64url.b64(key), 'base64')
-  if (numBytes != cmk.length) 
+  if (numBytes != cmk.length)
     throw new Error("key is not "+numBytes+" long.")
 
   var kdf = concatKDF(cmk)
-  
+
   var iv = Buffer(b64url.b64(ivB64url), 'base64')
-  
+
   // check integrity
   var hmac = crypto.createHmac(sign, kdf.cik).update(input);
   var inputSignature = b64url.safe(hmac.digest('base64'))
-  if (inputSignature != signature) 
-    throw new Error("JWE has invalid signature:"+signature)    
-  
+  if (inputSignature != signature)
+    throw new Error("JWE has invalid signature:"+signature)
+
   // decrypt
   var cipherText = Buffer( b64url.b64( ciphertextB64url ), 'base64' )
   var decipher = crypto.createDecipheriv( cipher, kdf.cek, iv )
@@ -190,7 +190,7 @@ var decryptA128CBC = function ( input, cmk, iv, ciphertext, signature, key ) {
 
 
 var decryptA256CBC = function ( input, cmk, iv, ciphertext, signature, key) {
-  return decryptAxxxCBC( input, cmk, iv, ciphertext, signature, key, 'aes256', 'sha512', 64) 
+  return decryptAxxxCBC( input, cmk, iv, ciphertext, signature, key, 'aes256', 'sha512', 64)
 }
 
 var decryptAlg =
@@ -210,11 +210,11 @@ var verifyHSxxx = function (input, signature, b64safeKey, alg) {
 }
 
 var verifyHS256 = function (input, signature, b64safeKey) {
-  return verifyHSxxx( input, signature, b64safeKey, 'sha256' )  
+  return verifyHSxxx( input, signature, b64safeKey, 'sha256' )
 }
 
 var verifyHS512 = function (input, signature, b64safeKey) {
-  return verifyHSxxx( input, signature, b64safeKey, 'sha512' )  
+  return verifyHSxxx( input, signature, b64safeKey, 'sha512' )
 }
 
 var verifyAlg =
@@ -223,8 +223,8 @@ var verifyAlg =
   }
 
 var signHSxxx = function (details, alg) {
-  details.header.kid = details.credentials.kid 
-  var input = b64url.encode( JSON.stringify( details.header ) ) 
+  details.header.kid = details.credentials.kid
+  var input = b64url.encode( JSON.stringify( details.header ) )
         +'.'+ b64url.encode( JSON.stringify( details.payload ) )
   var key = Buffer( b64url.b64(details.credentials.key), 'base64')
   var hmac = crypto.createHmac(alg, key).update(input);
@@ -256,7 +256,7 @@ function jwe ( details ) {
   if (!details.header.alg || details.header.alg != 'dir')
     throw new Error('Only "dir" algorithm supported for JWE token')
   if (!details.header.enc)
-    throw new Error('No JWE encryption algorithm specified')  
+    throw new Error('No JWE encryption algorithm specified')
   if (!encryptAlg[details.header.enc])
     throw new Error('Unsupported JWE encryption algorithm:"'+details.header.enc+'"')
   if (!details.payload)
@@ -275,7 +275,7 @@ function jws ( details ) {
   if (!details.header)
     throw new Error('No header for JWS token')
   if (!details.header.alg)
-    throw new Error('No JWS signing algorithm specified')  
+    throw new Error('No JWS signing algorithm specified')
   if (!signAlg[details.header.alg])
     throw new Error('Unsupported JWS signing algorithm:"'+details.header.alg+'"')
   if (!details.payload)
@@ -290,7 +290,7 @@ function jws ( details ) {
 }
 
 /*
-* parses a JWT and returns an object that can then be 
+* parses a JWT and returns an object that can then be
 * verified (JWS) or decrypted (JWE)
 */
 function Parse ( token ) {
@@ -299,7 +299,7 @@ function Parse ( token ) {
 
   var parts = token.split('.')
 
-  if (!parts.every(b64url.valid)) 
+  if (!parts.every(b64url.valid))
       throw new Error('JWT contains invalid URL safe Base64 chars')
   try {
     this.header = JSON.parse( b64url.decode( parts[0] ) )
@@ -307,9 +307,9 @@ function Parse ( token ) {
   catch (e) {
       return e
   }
-  if (!this.header.typ) 
+  if (!this.header.typ)
       throw new Error('No "typ" in JWT header')
-  
+
   if (this.header.typ == 'JWS') {
     try {
       this.payload = JSON.parse( b64url.decode( parts[1] ) )
@@ -319,8 +319,8 @@ function Parse ( token ) {
     }
     this._input = parts[0] +'.'+ parts[1]
     this.signature = parts[2]
-    return this      
-  
+    return this
+
   } else if (this.header.typ == 'JWE') {
     if (parts.length != 5)
       throw new Error('Invalid JWE token, does not have 5 components')
@@ -331,7 +331,7 @@ function Parse ( token ) {
     this.signature = parts[4]
     return this
 
-  } else 
+  } else
     throw new Error('Uknownn JWT header "typ":"'+header.typ+'"')
 }
 
@@ -363,7 +363,7 @@ Parse.prototype.decrypt = function (key) {
 
 // generates a key for the passed algorithm
 function keygen (alg) {
-    algs = 
+    algs =
         { 'HS256': 256/8
         , 'HS512': 512/8
         , 'A128CBC+HS256': 256/8
@@ -396,5 +396,5 @@ exports.jws = jws
 exports.keygen = keygen
 exports.handle = handle
 exports.iat = iat
-exports.expired = expired 
+exports.expired = expired
 

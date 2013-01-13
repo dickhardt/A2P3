@@ -5,14 +5,14 @@
 */
 
 var express = require('express')
-  , dashboard = require('../lib/dashboard')
-  , request = require('../request')
-  , token = require('../token')
-  , config = require('../config')
-  , vault = require('./vault')
   , util = require('util')
-  , db = require('../db')
-  , mw = require('../middleware')
+  , vault = require('./vault')
+  , config = require('../config')
+  , dashboard = require('../lib/dashboard')
+  , request = require('../lib/request')
+  , token = require('../lib/token')
+  , db = require('../lib/db')
+  , mw = require('../lib/middleware')
 
 // Express Middleware that checks if agent token is valid
 function checkValidAgent (req, res, next) {

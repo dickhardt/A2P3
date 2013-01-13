@@ -5,9 +5,9 @@
 */
 
 var express = require('express')
-  , stdRegistration = require('../stdRegistration')
-  , mw = require('../middleware')
   , vault = require('./vault')
+  , stdRegistration = require('../lib/stdRegistration')
+  , mw = require('../lib/middleware')
 
 exports.app = function( ) {
   var app = express()

@@ -35,16 +35,15 @@ if (config.facebook.appId) {
 }
 
 var should = require('chai').should()
-  , fetch = require('../app/requestJar').fetch
-  , cookieJar = require('../app/requestJar').cookieJar
-  , request = require('../app/request')
   , querystring = require('querystring')
-  , url = require('url')
-  , API = require('../app/api')
-  , jwt = require('../app/jwt')
-  , util = require('util')
   , urlParse = require('url').parse
-  , agent = require('../util/agent')
+  , util = require('util')
+  , fetch = require('../app/lib/requestJar').fetch
+  , cookieJar = require('../app/lib/requestJar').cookieJar
+  , request = require('../app/lib/request')
+  , API = require('../app/lib/api')
+  , jwt = require('../app/lib/jwt')
+  , agent = require('../app/lib/agent')
 
 var devUser =
     { label: 'Dev'

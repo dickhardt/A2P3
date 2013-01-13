@@ -6,7 +6,7 @@
 * Copyright (C) Province of British Columbia, 2013
 */
 
-var config = require('./config')
+var config = require('../config')
   , jwt = require('./jwt')
   , assert = require('assert')
   , db = require('./db')

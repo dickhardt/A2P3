@@ -5,15 +5,15 @@
 */
 
 var express = require('express')
-  , request = require('../request')
-  , token = require('../token')
   , config = require('../config')
   , vault = require('./vault')
   , util = require('util')
-  , db = require('../db')
-  , mw = require('../middleware')
-  , jwt = require('../jwt')
-  , api = require('../api')
+  , request = require('../lib/request')
+  , token = require('../lib/token')
+  , db = require('../lib/db')
+  , mw = require('../lib/middleware')
+  , jwt = require('../lib/jwt')
+  , api = require('../lib/api')
 
 // creates an Agent Request for registering agent
 function _makeAgentRequest ( returnURL ) {

@@ -5,16 +5,16 @@
 */
 
 var express = require('express')
-  , async = require('async')
-  , request = require('../request')
-  , token = require('../token')
-  , config = require('../config')
-  , vault = require('./vault')
   , util = require('util')
-  , db = require('../db')
-  , api = require('../api')
-  , jwt = require('../jwt')
-  , mw = require('../middleware')
+  , async = require('async')
+  , vault = require('./vault')
+  , config = require('../config')
+  , request = require('../lib/request')
+  , token = require('../lib/token')
+  , db = require('../lib/db')
+  , api = require('../lib/api')
+  , jwt = require('../lib/jwt')
+  , mw = require('../lib/middleware')
 
 
 var useFB = false

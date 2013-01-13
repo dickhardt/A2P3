@@ -16,9 +16,9 @@ var fs = require('fs')
   , crypto = require('crypto')
   , util = require('util')
   , async = require('async')
-  , b64url = require('../app/b64url')
   , config = require('../app/config')
-  , identity = require('../app/identity')
+  , b64url = require('../app/lib/b64url')
+  , identity = require('../app/lib/identity')
 
 
 function syncWriteJSON ( obj, fname ) {
@@ -65,7 +65,7 @@ function run ( complete ) {
   } )
 
   // NOTE: we cannot load db until registrar keys have been created or it will fail to load
-  var db = require('../app/db')
+  var db = require('../app/lib/db')
 
   // the rest of our bootstrap calls are not syncronous, so we create
   // an array of tasks and then execute them in order

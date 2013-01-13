@@ -11,14 +11,14 @@
 */
 
 var express = require('express')
-  , dashboard = require('../../lib/dashboard')
-  , mw = require('../../middleware')
-  , config = require('../../config')
-  , request = require('../../request')
-  , token = require('../../token')
-  , db = require('../../db')
   , underscore = require('underscore')
   , util = require('util')
+  , config = require('../../config')
+  , dashboard = require('../../lib/dashboard')
+  , request = require('../../lib/request')
+  , mw = require('../../lib/middleware')
+  , token = require('../../lib/token')
+  , db = require('../../lib/db')
 
 var vault = {}  // we pull in correct vault when app() is called
 

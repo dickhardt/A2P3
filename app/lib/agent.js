@@ -1,14 +1,14 @@
 /*
-* CLI Agent module and script
+* CLI Agent module
 *
-* TBD: documentation!!, perhaps in README.md?
+* module used for testing, does work of agent
 *
 * Copyright (C) Province of British Columbia, 2013
 */
 
 var fetch = require('request')
-  , jwt = require('../app/jwt')
-  , config = require('../app/config')
+  , jwt = require('./jwt')
+  , config = require('../config')
 
 var Create = function ( options ) {
   options = options || {}

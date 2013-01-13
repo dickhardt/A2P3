@@ -5,12 +5,12 @@
 */
 
 var express = require('express')
-  , request = require('../request')
-  , config = require('../config')
   , util = require('util')
-  , db = require('../db')
-  , mw = require('../middleware')
-  , api = require('../api')
+  , config = require('../config')
+  , request = require('./request')
+  , db = require('./db')
+  , mw = require('./middleware')
+  , api = require('./api')
 
 
 exports.routes = function ( app, RS, vault, cwd ) {

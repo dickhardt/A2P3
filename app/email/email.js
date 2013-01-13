@@ -7,14 +7,14 @@
 var express = require('express')
   , vault = require('./vault')
   , config = require('../config')
-  , db = require('../db')
   , dashboard = require('../lib/dashboard')
-  , mw = require('../middleware')
-  , request = require('../request')
-  , token = require('../token')
+  , request = require('../lib/request')
+  , mw = require('../lib/middleware')
+  , db = require('../lib/db')
+  , token = require('../lib/token')
   , querystring = require('querystring')
-  , api = require('../api')
-  , jwt = require('../jwt')
+  , api = require('../lib/api')
+  , jwt = require('../lib/jwt')
 
 
 // /di/link API called from setup

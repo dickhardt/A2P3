@@ -8,7 +8,7 @@
 
 // debugging middleware to trace execution
 
-var config = require('./config')
+var config = require('../config')
   , request = require('./request')
   , api = require('./api')
   , jwt = require('./jwt')

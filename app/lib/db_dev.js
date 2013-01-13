@@ -7,27 +7,27 @@
 */
 
 var fs = require('fs')
-  , config = require('./config')
+  , config = require('../config')
   , crypto = require('crypto')
   , b64url = require('./b64url')
   , identity = require('./identity')
-  , vaultIX = require('./ix/vault')
+  , vaultIX = require('../ix/vault')
   , jwt = require('./jwt')
 
 // Development JSON DB
 // create empty file if does not exist
-var fExist = fs.existsSync( __dirname+'/nosql.json' )
+var fExist = fs.existsSync( config.rootAppDir+'/nosql.json' )
 if ( !fExist ) {
   var nosql = {'keyChain': {} }
-  fs.writeFileSync( __dirname+'/nosql.json', JSON.stringify( nosql ) )
+  fs.writeFileSync( config.rootAppDir+'/nosql.json', JSON.stringify( nosql ) )
 }
 // load DB
-var dummyNoSql = require('./nosql.json')
+var dummyNoSql = require('../nosql.json')
 
 
 // save DB on exit
 process.on('exit', function() {
-  fs.writeFileSync( __dirname+'/nosql.json', JSON.stringify( dummyNoSql ) )
+  fs.writeFileSync( config.rootAppDir+'/nosql.json', JSON.stringify( dummyNoSql ) )
 })
 
 var keyChain = dummyNoSql.keyChain

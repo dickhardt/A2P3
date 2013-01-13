@@ -7,7 +7,7 @@
 */
 
 var fetch = require('request')
-  , config = require('./config')
+  , config = require('../config')
   , db = require('./db')
   , request = require('./request')
   , querystring = require('querystring')

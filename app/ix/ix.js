@@ -6,16 +6,15 @@
 
 var express = require('express')
   , url = require('url')
-  , request = require('../request')
-  , token = require('../token')
-  , config = require('../config')
+  , util = require('util')
   , vault = require('./vault')
-  , util = require('util')
-  , db = require('../db')
-  , api = require('../api')
-  , jwt = require('../jwt')
-  , mw = require('../middleware')
-  , util = require('util')
+  , config = require('../config')
+  , request = require('../lib/request')
+  , token = require('../lib/token')
+  , db = require('../lib/db')
+  , api = require('../lib/api')
+  , jwt = require('../lib/jwt')
+  , mw = require('../lib/middleware')
 
 function diCreate ( req, res, next ) {
     var AS = req.request['request.a2p3.org'].AS

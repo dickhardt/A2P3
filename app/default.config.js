@@ -143,6 +143,7 @@ exports.scheme = scheme
 exports.baseUrl = baseUrl
 exports.roles = roles
 exports.provinces = provinces
+exports.rootAppDir = __dirname
 
 // how long requests and tokens are valid for
 exports.maxTokenAge = 5 * 60 // 5 minutes

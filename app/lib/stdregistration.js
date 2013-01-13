@@ -6,7 +6,7 @@
 
 var express = require('express')
   , api = require('./api')
-  , config = require('./config')
+  , config = require('../config')
   , async = require('async')
   , db = require('./db')
   , mw = require('./middleware')

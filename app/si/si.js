@@ -7,11 +7,11 @@
 var express = require('express')
   , vault = require('./vault')
   , config = require('../config')
-  , db = require('../db')
   , dashboard = require('../lib/dashboard')
-  , mw = require('../middleware')
-  , request = require('../request')
-  , token = require('../token')
+  , request = require('../lib/request')
+  , db = require('../lib/db')
+  , mw = require('../lib/middleware')
+  , token = require('../lib/token')
 
 
 // /di/link API called from setup
