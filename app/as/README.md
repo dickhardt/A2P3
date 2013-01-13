@@ -44,7 +44,7 @@ The returned `token` is used when the Agent is making calls to the Registrar.
 
 The generated `device` parameter is saved and used in later calls to the AS.
 
-The Agent discards the passcode and name values that it gathered from the user.
+The Agent discards the passcode and saves the name to show the user later to identifiy the device.
 
 ##Token Exchange
 
