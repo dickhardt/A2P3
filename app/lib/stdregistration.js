@@ -182,7 +182,7 @@ var stdApi = new api.Standard( RS, vault )
           , dashboardGetKey
           )
 
-  app.get('/dashboard', function( req, res ) { res.sendfile( __dirname + '/html/dashboard_std.html' ) } )
+  app.get('/dashboard', function( req, res ) { res.sendfile( config.rootAppDir + '/html/dashboard_std.html' ) } )
 
 
 }
