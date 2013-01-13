@@ -7,6 +7,7 @@
 var express = require('express')
   , registration = require('../registration')
   , request = require('../request')
+  , token = require('../token')
   , config = require('../config')
   , vault = require('./vault')
   , util = require('util')
@@ -73,8 +74,13 @@ function authorizationsRequests (req, res) {
 }
 
 // /app/verify
-function appVerify (req, res) {
-    res.send(501, 'NOT IMPLEMENTED');
+function appVerify ( req, res, next ) {
+  db.checkApp( config.reverseHosts[req.request.iss], req.request['request.a2p3.org'].id, req.token.payload.sub, function ( e, ok ) {
+    if (e) return next( e )
+    if (ok) return res.send( { result: { success: true } } )
+    var err = new Error('UNKNOWN')
+    next( err )
+  })
 }
 
 
@@ -179,10 +185,15 @@ exports.app = function() {
   app.post('/authorizations/requests', checkValidAgent, authorizationsRequests )
 
   // called by RS
-  app.post('/app/verify', request.check( vault, null, 'registrar'), appVerify )
+  app.post('/app/verify'
+          , request.check( vault, null, 'registrar')
+          , mw.a2p3Params( ['id', 'token'] )
+          , token.checkRS( vault.keys, 'registrar', ['/scope/verify'] )
+          , appVerify
+          )
 
   // dashboard web APIs
-  registration.routes( app, 'registrar', vault )  // add in routes for the registration paths
+  registration.routes( app, 'registrar', vault, __dirname )  // add in routes for the registration paths
 
   // login routing
   mw.loginHandler( app, { 'dashboard': 'registrar', 'vault': vault } )

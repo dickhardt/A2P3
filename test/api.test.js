@@ -55,8 +55,9 @@ var devUser =
     }
   , demoApp =
     { host: 'demo.example.com'
+    , name: 'Demo App'
     }
-  , vault = {}
+  , vault = { keys: {} }
 
 var PASSCODE = '1234'
 
@@ -390,7 +391,7 @@ function registerDemoApp ( rs ) {
       })
     })
 
-    describe('Setup /token', function () {
+    describe('-> Setup /token', function () {
       it('should return an IX Token', function (done) {
         var options =
           { url: config.baseUrl.setup + '/token'
@@ -418,7 +419,7 @@ function registerDemoApp ( rs ) {
       })
     })
 
-    describe( rs + ' /dashboard/login/return', function () {
+    describe( ' /dashboard/login/return', function () {
       it('should redirect to /dashboard', function ( done ) {
         var options =
           { url: jws.payload['request.a2p3.org'].returnURL
@@ -432,6 +433,49 @@ function registerDemoApp ( rs ) {
           response.statusCode.should.equal( 302 )
           response.headers.should.exist
           response.headers.should.have.property( 'location', config.baseUrl[rs] + '/dashboard')
+          done( null )
+        })
+      })
+    })
+
+    describe(' /dashboard', function () {
+      it('should return status code of 200 and HTML', function (done) {
+        var options =
+          { url: config.baseUrl[rs] + '/dashboard'
+          , method: 'GET'
+          , followRedirect: false
+          }
+        fetch( options, function ( e, response, body ) {
+          should.not.exist( e )
+          should.exist( response )
+          should.exist( body )
+          response.statusCode.should.equal( 200 )
+          done( null )
+        })
+      })
+    })
+
+    describe(' /dashboard/new/app', function () {
+      it('should return keys for the Demo app', function (done) {
+        var options =
+          { url: config.baseUrl[rs] + '/dashboard/new/app'
+          , form: { name: demoApp.name, id: demoApp.host }
+          , method: 'POST'
+          }
+        fetch( options, function ( e, response, body ) {
+          should.not.exist( e )
+          should.exist( response )
+          response.statusCode.should.equal( 200 )
+          should.exist( body )
+          var r = JSON.parse( body )
+          should.exist( r )
+          r.should.have.property('result')
+          r.result.should.have.property('key')
+          r.result.key.should.have.property('latest')
+          r.result.key.latest.should.have.property('key')
+          r.result.key.latest.should.have.property('kid')
+          // save keys for later calls
+          vault.keys[config.host[rs]] = r.result.key
           done( null )
         })
       })

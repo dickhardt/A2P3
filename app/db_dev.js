@@ -157,6 +157,19 @@ exports.newApp = function ( reg, id, name, adminEmail, cb ) {
   process.nextTick( function () { cb( null, keyObj ) } )
 }
 
+exports.checkApp = function ( reg, id, di, cb) {
+  var e = null
+    , ok = null
+  var email = dummyNoSql[reg + ':admin:di:' + di]
+  if (!email) {
+    e = new Error('unknown administrator')
+  } else {
+    ok = ( dummyNoSql[reg + ':app:' + id + ':admins'][email] == 'ACTIVE' )
+    if (!ok) e = new Error('Account not authorative for '+id)
+  }
+  process.nextTick( function () { cb( e, ok ) } )
+}
+
 exports.addAppAdmin = function ( reg, id, admin, cb ) {
   dummyNoSql[reg + ':app:' + id + ':admins'][admin] = 'ACTIVE'
   dummyNoSql[reg + ':admin:' + admin + ':apps'][id] = 'ACTIVE'
@@ -225,7 +238,6 @@ exports.newUser = function ( asHost, rsHosts, redirects, cb ) {
   rsHosts.forEach( function ( host ) {
     dis[host] = mapDI( host, ixDI )
   })
-
   // store DI pointers
   dummyNoSql['ix:di:' + ixDI] = {}
   Object.keys( config.roles.as ).forEach( function (asHost) {
@@ -240,7 +252,6 @@ exports.newUser = function ( asHost, rsHosts, redirects, cb ) {
       dummyNoSql['ix:redirect:di:' + ixDI + ':' + std].push( redirects[std] )
     })
   }
-
   process.nextTick( function () { cb( null, dis ) } )
 }
 
@@ -266,7 +277,6 @@ exports.getRsDIfromAsDI = function ( asDI, asHost, rsHosts, cb ) {
   rsHosts.forEach( function (rsHost) {
     rsDI[rsHost] = mapDI( rsHost, ixDI )
   })
-
   process.nextTick( function () { cb( null, rsDI ) } )
 }
 

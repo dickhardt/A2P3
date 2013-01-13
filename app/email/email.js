@@ -1,4 +1,4 @@
-/* 
+/*
 * email RS Server code
 *
 * Copyright (C) Province of British Columbia, 2013
@@ -19,6 +19,9 @@ var express = require('express')
 
 // /di/link API called from setup
 function diLink ( req, res, next ) {
+
+debugger;
+
   var params = req.request['request.a2p3.org']
   db.updateProfile( 'email', params.sub, {'email': params.account}, function ( e ) {
     if (e) return next( e )
@@ -28,6 +31,9 @@ function diLink ( req, res, next ) {
 
 // /email/default API called from a registered App
 function emailDefault ( req, res, next ) {
+
+debugger;
+
   var di = req.token.sub
   db.getProfile( 'email', di, function ( e, profile ) {
     if (e) next( e )
@@ -46,23 +52,23 @@ exports.app = function() {
 
   app.use( express.limit('10kb') )  // protect against large POST attack
   app.use( express.bodyParser() )
-  
+
   registration.routes( app, 'email', vault )  // add in routes for the registration paths
 
   mw.loginHandler( app, { 'dashboard': 'email', 'vault': vault } )
 
-  app.post('/di/link' 
+  app.post('/di/link'
           , request.check( vault.keys, config.roles.enroll )
           , mw.a2p3Params( ['sub', 'account'] )
-          , diLink 
+          , diLink
           )
-  app.post('/email/default' 
+  app.post('/email/default'
           , request.check( vault.keys, null, 'email' )
           , mw.a2p3Params( ['token'] )
           , token.checkRS( vault.keys, 'email', ['/scope/default'] )
-          , emailDefault 
+          , emailDefault
           )
   app.use( mw.errorHandler )
-	
+
   return app
 }

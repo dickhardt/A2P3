@@ -30,9 +30,7 @@ exports.errorHandler = function errorHandler ( error, req, res, next ) {
     console.error(error.stack)
     res.send({'error':{'code': error.code, 'message': error.message, 'stack': error.stack}})
   } else {
-
     console.error(error.stack)
-
     res.errorA2P3 = error // logger uses this to log A2P3 error info
     res.send({'error':{'code': error.code, 'message': error.message}})
   }

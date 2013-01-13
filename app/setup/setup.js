@@ -273,7 +273,7 @@ function dashboardAgentCreate ( req, res, next ) {
       var agent =
         { 'device': jwt.handle()  // CLI Agent device is created here rather than at device
         , 'handle': result.handle
-        , 'sub': req.session.diList   // no passcode is used with CLI Agents
+        , 'sub': req.session.di    // no passcode is used with CLI Agents
         }
     db.storeAgent( 'setup', agent, function (e) {
       var results =

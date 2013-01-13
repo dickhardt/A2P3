@@ -13,7 +13,7 @@ var express = require('express')
   , api = require('./api')
 
 
-exports.routes = function ( app, RS, vault ) {
+exports.routes = function ( app, RS, vault, cwd ) {
     var std = RS.replace(/\.??$/,'')
     if (std == RS) std = null // std is set if we are doing a province standardized resource
 
@@ -44,19 +44,19 @@ exports.routes = function ( app, RS, vault ) {
     function newApp() {
       db.newApp( RS, req.body.id, req.body.name, req.session.email, function ( e, key ) {
         if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
-        return res.send( {result:{'id': req.body.id, 'key': key}} )
+        return res.send( {result:{'key': key}} )
       })
     }
     // check that User is auth for this App at Registrar unless we are the Registrar
     // or this is an API call from a Standardized Resource
-    if ( ( RS == 'registar' ) || req.request ) return db.newApp()
+    if ( ( RS == 'registrar' ) || req.request ) return newApp()
     if (!req.session && !req.session.tokens && !req.session.tokens[config.host.registrar]) {
       var e = new Error('No RS Token for Registrar found')
       e.code = 'INTERNAL_ERROR'
       return next( e )
     }
     var stdApi = new api.Standard( RS, vault )
-    stdApi.call( 'registrar', '/'
+    stdApi.call( 'registrar', '/app/verify'
                 , {id: req.body.id, token: req.session.tokens[config.host.registrar]}
                 , function ( e ) {
       if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
@@ -221,9 +221,10 @@ exports.routes = function ( app, RS, vault ) {
           , checkAdminAuthorization
           , dashboardGetKey
           )
+  app.get('/dashboard', function( req, res ) { res.sendfile( cwd + '/html/dashboard.html' ) } )
+
 // API calls from Standardized Resource Manager
-  var std = RS.replace(/\.??$/,'')
-  if (std != RS) {  // we are settign up a standardized resource
+  if (std) {  // we are settign up a standardized resource
     app.post('/std/new/app'
             , request.check( vault.keys, [config.host[std]], config.host[RS])
             , mw.a2p3Params( ['id', 'name'] )

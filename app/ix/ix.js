@@ -43,18 +43,17 @@ function getHosts ( scopes ) {
 // exchange IX Token for RS Tokens if all is good
 function exchange ( req, res, next ) {
 
-  var jwe, jws, ixToken
+  var jwe, jws, ixToken, e
 
 
   try {
     jwe = new jwt.Parse( req.request['request.a2p3.org'].token )
     if ( !jwe.header.kid || !vault.keys.as[jwe.header.kid] ) {
-      var e = new Error( "No AS key for 'kid' "+jwe.header.kid)
+      e = new Error( "No AS key for 'kid' "+jwe.header.kid)
       e.code = "INVALID_TOKEN"
       return next( e )
     }
     ixToken = jwe.decrypt( vault.keys.as[jwe.header.kid] ) // list of keys for AS
-
   }
   catch (e) {
     e.code = 'INVALID_TOKEN'
@@ -63,7 +62,7 @@ function exchange ( req, res, next ) {
   try {
     jws = new jwt.Parse( req.request['request.a2p3.org'].request )  // agent Request
     if ( !jwt ) {
-      var e = new Error( "Invalid Agent Request")
+      e = new Error( "Invalid Agent Request")
       e.code = "INVALID_REQUEST"
       return next( e )
     }
@@ -75,35 +74,35 @@ function exchange ( req, res, next ) {
 
   // make sure IX Token 'iss' matches associated 'kid'
   if (!vault.keys[ixToken.iss][jwe.header.kid]) {
-      var e = new Error("'iss' does not have supplied 'kid'")
+      e = new Error("'iss' does not have supplied 'kid'")
       e.code = 'INVALID_TOKEN'
       return next( e )
   }
   // check agent request signature matches 'sar' that AS got
   if (ixToken['token.a2p3.org'].sar != jws.signature) {
-      var e = new Error("IX Token 'sar' does not match request signature")
+      e = new Error("IX Token 'sar' does not match request signature")
       e.code = 'INVALID_IXREQUEST'
       return next( e )
   }
   // check ix request and agent request are from same app
   if (req.request.iss != jws.payload.iss) {
-      var e = new Error("Agent Request 'iss' does not match IX Request 'iss'")
+      e = new Error("Agent Request 'iss' does not match IX Request 'iss'")
       e.code = 'INVALID_REQUEST'
       return next( e )
   }
   // check IX & Agent Requests and IX Token have not expired
   if ( jwt.expired( req.request.iat ) ) {
-      var e = new Error("IX Request has expired")
+      e = new Error("IX Request has expired")
       e.code = 'EXPIRED_IXREQUEST'
       return next( e )
   }
   if ( jwt.expired( jws.payload.iat ) ) {
-      var e = new Error("Agent Request has expired")
+      e = new Error("Agent Request has expired")
       e.code = 'EXPIRED_REQUEST'
       return next( e )
   }
   if ( jwt.expired( jwe.payload.iat ) ) {
-      var e = new Error("IX Token has expired")
+      e = new Error("IX Token has expired")
       e.code = 'EXPIRED_TOKEN'
       return next( e )
   }
@@ -131,15 +130,16 @@ function exchange ( req, res, next ) {
     // app keys for IX are stored with registrar
     db.getAppKeys( 'registrar', Object.keys(hostList), vault.keys, function ( e, keys ) {
       if (e) return next( e )
+        var err
       if ( !keys[jws.payload.iss] || !keys[jws.payload.iss][jws.header.kid] ) {
-        var e = new Error( "Invalid Agent Request key or kid")
-        e.code = "INVALID_REQUEST"
-        return next( e )
+        err = new Error( "Invalid Agent Request key or kid")
+        err.code = "INVALID_REQUEST"
+        return next( err )
       }
       if ( !jws.verify( keys[jws.payload.iss][jws.header.kid] ) ) {
-        var e = new Error( "Invalid Agent Request")
-        e.code = "INVALID_REQUEST"
-        return next( e )
+        err = new Error( "Invalid Agent Request")
+        err.code = "INVALID_REQUEST"
+        return next( err )
       }
       db.getRsDIfromAsDI( ixToken.sub, ixToken.iss, Object.keys(hostList), function ( e, dis ) {
         if (e) return next( e )
@@ -201,7 +201,7 @@ function agentDelete ( req, res, next ) {
           , 'request.a2p3.org': { 'handle': handle }
           }
         }
-      api.call( details, function ( e, result ) {
+      api.call( details, function ( e ) {
         if (e) return next (e)
         return res.send( { result: { success: true } } )
     })
