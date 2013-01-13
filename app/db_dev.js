@@ -146,9 +146,6 @@ exports.listApps = function ( reg, admin, cb ) {
 }
 
 exports.newApp = function ( reg, id, name, adminEmail, cb ) {
-
-debugger;
-
   // add to DB
   dummyNoSql[reg + ':app:' + id + ':name'] = name
   dummyNoSql[reg + ':app:' + id + ':admins'] = {}
@@ -161,9 +158,6 @@ debugger;
 }
 
 exports.checkApp = function ( reg, id, di, cb) {
-
-debugger;
-
   var e = null
     , ok = null
   var email = dummyNoSql[reg + ':admin:di:' + di]
@@ -205,7 +199,7 @@ exports.refreshAppKey = function ( reg, id, cb ) {
 
 exports.getAppKey = function ( reg, id, vaultKeys, cb ) {
   var key = null
-  if (reg)
+  if (reg && keyChain[reg])
     key = keyChain[reg][id]
   if (!key && vaultKeys) {
     key = vaultKeys[id]

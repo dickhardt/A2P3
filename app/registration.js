@@ -14,7 +14,7 @@ var express = require('express')
 
 
 exports.routes = function ( app, RS, vault, cwd ) {
-    var std = RS.replace(/\.??$/,'')
+    var std = RS.replace(/\...$/,'')
     if (std == RS) std = null // std is set if we are doing a province standardized resource
 
     // only called at Registrar Dashboard
@@ -153,7 +153,7 @@ exports.routes = function ( app, RS, vault, cwd ) {
         })
       }
       if ( !req.session.tokens || !req.session.tokens[config.host.email] ) return badSession('No tokens in session')
-      db.getAppKey( 'registrar', config.host.email, vault.keys, function ( e, keys ) {
+      db.getAppKey( RS, config.host.email, vault.keys, function ( e, keys ) {
         var details =
           { host: 'email'
           , api: '/email/default'
@@ -223,27 +223,29 @@ exports.routes = function ( app, RS, vault, cwd ) {
           , checkAdminAuthorization
           , dashboardGetKey
           )
-  app.get('/dashboard', function( req, res ) { res.sendfile( __dirname + '/html/dashboard.html' ) } )
 
+  app.get('/dashboard', function( req, res ) { res.sendfile( __dirname + '/html/dashboard.html' ) } )
 // API calls from Standardized Resource Manager
-  if (std) {  // we are settign up a standardized resource
+  if (std) {  // we are setting up a standardized resource
+    var accessList = {}
+    accessList[config.host[std]] = true
     app.post('/std/new/app'
-            , request.check( vault.keys, [config.host[std]], config.host[RS])
+            , request.check( vault.keys, accessList, config.host[RS])
             , mw.a2p3Params( ['id', 'name'] )
             , stdNewApp
             )
     app.post('/std/delete/app'
-            , request.check( vault.keys, [config.host[std]], config.host[RS])
+            , request.check( vault.keys, accessList, config.host[RS])
             , mw.a2p3Params( ['id'] )
             , stdDeleteApp
             )
     app.post('/std/refresh/key'
-            , request.check( vault.keys, [config.host[std]], config.host[RS])
+            , request.check( vault.keys, accessList, config.host[RS])
             , mw.a2p3Params( ['id'] )
             , stdRefreshKey
             )
     app.post('/std/getkey'
-            , request.check( vault.keys, [config.host[std]], config.host[RS])
+            , request.check( vault.keys, accessList, config.host[RS])
             , mw.a2p3Params( ['id'] )
             , stdGetKey
             )

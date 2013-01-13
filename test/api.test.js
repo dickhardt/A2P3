@@ -353,7 +353,7 @@ describe('Enrolling agent at AS', function () {
 
 })
 
-function registerDemoApp ( rs ) {
+function registerDemoApp ( rs, standard ) {
   describe('Registering Demo App at '+rs, function () {
     cookieJar = {}  // clear cookieJar so we are like clean browser
     var agentRequest = null
@@ -470,17 +470,29 @@ function registerDemoApp ( rs ) {
           var r = JSON.parse( body )
           should.exist( r )
           r.should.have.property('result')
-          r.result.should.have.property('key')
-          r.result.key.should.have.property('latest')
-          r.result.key.latest.should.have.property('key')
-          r.result.key.latest.should.have.property('kid')
-          // save keys for later calls
-          vault.keys[config.host[rs]] = r.result.key
-          done( null )
+          if (standard) { // we are working with a standardized resource
+            var hosts = Object.keys(r.result)
+            hosts.should.have.length(config.provinces.length)
+            hosts.forEach( function (host) {
+              r.result.should.have.property(host)
+              r.result[host].should.have.property('latest')
+              r.result[host].latest.should.have.property('key')
+              r.result[host].latest.should.have.property('kid')
+              vault.keys[host] = r.result[host]
+            })
+            done( null )
+          } else {
+            r.result.should.have.property('key')
+            r.result.key.should.have.property('latest')
+            r.result.key.latest.should.have.property('key')
+            r.result.key.latest.should.have.property('kid')
+            // save keys for later calls
+            vault.keys[config.host[rs]] = r.result.key
+            done( null )
+          }
         })
       })
     })
-
 
   })
 }
@@ -488,6 +500,7 @@ function registerDemoApp ( rs ) {
 registerDemoApp( 'registrar' )
 registerDemoApp( 'email' )
 registerDemoApp( 'si' )
+registerDemoApp( 'health', true )
 
 // console.log('\n =>options\n', options)
 

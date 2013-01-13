@@ -11,6 +11,7 @@ var express = require('express')
   , db = require('./db')
   , mw = require('./middleware')
   , api = require('./api')
+  , util = require('util')
 
 // main function that sets up all the routes
 exports.routes = function ( app, RS, vault ) {
@@ -37,7 +38,7 @@ var stdApi = new api.Standard( RS, vault )
   }
 
   function dashboardNewApp ( req, res, next ) {
-    stdApi.call( 'registrar', '/'
+    stdApi.call( 'registrar', '/app/verify'
                 , {id: req.body.id, token: req.session.tokens[config.host.registrar]}
                 , function ( e ) {
       if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
@@ -47,10 +48,7 @@ var stdApi = new api.Standard( RS, vault )
           if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
           var keys = {}
           Object.keys( results ).forEach( function ( host ) {
-            keys[host] =
-              { kid: results[host].result.key.kid
-              , key: results[host].result.key.key
-              }
+            keys[config.host[host]] = results[host].key
           })
           return res.send( {result: keys} )
         })
@@ -183,5 +181,8 @@ var stdApi = new api.Standard( RS, vault )
           , checkAdminAuthorization
           , dashboardGetKey
           )
+
+  app.get('/dashboard', function( req, res ) { res.sendfile( __dirname + '/html/dashboard_std.html' ) } )
+
 
 }

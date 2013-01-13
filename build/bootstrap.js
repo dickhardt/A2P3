@@ -99,11 +99,10 @@ function run ( complete ) {
   var rsHostKeys = {}
 
   // we need to update the setup vault with key pairs with all RSes
-  // and registrar vault with email RS, but needed DB before we could
+  // but needed DB before we could
   // register them as apps at RSes
   // we get the vaults and then write them out again
   var setupVault = require('../app/setup/vault')
-  // Q: var registrarVault = require('../app/registrar/vault')
 
   // Registrar keys and registration and setup keys
   rsHosts.forEach( function (rs) {
@@ -143,11 +142,7 @@ function run ( complete ) {
         db.newApp( 'email', config.host.si, 'Social Insurance', 'root', function ( e, keyObj) {
           if (e) done (e)
           rsHostKeys.si.keys[config.host.email] = keyObj
-          // db.newApp( 'email', config.host.registrar, 'Registrar', 'root', function ( e, keyObj) {
-          //   if (e) done (e)
-          //   registrarVault.keys[config.host.email] = keyObj
             done( null, 'SI and Registrar registered at email RS')
-//          })
         })
       })
     })
@@ -161,11 +156,24 @@ function run ( complete ) {
         if (e) done (e)
         rsHostKeys[hReg].keys[config.host.email] = keyObj
         var pReg = 'people.' + province
-        db.newApp( 'email', config.host.clinic, pReg, 'root', function ( e, keyObj) {
+        db.newApp( 'email', config.host[pReg], pReg, 'root', function ( e, keyObj) {
           if (e) done (e)
-          rsHostKeys[hReg].keys[config.host.email] = keyObj
+          rsHostKeys[pReg].keys[config.host.email] = keyObj
           done( null, 'registered '+province+ ' for people and health at email RS')
         })
+      })
+    })
+  })
+
+  // register health and people at email RS
+  tasks.push( function (done) {
+    db.newApp( 'email', config.host.health, 'health', 'root', function ( e, keyObj) {
+      if (e) done (e)
+      rsHostKeys.health.keys[config.host.email] = keyObj
+      db.newApp( 'email', config.host.people, 'people', 'root', function ( e, keyObj) {
+        if (e) done (e)
+        rsHostKeys.people.keys[config.host.email] = keyObj
+        done( null, 'registered people and health at email RS')
       })
     })
   })
@@ -187,7 +195,6 @@ function run ( complete ) {
   // write out updated vault file for setup and registrar
   tasks.push( function (done) {
     syncWriteJSON( setupVault, projectRootDir + '/app/setup/vault.json')
-//    syncWriteJSON( registrarVault, projectRootDir + '/app/registrar/vault.json')
     done( null, 'wrote vault.json for setup and registrar' )
   })
 
