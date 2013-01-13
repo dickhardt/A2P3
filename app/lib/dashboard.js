@@ -1,16 +1,16 @@
 /*
-* Resource Server App Registration code
+* Resource Server App Dashboard code
 *
 * Copyright (C) Province of British Columbia, 2013
 */
 
 var express = require('express')
-  , request = require('./request')
-  , config = require('./config')
+  , request = require('../request')
+  , config = require('../config')
   , util = require('util')
-  , db = require('./db')
-  , mw = require('./middleware')
-  , api = require('./api')
+  , db = require('../db')
+  , mw = require('../middleware')
+  , api = require('../api')
 
 
 exports.routes = function ( app, RS, vault, cwd ) {
@@ -224,7 +224,7 @@ exports.routes = function ( app, RS, vault, cwd ) {
           , dashboardGetKey
           )
 
-  app.get('/dashboard', function( req, res ) { res.sendfile( __dirname + '/html/dashboard.html' ) } )
+  app.get('/dashboard', function( req, res ) { res.sendfile( __dirname + '/../html/dashboard.html' ) } ) // this likely needs to get fixed ...
 // API calls from Standardized Resource Manager
   if (std) {  // we are setting up a standardized resource
     var accessList = {}

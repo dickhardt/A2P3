@@ -8,7 +8,7 @@ var express = require('express')
   , vault = require('./vault')
   , config = require('../config')
   , db = require('../db')
-  , registration = require('../registration')
+  , dashboard = require('../lib/dashboard')
   , mw = require('../middleware')
   , request = require('../request')
   , token = require('../token')
@@ -47,7 +47,7 @@ exports.app = function() {
   app.use( express.limit('10kb') )  // protect against large POST attack
   app.use( express.bodyParser() )
 
-  registration.routes( app, 'email', vault )  // add in routes for the registration paths
+  dashboard.routes( app, 'email', vault )  // add in routes for the registration paths
 
   mw.loginHandler( app, { 'dashboard': 'email', 'vault': vault } )
 

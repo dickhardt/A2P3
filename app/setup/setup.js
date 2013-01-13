@@ -6,7 +6,6 @@
 
 var express = require('express')
   , async = require('async')
-  , registration = require('../registration')
   , request = require('../request')
   , token = require('../token')
   , config = require('../config')

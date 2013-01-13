@@ -5,7 +5,7 @@
 */
 
 var express = require('express')
-  , registration = require('../registration')
+  , dashboard = require('../lib/dashboard')
   , request = require('../request')
   , token = require('../token')
   , config = require('../config')
@@ -193,7 +193,7 @@ exports.app = function() {
           )
 
   // dashboard web APIs
-  registration.routes( app, 'registrar', vault, __dirname )  // add in routes for the registration paths
+  dashboard.routes( app, 'registrar', vault, __dirname )  // add in routes for the registration paths
 
   // login routing
   mw.loginHandler( app, { 'dashboard': 'registrar', 'vault': vault } )

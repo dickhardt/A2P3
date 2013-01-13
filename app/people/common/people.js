@@ -11,7 +11,7 @@
 */
 
 var express = require('express')
-  , registration = require('../../registration')
+  , dashboard = require('../../lib/dashboard')
   , mw = require('../../middleware')
   , config = require('../../config')
   , request = require('../../request')
@@ -119,7 +119,7 @@ exports.app = function( province ) {
   app.use( express.limit('10kb') )  // protect against large POST attack
   app.use( express.bodyParser() )
 
-  registration.routes( app, 'people.'+province, vault )  // add in routes for the registration paths
+  dashboard.routes( app, 'people.'+province, vault )  // add in routes for the registration paths
 
   mw.loginHandler( app, { 'dashboard': 'people.'+province, 'vault': vault } )
 
