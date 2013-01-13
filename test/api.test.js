@@ -331,6 +331,24 @@ describe('Enrolling agent at AS', function () {
     , token = null
 
   describe('AS /register/agent', function () {
+    it('should fail', function (done) {
+      var options =
+        { url: config.baseUrl.as + '/register/agent'
+        , form: { passcode: 6666, name: nameAgent, device: device, code: code }
+        , method: 'POST'
+        }
+      fetch( options, function ( e, response, body ) {
+        should.not.exist( e )
+        should.exist( response )
+        response.statusCode.should.equal( 200 )
+        should.exist( body )
+        var r = JSON.parse( body )
+        should.exist( r )
+        r.should.have.property('error')
+        r.should.not.have.property('result')
+        done( null )
+      })
+    })
     it('should return a handle for the agent', function (done) {
       var options =
         { url: config.baseUrl.as + '/register/agent'
@@ -348,6 +366,24 @@ describe('Enrolling agent at AS', function () {
         r.result.should.have.property('token')
         // save code for next step
         token = r.result.token
+        done( null )
+      })
+    })
+    it('should not return a handle for the agent the second time the code is used', function (done) {
+      var options =
+        { url: config.baseUrl.as + '/register/agent'
+        , form: { passcode: passcode, name: nameAgent, device: device, code: code }
+        , method: 'POST'
+        }
+      fetch( options, function ( e, response, body ) {
+        should.not.exist( e )
+        should.exist( response )
+        response.statusCode.should.equal( 200 )
+        should.exist( body )
+        var r = JSON.parse( body )
+        should.exist( r )
+        r.should.have.property('error')
+        r.should.not.have.property('result')
         done( null )
       })
     })

@@ -88,7 +88,7 @@ function registerAgent ( req, res, next ) {
     if (e) return next( e )
     if ( passcode != profile.passcode ) {
       var err = new Error('Passcode does not match')
-      e.code = 'INVALID_PASSCODE'
+      err.code = 'INVALID_PASSCODE'
       return next( err )
     }
     var details =
@@ -118,7 +118,7 @@ function registerAgent ( req, res, next ) {
         // TBD: let listener on channel know that QR code was read successfully
 
         // async clear out data associated with the code
-        db.updateProfile( 'as', code, {}, function ( e ) {
+        db.deleteProfile( 'as', code, function ( e ) {
           if (e) console.log("Profile update error:\n", e )
         })
         return res.send( { 'result': {'token': result.token } } )

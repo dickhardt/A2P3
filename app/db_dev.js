@@ -329,9 +329,9 @@ exports.retrieveAgentFromDevice = function ( as, device, cb) {
 exports.deleteAgentFromHandle = function ( as, handle, cb) {
   var key = as + ':agent:handle:' + handle
   var device = dummyNoSql[key]
-  delete dummyNoSql[key]
+  delete dummyNoSql[key];
   key = as + ':agent:device:' + device
-  delete dummyNoSql[key]
+  delete dummyNoSql[key];
   process.nextTick( function () { cb( null ) } )
 }
 
@@ -356,6 +356,18 @@ exports.getProfile = function ( rs, di, cb ) {
   } else {
     process.nextTick( function () { cb( null, dummyNoSql[key] ) } )
   }
+}
+
+exports.deleteProfile = function ( rs, di, cb ) {
+  var key = rs + ':di:' + di + ':profile'
+    , e = null
+  if (dummyNoSql[key]) {
+    delete dummyNoSql[key]
+  } else {
+    e = new Error('unknown user')
+    e.code = "UNKNOWN_USER"
+  }
+  process.nextTick( function () { cb( e ) } )
 }
 
 
