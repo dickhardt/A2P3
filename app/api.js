@@ -12,6 +12,7 @@ var fetch = require('request')
   , request = require('./request')
   , querystring = require('querystring')
   , assert = require('assert')
+  , jwt = require('./jwt')
 
 exports.call = function ( details, callback ) {
 
@@ -73,8 +74,8 @@ exports.Standard.prototype.call = function ( host, api, params, callback ) {
           }
       , credentials = keys.latest
       , path = config.baseUrl[ host ] + api
-      , jwt = request.create( payload, credentials )
-    fetch.post( path, { form:{ 'request':jwt } }, function (error, response, body ) {
+      , jws = request.create( payload, credentials )
+    fetch.post( path, { form:{ 'request': jws } }, function (error, response, body ) {
       var data = null
         , err = null
 

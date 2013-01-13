@@ -32,8 +32,12 @@ exports.parse = function ( request ) {
 
 
 function paramCheck( jws ) {
-  if (!jws.payload.iss)
+  if (!jws.payload.iss) {
+
+console.error('\nBad JWS:',jws)
+
     throw new Error('No "iss" in JWS payload')
+  }
   if (!jws.header.kid)
     throw new Error('No "kid" in JWS header')
   if (!jws.payload['request.a2p3.org'])
@@ -67,6 +71,7 @@ exports.check = function ( keys, accessList, reg ) {
     }
     try {
       jws = new jwt.Parse( req.body.request )
+
       paramCheck( jws )
       if ( accessList ) {
         if ( !accessList[jws.payload.iss] ) {

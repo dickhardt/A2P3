@@ -1,4 +1,4 @@
-/* 
+/*
 * CLI Agent module and script
 *
 * TBD: documentation!!, perhaps in README.md?
@@ -7,10 +7,10 @@
 */
 
 var fetch = require('request')
-  , fs = require('fs')
+  , jwt = require('../app/jwt')
   , config = require('../app/config')
 
-Create = function ( options ) {
+var Create = function ( options ) {
   options = options || {}
   this.error = null
   this.host = options.host || config.baseUrl.setup
@@ -22,29 +22,46 @@ Create = function ( options ) {
 }
 
 // return an IX Token for passed Agent Request
-Create.prototype.token = function ( agentRequest ) {
-  if (!this.ready) return null
-
+Create.prototype.ixToken = function ( agentRequest , cb ) {
+  if (!this.ready) return cb( null )
+  var jws = jwt.Parse( agentRequest )
+  var options =
+    { url: config.baseUrl.setup + '/token'
+    , method: 'POST'
+    , json:
+      { device: this.device
+      , sar: jws.signature
+      , auth:
+        { passcode: ""  // not needed for CLI agents
+        , authorization: true
+        }
+      }
+    }
+  fetch( options, function ( e, response, json ) {
+    if (e) return cb( e )
+    var ixToken = json.result.token
+    cb( null, ixToken )
+  })
 }
 
 // list all apps with long term resource access
 // passed a list of resource servers
 // TBD Q: remember which resource servers we have been called with
-Create.prototype.listAuthorizations = function ( list ) {
-  if (!this.ready) return null
-  // call Registrar and then each 
+Create.prototype.listAuthorizations = function ( list , cb ) {
+  if (!this.ready) return cb( null )
+  // call Registrar and then each
 }
 
 // revoke long term resource access for app
 // handle was obtained from listAuthorizations
-Create.prototype.deleteAuthorization = function ( handle ) {
-  if (!this.ready) return null
+Create.prototype.deleteAuthorization = function ( handle , cb ) {
+  if (!this.ready) return cb( null )
 
 }
 
 // report an app for abuse
-Create.prototype.report = function ( agentRequest ) {
-  if (!this.ready) return null
+Create.prototype.report = function ( agentRequest , cb ) {
+  if (!this.ready) return cb( null )
 
 }
 
@@ -87,7 +104,7 @@ Create.prototype.generate = function ( options, cb ) {
   function complete ( error, response, body ) {
     if (error) return done( error )
     try {
-      var response = JSON.parse( body )        
+      var response = JSON.parse( body )
     }
     catch (e) {
       return done( e )
@@ -106,7 +123,7 @@ Create.prototype.generate = function ( options, cb ) {
       , form: { name: agentName }
       , method: 'POST'
       }
-    fetch( options, complete )  
+    fetch( options, complete )
   }
 
   function enrollRegister ( error, response, body ) {
@@ -124,7 +141,7 @@ Create.prototype.generate = function ( options, cb ) {
       , form: profile
       , method: 'POST'
       }
-    fetch( options, dashboardAgentCreate )  
+    fetch( options, dashboardAgentCreate )
   }
 
   var options =
@@ -132,7 +149,7 @@ Create.prototype.generate = function ( options, cb ) {
     , form: { email: email }
     , method: 'POST'
     }
-  fetch( options, enrollRegister )  
+  fetch( options, enrollRegister )
 
 } // generateAgent
 
