@@ -14,6 +14,7 @@ var express = require('express')
   , config = require('../../config')
   , dashboard = require('../../lib/dashboard')
   , mw = require('../../lib/middleware')
+  , login = require('../../lib/login')
   , request = require('../../lib/request')
   , token = require('../../lib/token')
   , db = require('../../lib/db')
@@ -121,7 +122,7 @@ exports.app = function( province ) {
 
   dashboard.routes( app, 'people.'+province, vault )  // add in routes for the registration paths
 
-  mw.loginHandler( app, { 'dashboard': 'people.'+province, 'vault': vault } )
+  login.router( app, { 'dashboard': 'people.'+province, 'vault': vault } )
 
   app.post('/di/link'
           , request.check( vault.keys, config.roles.enroll )

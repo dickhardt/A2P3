@@ -8,6 +8,7 @@ var express = require('express')
   , vault = require('./vault')
   , stdRegistration = require('../lib/stdRegistration')
   , mw = require('../lib/middleware')
+  , login = require('../lib/login')
 
 exports.app = function( ) {
   var app = express()
@@ -17,7 +18,7 @@ exports.app = function( ) {
 
   stdRegistration.routes( app, 'health', vault )  // add in routes for the registration paths
 
-  mw.loginHandler( app, { 'dashboard': 'health', 'vault': vault } )
+  login.router( app, { 'dashboard': 'health', 'vault': vault } )
 
   app.use( mw.errorHandler )
   return app

@@ -10,6 +10,7 @@ var express = require('express')
   , async = require('async')
   , db = require('./db')
   , mw = require('./middleware')
+  , login = require('./login')
   , api = require('./api')
   , util = require('util')
 
@@ -152,7 +153,7 @@ var stdApi = new api.Standard( RS, vault )
   var cookieOptions = { 'secret': vault.secret, 'cookie': { path: '/dashboard' } }
   app.use( express.cookieSession( cookieOptions ))
 
-  mw.loginHandler( app, { 'dashboard': RS, 'vault': vault })
+  login.router( app, { 'dashboard': RS, 'vault': vault })
 
   app.get('/dashboard/list/apps'
           , checkSession

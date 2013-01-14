@@ -10,6 +10,7 @@ var express = require('express')
   , dashboard = require('../lib/dashboard')
   , request = require('../lib/request')
   , mw = require('../lib/middleware')
+  , login = require('../lib/login')
   , db = require('../lib/db')
   , token = require('../lib/token')
   , querystring = require('querystring')
@@ -49,7 +50,7 @@ exports.app = function() {
 
   dashboard.routes( app, 'email', vault )  // add in routes for the registration paths
 
-  mw.loginHandler( app, { 'dashboard': 'email', 'vault': vault } )
+  login.router( app, { 'dashboard': 'email', 'vault': vault } )
 
   app.post('/di/link'
           , request.check( vault.keys, config.roles.enroll )

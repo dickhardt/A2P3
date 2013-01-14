@@ -13,6 +13,7 @@ var express = require('express')
   , token = require('../lib/token')
   , db = require('../lib/db')
   , mw = require('../lib/middleware')
+  , login = require('../lib/login')
 
 // Express Middleware that checks if agent token is valid
 function checkValidAgent (req, res, next) {
@@ -196,7 +197,7 @@ exports.app = function() {
   dashboard.routes( app, 'registrar', vault, __dirname )  // add in routes for the registration paths
 
   // login routing
-  mw.loginHandler( app, { 'dashboard': 'registrar', 'vault': vault } )
+  login.router( app, { 'dashboard': 'registrar', 'vault': vault } )
 
   app.use( mw.errorHandler )
 
