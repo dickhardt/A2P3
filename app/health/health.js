@@ -6,7 +6,7 @@
 
 var express = require('express')
   , vault = require('./vault')
-  , stdRegistration = require('../lib/stdRegistration')
+  , stdDashboard = require('../lib/stdDashboard')
   , mw = require('../lib/middleware')
   , login = require('../lib/login')
 
@@ -16,7 +16,7 @@ exports.app = function( ) {
   app.use( express.limit('10kb') )  // protect against large POST attack
   app.use( express.bodyParser() )
 
-  stdRegistration.routes( app, 'health', vault )  // add in routes for the registration paths
+  stdDashboard.routes( app, 'health', vault )  // add in routes for the registration paths
 
   login.router( app, { 'dashboard': 'health', 'vault': vault } )
 
