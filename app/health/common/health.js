@@ -51,7 +51,7 @@ function number ( province ) {
 }
 
 // generates an OAuth access token for later use
-function oauth ( vault, province ) {
+function oauth ( province ) {
   return function oauth ( req, res, next ) {
     var details =
       { scopes: req.token['token.a2p3.org'].scopes
@@ -77,7 +77,7 @@ function _checkScope( province, series, api, scopes ) {
 }
 
 // checks that caller has an authorized OAuth token
-function oauthCheck ( vault, province ) {
+function oauthCheck ( province ) {
   return function oauthCheck ( req, res, next ) {
     var accessToken = req.body.access_token
     db.oauthRetrieve( 'health.'+province, accessToken, function ( e, details ) {
@@ -99,7 +99,7 @@ function oauthCheck ( vault, province ) {
 }
 
 // updates data in a time series
-function updateSeries ( vault, province ) {
+function updateSeries ( province ) {
   return function updateSeries ( req, res, next ) {
     var time = req.body.time || Date.now()
     db.updateSeries( 'health.'+province
@@ -115,7 +115,7 @@ function updateSeries ( vault, province ) {
 }
 
 // gets a time series of data
-function retrieveSeries ( vault, province ) {
+function retrieveSeries ( province ) {
   return function retrieveSeries ( req, res, next ) {
     // TBD confirm we got required parameters
     db.retrieveSeries( 'health.'+province
@@ -202,17 +202,17 @@ exports.app = function( province ) {
           , request.check( vault.keys, null, 'health.'+province )
           , mw.a2p3Params( ['token'] )
           , token.checkRS( vault.keys, 'health.'+province )
-          , oauth( vault, province )
+          , oauth( province )
           )
   app.post('/series/update'  // add to a time series of data
           , mw.checkParams( {'body':['access_token','series','data']} )
-          , oauthCheck( vault, province )
-          , updateSeries( vault, province )
+          , oauthCheck( province )
+          , updateSeries( province )
           )
   app.post('/series/retrieve'   // retrieve a time series of data
           , mw.checkParams( {'body':['access_token','series']} )
-          , oauthCheck( vault, province )
-          , retrieveSeries( vault, province )
+          , oauthCheck( province )
+          , retrieveSeries( province )
           )
 
   app.post('/authorizations/list' // list OAuth anytime authorizatsions
