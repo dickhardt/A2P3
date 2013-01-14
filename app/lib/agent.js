@@ -49,7 +49,7 @@ Create.prototype.ixToken = function ( agentRequest , cb ) {
 // TBD Q: remember which resource servers we have been called with
 Create.prototype.listAuthorizations = function ( list , cb ) {
   if (!this.ready) return cb( null )
-  // call Registrar and then each
+  // call Registrar and then each returned RS
 }
 
 // revoke long term resource access for app

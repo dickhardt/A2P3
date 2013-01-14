@@ -7,6 +7,7 @@
 */
 
 var fs = require('fs')
+  , underscore = require('underscore')
   , config = require('../config')
   , crypto = require('crypto')
   , b64url = require('./b64url')
@@ -67,12 +68,13 @@ exports.mapDI = mapDI
 */
 exports.addAgent = function ( asDI, asHost, name, cb ) {
   var ixDI = dummyNoSql['ix:di:' + asHost + ':' + asDI]
+  var registrarDI = mapDI( config.host.registrar, ixDI )
   var handle = jwt.handle()
   var token = jwt.handle()
   dummyNoSql['ix:di:' + ixDI] = dummyNoSql['ix:di:' + ixDI] || {}
   dummyNoSql['ix:di:' + ixDI][handle] = { 'name': name, 'AS': asHost, 'created': Date.now() }
   dummyNoSql['ix:di:' + ixDI + ':handle:' + handle + ':token'] = token
-  dummyNoSql['registrar:agentHandle:' + token] = true
+  dummyNoSql['registrar:agentHandle:' + token] = registrarDI
   process.nextTick( function () { cb( null, token, handle ) } )
 }
 
@@ -112,8 +114,8 @@ exports.deleteAgent = function ( asDI, asHost, handle, cb ) {
 * Registrar DB functions
 */
 exports.validAgent = function ( token, cb ) {
-  var valid = dummyNoSql['registrar:agentHandle:' + token]
-  process.nextTick( function () { cb(  valid ) } )
+  var di = dummyNoSql['registrar:agentHandle:' + token]
+  process.nextTick( function () { cb(  di ) } )
 }
 
 exports.getAppName = function ( id, cb ) {
@@ -440,17 +442,18 @@ exports.readChannel = function ( channel, cb) {
 *
 */
 // create an OAuth access token
-exports.oauthCreate = function ( rs, appID, di, details, cb) {
+exports.oauthCreate = function ( rs, details, cb) {
   var accessToken = jwt.handle()
+  var appID = details.app
   var keyAccess = rs + ':oauth:' + accessToken
+  // NOTE: an App may have multiple Access Tokens, and with different priveleges
   dummyNoSql[keyAccess] = details
-  var keyDI = rs + ':oauthGrants:' + di
+  dummyNoSql[keyAccess].created = Date.now()
+  dummyNoSql[keyAccess].lastAccess = Date.now()
+  var keyDI = rs + ':oauthGrants:' + details.sub
   dummyNoSql[keyDI] = dummyNoSql[keyDI] || {}
-  dummyNoSql[keyDI][appID] = dummyNoSql[keyDI][appID] || {}
-  dummyNoSql[keyDI][appID][accessToken] = Date.now()
+  dummyNoSql[keyDI][accessToken] = appID
   process.nextTick( function () { cb( null, accessToken ) } )
-    process.nextTick( function () { cb( null ) } )
-
 }
 
 // retrieve an OAuth access token
@@ -465,12 +468,14 @@ exports.oauthList = function ( rs, di, cb ) {
   var grants = dummyNoSql[keyDI]
   if (!grants) process.nextTick( function () { cb( null ) } )
   var results = {}
-  Object.keys( grants ).forEach( function ( appID ) {
-    var latest = 0
-    Object.keys( dummyNoSql[keyDI][appID] ).forEach( function ( token) {
-      if ( dummyNoSql[keyDI][appID][token] > latest ) latest = dummyNoSql[keyDI][appID][token]
-    })
-    results[appID] = latest
+  Object.keys( grants ).forEach( function ( accessToken ) {
+    var keyAccess = rs + ':oauth:' + accessToken
+    var details = dummyNoSql[keyAccess]
+    var appID = details.app
+    results[appID] = results[appID] || {}
+    var lastAccess = results[appID].lastAccess || details.lastAccess
+    if (lastAccess < details.lastAccess) results[appID].lastAccess = details.lastAccess
+    results[appId].resources = underscore.union( results[appId].resources, details.scopes )
   })
   process.nextTick( function () { cb( null, results ) } )
 }
@@ -478,12 +483,13 @@ exports.oauthList = function ( rs, di, cb ) {
 // delete all OAuth access tokens granted to an app
 exports.oauthDelete = function ( rs, di, appID, cb ) {
   var keyDI = rs + ':oauthGrants:' + di
-  var tokens = dummyNoSql[keyDI][appID]
-  Object.keys( tokens ).forEach( function ( accessToken ) {
+  var grants = dummyNoSql[keyDI]
+  Object.keys( grants ).forEach( function ( accessToken ) {
+    if ( grants[accessToken] == appID )
     var keyAccess = rs + ':oauth:' + accessToken
     delete dummyNoSql[keyAccess]
+    delete dummyNoSql[keyDI][appID]
   })
-  delete dummyNoSql[keyDI][appID]
   process.nextTick( function () { cb( null ) } )
 }
 

@@ -58,7 +58,7 @@ function oauth ( vault, province ) {
       , app: req.token['token.a2p3.org'].app
       , sub: req.token.sub
       }
-    db.oauthCreate( 'health.'+province, details.app, details.sub, details, function ( e, accessToken ) {
+    db.oauthCreate( 'health.'+province, details, function ( e, accessToken ) {
       if (e) next (e)
       res.send( {result: { access_token: accessToken } } )
     })
@@ -128,6 +128,52 @@ function retrieveSeries ( vault, province ) {
   }
 }
 
+
+function _makeDeleteAuthNRequest ( rs, di, app ) {
+  // impersonate Registrar calling us
+  var tokenPayload =
+    { 'iss': config.host.registrar
+    , 'aud': config.host[rs]
+    , 'sub': di
+    , 'token.a2p3.org': { 'app': app }
+    }
+  var rsToken = token.create( tokenPayload, vault.keys[config.host.registrar].latest )
+  var requestDetails =
+    { 'iss': config.host.registrar
+    , 'aud': config.host[rs]
+    , 'request.a2p3.org': { 'app': app, 'token': rsToken }
+    }
+  var rsRequest = request.create( requestDetails, vault.keys[config.host.registrar].latest )
+  return rsRequest
+}
+
+// list all authorizations provided by user
+function listAuthN ( rs ) {
+  return function listAuthN ( req, res, next ) {
+    var di = req.token.sub
+    db.oauthList( rs, di, function ( e, results ) {
+      if (e) return next( e )
+      var response = results
+      // make an RS Request for each App to delete it later
+      Object.keys(results).forEach( function ( app ) {
+        response[app].request = _makeDeleteAuthNRequest( rs, di, app )
+      })
+      res.send( {result: response} )
+    })
+  }
+}
+
+// delete all authorizations to an app for the user
+function deleteAuthN ( rs ) {
+  return function deleteAuthN ( req, res, next ) {
+    db.oauthDelete( rs, req.token.sub, req.request['request.a2p3.org'].app, function ( e ) {
+      if (e) return next( e )
+      return res.send( {result:{success: true }} )
+    })
+  }
+}
+
+
 // generate request processing stack and routes
 exports.app = function( province ) {
 	var app = express()
@@ -167,6 +213,20 @@ exports.app = function( province ) {
           , mw.checkParams( {'body':['access_token','series']} )
           , oauthCheck( vault, province )
           , retrieveSeries( vault, province )
+          )
+
+  app.post('/authorizations/list' // list OAuth anytime authorizatsions
+          , request.check( vault.keys, config.roles.authN, 'health.'+province )
+          , mw.a2p3Params( ['token'] )
+          , token.checkRS( vault.keys, 'health.'+province )
+          , listAuthN( 'health.'+province )
+          )
+
+  app.post('/authorizations/delete' // list OAuth anytime authorizatsions
+          , request.check( vault.keys, config.roles.authN, 'health.'+province )
+          , mw.a2p3Params( ['token'] )
+          , token.checkRS( vault.keys, 'health.'+province )
+          , deleteAuthN( 'health.'+province )
           )
 
   app.use( mw.errorHandler )

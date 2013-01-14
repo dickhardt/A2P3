@@ -24,13 +24,15 @@ function checkValidAgent (req, res, next) {
       next(err)
       return undefined
     }
-    db.validAgent( req.body.token, function (valid) {
-      if (!valid) {
+    db.validAgent( req.body.token, function ( di ) {
+      if (!di) {
         err = new Error('unrecognized agent token')
         err.code = 'INVALID_TOKEN'
         next(err)
         return undefined
       } else {
+        // save DI for later
+        req.body.di = di
         next()
       }
     })
@@ -71,7 +73,27 @@ function report (req, res) {
 
 // /authorizationsRequests
 function authorizationsRequests (req, res) {
-    res.send(501, 'NOT IMPLEMENTED');
+  var resources = req.body.authorizations
+  var response = {}
+  resources.forEach( function ( rs) {
+    db.getAppKey( 'registrar', rs, vault.keys, function ( e, key ) {
+      if (e) return
+      var tokenPayload =
+        { 'iss': config.host.registrar
+        , 'aud': config.host[rs]
+        , 'sub': req.body.di
+        , 'token.a2p3.org': { 'empty': true }
+        }
+      var rsToken = token.create( tokenPayload, key.latest )
+      var requestDetails =
+        { 'iss': config.host.registrar
+        , 'aud': config.host[rs]
+        , 'request.a2p3.org': { 'token': rsToken }
+        }
+      response[rs] = request.create( requestDetails, key.latest )
+    })
+  })
+  res.send( { result: response } )
 }
 
 // /app/verify

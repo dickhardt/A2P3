@@ -49,7 +49,7 @@ app.listen( config.portListen )
 function cleanup( reason, exit ) {
   return function ( e ) {
     console.error('we are going to die from', reason, '!')
-    if (e) console.error( 'we received error:\n',e)
+    if (e) console.error( 'we received error:\n', e.stack)
     db.saveSync()
     if (exit) process.exit()
   }

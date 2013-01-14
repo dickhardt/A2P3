@@ -97,6 +97,7 @@ var roles =
   , as: {}
   , enroll: {}
   , std: {}
+  , authN: {}
   }
 
 // IX roles, should just be the one!
@@ -112,6 +113,8 @@ roles.enroll[host.setup] = true
 // health and people are POC standardized resources
 roles.std[host.health] = true
 roles.std[host.people] = true
+
+roles.authN[host.registrar] = true
 
 /********************************************************************
 *  Don't edit below here unless you know what you are doing!!!      *
