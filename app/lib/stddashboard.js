@@ -184,6 +184,8 @@ var stdApi = new api.Standard( RS, vault )
           )
 
   app.get('/dashboard', function( req, res ) { res.sendfile( config.rootAppDir + '/html/dashboard_std.html' ) } )
+  app.get('/dashboard/error', function( req, res ) { res.sendfile( config.rootAppDir + '/html/login_error.html' ) } )
+  app.get('/dashboard/complete', function( req, res ) { res.sendfile( config.rootAppDir + '/html/login_complete.html' ) } )
 
 
 }

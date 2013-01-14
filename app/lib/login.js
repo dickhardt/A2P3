@@ -196,7 +196,7 @@ exports.router = function ( app, detailsOrig ) {
       { 'login':      '/dashboard/login'          // page loaded to initate login
       , 'response':   '/dashboard/login/response' // page where we redirect to
       , 'error':      '/dashboard/error'          // HTML to be provided where we send user when an error
-      , 'success':    '/dashboard'                // HTML to be provided which is success
+      , 'success':    '/dashboard'                // HTML to be provided on success
       , 'complete':   '/dashboard/complete'       // HTML to be provided to show on mobile after success
       , 'loginCheck': '/dashboard/login/check'    // API called to see which, if any user is logged in
       }
