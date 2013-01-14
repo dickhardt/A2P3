@@ -51,7 +51,6 @@ function cleanup( reason, exit ) {
     console.error('we are going to die from', reason, '!')
     if (e) console.error( 'we received error:\n',e)
     db.saveSync()
-    fs.writeFileSync( 'exit.txt', Date.now() )
     if (exit) process.exit()
   }
 }
