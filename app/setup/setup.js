@@ -179,6 +179,7 @@ function enrollRegister ( req, res, next ) {
 
 function _loadProfile ( id, profile, req, res ) {
   db.getProfile( 'setup', id, function ( e, existingProfile ) {
+    req.session = {}
     if (e) {
       req.session.profile = profile
       return res.redirect( '/enroll' )
@@ -199,6 +200,11 @@ function fbRedirect ( req, res, next ) {
 
 
 function devLogin ( req, res, next ) {
+
+// console.log('\n login req.session:\n', req.session )
+// console.log('\n login req.body:\n', req.body )
+// console.log('\n login req.query:\n', req.query )
+
   if (useFB) return res.redirect('/')
   var profile = JSON.parse( JSON.stringify( config.testUser ))  // clone test user object
   profile.email = req.body.email
@@ -400,7 +406,11 @@ function dashboard ( req, res, next ) {
   res.sendfile( __dirname+'/html/dashboard.html')
 }
 
-
+function databaseRestore ( req, res, next ) {
+   var e = db.restoreSnapshotSync()
+  if (e) return next(e)
+  return res.send({ result: { success: true } } )
+}
 
 exports.app = function() {
 	var app = express()
@@ -455,6 +465,14 @@ exports.app = function() {
   app.post('/dashboard/agent/delete'
           , mw.checkParams( {'session':['di'], 'body': ['handle']} )
           , dashboardAgentDelete
+          )
+
+  // DB restore API, only callable if signed with Setup
+  var dbRestoreList = {}
+  dbRestoreList[config.host.registrar] = true
+  app.post('/database/restore'
+          , request.check( vault.keys, dbRestoreList, config.host.setup )
+          , databaseRestore
           )
 
 

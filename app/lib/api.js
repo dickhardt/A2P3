@@ -68,6 +68,7 @@ exports.Standard = function ( clientHost, vault ) {
 
 exports.Standard.prototype.call = function ( host, api, params, callback ) {
   var that = this
+  params = params || { empty: true }
   db.getAppKey( that.client, config.host[host], that.vault.keys, function ( e, keys ) {
     var payload =
           { iss: config.host[that.client]
@@ -101,7 +102,7 @@ exports.Standard.prototype.call = function ( host, api, params, callback ) {
       if (data.error) {
         var apiError = new Error(data.error.message + data.error.stack)
         apiError.code = data.error.code
-        callback( apiError, null)
+        return callback( apiError, null)
       }
       callback( null, data.result )
     })

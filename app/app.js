@@ -11,6 +11,8 @@ var express = require('express')
   , config = require('./config')
   , app = express()
   , mw = require('./lib/middleware')
+  , db = require('./lib/db')
+  , fs = require('fs')
 
 // common assets
 app.use( express.static( __dirname + '/assets' ) )
@@ -43,6 +45,23 @@ app.use( express.vhost( '*', function ( req, res, next ) {
 }) )
 
 app.listen( config.portListen )
+
+function cleanup( reason, exit ) {
+  return function ( e ) {
+    console.error('we are going to die from', reason, '!')
+    if (e) console.error( 'we received error:\n',e)
+    db.saveSync()
+    fs.writeFileSync( 'exit.txt', Date.now() )
+    if (exit) process.exit()
+  }
+}
+
+// save DB on exit
+process.on('exit', cleanup( 'exit' ) )
+process.on('uncaughtException', cleanup( 'uncaught exception', true ) )
+process.on('SIGINT', cleanup( 'SIGINT', true ) )
+process.on('SIGABRT', cleanup( 'SIGABRT' ) )
+process.on('SIGTERM', cleanup( 'SIGTERM' ) )
 
 console.log( "A2P3 servers started on *."+config.baseDomain+':'+config.portListen)
 // TBD output DB, cluster config information

@@ -23,14 +23,34 @@ if ( !fExist ) {
 }
 // load DB
 var dummyNoSql = require('../nosql.json')
-
-
-// save DB on exit
-process.on('exit', function() {
-  fs.writeFileSync( config.rootAppDir+'/nosql.json', JSON.stringify( dummyNoSql ) )
-})
-
 var keyChain = dummyNoSql.keyChain
+
+
+// save DB state
+exports.saveSync = function saveSync () {
+  fs.writeFileSync( config.rootAppDir+'/nosql.json', JSON.stringify( dummyNoSql ) )
+}
+
+// syncronous save of DB to snapshot
+var SNAPSHOTFILE = config.rootAppDir+'/snapshot.nosql.json'
+
+exports.saveSnapshotSync = function saveSnapshotSync () {
+  return fs.writeFileSync( SNAPSHOTFILE, JSON.stringify( dummyNoSql ) )
+}
+
+// syncronous restore of DB from last snapshot
+exports.restoreSnapshotSync = function restoreSnapshotSync () {
+  if ( fs.existsSync( SNAPSHOTFILE ) ) {
+    var data = fs.readFileSync( SNAPSHOTFILE )
+    fs.writeFileSync( config.rootAppDir+'/nosql.json', data )
+    dummyNoSql = JSON.parse(data)
+    keyChain = dummyNoSql.keyChain
+    return null
+  } else {
+    return new Error( SNAPSHOTFILE + ' could not be found')
+  }
+}
+
 
 // maps an IX DI to the directed id fo a host
 function mapDI ( host, ixDI ) {

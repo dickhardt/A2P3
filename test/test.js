@@ -44,6 +44,7 @@ var should = require('chai').should()
   , API = require('../app/lib/api')
   , jwt = require('../app/lib/jwt')
   , agent = require('../app/lib/agent')
+  , vaultRegistrar = require('../app/registrar/vault')
 
 var devUser =
     { label: 'Dev'
@@ -64,11 +65,24 @@ var PASSCODE = '1234'
 // add our demo host in so modules work properly
 config.host.demo = demoApp.host
 
+// restore Database to snapshot
+function restoreDatabase( done ) {
+  var api = new API.Standard( 'registrar', vaultRegistrar )
+  api.call( 'setup', '/database/restore', null, done )
+}
+
 /*
 * Enroll the Dev and Test users in Setup and generate a CLI agent for both
 *
 */
 
+describe('Restoring ', function () {
+  describe('Database', function () {
+    it('should just happen', function (done) {
+      restoreDatabase( done )
+    })
+  })
+})
 
 function createUser ( user ) {
   describe('Setup ' + user.label + ' User Enroll', function () {
@@ -745,8 +759,20 @@ describe('Demo App calling ', function () {
     })
   })
 
-
 })
+
+
+describe('Restoring ', function () {
+  describe('Database', function () {
+    it('should just happen', function (done) {
+      restoreDatabase( done )
+    })
+  })
+})
+
+// describe('Restoring Database', function (done) {
+//   restoreDatabase( done )
+// })
 
 // console.log('\n =>options\n', options)
 

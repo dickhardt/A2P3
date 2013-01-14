@@ -7,3 +7,5 @@ vault.json
 nosql.json
 *.sublime-*
 old.*
+snapshot.*
+old

@@ -261,10 +261,14 @@ function run ( complete ) {
 
   tasks.push( function (done) {
     // store root DI for setup as agent
-
-    // TBD, can we get rid of this now???
-
     db.storeAgent( 'setup', { device:'root', di: diRoot[config.host.setup] }, done )
+  })
+
+  tasks.push( function (done) {
+    // save DB as built so we can restore it when testing
+    db.saveSync()
+    db.saveSnapshotSync()
+    done()
   })
 
   async.series( tasks, function ( err, results ) {
