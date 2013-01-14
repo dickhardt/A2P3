@@ -167,9 +167,17 @@ exports.listApps = function ( reg, admin, cb ) {
   process.nextTick( function () { cb( null, result ) } )
 }
 
-exports.newApp = function ( reg, id, name, adminEmail, cb ) {
+// anytime parameter is optional, and indicates if a RS
+// supports anytime OAuth 2.0 access and the
+// /authorizations/list & /authorization/delete APIs
+exports.newApp = function ( reg, id, name, adminEmail, anytime, cb ) {
+  if (typeof anytime === 'function') {
+    cb = anytime
+    anytime = false
+  }
   // add to DB
   dummyNoSql[reg + ':app:' + id + ':name'] = name
+  if (reg == 'registrar' && anytime) dummyNoSql[reg + ':app:' + id + ':anytime'] = true
   dummyNoSql[reg + ':app:' + id + ':admins'] = {}
   dummyNoSql[reg + ':app:' + id + ':admins'][adminEmail] = 'ACTIVE'
   dummyNoSql[reg + ':admin:' + adminEmail + ':apps'] = dummyNoSql[reg + ':admin:' + adminEmail + ':apps'] || {}
@@ -182,6 +190,7 @@ exports.newApp = function ( reg, id, name, adminEmail, cb ) {
 exports.checkApp = function ( reg, id, di, cb) {
   var e = null
     , ok = null
+    , name = null
   var email = dummyNoSql[reg + ':admin:di:' + di]
   if (!email) {
     e = new Error('unknown administrator')
@@ -189,7 +198,8 @@ exports.checkApp = function ( reg, id, di, cb) {
     ok = ( dummyNoSql[reg + ':app:' + id + ':admins'][email] == 'ACTIVE' )
     if (!ok) e = new Error('Account not authorative for '+id)
   }
-  process.nextTick( function () { cb( e, ok ) } )
+  if (ok) name =  dummyNoSql[reg + ':app:' + id + ':name']
+  process.nextTick( function () { cb( e, name ) } )
 }
 
 exports.addAppAdmin = function ( reg, id, admin, cb ) {
@@ -223,6 +233,19 @@ exports.getAppKey = function ( reg, id, vaultKeys, cb ) {
   var key = null
   if (reg && keyChain[reg])
     key = keyChain[reg][id]
+  if (!key && vaultKeys) {
+    key = vaultKeys[id]
+  }
+  process.nextTick( function () { cb( null, key ) } )
+}
+
+// used by Registrar to check if RS is Anytime and then get keys
+exports.getAnytimeAppKey = function ( id, vaultKeys, cb ) {
+  if (!dummyNoSql['registrar:app:' + id + ':anytime'])
+    process.nextTick( function () { cb( null, null ) } )
+  var key = null
+  if (keyChain.registrar)
+    key = keyChain.registrar[id]
   if (!key && vaultKeys) {
     key = vaultKeys[id]
   }
@@ -475,6 +498,7 @@ exports.oauthList = function ( rs, di, cb ) {
     results[appID] = results[appID] || {}
     var lastAccess = results[appID].lastAccess || details.lastAccess
     if (lastAccess < details.lastAccess) results[appID].lastAccess = details.lastAccess
+    results[appID].name = dummyNoSql[rs + ':app:' + appID + ':name']
     results[appId].resources = underscore.union( results[appId].resources, details.scopes )
   })
   process.nextTick( function () { cb( null, results ) } )

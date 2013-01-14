@@ -76,8 +76,9 @@ function authorizationsRequests (req, res) {
   var resources = req.body.authorizations
   var response = {}
   resources.forEach( function ( rs) {
-    db.getAppKey( 'registrar', rs, vault.keys, function ( e, key ) {
+    db.getAnytimeAppKey( vault.keys, function ( e, key ) {
       if (e) return
+      if (!key) return
       var tokenPayload =
         { 'iss': config.host.registrar
         , 'aud': config.host[rs]
@@ -98,100 +99,13 @@ function authorizationsRequests (req, res) {
 
 // /app/verify
 function appVerify ( req, res, next ) {
-  db.checkApp( 'registrar', req.request['request.a2p3.org'].id, req.token.sub, function ( e, ok ) {
+  db.checkApp( 'registrar', req.request['request.a2p3.org'].id, req.token.sub, function ( e, name ) {
     if (e) return next( e )
-    if (ok) return res.send( { result: { success: true } } )
+    if (name) return res.send( { result: { name: name } } )
     var err = new Error('UNKNOWN')
     next( err )
   })
 }
-
-
-/*
-*  registrar app APIs
-*/
-
-/*
-function dashboardAppIdTaken ( req, res, next ) {
-  db.checkRegistrarAppIdTaken( req.body.id, function ( e, taken ) {
-    if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
-    return res.send( {result:{'id': req.body.id, 'taken': taken}} )
-  })
-}
-
-function dashboardNewApp ( req, res, next ) {
-  db.newApp( 'registrar', req.body.id, req.body.name, req.session.email, function ( e, key ) {
-    if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
-    return res.send( {result:{'id': req.body.id, 'key': key}} )
-  })
-}
-
-function dashboardAddAdmin ( req, res, next ) {
-  db.addAppAdmin( 'registrar', req.body.id, eq.body.admin, function ( e ) {
-    if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
-    return res.send( {result:{'id': req.body.id, 'admin': req.body.admin}} )
-  })
-}
-
-function dashboardDeleteApp ( req, res, next ) {
-  db.deleteApp( 'registrar', req.body.id, function ( e ) {
-    if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
-    return res.send( {result:{'id': req.body.id,}} )
-  })
-}
-
-function dashboardRefreshKey ( req, res, next ) {
-  db.refreshAppKey( 'registrar', req.body.id, function ( e, key ) {
-    if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
-    return res.send( {result:{'id': req.body.id, 'key': key}} )
-  })
-}
-
-function dashboardGetKey ( req, res, next ) {
-  db.getAppKey( 'registrar', req.body.id, null, function ( e, key ) {
-    if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
-    return res.send( {result:{'id': req.body.id, 'key': key}} )
-  })
-}
-
-function checkAdminAuthorization ( req, res, next ) {
-  db.checkAdminAuthorization( 'registrar', req.body.id, req.a2p3admin.di, function ( e, authorized ) {
-    if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
-    if (!authorized) {
-      var err = new Error(req.a2p3admin.di+' not authorized for '+req.body.id)
-      e.code = "ACCESS_DENIED"
-      return next(e)
-    } else
-      next()
-  })
-}
-
-// TBD: placeholder for managing access control and sessions
-function checkSession ( req, res, next ) {
-  if (req.session.di && req.session.email) {
-    next()
-  } else {
-    var err = new Error('DI and email missing from session')
-    err.code = "ACCESS_DENIED"
-    return next( err )
-  }
-}
-
-// sets session cookie values
-function bootRegistrar ( req, res, next ) {
-  if (req.request && req.request['request.a2p3.org'] &&
-      req.request['request.a2p3.org'].di && req.request['request.a2p3.org'].email) {
-    req.session.di = req.request['request.a2p3.org'].di
-    req.session.email = req.request['request.a2p3.org'].email
-    res.send( {result: {success:true}} )
-  } else {
-    var err = new Error('DI and email missing from request')
-    err.code = "INVALID_REQUEST"
-    return next( err )
-  }
-}
-
-*/
 
 exports.app = function() {
 	var app = express()

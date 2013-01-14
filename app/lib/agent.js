@@ -50,6 +50,15 @@ Create.prototype.ixToken = function ( agentRequest , cb ) {
 Create.prototype.listAuthorizations = function ( list , cb ) {
   if (!this.ready) return cb( null )
   // call Registrar and then each returned RS
+
+// XXXXX add code here, then add tests!!! :)
+
+// registrar /authorizations/requests
+
+// TBD: need to filter out requests to only provide ones that support /authorizations/list API
+
+// RS /authorizations/list
+
 }
 
 // revoke long term resource access for app

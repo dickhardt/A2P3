@@ -41,8 +41,9 @@ exports.routes = function ( app, RS, vault, cwd ) {
   }
 
   function dashboardNewApp ( req, res, next ) {
+
     function newApp() {
-      db.newApp( RS, req.body.id, req.body.name, req.session.email, function ( e, key ) {
+      db.newApp( RS, req.body.id, req.body.name, req.session.email, req.body.anytime, function ( e, key ) {
         if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
         return res.send( {result:{'key': key}} )
       })
@@ -58,8 +59,9 @@ exports.routes = function ( app, RS, vault, cwd ) {
     var stdApi = new api.Standard( RS, vault )
     stdApi.call( 'registrar', '/app/verify'
                 , {id: req.body.id, token: req.session.tokens[config.host.registrar]}
-                , function ( e ) {
+                , function ( e, name ) {
       if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
+      req.body.name = name
       newApp()
     })
   }

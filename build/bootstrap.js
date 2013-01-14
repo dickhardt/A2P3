@@ -91,9 +91,13 @@ function run ( complete ) {
   * register each RS and build their vaults
   */
   var rsHosts = ['people','health','si','email']
+  var rsAnytime = {
+    si: true
+  }
   config.provinces.forEach( function ( province ) {
     rsHosts.push('people.'+province)
     rsHosts.push('health.'+province)
+    rsAnytime['health.'+province] = true
   })
 
   var rsHostKeys = {}
@@ -108,7 +112,7 @@ function run ( complete ) {
   rsHosts.forEach( function (rs) {
     rsHostKeys[rs] = {'keys':{}, 'secret': identity.makeSecret()}
     tasks.push( function (done) {
-      db.newApp( 'registrar', config.host[rs], rs, 'root', function ( e, keyObj ) {
+      db.newApp( 'registrar', config.host[rs], rs, 'root', rsAnytime[rs], function ( e, keyObj ) {
         if (e) return done( e )
         rsHostKeys[rs].keys[config.host.registrar] = rsHostKeys[rs].keys[config.host.ix] = keyObj
         // add key pair with setup
