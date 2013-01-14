@@ -224,7 +224,7 @@ exports.routes = function ( app, RS, vault, cwd ) {
           , dashboardGetKey
           )
 
-  app.get('/dashboard', function( req, res ) { res.sendfile( __dirname + '/../html/dashboard.html' ) } ) // this likely needs to get fixed ...
+  app.get('/dashboard', function( req, res ) { res.sendfile( config.rootAppDir + '/html/dashboard.html' ) } ) // this likely needs to get fixed ...
 // API calls from Standardized Resource Manager
   if (std) {  // we are setting up a standardized resource
     var accessList = {}
