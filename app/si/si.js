@@ -64,7 +64,7 @@ function oauth () {
 
 function _checkScope( api, scopes ) {
   if ( ( api == '/anytime/number' ) &&
-      underscore.intersection( ['/scope/anytime/number'], scopes ) )
+      underscore.intersection( [config.baseUrl.si+'/scope/anytime/number'], scopes ) )
         return null
   return 'Invalid scope(s) for operation.'
 }
@@ -113,6 +113,7 @@ function listAuthN ( rs ) {
     var di = req.token.sub
     db.oauthList( rs, di, function ( e, results ) {
       if (e) return next( e )
+      if (!results) return res.send( { result: {} } )
       var response = results
       // make an RS Request for each App to delete it later
       Object.keys(results).forEach( function ( app ) {
@@ -176,7 +177,7 @@ exports.app = function() {
           , listAuthN( 'si' )
           )
 
-  app.post('/authorizations/delete' // list OAuth anytime authorizatsions
+  app.post('/authorization/delete' // list OAuth anytime authorizatsions
           , request.check( vault.keys, config.roles.authN, 'si' )
           , mw.a2p3Params( ['token'] )
           , token.checkRS( vault.keys, 'si' )

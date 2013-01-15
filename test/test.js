@@ -572,6 +572,7 @@ describe('Demo App calling ', function () {
         , 'request.a2p3.org':
          { 'resources':
               [ config.baseUrl.si + '/scope/number'
+              , config.baseUrl.si + '/scope/anytime/number'
               , config.baseUrl.email + '/scope/default'
               , config.baseUrl['people.bc'] + '/scope/details'
               , config.baseUrl['health.bc'] + '/scope/prov_number'
@@ -754,6 +755,55 @@ describe('Demo App calling ', function () {
         r.should.have.property('result')
         var time = Object.keys( r.result )[0] // get first item
         r.result.should.have.property( time, '200' )
+        done()
+      })
+    })
+  })
+
+})
+
+describe('Agent Authorizations ', function () {
+  var apps = null
+
+  describe('getting Apps ', function () {
+    it('should return a list containing the Demo app and anytime resources ', function ( done ) {
+      var userAgent = new agent.Create( testUser.agent )
+      should.exist( userAgent )
+      var authorizations = [config.host.si, config.host['health.bc']]
+      userAgent.listAuthorizations( authorizations, function ( e, result ) {
+        should.not.exist( e )
+        should.exist( result )
+        result.should.have.property( demoApp.host )
+        apps = result
+        done()
+      })
+    })
+  })
+
+  describe('deleting authorization ', function () {
+    it('should return success', function ( done ) {
+      var userAgent = new agent.Create( testUser.agent )
+      should.exist( userAgent )
+      userAgent.deleteAuthorization( config.host['health.bc']
+            , apps[demoApp.host][config.host['health.bc']].request
+            , function ( e, result ) {
+        should.not.exist( e )
+        should.exist( result )
+        result.should.have.property( 'success' )
+        done()
+      })
+    })
+  })
+
+  describe('getting Apps ', function () {
+    it('should return an empty list ', function ( done ) {
+      var userAgent = new agent.Create( testUser.agent )
+      should.exist( userAgent )
+      var authorizations = [config.host.si, config.host['health.bc']]
+      userAgent.listAuthorizations( authorizations, function ( e, result ) {
+        should.not.exist( e )
+        should.exist( result )
+        result.should.not.have.property( demoApp.host )
         done()
       })
     })

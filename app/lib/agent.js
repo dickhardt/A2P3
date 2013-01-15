@@ -7,6 +7,7 @@
 */
 
 var fetch = require('request')
+  , async = require('async')
   , jwt = require('./jwt')
   , config = require('../config')
 
@@ -23,7 +24,7 @@ var Create = function ( options ) {
 
 // return an IX Token for passed Agent Request
 Create.prototype.ixToken = function ( agentRequest , cb ) {
-  if (!this.ready) return cb( null )
+  if (!this.ready) return cb( new Error('Agent is not ready.') )
   var jws = jwt.Parse( agentRequest )
   var options =
     { url: config.baseUrl.setup + '/token'
@@ -48,29 +49,78 @@ Create.prototype.ixToken = function ( agentRequest , cb ) {
 // passed a list of resource servers
 // TBD Q: remember which resource servers we have been called with
 Create.prototype.listAuthorizations = function ( list , cb ) {
-  if (!this.ready) return cb( null )
+  if (!this.ready) return cb( new Error('Agent is not ready.') )
   // call Registrar and then each returned RS
 
-// XXXXX add code here, then add tests!!! :)
+  var options =
+    { url: config.baseUrl.registrar + '/authorizations/requests'
+    , method: 'POST'
+    , json:
+      { authorizations: list
+      , token: this.token
+      }
+    }
+  fetch( options, function ( e, response, json ) {
+    if ( e ) return cb( e )
+    if (response.statusCode != 200 ) return cb( new Error( response.statusCode ) )
+    var rsRequests = json.result
+    var tasks = {}
+    Object.keys( rsRequests ).forEach( function ( rs ) {
+      tasks[rs] = function ( done ) {
+        var options =
+          { url: config.baseUrl[config.reverseHost[rs]] + '/authorizations/list'
+          , method: 'POST'
+          , form: { request: rsRequests[rs] }
+          }
+        fetch( options, function ( e, response, body ) {
+          if (e) return done( e )
+          if (response.statusCode != 200 ) return cb( new Error( response.statusCode ) )
+          var json = JSON.parse( body )
+          done( null, json.result )
+        })
+      }
+    })
+    async.parallel( tasks, function ( e, results) {
+      var response = {}
+      Object.keys( results ).forEach( function ( rs ) {
+        Object.keys( results[rs] ).forEach( function ( app ) {
+          response[app] = response[app] || {}
+          response[app][rs] =
+            { resources: results[rs][app].resources
+            , request: results[rs][app].request
+            }
+          response[app].name = results[rs][app].name
+        })
+      })
 
-// registrar /authorizations/requests
+// console.log('\nlistAuthorizations results\n',results)
+// console.log('\nlistAuthorizations response\n',response)
 
-// TBD: need to filter out requests to only provide ones that support /authorizations/list API
-
-// RS /authorizations/list
-
+      cb( e, response )
+    })
+  })
 }
 
 // revoke long term resource access for app
-// handle was obtained from listAuthorizations
-Create.prototype.deleteAuthorization = function ( handle , cb ) {
-  if (!this.ready) return cb( null )
-
+// request was obtained from listAuthorizations
+Create.prototype.deleteAuthorization = function ( rs, request , cb ) {
+  if (!this.ready) return cb( new Error('Agent is not ready.') )
+  var options =
+    { url: config.baseUrl[config.reverseHost[rs]] + '/authorization/delete'
+    , method: 'POST'
+    , form: { request: request }
+    }
+  fetch( options, function ( e, response, body ) {
+    if (e) return cb( e )
+    if (response.statusCode != 200 ) return cb( new Error( response.statusCode ) )
+    var json = JSON.parse( body )
+    cb( null, json.result )
+  })
 }
 
 // report an app for abuse
 Create.prototype.report = function ( agentRequest , cb ) {
-  if (!this.ready) return cb( null )
+  if (!this.ready) return cb( new Error('Agent is not ready.') )
 
 }
 

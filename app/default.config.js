@@ -114,6 +114,7 @@ roles.enroll[host.setup] = true
 roles.std[host.health] = true
 roles.std[host.people] = true
 
+roles.authN[host.ix] = true
 roles.authN[host.registrar] = true
 
 /********************************************************************

@@ -129,15 +129,18 @@ function retrieveSeries ( province ) {
 }
 
 
-function _makeDeleteAuthNRequest ( rs, di, app ) {
+function _makeDeleteAuthNRequest ( rs, di, app, vault ) {
   // impersonate Registrar calling us
   var tokenPayload =
-    { 'iss': config.host.registrar
+    { 'iss': config.host.ix
     , 'aud': config.host[rs]
     , 'sub': di
-    , 'token.a2p3.org': { 'app': app }
+    , 'token.a2p3.org':
+      { 'app': config.host.registrar
+      , 'auth': { passcode: true, authorization: true }
+      }
     }
-  var rsToken = token.create( tokenPayload, vault.keys[config.host.registrar].latest )
+  var rsToken = token.create( tokenPayload, vault.keys[config.host.ix].latest )
   var requestDetails =
     { 'iss': config.host.registrar
     , 'aud': config.host[rs]
@@ -148,15 +151,16 @@ function _makeDeleteAuthNRequest ( rs, di, app ) {
 }
 
 // list all authorizations provided by user
-function listAuthN ( rs ) {
+function listAuthN ( rs, vault ) {
   return function listAuthN ( req, res, next ) {
     var di = req.token.sub
     db.oauthList( rs, di, function ( e, results ) {
       if (e) return next( e )
+      if (!results) return res.send( { result: {} } )
       var response = results
       // make an RS Request for each App to delete it later
       Object.keys(results).forEach( function ( app ) {
-        response[app].request = _makeDeleteAuthNRequest( rs, di, app )
+        response[app].request = _makeDeleteAuthNRequest( rs, di, app, vault )
       })
       res.send( {result: response} )
     })
@@ -219,10 +223,10 @@ exports.app = function( province ) {
           , request.check( vault.keys, config.roles.authN, 'health.'+province )
           , mw.a2p3Params( ['token'] )
           , token.checkRS( vault.keys, 'health.'+province )
-          , listAuthN( 'health.'+province )
+          , listAuthN( 'health.'+province, vault )
           )
 
-  app.post('/authorizations/delete' // list OAuth anytime authorizatsions
+  app.post('/authorization/delete' // list OAuth anytime authorizatsions
           , request.check( vault.keys, config.roles.authN, 'health.'+province )
           , mw.a2p3Params( ['token'] )
           , token.checkRS( vault.keys, 'health.'+province )

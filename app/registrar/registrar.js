@@ -32,7 +32,7 @@ function checkValidAgent (req, res, next) {
         return undefined
       } else {
         // save DI for later
-        req.body.di = di
+        req.agent = {'di': di}
         next()
       }
     })
@@ -72,29 +72,32 @@ function report (req, res) {
 }
 
 // /authorizationsRequests
-function authorizationsRequests (req, res) {
+function authorizationsRequests ( req, res, next ) {
   var resources = req.body.authorizations
   var response = {}
-  resources.forEach( function ( rs) {
-    db.getAnytimeAppKey( vault.keys, function ( e, key ) {
-      if (e) return
-      if (!key) return
+  db.getAnytimeAppKeys( resources, vault.keys, function ( e, keys ) {
+    if (e) return next( e )
+    if (!keys) return res.send( { result: {} } )
+    Object.keys( keys ).forEach( function ( rs ) {
       var tokenPayload =
-        { 'iss': config.host.registrar
-        , 'aud': config.host[rs]
-        , 'sub': req.body.di
-        , 'token.a2p3.org': { 'empty': true }
+        { 'iss': config.host.ix // Tokens must be from IX
+        , 'aud': rs
+        , 'sub': db.mapDI( rs, req.agent.di)
+        , 'token.a2p3.org':
+          { 'app': config.host.registrar
+          , 'auth': { passcode: true, authorization: true }
+          }
         }
-      var rsToken = token.create( tokenPayload, key.latest )
+      var rsToken = token.create( tokenPayload, keys[rs].latest )
       var requestDetails =
-        { 'iss': config.host.registrar
-        , 'aud': config.host[rs]
+        { 'iss': config.host.registrar // request comes from Registrar
+        , 'aud': rs
         , 'request.a2p3.org': { 'token': rsToken }
         }
-      response[rs] = request.create( requestDetails, key.latest )
-    })
+      response[rs] = request.create( requestDetails, keys[rs].latest )
+      })
+    res.send( { result: response } )
   })
-  res.send( { result: response } )
 }
 
 // /app/verify
