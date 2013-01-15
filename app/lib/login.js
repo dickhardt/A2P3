@@ -49,17 +49,15 @@ function login ( details ) {
         }
       }
 
-// console.log('\n login agentRequestPayload\n', agentRequestPayload )
 // console.log('\n login req.session:\n', req.session )
 // console.log('\n login req.body:\n', req.body )
 // console.log('\n login req.query:\n', req.query )
 
-    var jsonResponse = req.query && req.query.json
     var agentRequest = request.create( agentRequestPayload, details.vault.keys[config.host.ix].latest )
     req.session.agentRequest = agentRequest
     var redirectUrl = (req.query && req.query.returnURL) ? req.query.returnURL : 'a2p3.net://token'
     redirectUrl += '?request=' + agentRequest
-    if (jsonResponse) {  // client wants JSON, likely will generate QR code
+    if (req.query && req.query.json) {  // client wants JSON, likely will generate QR code
       var state = jwt.handle()
       req.session.loginState = state
       var statusURL = details.url.response + '?' + querystring.stringify( { 'state': state } )
@@ -86,7 +84,7 @@ function loginReturn ( details ) {
         e.code = code
         return next( e )
       } else {
-        var errorUrl = details.url.error + '&' + querystring.stringify( {'error':code,'errorMessage':message})
+        var errorUrl = details.url.error + '?' + querystring.stringify( {'error':code,'errorMessage':message})
         return res.redirect( errorUrl )
       }
     }

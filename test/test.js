@@ -71,6 +71,10 @@ function restoreDatabase( done ) {
   api.call( 'setup', '/database/restore', null, done )
 }
 
+// TBD save Database to 'test' snapshot at end of run before restoring
+// or should we just leave database in Test mode????
+
+
 /*
 * Enroll the Dev and Test users in Setup and generate a CLI agent for both
 *
@@ -812,13 +816,13 @@ describe('Agent Authorizations ', function () {
 })
 
 
-describe('Restoring ', function () {
-  describe('Database', function () {
-    it('should just happen', function (done) {
-      restoreDatabase( done )
-    })
-  })
-})
+// describe('Restoring ', function () {
+//   describe('Database', function () {
+//     it('should just happen', function (done) {
+//       restoreDatabase( done )
+//     })
+//   })
+// })
 
 // describe('Restoring Database', function (done) {
 //   restoreDatabase( done )

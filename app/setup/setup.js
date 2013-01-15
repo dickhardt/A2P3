@@ -412,6 +412,30 @@ function databaseRestore ( req, res, next ) {
   return res.send({ result: { success: true } } )
 }
 
+//
+function backdoorLogin ( req, res, next ) {
+  var email = req.params.email
+  var request = req.query.request
+  var state = req.query.state
+  var jws = jwt.Parse(request)
+  db.getProfile( 'setup', email, function ( e, profile ) {
+    if ( e ) return next( e )
+    var payload =
+      { 'iss': config.host.setup
+      , 'aud': config.host.ix
+      , 'sub': profile.di
+      , 'token.a2p3.org':
+        { 'sar': jws.signature
+        , 'auth': { 'passcode': true, 'authorization': true }
+        }
+      }
+    var ixToken = token.create( payload, vault.keys[config.host.ix].latest )
+    var returnURL = jws.payload['request.a2p3.org'].returnURL + '?token=' + ixToken
+    if (state) returnURL += '&state=' + state
+    return res.redirect( returnURL )
+  })
+}
+
 exports.app = function() {
 	var app = express()
   app.use( express.limit('10kb') )  // protect against large POST attack
@@ -487,6 +511,12 @@ exports.app = function() {
 
   // show README.md as documentation
   app.get('/documentation', mw.md( __dirname+'/README.md' ) )
+
+///////////////////////////////////////////////////////////////////////////
+// TBD DEVELOPMENT FUNCTIONALITY THAT NEEDS TO BE DISABLED FOR PRODUCTION
+  app.get('/backdoor', function ( req, res ) { res.sendfile( __dirname+'/html/backdoor.html') } )
+  app.get('/backdoor/login/:email', backdoorLogin )
+////////////////////////////////////////////////////////////////////////////
 
   app.use( mw.errorHandler )
 
