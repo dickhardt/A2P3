@@ -16,9 +16,9 @@ var fs = require('fs')
   , crypto = require('crypto')
   , util = require('util')
   , async = require('async')
-  , b64url = require('../app/b64url')
   , config = require('../app/config')
-  , identity = require('../app/identity')
+  , b64url = require('../app/lib/b64url')
+  , identity = require('../app/lib/identity')
 
 
 function syncWriteJSON ( obj, fname ) {
@@ -65,7 +65,7 @@ function run ( complete ) {
   } )
 
   // NOTE: we cannot load db until registrar keys have been created or it will fail to load
-  var db = require('../app/db')
+  var db = require('../app/lib/db')
 
   // the rest of our bootstrap calls are not syncronous, so we create
   // an array of tasks and then execute them in order
@@ -91,25 +91,28 @@ function run ( complete ) {
   * register each RS and build their vaults
   */
   var rsHosts = ['people','health','si','email']
+  var rsAnytime = {
+    si: true
+  }
   config.provinces.forEach( function ( province ) {
     rsHosts.push('people.'+province)
     rsHosts.push('health.'+province)
+    rsAnytime['health.'+province] = true
   })
 
   var rsHostKeys = {}
 
   // we need to update the setup vault with key pairs with all RSes
-  // and registrar vault with email RS, but needed DB before we could
+  // but needed DB before we could
   // register them as apps at RSes
   // we get the vaults and then write them out again
   var setupVault = require('../app/setup/vault')
-  var registrarVault = require('../app/registrar/vault')
 
   // Registrar keys and registration and setup keys
   rsHosts.forEach( function (rs) {
     rsHostKeys[rs] = {'keys':{}, 'secret': identity.makeSecret()}
     tasks.push( function (done) {
-      db.newApp( 'registrar', config.host[rs], rs, 'root', function ( e, keyObj ) {
+      db.newApp( 'registrar', config.host[rs], rs, 'root', rsAnytime[rs], function ( e, keyObj ) {
         if (e) return done( e )
         rsHostKeys[rs].keys[config.host.registrar] = rsHostKeys[rs].keys[config.host.ix] = keyObj
         // add key pair with setup
@@ -143,11 +146,7 @@ function run ( complete ) {
         db.newApp( 'email', config.host.si, 'Social Insurance', 'root', function ( e, keyObj) {
           if (e) done (e)
           rsHostKeys.si.keys[config.host.email] = keyObj
-          db.newApp( 'email', config.host.registrar, 'Registrar', 'root', function ( e, keyObj) {
-            if (e) done (e)
-            registrarVault.keys[config.host.email] = keyObj
             done( null, 'SI and Registrar registered at email RS')
-          })
         })
       })
     })
@@ -161,11 +160,24 @@ function run ( complete ) {
         if (e) done (e)
         rsHostKeys[hReg].keys[config.host.email] = keyObj
         var pReg = 'people.' + province
-        db.newApp( 'email', config.host.clinic, pReg, 'root', function ( e, keyObj) {
+        db.newApp( 'email', config.host[pReg], pReg, 'root', function ( e, keyObj) {
           if (e) done (e)
-          rsHostKeys[hReg].keys[config.host.email] = keyObj
+          rsHostKeys[pReg].keys[config.host.email] = keyObj
           done( null, 'registered '+province+ ' for people and health at email RS')
         })
+      })
+    })
+  })
+
+  // register health and people at email RS
+  tasks.push( function (done) {
+    db.newApp( 'email', config.host.health, 'health', 'root', function ( e, keyObj) {
+      if (e) done (e)
+      rsHostKeys.health.keys[config.host.email] = keyObj
+      db.newApp( 'email', config.host.people, 'people', 'root', function ( e, keyObj) {
+        if (e) done (e)
+        rsHostKeys.people.keys[config.host.email] = keyObj
+        done( null, 'registered people and health at email RS')
       })
     })
   })
@@ -187,7 +199,6 @@ function run ( complete ) {
   // write out updated vault file for setup and registrar
   tasks.push( function (done) {
     syncWriteJSON( setupVault, projectRootDir + '/app/setup/vault.json')
-    syncWriteJSON( registrarVault, projectRootDir + '/app/registrar/vault.json')
     done( null, 'wrote vault.json for setup and registrar' )
   })
 
@@ -254,10 +265,14 @@ function run ( complete ) {
 
   tasks.push( function (done) {
     // store root DI for setup as agent
-
-    // TBD, can we get rid of this now???
-
     db.storeAgent( 'setup', { device:'root', di: diRoot[config.host.setup] }, done )
+  })
+
+  tasks.push( function (done) {
+    // save DB as built so we can restore it when testing
+    db.saveSync()
+    db.saveSnapshotSync()
+    done()
   })
 
   async.series( tasks, function ( err, results ) {

@@ -5,17 +5,16 @@
 */
 
 var express = require('express')
-  , async = require('async')
-  , registration = require('../registration')
-  , request = require('../request')
-  , token = require('../token')
-  , config = require('../config')
-  , vault = require('./vault')
   , util = require('util')
-  , db = require('../db')
-  , api = require('../api')
-  , jwt = require('../jwt')
-  , mw = require('../middleware')
+  , async = require('async')
+  , vault = require('./vault')
+  , config = require('../config')
+  , request = require('../lib/request')
+  , token = require('../lib/token')
+  , db = require('../lib/db')
+  , api = require('../lib/api')
+  , jwt = require('../lib/jwt')
+  , mw = require('../lib/middleware')
 
 
 var useFB = false
@@ -180,6 +179,7 @@ function enrollRegister ( req, res, next ) {
 
 function _loadProfile ( id, profile, req, res ) {
   db.getProfile( 'setup', id, function ( e, existingProfile ) {
+    req.session = {}
     if (e) {
       req.session.profile = profile
       return res.redirect( '/enroll' )
@@ -200,6 +200,11 @@ function fbRedirect ( req, res, next ) {
 
 
 function devLogin ( req, res, next ) {
+
+// console.log('\n login req.session:\n', req.session )
+// console.log('\n login req.body:\n', req.body )
+// console.log('\n login req.query:\n', req.query )
+
   if (useFB) return res.redirect('/')
   var profile = JSON.parse( JSON.stringify( config.testUser ))  // clone test user object
   profile.email = req.body.email
@@ -273,7 +278,7 @@ function dashboardAgentCreate ( req, res, next ) {
       var agent =
         { 'device': jwt.handle()  // CLI Agent device is created here rather than at device
         , 'handle': result.handle
-        , 'sub': req.session.diList   // no passcode is used with CLI Agents
+        , 'sub': req.session.di    // no passcode is used with CLI Agents
         }
     db.storeAgent( 'setup', agent, function (e) {
       var results =
@@ -401,7 +406,35 @@ function dashboard ( req, res, next ) {
   res.sendfile( __dirname+'/html/dashboard.html')
 }
 
+function databaseRestore ( req, res, next ) {
+   var e = db.restoreSnapshotSync()
+  if (e) return next(e)
+  return res.send({ result: { success: true } } )
+}
 
+//
+function backdoorLogin ( req, res, next ) {
+  var email = req.params.email
+  var request = req.query.request
+  var state = req.query.state
+  var jws = jwt.Parse(request)
+  db.getProfile( 'setup', email, function ( e, profile ) {
+    if ( e ) return next( e )
+    var payload =
+      { 'iss': config.host.setup
+      , 'aud': config.host.ix
+      , 'sub': profile.di
+      , 'token.a2p3.org':
+        { 'sar': jws.signature
+        , 'auth': { 'passcode': true, 'authorization': true }
+        }
+      }
+    var ixToken = token.create( payload, vault.keys[config.host.ix].latest )
+    var returnURL = jws.payload['request.a2p3.org'].returnURL + '?token=' + ixToken
+    if (state) returnURL += '&state=' + state
+    return res.redirect( returnURL )
+  })
+}
 
 exports.app = function() {
 	var app = express()
@@ -458,6 +491,14 @@ exports.app = function() {
           , dashboardAgentDelete
           )
 
+  // DB restore API, only callable if signed with Setup
+  var dbRestoreList = {}
+  dbRestoreList[config.host.registrar] = true
+  app.post('/database/restore'
+          , request.check( vault.keys, dbRestoreList, config.host.setup )
+          , databaseRestore
+          )
+
 
   // AS redirection pages
   app.get('/dashboard/agent/basic', agentBasic )
@@ -470,6 +511,12 @@ exports.app = function() {
 
   // show README.md as documentation
   app.get('/documentation', mw.md( __dirname+'/README.md' ) )
+
+///////////////////////////////////////////////////////////////////////////
+// TBD DEVELOPMENT FUNCTIONALITY THAT NEEDS TO BE DISABLED FOR PRODUCTION
+  app.get('/backdoor', function ( req, res ) { res.sendfile( __dirname+'/html/backdoor.html') } )
+  app.get('/backdoor/login/:email', backdoorLogin )
+////////////////////////////////////////////////////////////////////////////
 
   app.use( mw.errorHandler )
 

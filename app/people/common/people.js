@@ -11,12 +11,13 @@
 */
 
 var express = require('express')
-  , registration = require('../../registration')
-  , mw = require('../../middleware')
   , config = require('../../config')
-  , request = require('../../request')
-  , token = require('../../token')
-  , db = require('../../db')
+  , dashboard = require('../../lib/dashboard')
+  , mw = require('../../lib/middleware')
+  , login = require('../../lib/login')
+  , request = require('../../lib/request')
+  , token = require('../../lib/token')
+  , db = require('../../lib/db')
 
 var vault = {}  // we pull in correct vault when app() is called
 
@@ -119,9 +120,9 @@ exports.app = function( province ) {
   app.use( express.limit('10kb') )  // protect against large POST attack
   app.use( express.bodyParser() )
 
-  registration.routes( app, 'people.'+province, vault )  // add in routes for the registration paths
+  dashboard.routes( app, 'people.'+province, vault )  // add in routes for the registration paths
 
-  mw.loginHandler( app, { 'dashboard': 'people.'+province, 'vault': vault } )
+  login.router( app, { 'dashboard': 'people.'+province, 'vault': vault } )
 
   app.post('/di/link'
           , request.check( vault.keys, config.roles.enroll )

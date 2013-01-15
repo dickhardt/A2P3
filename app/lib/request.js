@@ -6,7 +6,7 @@
 * Copyright (C) Province of British Columbia, 2013
 */
 
-var config = require('./config')
+var config = require('../config')
   , jwt = require('./jwt')
   , assert = require('assert')
   , db = require('./db')
@@ -32,8 +32,12 @@ exports.parse = function ( request ) {
 
 
 function paramCheck( jws ) {
-  if (!jws.payload.iss)
+  if (!jws.payload.iss) {
+
+console.error('\nBad JWS:',jws)
+
     throw new Error('No "iss" in JWS payload')
+  }
   if (!jws.header.kid)
     throw new Error('No "kid" in JWS header')
   if (!jws.payload['request.a2p3.org'])
@@ -57,7 +61,7 @@ exports.verifyAndId = function ( request, keys ) {
 // Express Middleware that checks signature of A2P3 Request JWS
 exports.check = function ( keys, accessList, reg ) {
   assert( keys, "no keys passed in" )
-  return (function (req, res, next) {
+  return (function checkRequest (req, res, next) {
     var jws, err
     if (!req.body || !req.body.request) {
       err = new Error('No "request" parameter in POST')
@@ -67,9 +71,14 @@ exports.check = function ( keys, accessList, reg ) {
     }
     try {
       jws = new jwt.Parse( req.body.request )
+
       paramCheck( jws )
       if ( accessList ) {
         if ( !accessList[jws.payload.iss] ) {
+
+console.log('\nissuer:',jws.payload.iss)
+console.log('accessList\n',accessList)
+
           err = new Error('Access not allowed')
           err.code = 'ACCESS_DENIED'
           return next( err )
@@ -91,6 +100,10 @@ exports.check = function ( keys, accessList, reg ) {
           return next( err )
         }
         if (!key[jws.header.kid]) {
+
+console.error('\nrequest.check jws\n',jws)
+console.error('key:\n',key)
+
           err = new Error('Invalid KID '+ jws.header.kid)
           err.code = 'ACCESS_DENIED'
           return next( err )

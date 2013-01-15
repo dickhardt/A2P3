@@ -1,4 +1,4 @@
-/* 
+/*
 * Key, secret, identifier generation functions
 *
 * Copyright (C) Province of British Columbia, 2013
@@ -6,7 +6,7 @@
 
 var crypto = require('crypto')
  , b64url = require('./b64url')
- , config = require('./config')
+ , config = require('../config')
 
 // generates a  directed id
 exports.createDI = function () {
@@ -29,5 +29,5 @@ exports.makeKeyObj = function () {
 }
 
 exports.makeSecret = function () {
-  return b64url.safe( crypto.randomBytes( config.crypto.bytesSecret ).toString('base64') )  
+  return b64url.safe( crypto.randomBytes( config.crypto.bytesSecret ).toString('base64') )
 }

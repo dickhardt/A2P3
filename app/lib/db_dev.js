@@ -7,30 +7,53 @@
 */
 
 var fs = require('fs')
-  , config = require('./config')
+  , underscore = require('underscore')
+  , config = require('../config')
   , crypto = require('crypto')
   , b64url = require('./b64url')
   , identity = require('./identity')
-  , vaultIX = require('./ix/vault')
+  , vaultIX = require('../ix/vault')
   , jwt = require('./jwt')
 
 // Development JSON DB
 // create empty file if does not exist
-var fExist = fs.existsSync( __dirname+'/nosql.json' )
+var fExist = fs.existsSync( config.rootAppDir+'/nosql.json' )
 if ( !fExist ) {
   var nosql = {'keyChain': {} }
-  fs.writeFileSync( __dirname+'/nosql.json', JSON.stringify( nosql ) )
+  fs.writeFileSync( config.rootAppDir+'/nosql.json', JSON.stringify( nosql ) )
 }
 // load DB
-var dummyNoSql = require('./nosql.json')
-
-
-// save DB on exit
-process.on('exit', function() {
-  fs.writeFileSync( __dirname+'/nosql.json', JSON.stringify( dummyNoSql ) )
-})
-
+var dummyNoSql = require('../nosql.json')
 var keyChain = dummyNoSql.keyChain
+
+
+// save DB state
+exports.saveSync = function saveSync () {
+  fs.writeFileSync( config.rootAppDir+'/nosql.json', JSON.stringify( dummyNoSql ) )
+}
+
+// syncronous save of DB to snapshot
+var SNAPSHOTFILE = config.rootAppDir+'/snapshot.nosql.json'
+
+exports.saveSnapshotSync = function saveSnapshotSync ( name ) {
+  var fName = (name) ? config.rootAppDir + '/' + name + '.snapshot.nosql.json' : SNAPSHOTFILE
+  return fs.writeFileSync( fName, JSON.stringify( dummyNoSql ) )
+}
+
+// syncronous restore of DB from last snapshot
+exports.restoreSnapshotSync = function restoreSnapshotSync ( name ) {
+  var fName = (name) ? config.rootAppDir + '/' + name + '.snapshot.nosql.json' : SNAPSHOTFILE
+  if ( fs.existsSync( fName ) ) {
+    var data = fs.readFileSync( fName )
+    fs.writeFileSync( config.rootAppDir+'/nosql.json', data )
+    dummyNoSql = JSON.parse(data)
+    keyChain = dummyNoSql.keyChain
+    return null
+  } else {
+    return new Error( fName + ' could not be found')
+  }
+}
+
 
 // maps an IX DI to the directed id fo a host
 function mapDI ( host, ixDI ) {
@@ -47,12 +70,13 @@ exports.mapDI = mapDI
 */
 exports.addAgent = function ( asDI, asHost, name, cb ) {
   var ixDI = dummyNoSql['ix:di:' + asHost + ':' + asDI]
+ //  var registrarDI = mapDI( config.host.registrar, ixDI )
   var handle = jwt.handle()
   var token = jwt.handle()
   dummyNoSql['ix:di:' + ixDI] = dummyNoSql['ix:di:' + ixDI] || {}
   dummyNoSql['ix:di:' + ixDI][handle] = { 'name': name, 'AS': asHost, 'created': Date.now() }
   dummyNoSql['ix:di:' + ixDI + ':handle:' + handle + ':token'] = token
-  dummyNoSql['registrar:agentHandle:' + token] = true
+  dummyNoSql['registrar:agentHandle:' + token] = ixDI // registrarDI - need ixDI to map to RS for Authorization calls
   process.nextTick( function () { cb( null, token, handle ) } )
 }
 
@@ -92,8 +116,8 @@ exports.deleteAgent = function ( asDI, asHost, handle, cb ) {
 * Registrar DB functions
 */
 exports.validAgent = function ( token, cb ) {
-  var valid = dummyNoSql['registrar:agentHandle:' + token]
-  process.nextTick( function () { cb(  valid ) } )
+  var di = dummyNoSql['registrar:agentHandle:' + token]
+  process.nextTick( function () { cb(  di ) } )
 }
 
 exports.getAppName = function ( id, cb ) {
@@ -145,9 +169,18 @@ exports.listApps = function ( reg, admin, cb ) {
   process.nextTick( function () { cb( null, result ) } )
 }
 
-exports.newApp = function ( reg, id, name, adminEmail, cb ) {
+// anytime parameter is optional, and indicates if a RS
+// supports anytime OAuth 2.0 access and the
+// /authorizations/list & /authorization/delete APIs
+exports.newApp = function ( reg, id, name, adminEmail, anytime, cb ) {
+  if (typeof anytime === 'function') {
+    cb = anytime
+    anytime = false
+  }
   // add to DB
   dummyNoSql[reg + ':app:' + id + ':name'] = name
+  if (reg == 'registrar' && anytime)
+    dummyNoSql[reg + ':app:' + id + ':anytime'] = true
   dummyNoSql[reg + ':app:' + id + ':admins'] = {}
   dummyNoSql[reg + ':app:' + id + ':admins'][adminEmail] = 'ACTIVE'
   dummyNoSql[reg + ':admin:' + adminEmail + ':apps'] = dummyNoSql[reg + ':admin:' + adminEmail + ':apps'] || {}
@@ -155,6 +188,21 @@ exports.newApp = function ( reg, id, name, adminEmail, cb ) {
   // gen key pair
   var keyObj = newKeyObj( reg, id )
   process.nextTick( function () { cb( null, keyObj ) } )
+}
+
+exports.checkApp = function ( reg, id, di, cb) {
+  var e = null
+    , ok = null
+    , name = null
+  var email = dummyNoSql[reg + ':admin:di:' + di]
+  if (!email) {
+    e = new Error('unknown administrator')
+  } else {
+    ok = ( dummyNoSql[reg + ':app:' + id + ':admins'][email] == 'ACTIVE' )
+    if (!ok) e = new Error('Account not authorative for '+id)
+  }
+  if (ok) name =  dummyNoSql[reg + ':app:' + id + ':name']
+  process.nextTick( function () { cb( e, name ) } )
 }
 
 exports.addAppAdmin = function ( reg, id, admin, cb ) {
@@ -186,12 +234,27 @@ exports.refreshAppKey = function ( reg, id, cb ) {
 
 exports.getAppKey = function ( reg, id, vaultKeys, cb ) {
   var key = null
-  if (reg)
+  if (reg && keyChain[reg])
     key = keyChain[reg][id]
   if (!key && vaultKeys) {
     key = vaultKeys[id]
   }
   process.nextTick( function () { cb( null, key ) } )
+}
+
+// used by Registrar to check if list of RS are Anytime and then get keys
+exports.getAnytimeAppKeys = function ( list, vaultKeys, cb ) {
+  var keys = {}
+  list.forEach( function ( id ) {
+    if (dummyNoSql['registrar:app:' + id + ':anytime']) {
+      var key = keyChain.registrar[id]
+      if (!key && vaultKeys) {
+        key = vaultKeys[id]
+      }
+      keys[id] = key
+    }
+  })
+  process.nextTick( function () { cb( null, keys ) } )
 }
 
 exports.getAppKeys = function ( reg, list, vaultKeys, cb ) {
@@ -225,7 +288,6 @@ exports.newUser = function ( asHost, rsHosts, redirects, cb ) {
   rsHosts.forEach( function ( host ) {
     dis[host] = mapDI( host, ixDI )
   })
-
   // store DI pointers
   dummyNoSql['ix:di:' + ixDI] = {}
   Object.keys( config.roles.as ).forEach( function (asHost) {
@@ -240,7 +302,6 @@ exports.newUser = function ( asHost, rsHosts, redirects, cb ) {
       dummyNoSql['ix:redirect:di:' + ixDI + ':' + std].push( redirects[std] )
     })
   }
-
   process.nextTick( function () { cb( null, dis ) } )
 }
 
@@ -266,7 +327,6 @@ exports.getRsDIfromAsDI = function ( asDI, asHost, rsHosts, cb ) {
   rsHosts.forEach( function (rsHost) {
     rsDI[rsHost] = mapDI( rsHost, ixDI )
   })
-
   process.nextTick( function () { cb( null, rsDI ) } )
 }
 
@@ -348,9 +408,22 @@ exports.getProfile = function ( rs, di, cb ) {
   }
 }
 
+exports.deleteProfile = function ( rs, di, cb ) {
+  var key = rs + ':di:' + di + ':profile'
+    , e = null
+  if (dummyNoSql[key]) {
+    delete dummyNoSql[key]
+  } else {
+    e = new Error('unknown user')
+    e.code = "UNKNOWN_USER"
+  }
+  process.nextTick( function () { cb( e ) } )
+}
+
 
 exports.updateSeries = function ( rs, di, series, data, time, cb ) {
-  time = time || new Date().now()
+  if (time instanceof String) time = Date.parse(time)
+  time = time || Date().now()
   var key = rs + ':di:' + di + ':series:' + series
   dummyNoSql[key] = dummyNoSql[key] || {}
   dummyNoSql[key][time] = data
@@ -358,7 +431,7 @@ exports.updateSeries = function ( rs, di, series, data, time, cb ) {
 }
 
 
-exports.retrieveSeries = function ( rs, di, series, data, cb ) {
+exports.retrieveSeries = function ( rs, di, series, cb ) {
   var key = rs + ':di:' + di + ':series:' + series
   process.nextTick( function () { cb( null, dummyNoSql[key] ) } )
 }
@@ -397,37 +470,45 @@ exports.readChannel = function ( channel, cb) {
 *
 */
 // create an OAuth access token
-exports.oauthCreate = function ( rs, appID, di, details, cb) {
+exports.oauthCreate = function ( rs, details, cb) {
   var accessToken = jwt.handle()
+  var appID = details.app
   var keyAccess = rs + ':oauth:' + accessToken
+  // NOTE: an App may have multiple Access Tokens, and with different priveleges
   dummyNoSql[keyAccess] = details
-  var keyDI = rs + ':oauthGrants:' + di
+  dummyNoSql[keyAccess].created = Date.now()
+  dummyNoSql[keyAccess].lastAccess = Date.now()
+  var keyDI = rs + ':oauthGrants:' + details.sub
   dummyNoSql[keyDI] = dummyNoSql[keyDI] || {}
-  dummyNoSql[keyDI][appID] = dummyNoSql[keyDI][appID] || {}
-  dummyNoSql[keyDI][appID][accessToken] = Date.now()
+  dummyNoSql[keyDI][accessToken] = appID
   process.nextTick( function () { cb( null, accessToken ) } )
-    process.nextTick( function () { cb( null ) } )
-
 }
 
-// retrieve an OAuth access token
+// retrieve in an OAuth access token, reset last access
 exports.oauthRetrieve = function ( rs, accessToken, cb ) {
   var keyAccess = rs + ':oauth:' + accessToken
-  process.nextTick( function () { cb( null, dummyNoSql[keyAccess] ) } )
+  // we want to send current state of details so that
+  // we know last time was accessed
+  var details = JSON.parse( JSON.stringify( dummyNoSql[keyAccess] ) )
+  dummyNoSql[keyAccess].lastAccess = Date.now()
+  process.nextTick( function () { cb( null, details ) } )
 }
 
 // list which apps have been granted OAuth access tokens
 exports.oauthList = function ( rs, di, cb ) {
   var keyDI = rs + ':oauthGrants:' + di
   var grants = dummyNoSql[keyDI]
-  if (!grants) process.nextTick( function () { cb( null ) } )
+  if (!grants) return process.nextTick( function () { cb( null ) } )
   var results = {}
-  Object.keys( grants ).forEach( function ( appID ) {
-    var latest = 0
-    Object.keys( dummyNoSql[keyDI][appID] ).forEach( function ( token) {
-      if ( dummyNoSql[keyDI][appID][token] > latest ) latest = dummyNoSql[keyDI][appID][token]
-    })
-    results[appID] = latest
+  Object.keys( grants ).forEach( function ( accessToken ) {
+    var keyAccess = rs + ':oauth:' + accessToken
+    var details = dummyNoSql[keyAccess]
+    var appID = details.app
+    results[appID] = results[appID] || {}
+    var lastAccess = results[appID].lastAccess || details.lastAccess
+    if (lastAccess < details.lastAccess) results[appID].lastAccess = details.lastAccess
+    results[appID].name = dummyNoSql[rs + ':app:' + appID + ':name']
+    results[appID].resources = underscore.union( results[appID].resources, details.scopes )
   })
   process.nextTick( function () { cb( null, results ) } )
 }
@@ -435,12 +516,14 @@ exports.oauthList = function ( rs, di, cb ) {
 // delete all OAuth access tokens granted to an app
 exports.oauthDelete = function ( rs, di, appID, cb ) {
   var keyDI = rs + ':oauthGrants:' + di
-  var tokens = dummyNoSql[keyDI][appID]
-  Object.keys( tokens ).forEach( function ( accessToken ) {
-    var keyAccess = rs + ':oauth:' + accessToken
-    delete dummyNoSql[keyAccess]
+  var grants = dummyNoSql[keyDI]
+  Object.keys( grants ).forEach( function ( accessToken ) {
+    if ( grants[accessToken] == appID ) {
+      var keyAccess = rs + ':oauth:' + accessToken
+      delete dummyNoSql[keyAccess]
+      delete dummyNoSql[keyDI][accessToken]
+    }
   })
-  delete dummyNoSql[keyDI][appID]
   process.nextTick( function () { cb( null ) } )
 }
 

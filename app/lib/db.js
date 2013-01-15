@@ -1,10 +1,10 @@
-/* 
+/*
 * Database Abstraction layer
 *
 * Copyright (C) Province of British Columbia, 2013
 */
 
-var config = require('./config')
+var config = require('../config')
 
 if (!config.db) {
   var db_dev = require('./db_dev')

@@ -1,4 +1,4 @@
-/* 
+/*
 * email RS Server code
 *
 * Copyright (C) Province of British Columbia, 2013
@@ -7,14 +7,15 @@
 var express = require('express')
   , vault = require('./vault')
   , config = require('../config')
-  , db = require('../db')
-  , registration = require('../registration')
-  , mw = require('../middleware')
-  , request = require('../request')
-  , token = require('../token')
+  , dashboard = require('../lib/dashboard')
+  , request = require('../lib/request')
+  , mw = require('../lib/middleware')
+  , login = require('../lib/login')
+  , db = require('../lib/db')
+  , token = require('../lib/token')
   , querystring = require('querystring')
-  , api = require('../api')
-  , jwt = require('../jwt')
+  , api = require('../lib/api')
+  , jwt = require('../lib/jwt')
 
 
 // /di/link API called from setup
@@ -46,23 +47,23 @@ exports.app = function() {
 
   app.use( express.limit('10kb') )  // protect against large POST attack
   app.use( express.bodyParser() )
-  
-  registration.routes( app, 'email', vault )  // add in routes for the registration paths
 
-  mw.loginHandler( app, { 'dashboard': 'email', 'vault': vault } )
+  dashboard.routes( app, 'email', vault )  // add in routes for the registration paths
 
-  app.post('/di/link' 
+  login.router( app, { 'dashboard': 'email', 'vault': vault } )
+
+  app.post('/di/link'
           , request.check( vault.keys, config.roles.enroll )
           , mw.a2p3Params( ['sub', 'account'] )
-          , diLink 
+          , diLink
           )
-  app.post('/email/default' 
+  app.post('/email/default'
           , request.check( vault.keys, null, 'email' )
           , mw.a2p3Params( ['token'] )
           , token.checkRS( vault.keys, 'email', ['/scope/default'] )
-          , emailDefault 
+          , emailDefault
           )
   app.use( mw.errorHandler )
-	
+
   return app
 }

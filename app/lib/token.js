@@ -6,7 +6,7 @@
 * Copyright (C) Province of British Columbia, 2013
 */
 
-var config = require('./config')
+var config = require('../config')
   , jwt = require('./jwt')
   , underscore = require('underscore')
 
@@ -47,7 +47,7 @@ exports.checkRS = function ( vault, rs, scopePaths, stdRS ) {
     acceptedScopes.push( stdAcceptedScopes )
   }
 
-  return (function (req, res, next) {
+  return (function checkRS (req, res, next) {
     var jwe, err, token
     if (!req.request['request.a2p3.org'].token) {
       err = new Error("No token in 'request.a2p3.org' payload property")

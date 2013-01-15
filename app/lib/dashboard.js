@@ -1,20 +1,20 @@
 /*
-* Resource Server App Registration code
+* Resource Server App Dashboard code
 *
 * Copyright (C) Province of British Columbia, 2013
 */
 
 var express = require('express')
-  , request = require('./request')
-  , config = require('./config')
   , util = require('util')
+  , config = require('../config')
+  , request = require('./request')
   , db = require('./db')
   , mw = require('./middleware')
   , api = require('./api')
 
 
-exports.routes = function ( app, RS, vault ) {
-    var std = RS.replace(/\.??$/,'')
+exports.routes = function ( app, RS, vault, cwd ) {
+    var std = RS.replace(/\...$/,'')
     if (std == RS) std = null // std is set if we are doing a province standardized resource
 
     // only called at Registrar Dashboard
@@ -41,25 +41,27 @@ exports.routes = function ( app, RS, vault ) {
   }
 
   function dashboardNewApp ( req, res, next ) {
+
     function newApp() {
-      db.newApp( RS, req.body.id, req.body.name, req.session.email, function ( e, key ) {
+      db.newApp( RS, req.body.id, req.body.name, req.session.email, req.body.anytime, function ( e, key ) {
         if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
-        return res.send( {result:{'id': req.body.id, 'key': key}} )
+        return res.send( {result:{'key': key}} )
       })
     }
     // check that User is auth for this App at Registrar unless we are the Registrar
     // or this is an API call from a Standardized Resource
-    if ( ( RS == 'registar' ) || req.request ) return db.newApp()
+    if ( ( RS == 'registrar' ) || req.request ) return newApp()
     if (!req.session && !req.session.tokens && !req.session.tokens[config.host.registrar]) {
       var e = new Error('No RS Token for Registrar found')
       e.code = 'INTERNAL_ERROR'
       return next( e )
     }
     var stdApi = new api.Standard( RS, vault )
-    stdApi.call( 'registrar', '/'
+    stdApi.call( 'registrar', '/app/verify'
                 , {id: req.body.id, token: req.session.tokens[config.host.registrar]}
-                , function ( e ) {
+                , function ( e, name ) {
       if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
+      req.body.name = name
       newApp()
     })
   }
@@ -153,23 +155,25 @@ exports.routes = function ( app, RS, vault ) {
         })
       }
       if ( !req.session.tokens || !req.session.tokens[config.host.email] ) return badSession('No tokens in session')
-      var details =
-        { host: 'email'
-        , api: '/email/default'
-        , credentials: vault.keys[config.host.email].latest
-        , payload:
-          { iss: config.host[RS]
-          , aud: config.host.email
-          , 'request.a2p3.org': { 'token': req.session.tokens[config.host.email] }
+      db.getAppKey( RS, config.host.email, vault.keys, function ( e, keys ) {
+        var details =
+          { host: 'email'
+          , api: '/email/default'
+          , credentials: keys.latest
+          , payload:
+            { iss: config.host[RS]
+            , aud: config.host.email
+            , 'request.a2p3.org': { 'token': req.session.tokens[config.host.email] }
+            }
           }
-        }
-      api.call( details, function ( error, result ) {
-        if (error) return badSession( error )
-        if (!result.email) badSession( 'No email for user.' )
-        req.session.email = result.email
-        db.registerAdmin( RS, result.email, req.session.di, function ( e ) {
-          if (e) return next (e)
-          return next()
+        api.call( details, function ( error, result ) {
+          if (error) return badSession( error )
+          if (!result.email) badSession( 'No email for user.' )
+          req.session.email = result.email
+          db.registerAdmin( RS, result.email, req.session.di, function ( e ) {
+            if (e) return next (e)
+            return next()
+          })
         })
       })
     }
@@ -221,26 +225,33 @@ exports.routes = function ( app, RS, vault ) {
           , checkAdminAuthorization
           , dashboardGetKey
           )
+
+  app.get('/dashboard', function( req, res ) { res.sendfile( config.rootAppDir + '/html/dashboard.html' ) } )
+  app.get('/dashboard/error', function( req, res ) { res.sendfile( config.rootAppDir + '/html/login_error.html' ) } )
+  app.get('/dashboard/complete', function( req, res ) { res.sendfile( config.rootAppDir + '/html/login_complete.html' ) } )
+
+
 // API calls from Standardized Resource Manager
-  var std = RS.replace(/\.??$/,'')
-  if (std != RS) {  // we are settign up a standardized resource
+  if (std) {  // we are setting up a standardized resource
+    var accessList = {}
+    accessList[config.host[std]] = true
     app.post('/std/new/app'
-            , request.check( vault.keys, [config.host[std]], config.host[RS])
+            , request.check( vault.keys, accessList, config.host[RS])
             , mw.a2p3Params( ['id', 'name'] )
             , stdNewApp
             )
     app.post('/std/delete/app'
-            , request.check( vault.keys, [config.host[std]], config.host[RS])
+            , request.check( vault.keys, accessList, config.host[RS])
             , mw.a2p3Params( ['id'] )
             , stdDeleteApp
             )
     app.post('/std/refresh/key'
-            , request.check( vault.keys, [config.host[std]], config.host[RS])
+            , request.check( vault.keys, accessList, config.host[RS])
             , mw.a2p3Params( ['id'] )
             , stdRefreshKey
             )
     app.post('/std/getkey'
-            , request.check( vault.keys, [config.host[std]], config.host[RS])
+            , request.check( vault.keys, accessList, config.host[RS])
             , mw.a2p3Params( ['id'] )
             , stdGetKey
             )

@@ -5,15 +5,15 @@
 */
 
 var express = require('express')
-  , request = require('../request')
-  , token = require('../token')
   , config = require('../config')
   , vault = require('./vault')
   , util = require('util')
-  , db = require('../db')
-  , mw = require('../middleware')
-  , jwt = require('../jwt')
-  , api = require('../api')
+  , request = require('../lib/request')
+  , token = require('../lib/token')
+  , db = require('../lib/db')
+  , mw = require('../lib/middleware')
+  , jwt = require('../lib/jwt')
+  , api = require('../lib/api')
 
 // creates an Agent Request for registering agent
 function _makeAgentRequest ( returnURL ) {
@@ -88,7 +88,7 @@ function registerAgent ( req, res, next ) {
     if (e) return next( e )
     if ( passcode != profile.passcode ) {
       var err = new Error('Passcode does not match')
-      e.code = 'INVALID_PASSCODE'
+      err.code = 'INVALID_PASSCODE'
       return next( err )
     }
     var details =
@@ -118,7 +118,7 @@ function registerAgent ( req, res, next ) {
         // TBD: let listener on channel know that QR code was read successfully
 
         // async clear out data associated with the code
-        db.updateProfile( 'as', code, {}, function ( e ) {
+        db.deleteProfile( 'as', code, function ( e ) {
           if (e) console.log("Profile update error:\n", e )
         })
         return res.send( { 'result': {'token': result.token } } )

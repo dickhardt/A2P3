@@ -17,20 +17,24 @@ The code is acquired by scanning the QR code generated during the agent enrollme
 
 Once the Agent has the code, it prompts the user for a name for the agent, ideally prefilling the name with the device name. The Agent then prompts the user for the passcode the user entered at the AS, generates a unique 128 bit identifier, converts it to a URL safe string, and then the Agent sends:
 	
-	passcode
-	name
-	code
-	device
+	passcode:   passcode user typed in
+	name:	 	user friendly name to identify this device
+	code:		code received
+	device:		secret shared between this device and AS
 
-as `application/x-www-form-urlencoded` to `/register/agent`
+as `application/json` content to  to `/register/agent`
 
 example
 
 ```
 POST /register/agent
-Content-Type: application/x-www-form-urlencoded
+Content-Type: application/json
 	
-passcode=1234&name=my%20iphone&code=efhnjauy3kduijhdkjsdkajskjfd&device=kiwjsyvsneysidoopSjkDeleksdd
+{ "passcode": 1234
+, "name": "my iphone"
+, "code": "efhnjauy3kduijhdkjsdkajskjfd"
+, "device": "kiwjsyvsneysidoopSjkDeleksdd"
+}
 
 ```
 If all goes well, the AS will return

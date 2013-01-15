@@ -11,13 +11,15 @@
 */
 
 var express = require('express')
-  , registration = require('../../registration')
-  , mw = require('../../middleware')
-  , config = require('../../config')
-  , request = require('../../request')
-  , token = require('../../token')
-  , db = require('../../db')
   , underscore = require('underscore')
+  , util = require('util')
+  , config = require('../../config')
+  , dashboard = require('../../lib/dashboard')
+  , request = require('../../lib/request')
+  , mw = require('../../lib/middleware')
+  , login = require('../../lib/login')
+  , token = require('../../lib/token')
+  , db = require('../../lib/db')
 
 var vault = {}  // we pull in correct vault when app() is called
 
@@ -49,14 +51,14 @@ function number ( province ) {
 }
 
 // generates an OAuth access token for later use
-function oauth ( vault, province ) {
+function oauth ( province ) {
   return function oauth ( req, res, next ) {
     var details =
       { scopes: req.token['token.a2p3.org'].scopes
       , app: req.token['token.a2p3.org'].app
       , sub: req.token.sub
       }
-    db.oauthCreate( 'health.'+province, details.app, details.sub, details, function ( e, accessToken ) {
+    db.oauthCreate( 'health.'+province, details, function ( e, accessToken ) {
       if (e) next (e)
       res.send( {result: { access_token: accessToken } } )
     })
@@ -75,24 +77,19 @@ function _checkScope( province, series, api, scopes ) {
 }
 
 // checks that caller has an authorized OAuth token
-function oauthCheck ( vault, province ) {
+function oauthCheck ( province ) {
   return function oauthCheck ( req, res, next ) {
-    var accessToken = req.body.access_token || req.query.access_token
-    if (!accessToken) {
-      var err = new Error('No access_token found in body or query string.')
-      err.code = 'INVALID_REQUEST'
-      return next( err )
-    }
+    var accessToken = req.body.access_token
     db.oauthRetrieve( 'health.'+province, accessToken, function ( e, details ) {
       if (e) return next( e )
-      var series = req.body.series || req.query.series
-      var scopeError = _checkScope( province, series, req.path, details.scpopes )
+      var series = req.body.series
+      var scopeError = _checkScope( province, series, req.path, details.scopes )
       if (scopeError) {
-        var error = new Error( scopeError )
+        var err = new Error( scopeError )
         err.code = 'ACCESS_DENIED'
-        return next( error )
+        return next( err )
       }
-      req.oath =
+      req.oauth =
         { sub: details.sub
         , series: series
         }
@@ -102,8 +99,8 @@ function oauthCheck ( vault, province ) {
 }
 
 // updates data in a time series
-function postSeries ( vault, province ) {
-  return function postSeries ( req, res, next ) {
+function updateSeries ( province ) {
+  return function updateSeries ( req, res, next ) {
     var time = req.body.time || Date.now()
     db.updateSeries( 'health.'+province
                     , req.oauth.sub
@@ -118,8 +115,9 @@ function postSeries ( vault, province ) {
 }
 
 // gets a time series of data
-function retrieveSeries ( vault, province ) {
+function retrieveSeries ( province ) {
   return function retrieveSeries ( req, res, next ) {
+    // TBD confirm we got required parameters
     db.retrieveSeries( 'health.'+province
                 , req.oauth.sub
                 , req.oauth.series
@@ -130,6 +128,56 @@ function retrieveSeries ( vault, province ) {
   }
 }
 
+
+function _makeDeleteAuthNRequest ( rs, di, app, vault ) {
+  // impersonate Registrar calling us
+  var tokenPayload =
+    { 'iss': config.host.ix
+    , 'aud': config.host[rs]
+    , 'sub': di
+    , 'token.a2p3.org':
+      { 'app': config.host.registrar
+      , 'auth': { passcode: true, authorization: true }
+      }
+    }
+  var rsToken = token.create( tokenPayload, vault.keys[config.host.ix].latest )
+  var requestDetails =
+    { 'iss': config.host.registrar
+    , 'aud': config.host[rs]
+    , 'request.a2p3.org': { 'app': app, 'token': rsToken }
+    }
+  var rsRequest = request.create( requestDetails, vault.keys[config.host.registrar].latest )
+  return rsRequest
+}
+
+// list all authorizations provided by user
+function listAuthN ( rs, vault ) {
+  return function listAuthN ( req, res, next ) {
+    var di = req.token.sub
+    db.oauthList( rs, di, function ( e, results ) {
+      if (e) return next( e )
+      if (!results) return res.send( { result: {} } )
+      var response = results
+      // make an RS Request for each App to delete it later
+      Object.keys(results).forEach( function ( app ) {
+        response[app].request = _makeDeleteAuthNRequest( rs, di, app, vault )
+      })
+      res.send( {result: response} )
+    })
+  }
+}
+
+// delete all authorizations to an app for the user
+function deleteAuthN ( rs ) {
+  return function deleteAuthN ( req, res, next ) {
+    db.oauthDelete( rs, req.token.sub, req.request['request.a2p3.org'].app, function ( e ) {
+      if (e) return next( e )
+      return res.send( {result:{success: true }} )
+    })
+  }
+}
+
+
 // generate request processing stack and routes
 exports.app = function( province ) {
 	var app = express()
@@ -139,9 +187,9 @@ exports.app = function( province ) {
   app.use( express.limit('10kb') )  // protect against large POST attack
   app.use( express.bodyParser() )
 
-  registration.routes( app, 'health.'+province, vault )  // add in routes for the registration paths
+  dashboard.routes( app, 'health.'+province, vault )  // add in routes for the registration paths
 
-  mw.loginHandler( app, { 'dashboard': 'health.'+province, 'vault': vault } )
+  login.router( app, { 'dashboard': 'health.'+province, 'vault': vault } )
 
   app.post('/di/link'
           , request.check( vault.keys, config.roles.enroll )
@@ -158,17 +206,34 @@ exports.app = function( province ) {
           , request.check( vault.keys, null, 'health.'+province )
           , mw.a2p3Params( ['token'] )
           , token.checkRS( vault.keys, 'health.'+province )
-          , oauth( vault, province )
+          , oauth( province )
           )
   app.post('/series/update'  // add to a time series of data
-          , oauthCheck( vault, province )
-          , postSeries( vault, province )
+          , mw.checkParams( {'body':['access_token','series','data']} )
+          , oauthCheck( province )
+          , updateSeries( province )
           )
   app.post('/series/retrieve'   // retrieve a time series of data
-          , oauthCheck( vault, province )
-          , retrieveSeries( vault, province )
+          , mw.checkParams( {'body':['access_token','series']} )
+          , oauthCheck( province )
+          , retrieveSeries( province )
+          )
+
+  app.post('/authorizations/list' // list OAuth anytime authorizatsions
+          , request.check( vault.keys, config.roles.authN, 'health.'+province )
+          , mw.a2p3Params( ['token'] )
+          , token.checkRS( vault.keys, 'health.'+province )
+          , listAuthN( 'health.'+province, vault )
+          )
+
+  app.post('/authorization/delete' // list OAuth anytime authorizatsions
+          , request.check( vault.keys, config.roles.authN, 'health.'+province )
+          , mw.a2p3Params( ['token'] )
+          , token.checkRS( vault.keys, 'health.'+province )
+          , deleteAuthN( 'health.'+province )
           )
 
   app.use( mw.errorHandler )
+
 	return app
 }

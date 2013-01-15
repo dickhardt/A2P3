@@ -3,7 +3,7 @@
 , "description": "A2P3 Proof of Concept"
 , "homepage": "http://a2p3.ca"
 , "author": "Dick Hardt dickhardt@gmail.com"
-, "license": "BSD"
+, "license": "MIT"
 , "private": true
 , "config": {}
 , "dependencies":
@@ -16,10 +16,9 @@
   }
 , "devDependencies":
   { "chai": "*"
-  , "mocha": "*"
   }
 , "engines" : { "node" : "0.8.x" }
-, "repository": 
+, "repository":
   { "type": "git"
   , "url": "http://github.com:dickhardt/A2P3.git"
   }
@@ -27,7 +26,7 @@
   { "install": "node build/install.js"
   , "start": "node app/app.js"
   , "pretest": "node build/pretest.js"
-  , "test": "./node_modules/mocha/bin/mocha"
+  , "test": "mocha"
   , "bootstrap": "node build/bootstrap.js"
-  }  
+  }
 }
