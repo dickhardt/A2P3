@@ -35,20 +35,22 @@ exports.saveSync = function saveSync () {
 // syncronous save of DB to snapshot
 var SNAPSHOTFILE = config.rootAppDir+'/snapshot.nosql.json'
 
-exports.saveSnapshotSync = function saveSnapshotSync () {
-  return fs.writeFileSync( SNAPSHOTFILE, JSON.stringify( dummyNoSql ) )
+exports.saveSnapshotSync = function saveSnapshotSync ( name ) {
+  var fName = (name) ? config.rootAppDir + '/' + name + '.snapshot.nosql.json' : SNAPSHOTFILE
+  return fs.writeFileSync( fName, JSON.stringify( dummyNoSql ) )
 }
 
 // syncronous restore of DB from last snapshot
-exports.restoreSnapshotSync = function restoreSnapshotSync () {
-  if ( fs.existsSync( SNAPSHOTFILE ) ) {
-    var data = fs.readFileSync( SNAPSHOTFILE )
+exports.restoreSnapshotSync = function restoreSnapshotSync ( name ) {
+  var fName = (name) ? config.rootAppDir + '/' + name + '.snapshot.nosql.json' : SNAPSHOTFILE
+  if ( fs.existsSync( fName ) ) {
+    var data = fs.readFileSync( fName )
     fs.writeFileSync( config.rootAppDir+'/nosql.json', data )
     dummyNoSql = JSON.parse(data)
     keyChain = dummyNoSql.keyChain
     return null
   } else {
-    return new Error( SNAPSHOTFILE + ' could not be found')
+    return new Error( fName + ' could not be found')
   }
 }
 
