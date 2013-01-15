@@ -1,33 +1,33 @@
-<mockup version="1.0" skin="sketch" fontFace="Balsamiq Sans" measuredW="307" measuredH="430" mockupW="211" mockupH="295">
+<mockup version="1.0" skin="sketch" fontFace="Balsamiq Sans" measuredW="342" measuredH="537" mockupW="282" mockupH="510">
   <controls>
-    <control controlID="50" controlTypeID="com.balsamiq.mockups::Paragraph" x="96" y="192" w="211" h="128" measuredW="200" measuredH="80" zOrder="0" locked="false" isInGroup="-1">
+    <control controlID="50" controlTypeID="com.balsamiq.mockups::Paragraph" x="96" y="192" w="211" h="128" measuredW="200" measuredH="80" zOrder="1" locked="false" isInGroup="-1">
       <controlProperties>
         <align>left</align>
         <size>14</size>
         <text>Access%20your%20Social%20Insurance%20Number%0A%20%0AAccess%20your%20email%20address%0A%20%0AAccess%20your%20name%2C%20date%20of%20birth%2C%20and%20full%20address</text>
       </controlProperties>
     </control>
-    <control controlID="51" controlTypeID="com.balsamiq.mockups::PointyButton" x="96" y="403" w="-1" h="-1" measuredW="98" measuredH="27" zOrder="1" locked="false" isInGroup="-1">
+    <control controlID="51" controlTypeID="com.balsamiq.mockups::PointyButton" x="96" y="403" w="-1" h="-1" measuredW="98" measuredH="27" zOrder="2" locked="false" isInGroup="-1">
       <controlProperties>
         <color>5865130</color>
         <direction>center</direction>
         <href>20_login%26bm%3B20_login.bmml%26bm%3B20_login.bmml%26bm%3B20_login.bmml</href>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%220%2C268%2C98%2C295%22%20href%3D%2220_login.bmml%22%20alt%3D%2220_login%22%20id%3D%2251%22/%3E</map>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%2236%2C376%2C134%2C403%22%20href%3D%2220_login.bmml%22%20alt%3D%2220_login%22%20id%3D%2251%22/%3E</map>
         <size>16</size>
         <text>Don%27t%20Allow</text>
       </controlProperties>
     </control>
-    <control controlID="52" controlTypeID="com.balsamiq.mockups::PointyButton" x="218" y="403" w="85" h="-1" measuredW="44" measuredH="27" zOrder="2" locked="false" isInGroup="-1">
+    <control controlID="52" controlTypeID="com.balsamiq.mockups::PointyButton" x="218" y="403" w="85" h="-1" measuredW="44" measuredH="27" zOrder="3" locked="false" isInGroup="-1">
       <controlProperties>
         <color>5865130</color>
         <direction>center</direction>
         <href>45_processing%26bm%3B45_processing.bmml%26bm%3B45_processing.bmml%26bm%3B45_processing.bmml</href>
-        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22122%2C268%2C207%2C295%22%20href%3D%2245_processing.bmml%22%20alt%3D%2245_processing%22%20id%3D%2252%22/%3E</map>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22158%2C376%2C243%2C403%22%20href%3D%2245_processing.bmml%22%20alt%3D%2245_processing%22%20id%3D%2252%22/%3E</map>
         <size>16</size>
         <text>OK</text>
       </controlProperties>
     </control>
-    <control controlID="53" controlTypeID="com.balsamiq.mockups::IconLabel" x="96" y="135" w="32" h="-1" measuredW="32" measuredH="47" zOrder="3" locked="false" isInGroup="-1">
+    <control controlID="53" controlTypeID="com.balsamiq.mockups::IconLabel" x="96" y="135" w="32" h="-1" measuredW="32" measuredH="47" zOrder="4" locked="false" isInGroup="-1">
       <controlProperties>
         <borderStyle>square</borderStyle>
         <icon>./assets/icon_agent.png%7Cmedium</icon>
@@ -35,12 +35,13 @@
         <text>%20</text>
       </controlProperties>
     </control>
-    <control controlID="54" controlTypeID="com.balsamiq.mockups::Paragraph" x="138" y="135" w="155" h="63" measuredW="200" measuredH="80" zOrder="4" locked="false" isInGroup="-1">
+    <control controlID="54" controlTypeID="com.balsamiq.mockups::Paragraph" x="138" y="135" w="155" h="63" measuredW="200" measuredH="80" zOrder="5" locked="false" isInGroup="-1">
       <controlProperties>
         <align>left</align>
         <size>14</size>
         <text>%22Bank%22%20at%0Ahttps%3A//bank.a2p3.ca%0Awould%20like%20to%3A</text>
       </controlProperties>
     </control>
+    <control controlID="55" controlTypeID="com.balsamiq.mockups::iPhone" x="60" y="27" w="-1" h="-1" measuredW="282" measuredH="510" zOrder="0" locked="false" isInGroup="-1"/>
   </controls>
 </mockup>
