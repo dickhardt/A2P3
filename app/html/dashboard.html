@@ -5,35 +5,28 @@
 <body>
   <script type="text/javascript"    src="/js/jquery-1.8.3.js"></script>
   <script type="text/javascript"    src="/js/purl.js"></script>
+  <script type="text/javascript"    src="/js/config.js"></script>
+<H1 id='title'>XX Dashboard</H1>
+<h2> placeholder </h2>
 
 <script type="text/javascript">
+function onReady() {
 
-var a2p3 = {}
-// namespace wrapper function
-(function() {
+  // Write title and pull in image based on host we are at
+  // URL is parsed in config.js and made available
+  var title = config.subhost.charAt(0).toUpperCase() + config.subhost.substr( 1 )
+  if (title === 'Si') title = 'Social Insurance'
+  if ( config.province ) title += ' '+ config.provinceNames[config.province]
+  title += ' Dashboard'
+  $('#title').text( title )
+  var flag = config.province || 'ca'
+  $('#title').before('<img src="/images/flags/' + flag + '.png">')
 
-  var url = $.url()
-  a2p3.protocol = url.attr('protocol')
-  a2p3.fullhost = url.attr('host')
-  a2p3.port = url.attr('port')
-  var parts =  a2p3.fullhost.split('.')
-  if (parts[1].length === 2) {  // we have a province
-    a2p3.province = parts[1]
-    a2p3.host = parts[0] + '.' + parts[1]
-  } else {
-    a2p3.host = parts[0]
-  }
+}
 
-console.log('a2p3\n',a2p3)
-
-})();
-
-// a2p3.init()
+$(document).ready(onReady)
 
 </script>
-
-<H1>XX Dashboard</H1>
-<h2> placeholder </h2>
 
 </body>
 </html>

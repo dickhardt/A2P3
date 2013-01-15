@@ -4,9 +4,29 @@
 </head>
 <body>
   <script type="text/javascript"    src="/js/jquery-1.8.3.js"></script>
-
-<H1>XX Dashboard</H1>
+  <script type="text/javascript"    src="/js/purl.js"></script>
+  <script type="text/javascript"    src="/js/config.js"></script>
+<H1 id='title'>XX Dashboard</H1>
 <h2> placeholder </h2>
+
+<script type="text/javascript">
+function onReady() {
+
+  // Write title and pull in image based on host we are at
+  // URL is parsed in config.js and made available
+  var title = config.subhost.charAt(0).toUpperCase() + config.subhost.substr( 1 )
+  if (title === 'Si') title = 'Social Insurance'
+  if ( config.province ) title += ' '+ config.provinceNames[config.province]
+  title += ' Dashboard'
+  $('#title').text( title )
+  var flag = config.province || 'ca'
+  $('#title').before('<img src="/images/flags/' + flag + '.png">')
+
+}
+
+$(document).ready(onReady)
+
+</script>
 
 </body>
 </html>
