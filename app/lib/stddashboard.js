@@ -112,6 +112,9 @@ var stdApi = new api.Standard( RS, vault )
   function checkSession ( req, res, next ) {
 
     function badSession( error ) {
+      if (req.route.method === 'get') { // we are serving a page, so send user back to homepage
+        return res.redirect('/')
+      }
       req.session.bad = true
       var err = new Error( error || 'Bad session' )
       err.code = "ACCESS_DENIED"
@@ -183,7 +186,7 @@ var stdApi = new api.Standard( RS, vault )
           , dashboardGetKey
           )
 
-  app.get('/dashboard', function( req, res ) { res.sendfile( config.rootAppDir + '/html/dashboard_std.html' ) } )
+  app.get('/dashboard', checkSession, function( req, res ) { res.sendfile( config.rootAppDir + '/html/dashboard_std.html' ) } )
   app.get('/dashboard/error', function( req, res ) { res.sendfile( config.rootAppDir + '/html/login_error.html' ) } )
   app.get('/dashboard/complete', function( req, res ) { res.sendfile( config.rootAppDir + '/html/login_complete.html' ) } )
 

@@ -1,11 +1,22 @@
 <!DOCTYPE html>
 <html>
 <head>
+<style type="text/css">
+  .loginStatus {text-align:right;}
+</style>
+
 </head>
 <body>
   <script type="text/javascript"    src="/js/jquery-1.8.3.js"></script>
   <script type="text/javascript"    src="/js/purl.js"></script>
   <script type="text/javascript"    src="/js/config.js"></script>
+
+<div class="loginStatus">
+  <span id="loginEmail"></span>
+  <a href="" id="login"> login </a>
+  <a href="/dashboard/logout" id="logout">logout </a>
+</div>
+
 <H1 id='title'>XX Dashboard</H1>
 <h2> placeholder </h2>
 
@@ -15,14 +26,26 @@ function onReady() {
   // Write title and pull in image based on host we are at
   // URL is parsed in config.js and made available
   var title = config.subhost.charAt(0).toUpperCase() + config.subhost.substr( 1 )
-  if (title === 'Si') title = 'Social Insurance'
-  if ( config.province ) title += ' '+ config.provinceNames[config.province]
   title += ' Dashboard'
   $('#title').text( title )
   var flag = config.province || 'ca'
   $('#title').before('<img src="/images/flags/' + flag + '.png">')
 
-}
+  // check if we are logged in, if so, then show email and enable logout
+  $('#logout').hide()
+  $.get('/dashboard/login/check', function ( data, status ) {
+
+console.log('status',status)
+console.log('data',data)
+
+    if (data && data.result && data.result.user) {
+      $('#loginEmail').text(data.result.user)
+      $('#logout').show()
+      $('#login').hide()
+    }
+  })
+
+} // onReady
 
 $(document).ready(onReady)
 
