@@ -13,7 +13,6 @@ var express = require('express')
   , token = require('../lib/token')
   , db = require('../lib/db')
   , mw = require('../lib/middleware')
-  , login = require('../lib/login')
 
 // Express Middleware that checks if agent token is valid
 function checkValidAgent (req, res, next) {
@@ -115,9 +114,8 @@ exports.app = function() {
   app.use( express.limit('10kb') )  // protect against large POST attack
   app.use( express.bodyParser() )
 
-  app.use( express.cookieParser() )
-  var cookieOptions = { 'secret': vault.secret, 'cookie': { path: '/dashboard' } }
-  app.use( express.cookieSession( cookieOptions ))
+  // All Dashboard Web pages and API
+  dashboard.routes( app, 'registrar', vault, __dirname )  // add in routes for the registration paths
 
   // called by personal agents
   app.post('/request/verify', checkValidAgent, requestVerify )
@@ -132,13 +130,6 @@ exports.app = function() {
           , appVerify
           )
 
-  // dashboard web APIs
-  dashboard.routes( app, 'registrar', vault, __dirname )  // add in routes for the registration paths
-
-  // login routing
-  login.router( app, { 'dashboard': 'registrar', 'vault': vault } )
-
-  app.get('/', function( req, res ) { res.sendfile( config.rootAppDir + '/html/homepage_rs.html' ) } )
   app.get('/documentation', mw.md( __dirname+'/README.md' ) )
 
   app.use( mw.errorHandler )

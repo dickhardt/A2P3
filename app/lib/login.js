@@ -7,7 +7,8 @@
 */
 
 
-var config = require('../config')
+var express = require('express')
+  , config = require('../config')
   , request = require('./request')
   , api = require('./api')
   , jwt = require('./jwt')
@@ -183,11 +184,19 @@ var details =
 
 */
 
-
 exports.router = function ( app, detailsOrig ) {
 
   // clone object as we are going to muck with it
   var details = JSON.parse(JSON.stringify(detailsOrig))
+
+    details.path =
+      { 'login':      '/login'          // page loaded to initate login
+      , 'logout':     '/logout'         // page called to logout
+      , 'response':   '/login/response' // page where we redirect to
+      , 'error':      '/error'          // HTML to be provided where we send user when an error
+      , 'complete':   '/complete'       // HTML to be provided to show on mobile after success
+      , 'loginCheck': '/login/check'    // API called to see which, if any user is logged in
+      }
 
   if (details.dashboard) { // setup standard dashboard settings
     details.host = config.host[details.dashboard]
@@ -196,29 +205,32 @@ exports.router = function ( app, detailsOrig ) {
       [ config.baseUrl.email + '/scope/default'
       , config.baseUrl.registrar + '/scope/verify'
       ]
-    details.path =
-      { 'login':      '/dashboard/login'          // page loaded to initate login
-      , 'logout':      '/dashboard/logout'         // page called to logout
-      , 'response':   '/dashboard/login/response' // page where we redirect to
-      , 'error':      '/dashboard/error'          // HTML to be provided where we send user when an error
-      , 'success':    '/dashboard'                // HTML to be provided on success
-      , 'complete':   '/dashboard/complete'       // HTML to be provided to show on mobile after success
-      , 'loginCheck': '/dashboard/login/check'    // API called to see which, if any user is logged in
-      }
+    details.path.success = '/dashboard'                // HTML to be provided on success
+
   }
+
+
   // create URLs to use
   details.url = {}
   Object.keys( details.path ).forEach ( function ( p ) {
     details.url[p] = details.baseUrl + details.path[p]
   })
 
+// console.log('\nDetails\n',details)
+
+  // setup session management
+
+  app.use( express.cookieParser() )
+  var cookieOptions = { 'secret': details.vault.secret, 'cookie': { path: '/' } }
+  app.use( express.cookieSession( cookieOptions ))
+
   app.get( details.path.login, login( details ) )
-
   app.get( details.path.logout, logout )
-
   app.get( details.path.response, loginStateCheck( details ), loginReturn( details ) )
-
   app.get( details.path.loginCheck, loginStateCheck( details ), loginCheck )
+
+  app.get( details.path.error, function( req, res ) { res.sendfile( config.rootAppDir + '/html/login_error.html' ) } )
+  app.get( details.path.complete, function( req, res ) { res.sendfile( config.rootAppDir + '/html/login_complete.html' ) } )
 
 }
 

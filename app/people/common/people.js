@@ -14,7 +14,6 @@ var express = require('express')
   , config = require('../../config')
   , dashboard = require('../../lib/dashboard')
   , mw = require('../../lib/middleware')
-  , login = require('../../lib/login')
   , request = require('../../lib/request')
   , token = require('../../lib/token')
   , db = require('../../lib/db')
@@ -120,9 +119,8 @@ exports.app = function( province ) {
   app.use( express.limit('10kb') )  // protect against large POST attack
   app.use( express.bodyParser() )
 
+  // All Dashboard Web pages and API
   dashboard.routes( app, 'people.'+province, vault )  // add in routes for the registration paths
-
-  login.router( app, { 'dashboard': 'people.'+province, 'vault': vault } )
 
   app.post('/di/link'
           , request.check( vault.keys, config.roles.enroll )

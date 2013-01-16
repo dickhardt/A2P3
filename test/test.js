@@ -416,10 +416,10 @@ function registerDemoApp ( rs, standard ) {
     var agentRequest = null
       , ixToken = null
       , jws = null
-    describe( ' /dashboard/login', function () {
+    describe( ' /login', function () {
       it('should return an Agent Request', function ( done ) {
         var options =
-          { url: config.baseUrl[rs] + '/dashboard/login'
+          { url: config.baseUrl[rs] + '/login'
           , method: 'GET'
           , qs: { json: true }
           , followRedirect: false
@@ -476,7 +476,7 @@ function registerDemoApp ( rs, standard ) {
       })
     })
 
-    describe( ' /dashboard/login/return', function () {
+    describe( ' /login/return', function () {
       it('should redirect to /dashboard', function ( done ) {
         var options =
           { url: jws.payload['request.a2p3.org'].returnURL

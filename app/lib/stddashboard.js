@@ -151,12 +151,10 @@ var stdApi = new api.Standard( RS, vault )
     }
   }
 
-  app.use( express.cookieParser() )
-
-  var cookieOptions = { 'secret': vault.secret, 'cookie': { path: '/dashboard' } }
-  app.use( express.cookieSession( cookieOptions ))
-
+  // setup session management and all login routes
   login.router( app, { 'dashboard': RS, 'vault': vault })
+
+  app.get('/', function( req, res ) { res.sendfile( config.rootAppDir + '/html/homepage_rs.html' ) } )
 
   app.get('/dashboard/list/apps'
           , checkSession
@@ -187,8 +185,6 @@ var stdApi = new api.Standard( RS, vault )
           )
 
   app.get('/dashboard', checkSession, function( req, res ) { res.sendfile( config.rootAppDir + '/html/dashboard_std.html' ) } )
-  app.get('/dashboard/error', function( req, res ) { res.sendfile( config.rootAppDir + '/html/login_error.html' ) } )
-  app.get('/dashboard/complete', function( req, res ) { res.sendfile( config.rootAppDir + '/html/login_complete.html' ) } )
 
 
 }

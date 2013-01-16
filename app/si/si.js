@@ -12,7 +12,6 @@ var express = require('express')
   , request = require('../lib/request')
   , db = require('../lib/db')
   , mw = require('../lib/middleware')
-  , login = require('../lib/login')
   , token = require('../lib/token')
 
 
@@ -142,9 +141,8 @@ exports.app = function() {
   app.use( express.limit('10kb') )  // protect against large POST attack
   app.use( express.bodyParser() )
 
+  // All Dashboard Web pages and API
   dashboard.routes( app, 'si', vault )  // add in routes for the registration paths
-
-  login.router( app, { 'dashboard': 'si', 'vault': vault } )
 
   app.post('/di/link'
           , request.check( vault.keys, config.roles.enroll )
@@ -184,7 +182,6 @@ exports.app = function() {
           , deleteAuthN( 'si' )
           )
 
-  app.get('/', function( req, res ) { res.sendfile( config.rootAppDir + '/html/homepage_rs.html' ) } )
   app.get('/documentation', mw.md( config.rootAppDir+'/si/README.md' ) )
 
   app.use( mw.errorHandler )

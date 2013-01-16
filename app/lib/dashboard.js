@@ -11,6 +11,7 @@ var express = require('express')
   , db = require('./db')
   , mw = require('./middleware')
   , api = require('./api')
+  , login = require('./login')
 
 
 exports.routes = function ( app, RS, vault, cwd ) {
@@ -130,7 +131,7 @@ exports.routes = function ( app, RS, vault, cwd ) {
   // checks session has required data, otherwise goes and gets it
   function checkSession ( req, res, next ) {
 
-console.log('\ncheckSession session\n', req.session)
+// console.log('\ncheckSession session\n', req.session)
 
     function badSession( error ) {
       if (req.route.method === 'get') { // we are serving a page, so send user back to homepage
@@ -183,10 +184,10 @@ console.log('\ncheckSession session\n', req.session)
     }
   }
 
-  app.use( express.cookieParser() )
+  // setup session management and all login routes
+  login.router( app, { 'dashboard': RS, 'vault': vault })
 
-  var cookieOptions = { 'secret': vault.secret, 'cookie': { path: '/dashboard' } }
-  app.use( express.cookieSession( cookieOptions ))
+  app.get('/', function( req, res ) { res.sendfile( config.rootAppDir + '/html/homepage_rs.html' ) } )
 
   if (RS == 'registrar') { // only Registrar is allowed to check if ID is available
     app.post('/dashboard/appid/taken'
@@ -231,9 +232,6 @@ console.log('\ncheckSession session\n', req.session)
           )
 
   app.get('/dashboard', checkSession, function( req, res ) { res.sendfile( config.rootAppDir + '/html/dashboard.html' ) } )
-  app.get('/dashboard/error', function( req, res ) { res.sendfile( config.rootAppDir + '/html/login_error.html' ) } )
-  app.get('/dashboard/complete', function( req, res ) { res.sendfile( config.rootAppDir + '/html/login_complete.html' ) } )
-
 
 // API calls from Standardized Resource Manager
   if (std) {  // we are setting up a standardized resource

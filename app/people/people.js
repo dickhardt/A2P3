@@ -8,7 +8,6 @@ var express = require('express')
   , vault = require('./vault')
   , stdDashboard = require('../lib/stdDashboard')
   , mw = require('../lib/middleware')
-  , login = require('../lib/login')
   , config = require('../config')
 
 exports.app = function( ) {
@@ -17,11 +16,9 @@ exports.app = function( ) {
   app.use( express.limit('10kb') )  // protect against large POST attack
   app.use( express.bodyParser() )
 
+  // All Dashboard Web pages and API
   stdDashboard.routes( app, 'people', vault )  // add in routes for the registration paths
 
-  login.router( app, { 'dashboard': 'people', 'vault': vault } )
-
-  app.get('/', function( req, res ) { res.sendfile( config.rootAppDir + '/html/homepage_rs.html' ) } )
   app.get('/documentation', mw.md( config.rootAppDir+'/people/README.md' ) )
 
   app.use( mw.errorHandler )

@@ -10,12 +10,8 @@ var express = require('express')
   , dashboard = require('../lib/dashboard')
   , request = require('../lib/request')
   , mw = require('../lib/middleware')
-  , login = require('../lib/login')
   , db = require('../lib/db')
   , token = require('../lib/token')
-  , querystring = require('querystring')
-  , api = require('../lib/api')
-  , jwt = require('../lib/jwt')
 
 
 // /di/link API called from setup
@@ -33,9 +29,9 @@ function emailDefault ( req, res, next ) {
   db.getProfile( 'email', di, function ( e, profile ) {
     if (e) next( e )
     if (!profile || !profile.email) {
-      var e = new Error('no email for user')
-      e.code = 'NO_EMAIL'
-      return next( e )
+      var err = new Error('no email for user')
+      err.code = 'NO_EMAIL'
+      return next( err )
     }
     res.send( {result: {'email': profile.email} } )
   })
@@ -48,9 +44,8 @@ exports.app = function() {
   app.use( express.limit('10kb') )  // protect against large POST attack
   app.use( express.bodyParser() )
 
+  // All Dashboard Web pages and API
   dashboard.routes( app, 'email', vault )  // add in routes for the registration paths
-
-  login.router( app, { 'dashboard': 'email', 'vault': vault } )
 
   app.post('/di/link'
           , request.check( vault.keys, config.roles.enroll )
@@ -64,7 +59,6 @@ exports.app = function() {
           , emailDefault
           )
 
-  app.get('/', function( req, res ) { res.sendfile( config.rootAppDir + '/html/homepage_rs.html' ) } )
   app.get('/documentation', mw.md( __dirname+'/README.md' ) )
 
   app.use( mw.errorHandler )

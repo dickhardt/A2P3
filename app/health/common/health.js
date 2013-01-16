@@ -17,7 +17,6 @@ var express = require('express')
   , dashboard = require('../../lib/dashboard')
   , request = require('../../lib/request')
   , mw = require('../../lib/middleware')
-  , login = require('../../lib/login')
   , token = require('../../lib/token')
   , db = require('../../lib/db')
 
@@ -187,9 +186,8 @@ exports.app = function( province ) {
   app.use( express.limit('10kb') )  // protect against large POST attack
   app.use( express.bodyParser() )
 
+  // All Dashboard Web pages and API
   dashboard.routes( app, 'health.'+province, vault )  // add in routes for the registration paths
-
-  login.router( app, { 'dashboard': 'health.'+province, 'vault': vault } )
 
   app.post('/di/link'
           , request.check( vault.keys, config.roles.enroll )
@@ -233,7 +231,6 @@ exports.app = function( province ) {
           , deleteAuthN( 'health.'+province )
           )
 
-  app.get('/', function( req, res ) { res.sendfile( config.rootAppDir + '/html/homepage_rs.html' ) } )
   app.get('/documentation', mw.md( config.rootAppDir+'/health/README.md' ) )
 
   app.use( mw.errorHandler )
