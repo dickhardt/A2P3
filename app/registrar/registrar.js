@@ -115,7 +115,7 @@ exports.app = function() {
   app.use( express.bodyParser() )
 
   // All Dashboard Web pages and API
-  dashboard.routes( app, 'registrar', vault, __dirname )  // add in routes for the registration paths
+  dashboard.routes( app, 'registrar', vault )  // add in routes for the registration paths
 
   // called by personal agents
   app.post('/request/verify', checkValidAgent, requestVerify )

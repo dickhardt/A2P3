@@ -14,7 +14,7 @@ var express = require('express')
   , login = require('./login')
 
 
-exports.routes = function ( app, RS, vault, cwd ) {
+exports.routes = function ( app, RS, vault ) {
     var std = RS.replace(/\...$/,'')
     if (std == RS) std = null // std is set if we are doing a province standardized resource
 
