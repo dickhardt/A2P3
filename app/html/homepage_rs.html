@@ -14,8 +14,8 @@
 <div class="loginStatus">
   <span id="loginEmail"></span>
   <a href="" id="loginBackdoor"> backdoor login </a>
-  <a href="/dashboard/login" id="login"> mobile agent login </a>
-  <a href="/dashboard/logout" id="logout">logout </a>
+  <a href="/login" id="login"> mobile agent login </a>
+  <a href="/logout" id="logout">logout </a>
 </div>
 
 <H1 id='title'>XX Resource Server</H1>
@@ -41,7 +41,7 @@ function onReady() {
   $('#title').before('<img src="/images/flags/' + flag + '.png">')
 
   // check if we are logged in, if so, then show email and enable logout
-  $.get('/dashboard/login/check', function ( data, status ) {
+  $.get('/login/check', function ( data, status ) {
     if (data && data.result && data.result.user) {
       $('#loginEmail').text(data.result.user)
       $('#logout').show()

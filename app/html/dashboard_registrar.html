@@ -15,7 +15,7 @@
   <div class="loginStatus">
     <span id="loginEmail"></span>
     <a href="" id="login"> login </a>
-    <a href="/dashboard/logout" id="logout">logout </a>
+    <a href="/logout" id="logout">logout </a>
   </div>
 
   <H1 id='title'>XX Dashboard</H1>
@@ -128,7 +128,7 @@
       $('#title').before('<img src="/images/flags/' + flag + '.png">')
 
       // check if we are logged in, if so, then show email and enable logout
-      $.get('/dashboard/login/check', function ( data, status ) {
+      $.get('/login/check', function ( data, status ) {
         if (data && data.result && data.result.user) {
           $('#loginEmail').text(data.result.user)
           $('#logout').show()

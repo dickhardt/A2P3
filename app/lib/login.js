@@ -133,16 +133,6 @@ function loginStateCheck ( details ) {
   }
 }
 
-/* in case we need this ... otherwise, delete TBD
-exports.checkLoggedIn = function ( req, res, next ) {
-  if (!req.session || !req.session.di) {
-    var e = new Error('not logged in')
-    e.code = 'ACCESS_DENIED'
-    return next(e)
-  }
-  next()
-}
-*/
 
 function logout ( req, res, next) {
   req.session = null
@@ -159,31 +149,6 @@ function loginCheck ( req, res, next ) {
   return res.send( { result: {'user': req.session.email } } )
 }
 
-/*
-
-Sample details object for loginHandler
-
-var details =
-  { 'host': config.host.email  // app host
-  , 'vault': vault  // vault for app
-  , 'resources':    // array of resources wanted by app
-    [ config.baseUrl.email + '/scope/default'
-    , config.baseUrl.registrar + '/scope/verify'
-    ]
-  , 'path':          // paths were each step of login goes
-        // these paths are managed here
-    { 'login':      '/dashboard/login'
-    , 'return':     '/dashboard/login/return'
-        // these are static pages that should map to somewhere TBD, generic?
-    , 'error':      '/dashboard/error'
-    , 'success':    '/dashboard'
-    , 'complete':   '/dashboard/complete'
-    }
-  , dashboard: 'email'  // if present, sets up default config for dashboards
-  }
-
-*/
-
 exports.router = function ( app, detailsOrig ) {
 
   // clone object as we are going to muck with it
@@ -198,7 +163,7 @@ exports.router = function ( app, detailsOrig ) {
       , 'loginCheck': '/login/check'    // API called to see which, if any user is logged in
       }
 
-  if (details.dashboard) { // setup standard dashboard settings
+  if (details.dashboard) { // setup standard dashboard settings, dashboard is name of host
     details.host = config.host[details.dashboard]
     details.baseUrl = config.baseUrl[details.dashboard]
     details.resources =
