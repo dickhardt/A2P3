@@ -32,16 +32,14 @@ function onReady() {
   $('#title').before('<img src="/images/flags/' + flag + '.png">')
 
   // check if we are logged in, if so, then show email and enable logout
-  $('#logout').hide()
   $.get('/dashboard/login/check', function ( data, status ) {
-
-console.log('status',status)
-console.log('data',data)
-
     if (data && data.result && data.result.user) {
       $('#loginEmail').text(data.result.user)
       $('#logout').show()
       $('#login').hide()
+    } else {
+      $('#logout').hide()
+      $('#login').show()
     }
   })
 
