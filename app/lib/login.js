@@ -140,11 +140,9 @@ function logout ( req, res, next) {
 }
 
 // web app API to check which user is logged in
-function loginCheck ( req, res, next ) {
+function loginCheck ( req, res ) {
   if (!req.session || !req.session.di) {
-    var e = new Error('not logged in')
-    e.code = 'ACCESS_DENIED'
-    return next(e)
+    return res.send( { error: {'code': 'NO_USER_LOGGED_IN' } } )
   }
   return res.send( { result: {'user': req.session.email } } )
 }

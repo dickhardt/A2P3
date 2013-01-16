@@ -201,7 +201,10 @@ exports.routes = function ( app, RS, vault ) {
             , checkAdminAuthorization
             , dashboardAddAdmin
             )
-  } // if registrar
+    app.get('/dashboard', checkSession, function( req, res ) { res.sendfile( config.rootAppDir + '/html/dashboard_registrar.html' ) } )
+  } else { // if not registrar
+    app.get('/dashboard', checkSession, function( req, res ) { res.sendfile( config.rootAppDir + '/html/dashboard.html' ) } )
+  }
 
   app.get('/dashboard/list/apps'
           , checkSession
@@ -231,7 +234,6 @@ exports.routes = function ( app, RS, vault ) {
           , dashboardGetKey
           )
 
-  app.get('/dashboard', checkSession, function( req, res ) { res.sendfile( config.rootAppDir + '/html/dashboard.html' ) } )
 
 // API calls from Standardized Resource Manager
   if (std) {  // we are setting up a standardized resource

@@ -38,9 +38,11 @@
         <label id="registerApp_status"><i>ID is hostname</i></label>
       </dd>
       </dl>
-        <p><input id="registerAppFormCancel" type="button" value="Cancel">
-            <input id="registerAppFormSubmit" type="button" value="Register">
-          </p>
+        <p>
+          <input id="registerAppFormCancel" type="button" value="Cancel">
+          <input id="registerAppFormSubmit" type="button" value="Register">
+          <input id="registerAppFormOk" type="button" value="Ok">
+        </p>
     </form>
 </div>
 
@@ -76,6 +78,8 @@
       $('#registerApp_id_input').val("")
       $('#registerApp_name_input').focus()
       $('#registerAppFormSubmit').attr("disabled", "disabled")
+      $('#registerApp_id_input').removeAttr("disabled")
+      $('#registerApp_name_input').removeAttr("disabled")
       return false
     })
 
@@ -98,15 +102,30 @@
     })
 
     $('#registerAppFormSubmit').click( function () {
-      var host = $('#registerApp_id_input').val()
-      var name = $()
-      $('#registerApp_status').text('Registering App "'+host+'"" ... ').css('color','black')
+      $('#registerApp_id_input').attr("disabled", "disabled")
+      $('#registerApp_name_input').attr("disabled", "disabled")
+      var id = $('#registerApp_id_input').val()
+      var name = $('#registerApp_name_input').val()
+      $('#registerApp_status').text('Registering App "'+id+'"" ... ').css('color','black')
       $('#registerAppFormSubmit').hide()
       $('#registerAppFormCancel').hide()
 
-  console.log('Trying to register:"'+host+'"')
-      $.post()
+      $.post('/dashboard/new/app', { name: name, id: id}, function ( data, status ) {
 
+console.log('status',status)
+console.log('data\n',data)
+
+        if (status == "success" && !data.error) {
+          $('#registerAppFormOk').show()
+          $('#registerApp_status').text(name+' ('+id+') is registered').css('color','black')
+        }
+      })
+
+    })
+
+
+    $('#registerAppFormOk').click( function () {
+      $('#registerApp_form').fadeOut('fast')
     })
 
     $('#registerAppFormCancel').click( function () {
