@@ -138,6 +138,9 @@ exports.app = function() {
   // login routing
   login.router( app, { 'dashboard': 'registrar', 'vault': vault } )
 
+  app.get('/', function( req, res ) { res.sendfile( config.rootAppDir + '/html/homepage_rs.html' ) } )
+  app.get('/documentation', mw.md( __dirname+'/README.md' ) )
+
   app.use( mw.errorHandler )
 
 // console.log( '\nroutes\n', util.inspect( app.routes, null, null ) )

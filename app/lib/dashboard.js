@@ -208,7 +208,7 @@ console.log('\ncheckSession session\n', req.session)
           )
   app.post('/dashboard/new/app'
           , checkSession
-          , mw.checkParams( {'body':['id','name']} )
+          , mw.checkParams( {'body':['id']} ) // {'body':['id','name']} only Registrar takes name
           , dashboardNewApp
           )
   app.post('/dashboard/delete/app'

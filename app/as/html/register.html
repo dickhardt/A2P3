@@ -20,9 +20,9 @@ You will need to have a Personal Agent installed on your iOS device.
     <form id="passcode_form_input">
         <dl>
             <dt></dt><dd><span id="status">&nbsp;</span></dd>
-            <dt></dt><dd><label for="passcode_input">passcode</label> 
+            <dt></dt><dd><label for="passcode_input">passcode</label>
               <input type="password" size="4" maxlength="4" name="passcode" value="" id="passcode_input"> </dd>
-            <dt></dt><dd><label for="passcode_input2">again</label> 
+            <dt></dt><dd><label for="passcode_input2">again</label>
               <input type="password" size="4" maxlength="4" name="passcode2" value="" id="passcode_input2"> </dd>
         </dl>
         <p><input id="passcode_cancel" type="button" value="Cancel">
@@ -57,28 +57,28 @@ You will need to have a Personal Agent installed on your iOS device.
       } else {
         if (fromPasscode) {
           $('#passcode_input2').val('')
-          $('#status').text('please enter four digits').css('color','black')      
+          $('#status').text('please enter four digits').css('color','black')
           $('#passcode_next').attr("disabled", "disabled")
         } else {
-          $('#status').text("PASSCODES DON'T MATCH").css('color','red')      
+          $('#status').text("PASSCODES DON'T MATCH").css('color','red')
           $('#passcode_next').attr("disabled", "disabled")
         }
       }
     } else {
-      $('#status').text('please enter four digits').css('color','black')      
+      $('#status').text('please enter four digits').css('color','black')
       $('#passcode_next').attr("disabled", "disabled")
     }
   }
 
   function onReady() {
-    $('#passcodeForm').hide()  
-    $('#qrcodeForm').hide()  
+    $('#passcodeForm').hide()
+    $('#qrcodeForm').hide()
 
     $('#QRinstall').click( function () {
       iOSinstall = false
       showPasscodeForm()
       return false
-    })  
+    })
 
     $('#iOSinstall').click( function () {
       iOSinstall = true
@@ -87,18 +87,17 @@ You will need to have a Personal Agent installed on your iOS device.
     })
 
     $('#passcode_cancel').click( function () {
-      $('#passcodeForm').fadeOut('fast')      
+      $('#passcodeForm').fadeOut('fast')
       return false
     })
 
     $('#passcode_input').bind('input', function () {
-      debugger;
       // strip out non-numeric
       $('#passcode_input').val($('#passcode_input').val().replace(/[^\d]+/g, ''))
       // move focus to next input if done
       if ($('#passcode_input').val().length >= 4) {
         // Safari does not seem to want to execute this focus change, but will do others ... hmmmm
-        $('#passcode_input2').focus() 
+        $('#passcode_input2').focus()
       }
       comparePasscodes( true )
     })
@@ -115,7 +114,7 @@ You will need to have a Personal Agent installed on your iOS device.
       // get passcode
       var passcode = $('#passcode_input').val()
       $.post( '/register/agent/code', {'passcode':passcode}, function ( data, status ) {
-        // TBD deal with errors  data.error exists ... 
+        // TBD deal with errors  data.error exists ...
         if (data.error) {
           $('#passcodeForm').fadeOut('fast')
         }
@@ -132,9 +131,9 @@ You will need to have a Personal Agent installed on your iOS device.
           $('#passcodeForm').fadeOut('fast')
           /// TBD - adjust size of popup and QR code to screen
           $('#qrcodeForm').fadeIn('fast')
-          $('#qrcode').qrcode({width: 300,height: 300,text: code}) 
+          $('#qrcode').qrcode({width: 300,height: 300,text: code})
 
-        }        
+        }
       })
       return false
     })

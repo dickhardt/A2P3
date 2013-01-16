@@ -3,7 +3,7 @@
 <head>
 <style type="text/css">
   .loginStatus {text-align:right;}
-  .registerAppForm{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:250px; height:110px; position: absolute; top:75px; left:50%; margin-left:-125px; padding:10px; border-radius:4px;}
+  .registerAppForm{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:250px; height:140px; position: absolute; top:75px; left:50%; margin-left:-125px; padding:10px; border-radius:4px;}
 </style>
 
 </head>
@@ -23,9 +23,13 @@
   <a href="" id="registerApp">Register Application</a>
 
 <div id="registerApp_form" class="registerAppForm">
-  <span class="form_title">Register an App</span>
+  <span class="form_title">Register an existing App</span>
     <form id="registerAppForm_input">
       <dl>
+        <dt></dt><dd>
+          <label for="AppName">Name</label>
+          <input type="text" name="AppName" value="" id="registerApp_name_input">
+        </dd>
         <dt></dt><dd>
           <label for="ApID">ID</label>
           <input type="text" name="AppID" value="" id="registerApp_id_input">
@@ -36,7 +40,6 @@
       </dl>
         <p><input id="registerAppFormCancel" type="button" value="Cancel">
             <input id="registerAppFormSubmit" type="button" value="Register">
-            <input id="registerAppFormOk" type="button" value="Ok">
           </p>
     </form>
 </div>
@@ -73,9 +76,6 @@
       $('#registerApp_id_input').val("")
       $('#registerApp_name_input').focus()
       $('#registerAppFormSubmit').attr("disabled", "disabled")
-      $('#registerAppFormOk').hide()
-      $('#registerAppFormSubmit').show()
-      $('#registerAppFormCancel').show()
       return false
     })
 
@@ -98,32 +98,19 @@
     })
 
     $('#registerAppFormSubmit').click( function () {
-      var id = $('#registerApp_id_input').val()
-      $('#registerApp_status').text('Registering App "'+id+'"" ... ').css('color','black')
+      var host = $('#registerApp_id_input').val()
+      var name = $()
+      $('#registerApp_status').text('Registering App "'+host+'"" ... ').css('color','black')
       $('#registerAppFormSubmit').hide()
       $('#registerAppFormCancel').hide()
 
-  console.log('Trying to register:"'+id+'"')
-      $.post('/dashboard/new/app', {id: id}, function ( data, status ) {
-
-console.log('status',status)
-console.log('data\n',data)
-
-        if (status == "success" && !data.error) {
-          $('#registerAppFormOk').show()
-          $('#registerApp_status').text('App is registered').css('color','black')
-        }
-      })
+  console.log('Trying to register:"'+host+'"')
+      $.post()
 
     })
-
-    $('#registerAppFormOk').click( function () {
-      $('#registerApp_form').fadeOut('fast')
-    })
-
 
     $('#registerAppFormCancel').click( function () {
-      $('#registerApp_form').fadeOut('fast')
+          $('#registerApp_form').fadeOut('fast')
     })
 
 

@@ -26,7 +26,7 @@ function onReady() {
   // Write title and pull in image based on host we are at
   // URL is parsed in config.js and made available
   var title = config.subhost.charAt(0).toUpperCase() + config.subhost.substr( 1 )
-  title += ' Dashboard'
+  title += ' Standardized Resource Server Dashboard'
   $('#title').text( title )
   var flag = config.province || 'ca'
   $('#title').before('<img src="/images/flags/' + flag + '.png">')
