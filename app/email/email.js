@@ -63,6 +63,9 @@ exports.app = function() {
           , token.checkRS( vault.keys, 'email', ['/scope/default'] )
           , emailDefault
           )
+
+  app.get('/', function( req, res ) { res.sendfile( config.rootAppDir + '/html/homepage_rs.html' ) } )
+
   app.use( mw.errorHandler )
 
   return app

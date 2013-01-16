@@ -233,6 +233,8 @@ exports.app = function( province ) {
           , deleteAuthN( 'health.'+province )
           )
 
+  app.get('/', function( req, res ) { res.sendfile( config.rootAppDir + '/html/homepage_rs.html' ) } )
+
   app.use( mw.errorHandler )
 
 	return app

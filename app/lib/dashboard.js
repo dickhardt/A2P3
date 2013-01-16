@@ -130,8 +130,12 @@ exports.routes = function ( app, RS, vault, cwd ) {
   // checks session has required data, otherwise goes and gets it
   function checkSession ( req, res, next ) {
 
+console.log('\ncheckSession session\n', req.session)
 
     function badSession( error ) {
+      if (req.route.method === 'get') { // we are serving a page, so send user back to homepage
+        return res.redirect('/')
+      }
       req.session.bad = true
       var err = new Error( error || 'Bad session' )
       err.code = "ACCESS_DENIED"
@@ -226,7 +230,7 @@ exports.routes = function ( app, RS, vault, cwd ) {
           , dashboardGetKey
           )
 
-  app.get('/dashboard', function( req, res ) { res.sendfile( config.rootAppDir + '/html/dashboard.html' ) } )
+  app.get('/dashboard', checkSession, function( req, res ) { res.sendfile( config.rootAppDir + '/html/dashboard.html' ) } )
   app.get('/dashboard/error', function( req, res ) { res.sendfile( config.rootAppDir + '/html/login_error.html' ) } )
   app.get('/dashboard/complete', function( req, res ) { res.sendfile( config.rootAppDir + '/html/login_complete.html' ) } )
 

@@ -9,6 +9,7 @@ var express = require('express')
   , stdDashboard = require('../lib/stdDashboard')
   , mw = require('../lib/middleware')
   , login = require('../lib/login')
+  , config = require('../config')
 
 exports.app = function( ) {
   var app = express()
@@ -19,6 +20,8 @@ exports.app = function( ) {
   stdDashboard.routes( app, 'health', vault )  // add in routes for the registration paths
 
   login.router( app, { 'dashboard': 'health', 'vault': vault } )
+
+  app.get('/', function( req, res ) { res.sendfile( config.rootAppDir + '/html/homepage_rs.html' ) } )
 
   app.use( mw.errorHandler )
   return app

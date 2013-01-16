@@ -5,12 +5,11 @@
 */
 
 var express = require('express')
-
-var express = require('express')
   , vault = require('./vault')
   , stdDashboard = require('../lib/stdDashboard')
   , mw = require('../lib/middleware')
   , login = require('../lib/login')
+  , config = require('../config')
 
 exports.app = function( ) {
   var app = express()
@@ -21,6 +20,8 @@ exports.app = function( ) {
   stdDashboard.routes( app, 'people', vault )  // add in routes for the registration paths
 
   login.router( app, { 'dashboard': 'people', 'vault': vault } )
+
+  app.get('/', function( req, res ) { res.sendfile( config.rootAppDir + '/html/homepage_rs.html' ) } )
 
   app.use( mw.errorHandler )
   return app

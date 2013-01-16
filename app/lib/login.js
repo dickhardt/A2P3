@@ -143,6 +143,12 @@ exports.checkLoggedIn = function ( req, res, next ) {
 }
 */
 
+function logout ( req, res, next) {
+  req.session = null
+  res.redirect( '/' )
+}
+
+// web app API to check which user is logged in
 function loginCheck ( req, res, next ) {
   if (!req.session || !req.session.di) {
     var e = new Error('not logged in')
@@ -192,6 +198,7 @@ exports.router = function ( app, detailsOrig ) {
       ]
     details.path =
       { 'login':      '/dashboard/login'          // page loaded to initate login
+      , 'logout':      '/dashboard/logout'         // page called to logout
       , 'response':   '/dashboard/login/response' // page where we redirect to
       , 'error':      '/dashboard/error'          // HTML to be provided where we send user when an error
       , 'success':    '/dashboard'                // HTML to be provided on success
@@ -206,6 +213,8 @@ exports.router = function ( app, detailsOrig ) {
   })
 
   app.get( details.path.login, login( details ) )
+
+  app.get( details.path.logout, logout )
 
   app.get( details.path.response, loginStateCheck( details ), loginReturn( details ) )
 

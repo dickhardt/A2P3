@@ -184,6 +184,7 @@ exports.app = function() {
           , deleteAuthN( 'si' )
           )
 
+  app.get('/', function( req, res ) { res.sendfile( config.rootAppDir + '/html/homepage_rs.html' ) } )
 
   app.use( mw.errorHandler )
 

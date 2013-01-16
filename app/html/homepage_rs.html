@@ -13,22 +13,27 @@
 
 <div class="loginStatus">
   <span id="loginEmail"></span>
-  <a href="" id="login"> login </a>
+  <a href="" id="login"> backdoor login </a>
   <a href="/dashboard/logout" id="logout">logout </a>
 </div>
 
-<H1 id='title'>XX Dashboard</H1>
+<H1 id='title'>XX Resource Server</H1>
 <h2> placeholder </h2>
 
 <script type="text/javascript">
 function onReady() {
+
+  // development hack since we can't login yet
+  var setup = config.fullhost.replace( config.host, 'setup' )
+  setup = config.protocol + '://' + setup + ':' + config.port + '/backdoor'
+  $('#login').attr('href', setup )
 
   // Write title and pull in image based on host we are at
   // URL is parsed in config.js and made available
   var title = config.subhost.charAt(0).toUpperCase() + config.subhost.substr( 1 )
   if (title === 'Si') title = 'Social Insurance'
   if ( config.province ) title += ' '+ config.provinceNames[config.province]
-  title += ' Dashboard'
+  title += ' Resource Server'
   $('#title').text( title )
   var flag = config.province || 'ca'
   $('#title').before('<img src="/images/flags/' + flag + '.png">')
