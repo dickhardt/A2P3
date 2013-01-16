@@ -22,7 +22,7 @@ exports.app = function( ) {
   login.router( app, { 'dashboard': 'health', 'vault': vault } )
 
   app.get('/', function( req, res ) { res.sendfile( config.rootAppDir + '/html/homepage_rs.html' ) } )
-
+  app.get('/documentation', mw.md( config.rootAppDir+'/health/README.md' ) )
   app.use( mw.errorHandler )
   return app
 }

@@ -65,6 +65,7 @@ exports.app = function() {
           )
 
   app.get('/', function( req, res ) { res.sendfile( config.rootAppDir + '/html/homepage_rs.html' ) } )
+  app.get('/documentation', mw.md( __dirname+'/README.md' ) )
 
   app.use( mw.errorHandler )
 

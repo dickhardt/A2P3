@@ -155,6 +155,7 @@ exports.app = function( province ) {
           )
 
   app.get('/', function( req, res ) { res.sendfile( config.rootAppDir + '/html/homepage_rs.html' ) } )
+  app.get('/documentation', mw.md( config.rootAppDir+'/people/README.md' ) )
 
   app.use( mw.errorHandler )
   return app

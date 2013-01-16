@@ -19,7 +19,8 @@
 </div>
 
 <H1 id='title'>XX Resource Server</H1>
-<h2> placeholder </h2>
+
+<a href="/documentation">Documentation</a>
 
 <script type="text/javascript">
 function onReady() {
@@ -41,10 +42,6 @@ function onReady() {
 
   // check if we are logged in, if so, then show email and enable logout
   $.get('/dashboard/login/check', function ( data, status ) {
-
-console.log('status',status)
-console.log('data',data)
-
     if (data && data.result && data.result.user) {
       $('#loginEmail').text(data.result.user)
       $('#logout').show()
