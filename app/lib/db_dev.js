@@ -77,6 +77,10 @@ exports.addAgent = function ( asDI, asHost, name, cb ) {
   dummyNoSql['ix:di:' + ixDI][handle] = { 'name': name, 'AS': asHost, 'created': Date.now() }
   dummyNoSql['ix:di:' + ixDI + ':handle:' + handle + ':token'] = token
   dummyNoSql['registrar:agentHandle:' + token] = ixDI // registrarDI - need ixDI to map to RS for Authorization calls
+
+console.log('\naddAgent',asDI,asHost,name)
+console.log('handles\n',dummyNoSql['ix:di:' + ixDI])
+
   process.nextTick( function () { cb( null, token, handle ) } )
 }
 
@@ -94,6 +98,12 @@ exports.listAgents = function ( asDI, asHost, cb ) {
       , created: agents[handle].created
       }
   })
+
+console.log('\nlistAgents',asDI,asHost)
+console.log('handles\n',dummyNoSql['ix:di:' + ixDI])
+console.log('listAgent results\n', results)
+
+
   process.nextTick( function () { cb( null, results ) } )
 }
 
@@ -161,13 +171,26 @@ exports.listApps = function ( reg, admin, cb ) {
   if (apps) {
     Object.keys(apps).forEach( function (id) {
       result[id] =
-        { name: dummyNoSql[reg + ':app:' + id + ':name']
-        , admins: dummyNoSql[reg + ':app:' + id + ':admins']
-        }
+        { name: dummyNoSql[reg + ':app:' + id + ':name'] }
     })
   }
   process.nextTick( function () { cb( null, result ) } )
 }
+
+exports.appDetails = function ( reg, admin, id, cb ) {
+  if (!dummyNoSql[reg + ':admin:' + admin + ':apps'][id]) {
+    var e = new Error('Admin is not authorative for '+id)
+    e.code = "ACCESS_DENIED"
+    process.nextTick( function () { cb( e ) } )
+  }
+  var result =
+    { name: dummyNoSql[reg + ':app:' + id + ':name']
+    , admins: dummyNoSql[reg + ':app:' + id + ':admins']
+    , keys: keyChain[reg][id]
+    }
+  process.nextTick( function () { cb( null, result ) } )
+}
+
 
 // anytime parameter is optional, and indicates if a RS
 // supports anytime OAuth 2.0 access and the
