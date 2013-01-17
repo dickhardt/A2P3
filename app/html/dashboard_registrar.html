@@ -12,6 +12,7 @@
 
 </head>
 <body>
+
   <script type="text/javascript"    src="/js/jquery-1.8.3.js"></script>
   <script type="text/javascript"    src="/js/purl.js"></script>
   <script type="text/javascript"    src="/js/config.js"></script>
@@ -48,7 +49,6 @@
         <p>
           <input id="registerAppFormCancel" type="button" value="Cancel">
           <input id="registerAppFormSubmit" type="button" value="Register">
-          <input id="registerAppFormOk" type="button" value="Ok">
         </p>
     </form>
 </div>
@@ -56,7 +56,7 @@
 
 <div id="appDetails_popup" class="appDetailPopup">
   <span id="appDetailsTitle" >App Details</span>
-    <table id="appDetailsTable">
+    <table id="adminsList">
         <tr><td>Name</td><td id="appDetails_Name"></td></tr>
         <tr><td>ID</td><td id="appDetails_ID"></td></tr>
         <tr><td>Key</td><td id="appKey"></td></tr>
@@ -113,6 +113,11 @@
 
 
 <script type="text/javascript">
+
+/*
+*   TODO: 'esc' and 'return' are not doing what is expected in most of the forms, need to capture and do right thing
+*/
+
   (function() { // wrapper
 
     var currentApp = null
@@ -216,6 +221,7 @@
     })
 
     function deleteAppAdmin( admin ) {
+      app = currentApp
       currentAdmin = admin
       $('#confirmAdminDelete_form').fadeIn('fast')
       $('#confirmAdminDeleteTitle').text('Remove admin "'+admin+'" from "'+app+'"?')
@@ -242,13 +248,13 @@
           $('#appKID').text( details.keys.latest.kid )
 
           var item = 0 // use for ids for delete links
-          $('#appAdminDetailsTable').empty()
+          $('.adminEntry').remove()
           Object.keys( details.admins ).forEach( function ( admin ) {
             // filter out adding delete if current user is the Admin TBD
             if (currentAdmin === admin) {
-              $('#appDetailsTable').append('<tr><td></td><td>'+admin+'</td></tr>')
+              $('#adminsList').append('<tr class="adminEntry"><td></td><td>'+admin+'</td></tr>')
             } else {
-              $('#appDetailsTable').append('<tr><td><a href="" id="deleteAppAdmin_'+item+'">delete</a></td><td>'+admin+'</td></tr>')
+              $('#adminsList').append('<tr class="adminEntry"><td><a href="" id="deleteAppAdmin_'+item+'">delete</a></td><td>'+admin+'</td></tr>')
             }
             $('#deleteAppAdmin_'+item).click( function () { return deleteAppAdmin( admin ) } ) //dynamic built element, so ok to hook with closure
           })
@@ -325,30 +331,18 @@
       $('#registerApp_status').text('Registering App "'+id+'"" ... ').css('color','black')
       $('#registerAppFormSubmit').hide()
       $('#registerAppFormCancel').hide()
-
       $.post('/dashboard/new/app', { name: name, id: id}, function ( data, status ) {
-
         updateDashboardTable()
-
-console.log('status',status)
-console.log('data\n',data)
-
         if (status == "success" && !data.error) {
-          //  $('#registerAppFormOk').show()  -- TBD Delete? -- changed flow to not show completion
-          // $('#registerApp_status').text(name+' ('+id+') is registered').css('color','black')
           $('#registerApp_form').fadeOut('fast')
+          showAppDetails( id, true )  // show user their new app
         }
       })
-
     })
 
-    // TBD - delete? -- changed flow to not have ok at end
-    $('#registerAppFormOk').click( function () {
-      $('#registerApp_form').fadeOut('fast')
-    })
 
     $('#registerAppFormCancel').click( function () {
-          $('#registerApp_form').fadeOut('fast')
+      $('#registerApp_form').fadeOut('fast')
     })
 
 
@@ -381,8 +375,8 @@ console.log('data\n',data)
       updateDashboardTable()
 
     } // onReady
+      $(document).ready( onReady )
 
-    $(document).ready(onReady)
 
   })(); // end wrapper
 </script>
