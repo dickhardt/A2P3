@@ -57,6 +57,14 @@
 <div id="appDetails_popup" class="appDetailPopup">
   <span id="appDetailsTitle" >App Details</span>
     <table id="appDetailsTable">
+        <tr><td>Name</td><td id="appDetails_Name"></td></tr>
+        <tr><td>ID</td><td id="appDetails_ID"></td></tr>
+        <tr><td>Key</td><td id="appKey"></td></tr>
+        <tr><td>Key ID</td><td id="appKID"></td></tr>
+        <tr><td></td><td><a href="" id="refreshAppKey">refresh key</a></td></tr>
+        <tr><td>Admins</td><td><a href="" id="addAppAdmin">add</a></td></tr>
+        <div id="appAdminDetailsTable">
+        </div>
     </table>
     <p>
       <input id="appDetailsDelete" type="button" value="Delete">
@@ -119,11 +127,20 @@
     $('#addAppAdmin_form').hide()
 
 
-    function refreshAppKey( app ) {
-
-//TBD
-
-    }
+    $('#refreshAppKey').click( function () {
+      app = currentApp
+      $('#appKID').fadeOut('fast')
+      $('#appKey').fadeOut('fast')
+      $.post('/dashboard/refresh/key', { id: app }, function ( data, status ) {
+        if (status == "success" && !data.error) {
+          $('#appKID').text( data.result.key.latest.kid )
+          $('#appKey').text( data.result.key.latest.key )
+          $('#appKID').fadeIn('fast')
+          $('#appKey').fadeIn('fast')
+        } // TBD -- what do we show on error????
+      })
+      return false
+    })
 
     /////////////////////////////////////////////////////////////////////////
     // App Detail Popup
@@ -155,13 +172,13 @@
       return false
     })
 
-    function addAppAdminForm( app ) {
+    $('#addAppAdmin').click( function () {
       $('#addAppAdmin_form').fadeIn('fast')
       $('#adminEmail_input').focus()
       $('#adminEmail_input').val('')
       $('#addAppAdminFormAdd').attr('disabled', 'disabled')
       return false
-    }
+    })
 
     $('#adminEmail_input').bind('input', function () {
       if ( $('#adminEmail_input').val() ) {
@@ -181,11 +198,12 @@
       return false
     })
 
-    function deleteApp( app ) {
+    $('#appDetailsDelete').click( function () {
+      app = currentApp
       $('#confirmDelete_form').fadeIn('fast')
       $('#confirmDeleteTitle').text('Delete registration of "'+app+'"?')
       return false
-    }
+    })
 
     $('#confirmAdminDeleteFormDelete').click( function() {
       app = currentApp
@@ -197,10 +215,10 @@
       return false
     })
 
-    function deleteAppAdmin( app, admin ) {
+    function deleteAppAdmin( admin ) {
+      currentAdmin = admin
       $('#confirmAdminDelete_form').fadeIn('fast')
       $('#confirmAdminDeleteTitle').text('Remove admin "'+admin+'" from "'+app+'"?')
-      currentAdmin = admin
       return false
     }
 
@@ -208,25 +226,23 @@
     function showAppDetails ( app, fadeIn ) {
       currentApp = app
 
-      $('#appDetailsTable').empty()
+      $('#appAdminDetailsTable').empty()
       if ( fadeIn ) $('#appDetails_popup').fadeIn('fast')
       $.post('/dashboard/app/details', {id: app}, function ( data, status ) {
         if (status == "success" && !data.error) {
           var details = data.result.details
           var currentAdmin = data.result.email
-          $('#appDetailsTable').append('<tr><td>Name</td><td>' + details.name + '</td></tr>')
-          $('#appDetailsTable').append('<tr><td>ID</td><td>' + app + '</td></tr>')
-          $('#appDetailsTable').append('<tr><td>Key</td><td id="appKey">' + details.keys.latest.key + '</td></tr>')
+          $('#appDetails_Name').text( details.name )
+          $('#appDetails_ID').text( app )
+          $('#appKey').text( details.keys.latest.key )
 
           // TBD - will need to make Key line wrap so that it is on multiple lines, but can be selected easily as a single
           // text string for developers to copy and paste into code
 
-          $('#appDetailsTable').append('<tr><td>Key ID</td><td id="appKID">' + details.keys.latest.kid + '</td></tr>')
-          $('#appDetailsTable').append('<tr><td></td><td><a href="" id="refreshAppKey">refresh key</a></td></tr>')
-          $('#refreshAppKey').click( function () { return refreshAppKey( app ) } )
-          $('#appDetailsTable').append('<tr><td>Admins</td><td><a href="" id="addAppAdmin">add</a></td></tr>')
-          $('#addAppAdmin').click( function () { return addAppAdminForm( app ) } )
+          $('#appKID').text( details.keys.latest.kid )
+
           var item = 0 // use for ids for delete links
+          $('#appAdminDetailsTable').empty()
           Object.keys( details.admins ).forEach( function ( admin ) {
             // filter out adding delete if current user is the Admin TBD
             if (currentAdmin === admin) {
@@ -234,12 +250,10 @@
             } else {
               $('#appDetailsTable').append('<tr><td><a href="" id="deleteAppAdmin_'+item+'">delete</a></td><td>'+admin+'</td></tr>')
             }
-            $('#deleteAppAdmin_'+item).click( function () { return deleteAppAdmin( app, admin ) } )
+            $('#deleteAppAdmin_'+item).click( function () { return deleteAppAdmin( admin ) } ) //dynamic built element, so ok to hook with closure
           })
 
           // TBD -- adjust the popup height so appropriate for number of admins listed
-          $('#appDetailsDelete').click( function () { return deleteApp( app ) } )
-
         }
       })
       return false
