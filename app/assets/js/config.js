@@ -14,7 +14,12 @@ var config = {};
   } else {
     config.subhost = config.host = parts[0]
   }
-
+  try {
+    config.baseDomain = config.fullhost.replace( config.host+'.', '' )
+  }
+  catch (e) {
+    console.log(e)
+  }
   config.provinceNames =
     { 'ab': 'Alberta'
     , 'bc': 'British Columbia'

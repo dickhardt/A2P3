@@ -4,44 +4,37 @@
 </head>
 <body>
   <script type="text/javascript"    src="/js/jquery-1.8.3.js"></script>
+  <script type="text/javascript"    src="/js/purl.js"></script>
+  <script type="text/javascript"    src="/js/config.js"></script>
 
 <H1>A2P3 Backdoor</H1>
 <b>will login as <i>dev@example.com</i></b>
 <ul id='loginList'>
-  <li><a
-    href="http://registrar.local.a2p3.net:8080/login?returnURL=http%3a%2f%2fsetup.local.a2p3.net%3a8080%2fbackdoor%2flogin%2fdev%40example.com"
-    >Registrar</a></li>
-  <li><a
-    href="http://email.local.a2p3.net:8080/login?returnURL=http%3a%2f%2fsetup.local.a2p3.net%3a8080%2fbackdoor%2flogin%2fdev%40example.com"
-    >Email RS</a></li>
-  <li><a
-    href="http://si.local.a2p3.net:8080/login?returnURL=http%3a%2f%2fsetup.local.a2p3.net%3a8080%2fbackdoor%2flogin%2fdev%40example.com"
-    >Social Insurance RS</a></li>
-  <li><a
-    href="http://health.local.a2p3.net:8080/login?returnURL=http%3a%2f%2fsetup.local.a2p3.net%3a8080%2fbackdoor%2flogin%2fdev%40example.com"
-    >Health RS</a></li>
-  <li><a
-    href="http://health.bc.local.a2p3.net:8080/login?returnURL=http%3a%2f%2fsetup.local.a2p3.net%3a8080%2fbackdoor%2flogin%2fdev%40example.com"
-    >BC Health RS</a></li>
-  <li><a
-    href="http://health.ab.local.a2p3.net:8080/login?returnURL=http%3a%2f%2fsetup.local.a2p3.net%3a8080%2fbackdoor%2flogin%2fdev%40example.com"
-    >Alberta Health RS</a></li>
-  <li><a
-    href="http://people.local.a2p3.net:8080/login?returnURL=http%3a%2f%2fsetup.local.a2p3.net%3a8080%2fbackdoor%2flogin%2fdev%40example.com"
-    >People RS</a></li>
-  <li><a
-    href="http://people.bc.local.a2p3.net:8080/login?returnURL=http%3a%2f%2fsetup.local.a2p3.net%3a8080%2fbackdoor%2flogin%2fdev%40example.com"
-    >BC People RS</a></li>
-  <li><a
-    href="http://people.ab.local.a2p3.net:8080/login?returnURL=http%3a%2f%2fsetup.local.a2p3.net%3a8080%2fbackdoor%2flogin%2fdev%40example.com"
-    >Alberta People RS</a></li>
-  <li><a
-    href="http://clinic.local.a2p3.net:8080/login?returnURL=http%3a%2f%2fsetup.local.a2p3.net%3a8080%2fbackdoor%2flogin%2fdev%40example.com"
-    >Clinic App</a> NOT IMPLEMENTED</li>
-  <li><a
-    href="http://bank.local.a2p3.net:8080/login?returnURL=http%3a%2f%2fsetup.local.a2p3.net%3a8080%2fbackdoor%2flogin%2fdev%40example.com"
-    >Bank App</a>NOT IMPLEMENTED</li>
 </ul>
+
+<script type="text/javascript">
+    $(document).ready( function () {
+      var servers =
+        { 'registrar':  'Registar'
+        , 'email':      'Email RS'
+        , 'si':         'Social Insurance RS'
+        , 'health':      'Standard Health RS'
+        , 'health.bc':    'BC Health RS'
+        , 'health.ab':    'Alberta Health RS'
+        , 'people':      'Standard People RS'
+        , 'people.bc':    'BC People RS'
+        , 'people.ab':    'Alberta People RS'
+        , 'clinic':       'Clinic App (NOT IMPLEMENTED)'
+        , 'bank':       'Bank App (NOT IMPLEMENTED)'
+        }
+      Object.keys( servers ).forEach( function (host ) {
+        var url = config.protocol + '://' + host + '.' + config.baseDomain + ':' + config.port +
+          '/login?returnURL=http%3a%2f%2fsetup.local.a2p3.net%3a8080%2fbackdoor%2flogin%2fdev%40example.com'
+        $('#loginList').append('<li><a href="' + url + '">' + servers[host] + '</a></li>')
+      })
+    })
+
+</script>
 
 <pre>
 NOTE: before this works, you must run "npm test"
