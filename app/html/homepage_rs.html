@@ -3,6 +3,7 @@
 <head>
 <style type="text/css">
   .loginStatus {text-align:right;}
+  .loginItem {padding-left: 5px;}
 </style>
 
 </head>
@@ -13,9 +14,10 @@
 
 <div class="loginStatus">
   <span id="loginEmail"></span>
-  <a href="" id="loginBackdoor"> backdoor login </a>
-  <a href="/login" id="login"> mobile agent login </a>
-  <a href="/logout" id="logout">logout </a>
+  <a href="" id="loginBackdoor" class="loginItem"> backdoor login </a>
+  <a href="/login" id="login" class="loginItem"> mobile agent login </a>
+  <a href="" id="loginQR" class="loginItem"> QR login </a>
+  <a href="/logout" id="logout" class="loginItem">logout </a>
 </div>
 
 <H1 id='title'>XX Resource Server</H1>
@@ -25,10 +27,8 @@
 <script type="text/javascript">
 function onReady() {
 
-  // development hack since we can't login yet
-  var setup = config.fullhost.replace( config.host, 'setup' )
-  setup = config.protocol + '://' + setup + ':' + config.port + '/backdoor'
-  $('#loginBackdoor').attr('href', setup )
+  var setupURL = config.protocol + '://setup.' + config.baseDomain + ':' + config.port + '/backdoor'
+  $('#loginBackdoor').attr('href', setupURL )
 
   // Write title and pull in image based on host we are at
   // URL is parsed in config.js and made available
