@@ -4,12 +4,14 @@
 <style type="text/css">
   .loginStatus {text-align:right;}
   .loginItem {padding-left: 5px;}
+  #qrcodeForm{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:500px; height:520px; position: absolute; top:75px; left:10%; margin-left:-50px; padding:10px; border-radius:4px;}
 </style>
 
 </head>
 <body>
   <script type="text/javascript"    src="/js/jquery-1.8.3.js"></script>
   <script type="text/javascript"    src="/js/purl.js"></script>
+  <script type="text/javascript"    src="/js/jquery.qrcode.min.js"></script>
   <script type="text/javascript"    src="/js/config.js"></script>
 
 <div class="loginStatus">
@@ -20,11 +22,32 @@
   <a href="/logout" id="logout" class="loginItem">logout </a>
 </div>
 
+<div id="qrcodeForm">
+    <span class="form_title">Scan QR Code to login</span>
+    <div id="qrcode"></div>
+</div>
+
+
 <H1 id='title'>XX Resource Server</H1>
 
 <a href="/documentation">Documentation</a>
 
 <script type="text/javascript">
+
+  $('#qrcodeForm').hide()
+
+  $('#loginQR').click( function () {
+    $.get( '/login?json=true', function ( data, status ) {
+      if (status == "success" && !data.error && data.result && data.result.request) {   // TBD, deal with error
+        console.log('login for qr',data)
+        $('#qrcodeForm').fadeIn('fast')
+        $('#qrcode').qrcode( {width: 500, height: 500, text: data.result.request } )
+      }
+    })
+    return false
+  })
+
+
 function onReady() {
 
   var setupURL = config.protocol + '://setup.' + config.baseDomain + ':' + config.port + '/backdoor'
@@ -53,6 +76,7 @@ function onReady() {
       $('#loginBackdoor').show()
     }
   })
+
 
 } // onReady
 
