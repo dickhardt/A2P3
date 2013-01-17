@@ -83,7 +83,6 @@ function registerAgent ( req, res, next ) {
     , passcode = req.body.passcode
     , name = req.body.name
     , device = req.body.device
-
   db.getProfile( 'as', code, function ( e, profile ) {
     if (e) return next( e )
     if ( passcode != profile.passcode ) {
@@ -99,7 +98,7 @@ function registerAgent ( req, res, next ) {
         { iss: config.host.as
         , aud: config.host.ix
         , 'request.a2p3.org':
-          { di: req.session.di
+          { di: profile.di
           , name: name
           }
         }

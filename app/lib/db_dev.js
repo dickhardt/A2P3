@@ -230,6 +230,7 @@ exports.checkApp = function ( reg, id, di, cb) {
 
 exports.addAppAdmin = function ( reg, id, admin, cb ) {
   dummyNoSql[reg + ':app:' + id + ':admins'][admin] = 'ACTIVE'
+  dummyNoSql[reg + ':admin:' + admin + ':apps'] = dummyNoSql[reg + ':admin:' + admin + ':apps'] || {}
   dummyNoSql[reg + ':admin:' + admin + ':apps'][id] = 'ACTIVE'
   process.nextTick( function () { cb( null ) } )
 }
@@ -241,9 +242,13 @@ exports.deleteAppAdmin = function ( reg, id, admin, cb ) {
 }
 
 exports.deleteApp = function ( reg, id, cb ) {
+
+console.log('\ndeleteApp:\nreg:',reg,'\nid:',id)
+console.log('app admins:',dummyNoSql[reg + ':app:' + id + ':admins'])
+
   delete dummyNoSql[reg + ':app:' + id + ':name']
   delete keyChain[reg][id]
-  var admins = Object( dummyNoSql[reg + ':app:' + id + ':admins'] ).keys()
+  var admins = Object.keys( dummyNoSql[reg + ':app:' + id + ':admins'] )
   admins.forEach( function (admin) {
     delete dummyNoSql[reg + ':admin:' + admin + ':apps'][id]
   })

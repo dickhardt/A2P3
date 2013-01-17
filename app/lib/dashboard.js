@@ -26,6 +26,14 @@ exports.routes = function ( app, RS, vault ) {
       })
     }
 
+    // only called at Registrar Dashboard
+    function dashboardDeleteAdmin ( req, res, next ) {
+      db.deleteAppAdmin( RS, req.body.id, req.body.admin, function ( e ) {
+        if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
+        return res.send( { result: {success: true } } )
+      })
+    }
+
   // only called at Registrar Dashboard
   function dashboardAppIdTaken ( req, res, next ) {
     db.checkRegistrarAppIdTaken( req.body.id, function ( e, taken ) {
@@ -40,6 +48,15 @@ exports.routes = function ( app, RS, vault ) {
       return res.send( { result: {'list': list, 'email': req.session.email } } )
     })
   }
+
+  function dashboardAppDetails ( req, res, next ) {
+      db.appDetails( RS, req.session.email, req.body.id, function ( e, details ) {
+        if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
+        return res.send( { result: {'details': details, 'email': req.session.email } } )
+      })
+    }
+
+
 
   function dashboardNewApp ( req, res, next ) {
 
@@ -201,6 +218,12 @@ exports.routes = function ( app, RS, vault ) {
             , checkAdminAuthorization
             , dashboardAddAdmin
             )
+    app.post('/dashboard/delete/admin'
+            , checkSession
+            , mw.checkParams( {'body':['id','admin']} )
+            , checkAdminAuthorization
+            , dashboardDeleteAdmin
+            )
     app.get('/dashboard', checkSession, function( req, res ) { res.sendfile( config.rootAppDir + '/html/dashboard_registrar.html' ) } )
   } else { // if not registrar
     app.get('/dashboard', checkSession, function( req, res ) { res.sendfile( config.rootAppDir + '/html/dashboard.html' ) } )
@@ -209,6 +232,12 @@ exports.routes = function ( app, RS, vault ) {
   app.get('/dashboard/list/apps'
           , checkSession
           , dashboardlistApps
+          )
+  app.post('/dashboard/app/details'
+          , checkSession
+          , mw.checkParams( {'body':['id']} )
+          , checkAdminAuthorization
+          , dashboardAppDetails
           )
   app.post('/dashboard/new/app'
           , checkSession

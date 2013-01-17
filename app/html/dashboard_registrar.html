@@ -4,6 +4,10 @@
 <style type="text/css">
   .loginStatus {text-align:right;}
   .registerAppForm{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:250px; height:140px; position: absolute; top:75px; left:50%; margin-left:-125px; padding:10px; border-radius:4px;}
+  .appDetailPopup{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:500px; height:300px; position: absolute; top:75px; left:5%; margin-left:-20px; padding:10px; border-radius:4px;}
+  .confirmDeleteForm{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:300px; height:80px; position: absolute; top:100px; left:10%; margin-left:-20px; padding:10px; border-radius:4px;}
+  .addAppAdminForm{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:300px; height:120px; position: absolute; top:100px; left:10%; margin-left:-20px; padding:10px; border-radius:4px;}
+
 </style>
 
 </head>
@@ -21,9 +25,12 @@
   <H1 id='title'>XX Dashboard</H1>
 
   <a href="" id="registerApp">Register Application</a>
+  <hr>
+  <table id='appTable'>
+  </table>
 
 <div id="registerApp_form" class="registerAppForm">
-  <span class="form_title">Register an existing App</span>
+  <span>Register an new App</span>
     <form id="registerAppForm_input">
       <dl>
         <dt></dt><dd>
@@ -47,39 +54,234 @@
 </div>
 
 
-  <script type="text/javascript">
-    (function() { // wrapper
+<div id="appDetails_popup" class="appDetailPopup">
+  <span id="appDetailsTitle" >App Details</span>
+    <table id="appDetailsTable">
+    </table>
+    <p>
+      <input id="appDetailsDelete" type="button" value="Delete">
+      <input id="appDetailsClose" type="button" value="Close">
+    </p>
+</div>
 
-    function updateDashboardTable () {
+
+<div id="confirmDelete_form" class="confirmDeleteForm">
+  <span id="confirmDeleteTitle">Confirm Deletion XX</span>
+    <form id="confirmDeleteForm_input">
+      <p>
+        <input id="confirmDeleteFormCancel" type="button" value="Cancel">
+        <input id="confirmDeleteFormDelete" type="button" value="Delete">
+      </p>
+    </form>
+</div>
+
+
+<div id="confirmAdminDelete_form" class="confirmDeleteForm">
+  <span id="confirmAdminDeleteTitle">Confirm Deletion XX</span>
+    <form id="confirmAdminDeleteForm_input">
+      <p>
+        <input id="confirmAdminDeleteFormCancel" type="button" value="Cancel">
+        <input id="confirmAdminDeleteFormDelete" type="button" value="Delete">
+      </p>
+    </form>
+</div>
+
+<div id="addAppAdmin_form" class="addAppAdminForm">
+  <span id="addAppAdminTitle">Add App Administrator</span>
+    <form id="addAppAdminForm_input">
+       <dl>
+        <dt></dt><dd>
+          <label for="adminEmail">Email</label>
+          <input type="text" name="adminEmail" value="" id="adminEmail_input">
+        </dd>
+        </dl>
+      <p>
+        <input id="addAppAdminFormCancel" type="button" value="Cancel">
+        <input id="addAppAdminFormAdd" type="button" value="Add">
+      </p>
+    </form>
+</div>
+
+
+
+<script type="text/javascript">
+  (function() { // wrapper
+
+    var currentApp = null
+    var currentAdmin = null
+
+    ///////////////////////////////////////////////////////////////////////////
+    // setup initial states
+
+    $('#confirmDelete_form').hide()
+    $('#confirmAdminDelete_form').hide()
+    $('#appDetails_popup').hide()
+    $('#addAppAdmin_form').hide()
+
+
+    function refreshAppKey( app ) {
+
+//TBD
 
     }
 
-    $('#showKey').click( function () {
+    /////////////////////////////////////////////////////////////////////////
+    // App Detail Popup
 
+    $('#appDetailsClose').click( function () {
+      $('#appDetails_popup').fadeOut('fast')
     })
 
-    $('#refreshKey').click( function () {
-
+    $('#confirmDeleteFormCancel').click( function () {
+      $('#confirmDelete_form').fadeOut('fast')
     })
 
-    $('#deleteApp').click( function () {
 
+    $('#confirmAdminDeleteFormCancel').click( function () {
+      $('#confirmAdminDelete_form').fadeOut('fast')
     })
 
-    $('#deleteAppConfirm').click( function () {
-
+    $('#addAppAdminFormCancel').click( function () {
+      $('#addAppAdmin_form').fadeOut('fast')
     })
 
+    $('#addAppAdminFormAdd').click( function (e) {
+      var app = currentApp
+      var admin = $('#adminEmail_input').val()
+      $.post('/dashboard/add/admin', { id: app, admin: admin }, function ( data, statis ) {
+        $('#addAppAdmin_form').fadeOut('fast')
+        showAppDetails( app )
+      })
+      return false
+    })
+
+    function addAppAdminForm( app ) {
+      $('#addAppAdmin_form').fadeIn('fast')
+      $('#adminEmail_input').focus()
+      $('#adminEmail_input').val('')
+      $('#addAppAdminFormAdd').attr('disabled', 'disabled')
+      return false
+    }
+
+    $('#adminEmail_input').bind('input', function () {
+      if ( $('#adminEmail_input').val() ) {
+        $('#addAppAdminFormAdd').removeAttr('disabled')
+      } else {
+        $('#addAppAdminFormAdd').attr('disabled', 'disabled')
+      }
+    })
+
+    $('#confirmDeleteFormDelete').click( function() {
+      var app = currentApp
+      $.post('/dashboard/delete/app', { id: app }, function ( data, status ) {
+        $('#confirmDelete_form').fadeOut('fast')
+        $('#appDetails_popup').fadeOut('fast')
+        updateDashboardTable()
+      })
+      return false
+    })
+
+    function deleteApp( app ) {
+      $('#confirmDelete_form').fadeIn('fast')
+      $('#confirmDeleteTitle').text('Delete registration of "'+app+'"?')
+      return false
+    }
+
+    $('#confirmAdminDeleteFormDelete').click( function() {
+      app = currentApp
+      admin = currentAdmin
+      $.post('/dashboard/delete/admin', { id: app, admin: admin }, function ( data, status ) {
+        $('#confirmAdminDelete_form').fadeOut('fast')
+        showAppDetails( app )
+      })
+      return false
+    })
+
+    function deleteAppAdmin( app, admin ) {
+      $('#confirmAdminDelete_form').fadeIn('fast')
+      $('#confirmAdminDeleteTitle').text('Remove admin "'+admin+'" from "'+app+'"?')
+      currentAdmin = admin
+      return false
+    }
+
+
+    function showAppDetails ( app, fadeIn ) {
+      currentApp = app
+
+      $('#appDetailsTable').empty()
+      if ( fadeIn ) $('#appDetails_popup').fadeIn('fast')
+      $.post('/dashboard/app/details', {id: app}, function ( data, status ) {
+        if (status == "success" && !data.error) {
+          var details = data.result.details
+          var currentAdmin = data.result.email
+          $('#appDetailsTable').append('<tr><td>Name</td><td>' + details.name + '</td></tr>')
+          $('#appDetailsTable').append('<tr><td>ID</td><td>' + app + '</td></tr>')
+          $('#appDetailsTable').append('<tr><td>Key</td><td id="appKey">' + details.keys.latest.key + '</td></tr>')
+
+          // TBD - will need to make Key line wrap so that it is on multiple lines, but can be selected easily as a single
+          // text string for developers to copy and paste into code
+
+          $('#appDetailsTable').append('<tr><td>Key ID</td><td id="appKID">' + details.keys.latest.kid + '</td></tr>')
+          $('#appDetailsTable').append('<tr><td></td><td><a href="" id="refreshAppKey">refresh key</a></td></tr>')
+          $('#refreshAppKey').click( function () { return refreshAppKey( app ) } )
+          $('#appDetailsTable').append('<tr><td>Admins</td><td><a href="" id="addAppAdmin">add</a></td></tr>')
+          $('#addAppAdmin').click( function () { return addAppAdminForm( app ) } )
+          var item = 0 // use for ids for delete links
+          Object.keys( details.admins ).forEach( function ( admin ) {
+            // filter out adding delete if current user is the Admin TBD
+            if (currentAdmin === admin) {
+              $('#appDetailsTable').append('<tr><td></td><td>'+admin+'</td></tr>')
+            } else {
+              $('#appDetailsTable').append('<tr><td><a href="" id="deleteAppAdmin_'+item+'">delete</a></td><td>'+admin+'</td></tr>')
+            }
+            $('#deleteAppAdmin_'+item).click( function () { return deleteAppAdmin( app, admin ) } )
+          })
+
+          // TBD -- adjust the popup height so appropriate for number of admins listed
+          $('#appDetailsDelete').click( function () { return deleteApp( app ) } )
+
+        }
+      })
+      return false
+    }
+
+
+    /////////////////////////////////////////////////////////////////////////////////////////////
+    // Dashboard refresh
+    function updateDashboardTable () {
+      $.get('/dashboard/list/apps', function ( data, status ) {
+        if (status == "success" && !data.error) {
+          $('#appTable').empty()
+          var list = data.result.list
+          var html = null
+          var item = 0  // use a counter since the app has '.'s which browser is cranky about in element IDs
+          Object.keys( list ).forEach( function ( app ) {
+            html = '<tr><td><a href="" id="' + item +'_details">' + list[app].name +'</a>' +
+              '</td><td>' + app + '</td></tr>'
+            $('#appTable').append( html )
+            $('#'+item+'_details').click( function () { return showAppDetails( app, true ); } )
+            item++
+          })
+        }
+      })
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    // Register App form
 
     $('#registerApp_form').hide()
 
     $('#registerApp').click( function () {
       $('#registerApp_form').fadeIn('fast')
-      $('#registerApp_id_input').val("")
+      $('#registerApp_id_input').val('')
+      $('#registerApp_name_input').val('')
       $('#registerApp_name_input').focus()
-      $('#registerAppFormSubmit').attr("disabled", "disabled")
-      $('#registerApp_id_input').removeAttr("disabled")
-      $('#registerApp_name_input').removeAttr("disabled")
+      $('#registerAppFormSubmit').attr('disabled', 'disabled')
+      $('#registerApp_id_input').removeAttr('disabled')
+      $('#registerApp_name_input').removeAttr('disabled')
+      $('#registerAppFormOk').hide()
+      $('#registerAppFormSubmit').show()
+      $('#registerAppFormCancel').show()
       return false
     })
 
@@ -87,23 +289,23 @@
       var host = $('#registerApp_id_input').val()
       if (!host) {
         $('#registerApp_status').text('Enter a valid hostname').css('color','black')
-        $('#registerAppFormSubmit').attr("disabled", "disabled")
+        $('#registerAppFormSubmit').attr('disabled', 'disabled')
 
       } else if // valid hostname
           ( host.match( /^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9])$/ ) ) {
         $('#registerApp_status').text('Hostname is valid').css('color','black')
-        $('#registerAppFormSubmit').removeAttr("disabled")
+        $('#registerAppFormSubmit').removeAttr('disabled')
 
       } else {
         $('#registerApp_status').text('Hostname is invalid').css('color','red')
-        $('#registerAppFormSubmit').attr("disabled", "disabled")
+        $('#registerAppFormSubmit').attr('disabled', 'disabled')
       }
 
     })
 
     $('#registerAppFormSubmit').click( function () {
-      $('#registerApp_id_input').attr("disabled", "disabled")
-      $('#registerApp_name_input').attr("disabled", "disabled")
+      $('#registerApp_id_input').attr('disabled', 'disabled')
+      $('#registerApp_name_input').attr('disabled', 'disabled')
       var id = $('#registerApp_id_input').val()
       var name = $('#registerApp_name_input').val()
       $('#registerApp_status').text('Registering App "'+id+'"" ... ').css('color','black')
@@ -112,18 +314,21 @@
 
       $.post('/dashboard/new/app', { name: name, id: id}, function ( data, status ) {
 
+        updateDashboardTable()
+
 console.log('status',status)
 console.log('data\n',data)
 
         if (status == "success" && !data.error) {
-          $('#registerAppFormOk').show()
-          $('#registerApp_status').text(name+' ('+id+') is registered').css('color','black')
+          //  $('#registerAppFormOk').show()  -- TBD Delete? -- changed flow to not show completion
+          // $('#registerApp_status').text(name+' ('+id+') is registered').css('color','black')
+          $('#registerApp_form').fadeOut('fast')
         }
       })
 
     })
 
-
+    // TBD - delete? -- changed flow to not have ok at end
     $('#registerAppFormOk').click( function () {
       $('#registerApp_form').fadeOut('fast')
     })
@@ -159,12 +364,14 @@ console.log('data\n',data)
       })
 
       // get registered apps and insert into Dashboard table
+      updateDashboardTable()
+
     } // onReady
 
     $(document).ready(onReady)
 
-    })(); // end wrapper
-  </script>
+  })(); // end wrapper
+</script>
 
 </body>
 </html>

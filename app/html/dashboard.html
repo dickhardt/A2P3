@@ -73,6 +73,8 @@
       $('#registerApp_id_input').val("")
       $('#registerApp_name_input').focus()
       $('#registerAppFormSubmit').attr("disabled", "disabled")
+      $('#registerApp_id_input').removeAttr("disabled")
+      $('#registerApp_name_input').removeAttr("disabled")
       $('#registerAppFormOk').hide()
       $('#registerAppFormSubmit').show()
       $('#registerAppFormCancel').show()
