@@ -29,7 +29,7 @@
         }
       Object.keys( servers ).forEach( function (host ) {
         var url = config.protocol + '://' + host + '.' + config.baseDomain + ':' + config.port +
-          '/login?returnURL=http%3a%2f%2fsetup.local.a2p3.net%3a8080%2fbackdoor%2flogin%2fdev%40example.com'
+          '/login?returnURL=http%3a%2f%2fsetup.' + config.baseDomain + '%3a8080%2fbackdoor%2flogin%2fdev%40example.com'
         $('#loginList').append('<li><a href="' + url + '">' + servers[host] + '</a></li>')
       })
     })
