@@ -602,6 +602,53 @@ function registerDemoApp ( rs, standard ) {
       })
     })
 
+    describe(' /dashboard/list/apps', function () {
+      it('should return the Demo App', function (done) {
+        var options =
+          { url: config.baseUrl[rs] + '/dashboard/list/apps'
+          , method: 'GET'
+          }
+        fetch( options, function ( e, response, body ) {
+          should.not.exist( e )
+          should.exist( response )
+          response.statusCode.should.equal( 200 )
+          should.exist( body )
+          var r = JSON.parse( body )
+          should.exist( r )
+          r.should.have.property('result')
+          r.result.should.have.property('list')
+          r.result.list.should.have.property('demo.example.com')
+          done( null )
+        })
+      })
+    })
+
+    describe(' /dashboard/app/details', function () {
+      it('should return the Demo App details', function (done) {
+        var options =
+          { url: config.baseUrl[rs] + '/dashboard/app/details'
+          , form: { id: demoApp.host }
+          , method: 'POST'
+          }
+        fetch( options, function ( e, response, body ) {
+          should.not.exist( e )
+          should.exist( response )
+          response.statusCode.should.equal( 200 )
+          should.exist( body )
+          var r = JSON.parse( body )
+          should.exist( r )
+          r.should.have.property('result')
+          r.result.should.have.property('details')
+          r.result.details.should.have.property('admins')
+          r.result.details.admins.should.have.property( devUser.email )
+          r.should.not.have.property('error')
+          r.should.have.property('result')
+          done( null )
+        })
+      })
+    })
+
+
   })
 }
 

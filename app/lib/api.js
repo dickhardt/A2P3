@@ -100,7 +100,7 @@ exports.Standard.prototype.call = function ( host, api, params, callback ) {
         return callback( e, null)
       }
       if (data.error) {
-        var apiError = new Error(data.error.message + data.error.stack)
+        var apiError = new Error(data.error.message)
         apiError.code = data.error.code
         return callback( apiError, null)
       }

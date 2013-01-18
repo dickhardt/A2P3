@@ -75,10 +75,6 @@ exports.check = function ( keys, accessList, reg ) {
       paramCheck( jws )
       if ( accessList ) {
         if ( !accessList[jws.payload.iss] ) {
-
-console.log('\nissuer:',jws.payload.iss)
-console.log('accessList\n',accessList)
-
           err = new Error('Access not allowed')
           err.code = 'ACCESS_DENIED'
           return next( err )

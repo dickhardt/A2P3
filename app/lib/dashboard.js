@@ -15,24 +15,26 @@ var express = require('express')
 
 
 exports.routes = function ( app, RS, vault ) {
-    var std = RS.replace(/\...$/,'')
-    if (std == RS) std = null // std is set if we are doing a province standardized resource
 
-    // only called at Registrar Dashboard
-    function dashboardAddAdmin ( req, res, next ) {
-      db.addAppAdmin( RS, req.body.id, req.body.admin, function ( e ) {
-        if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
-        return res.send( {result:{'id': req.body.id, 'admin': req.body.admin}} )
-      })
-    }
+  var std = RS.replace(/\...$/,'')
 
-    // only called at Registrar Dashboard
-    function dashboardDeleteAdmin ( req, res, next ) {
-      db.deleteAppAdmin( RS, req.body.id, req.body.admin, function ( e ) {
-        if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
-        return res.send( { result: {success: true } } )
-      })
-    }
+  if (std == RS) std = null // std is set if we are doing a province standardized resource
+
+  // only called at Registrar Dashboard
+  function dashboardAddAdmin ( req, res, next ) {
+    db.addAppAdmin( RS, req.body.id, req.body.admin, function ( e ) {
+      if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
+      return res.send( {result:{'id': req.body.id, 'admin': req.body.admin}} )
+    })
+  }
+
+  // only called at Registrar Dashboard
+  function dashboardDeleteAdmin ( req, res, next ) {
+    db.deleteAppAdmin( RS, req.body.id, req.body.admin, function ( e ) {
+      if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
+      return res.send( { result: {success: true } } )
+    })
+  }
 
   // only called at Registrar Dashboard
   function dashboardAppIdTaken ( req, res, next ) {
@@ -50,11 +52,11 @@ exports.routes = function ( app, RS, vault ) {
   }
 
   function dashboardAppDetails ( req, res, next ) {
-      db.appDetails( RS, req.session.email, req.body.id, function ( e, details ) {
-        if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
-        return res.send( { result: {'details': details, 'email': req.session.email } } )
-      })
-    }
+    db.appDetails( RS, req.session.email, req.body.id, function ( e, details ) {
+      if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
+      return res.send( { result: {'details': details, 'email': req.session.email } } )
+    })
+  }
 
 
 
@@ -77,9 +79,9 @@ exports.routes = function ( app, RS, vault ) {
     var stdApi = new api.Standard( RS, vault )
     stdApi.call( 'registrar', '/app/verify'
                 , {id: req.body.id, token: req.session.tokens[config.host.registrar]}
-                , function ( e, name ) {
-      if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
-      req.body.name = name
+                , function ( e, result ) {
+      if (e) return next(e)
+      req.body.name = result.name
       newApp()
     })
   }
@@ -173,7 +175,10 @@ exports.routes = function ( app, RS, vault ) {
           if (e) return badSession( e.message )
           if (!profile.email) return badSession( 'No email for user.' )
           req.session.email = profile.email
-          return next()
+          db.registerAdmin( RS, req.session.email, req.session.di, function ( e ) {
+            if (e) return next (e)
+            return next()
+          })
         })
       }
       if ( !req.session.tokens || !req.session.tokens[config.host.email] ) return badSession('No tokens in session')
@@ -192,7 +197,7 @@ exports.routes = function ( app, RS, vault ) {
           if (error) return badSession( error )
           if (!result.email) badSession( 'No email for user.' )
           req.session.email = result.email
-          db.registerAdmin( RS, result.email, req.session.di, function ( e ) {
+          db.registerAdmin( RS, req.session.email, req.session.di, function ( e ) {
             if (e) return next (e)
             return next()
           })
@@ -235,13 +240,14 @@ exports.routes = function ( app, RS, vault ) {
           )
   app.post('/dashboard/app/details'
           , checkSession
-          , mw.checkParams( {'body':['id']} )
+          , mw.checkParams( {'body':['id'],'session':['email','di']} )
           , checkAdminAuthorization
           , dashboardAppDetails
           )
   app.post('/dashboard/new/app'
           , checkSession
-          , mw.checkParams( {'body':['id']} ) // {'body':['id','name']} only Registrar takes name
+          , mw.trace
+          , mw.checkParams( {'body':['id'],'session':['email','di']} ) // {'body':['id','name']} only Registrar takes name
           , dashboardNewApp
           )
   app.post('/dashboard/delete/app'
@@ -270,7 +276,7 @@ exports.routes = function ( app, RS, vault ) {
     accessList[config.host[std]] = true
     app.post('/std/new/app'
             , request.check( vault.keys, accessList, config.host[RS])
-            , mw.a2p3Params( ['id', 'name'] )
+            , mw.a2p3Params( ['id', 'name', 'email'] )
             , stdNewApp
             )
     app.post('/std/delete/app'

@@ -17,7 +17,7 @@ var express = require('express')
 // main function that sets up all the routes
 exports.routes = function ( app, RS, vault ) {
 
-var stdApi = new api.Standard( RS, vault )
+  var stdApi = new api.Standard( RS, vault )
 
   function _callAllResources ( api, params, callback ) {
     var tasks = {}
@@ -38,6 +38,13 @@ var stdApi = new api.Standard( RS, vault )
     })
   }
 
+  function dashboardAppDetails ( req, res, next ) {
+    db.appDetails( RS, req.session.email, req.body.id, function ( e, details ) {
+      if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
+      return res.send( { result: {'details': details, 'email': req.session.email } } )
+    })
+  }
+
   function dashboardNewApp ( req, res, next ) {
     stdApi.call( 'registrar', '/app/verify'
                 , {id: req.body.id, token: req.session.tokens[config.host.registrar]}
@@ -45,7 +52,9 @@ var stdApi = new api.Standard( RS, vault )
       if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
       db.newApp( RS, req.body.id, req.body.name, req.session.email, function ( e ) {
         if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
-        _callAllResources( '/std/new/app', {id: req.body.id, name: req.body.name}, function ( e, results ) {
+        _callAllResources( '/std/new/app'
+                    , {id: req.body.id, name: req.body.name, email: req.session.email}
+                    , function ( e, results ) {
           if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
           var keys = {}
           Object.keys( results ).forEach( function ( host ) {
@@ -159,6 +168,12 @@ var stdApi = new api.Standard( RS, vault )
   app.get('/dashboard/list/apps'
           , checkSession
           , dashboardlistApps
+          )
+  app.post('/dashboard/app/details'
+          , checkSession
+          , mw.checkParams( {'body':['id'],'session':['email','di']} )
+          , checkAdminAuthorization
+          , dashboardAppDetails
           )
   app.post('/dashboard/new/app'
           , checkSession

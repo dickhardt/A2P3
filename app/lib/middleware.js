@@ -19,7 +19,10 @@ var config = require('../config')
   , marked = require('marked')
 
 exports.trace = function trace ( req, res, next ) {
-  console.log('TRACE:',req.host,req.originalUrl)
+  console.log('\nTRACE:',req.host,req.originalUrl,'\n',req.session)
+
+debugger;
+
   next()
 }
 

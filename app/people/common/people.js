@@ -175,7 +175,7 @@ exports.app = function( province ) {
           )
 
   app.get('/documentation', mw.md( config.rootAppDir+'/people/README.md' ) )
-  app.get(/\/scope[\w\/]*/, mw.trace, mw.scopes( config.rootAppDir + '/people/scopes.json', config.host['people.'+province] ) )
+  app.get(/\/scope[\w\/]*/, mw.scopes( config.rootAppDir + '/people/scopes.json', config.host['people.'+province] ) )
 
   app.use( mw.errorHandler )
   return app

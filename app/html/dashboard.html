@@ -3,7 +3,9 @@
 <head>
 <style type="text/css">
   .loginStatus {text-align:right;}
-  .registerAppForm{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:250px; height:110px; position: absolute; top:75px; left:50%; margin-left:-125px; padding:10px; border-radius:4px;}
+  .registerAppForm{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:250px; height:140px; position: absolute; top:75px; left:50%; margin-left:-125px; padding:10px; border-radius:4px;}
+  .appDetailPopup{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:500px; height:300px; position: absolute; top:75px; left:5%; margin-left:-20px; padding:10px; border-radius:4px;}
+  .confirmDeleteForm{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:300px; height:80px; position: absolute; top:100px; left:10%; margin-left:-20px; padding:10px; border-radius:4px;}
 </style>
 
 </head>
@@ -17,13 +19,17 @@
     <a href="" id="login"> login </a>
     <a href="/logout" id="logout">logout </a>
   </div>
-
   <H1 id='title'>XX Dashboard</H1>
 
   <a href="" id="registerApp">Register Application</a>
 
+ <hr>
+
+  <table id='appTable'>
+  </table>
+
 <div id="registerApp_form" class="registerAppForm">
-  <span class="form_title">Register an App</span>
+  <span class="form_title">Register an Existing App</span>
     <form id="registerAppForm_input">
       <dl>
         <dt></dt><dd>
@@ -36,15 +42,192 @@
       </dl>
         <p><input id="registerAppFormCancel" type="button" value="Cancel">
             <input id="registerAppFormSubmit" type="button" value="Register">
-            <input id="registerAppFormOk" type="button" value="Ok">
           </p>
     </form>
 </div>
 
 
+<div id="appDetails_popup" class="appDetailPopup">
+  <span id="appDetailsTitle" >App Details</span>
+    <table id="adminsList">
+        <tr><td>Name</td><td id="appDetails_Name"></td></tr>
+        <tr><td>ID</td><td id="appDetails_ID"></td></tr>
+        <tr><td>Key</td><td id="appKey"></td></tr>
+        <tr><td>Key ID</td><td id="appKID"></td></tr>
+        <tr><td></td><td><a href="" id="refreshAppKey">refresh key</a></td></tr>
+    </table>
+    <p>
+      <input id="appDetailsDelete" type="button" value="Delete">
+      <input id="appDetailsClose" type="button" value="Close">
+    </p>
+</div>
+
+<div id="confirmDelete_form" class="confirmDeleteForm">
+  <span id="confirmDeleteTitle">Confirm Deletion XX</span>
+    <form id="confirmDeleteForm_input">
+      <p>
+        <input id="confirmDeleteFormCancel" type="button" value="Cancel">
+        <input id="confirmDeleteFormDelete" type="button" value="Delete">
+      </p>
+    </form>
+</div>
+
   <script type="text/javascript">
     (function() { // wrapper
 
+    var currentApp = null
+
+    ///////////////////////////////////////////////////////////////////////////
+    // setup initial states
+
+    $('#confirmDelete_form').hide()
+    $('#appDetails_popup').hide()
+
+    $('#refreshAppKey').click( function () {
+      app = currentApp
+      $('#appKID').fadeOut('fast')
+      $('#appKey').fadeOut('fast')
+      $.post('/dashboard/refresh/key', { id: app }, function ( data, status ) {
+        if (status == "success" && !data.error) {
+          $('#appKID').text( data.result.key.latest.kid )
+          $('#appKey').text( data.result.key.latest.key )
+          $('#appKID').fadeIn('fast')
+          $('#appKey').fadeIn('fast')
+        } // TBD -- what do we show on error????
+      })
+      return false
+    })
+
+    /////////////////////////////////////////////////////////////////////////
+    // App Detail Popup
+
+    $('#appDetailsClose').click( function () {
+      $('#appDetails_popup').fadeOut('fast')
+    })
+
+    $('#confirmDeleteFormCancel').click( function () {
+      $('#confirmDelete_form').fadeOut('fast')
+    })
+
+    $('#confirmDeleteFormDelete').click( function() {
+      var app = currentApp
+      $.post('/dashboard/delete/app', { id: app }, function ( data, status ) {
+        $('#confirmDelete_form').fadeOut('fast')
+        $('#appDetails_popup').fadeOut('fast')
+        updateDashboardTable()
+      })
+      return false
+    })
+
+    $('#appDetailsDelete').click( function () {
+      app = currentApp
+      $('#confirmDelete_form').fadeIn('fast')
+      $('#confirmDeleteTitle').text('Delete registration of "'+app+'"?')
+      return false
+    })
+
+    function showAppDetails ( app, fadeIn ) {
+      currentApp = app
+
+      if ( fadeIn ) $('#appDetails_popup').fadeIn('fast')
+      $.post('/dashboard/app/details', {id: app}, function ( data, status ) {
+        if (status == "success" && !data.error) {
+          var details = data.result.details
+          var currentAdmin = data.result.email
+          $('#appDetails_Name').text( details.name )
+          $('#appDetails_ID').text( app )
+          $('#appKey').text( details.keys.latest.key )
+
+          // TBD - will need to make Key line wrap so that it is on multiple lines, but can be selected easily as a single
+          // text string for developers to copy and paste into code
+
+          $('#appKID').text( details.keys.latest.kid )
+        }
+      })
+      return false
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////////
+    // Dashboard refresh
+    function updateDashboardTable () {
+      $.get('/dashboard/list/apps', function ( data, status ) {
+        if (status == "success" && !data.error) {
+          $('#appTable').empty()
+          var list = data.result.list
+          var html = null
+          var item = 0  // use a counter since the app has '.'s which browser is cranky about in element IDs
+          Object.keys( list ).forEach( function ( app ) {
+            html = '<tr><td><a href="" id="' + item +'_details">' + list[app].name +'</a>' +
+              '</td><td>' + app + '</td></tr>'
+            $('#appTable').append( html )
+            $('#'+item+'_details').click( function () { return showAppDetails( app, true ); } )
+            item++
+          })
+        }
+      })
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    // Register App form
+
+    $('#registerApp_form').hide()
+
+    $('#registerApp').click( function () {
+      $('#registerApp_form').fadeIn('fast')
+      $('#registerApp_id_input').val('')
+      $('#registerApp_id_input').focus()
+      $('#registerAppFormSubmit').attr('disabled', 'disabled')
+      $('#registerApp_id_input').removeAttr('disabled')
+      $('#registerAppFormSubmit').removeAttr('disabled')
+      $('#registerAppFormCancel').removeAttr('disabled')
+      return false
+    })
+
+    $('#registerApp_id_input').bind('input', function () {
+      var host = $('#registerApp_id_input').val()
+      if (!host) {
+        $('#registerApp_status').text('Enter a valid hostname').css('color','black')
+        $('#registerAppFormSubmit').attr('disabled', 'disabled')
+
+      } else if // valid hostname
+          ( host.match( /^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9])$/ ) ) {
+        $('#registerApp_status').text('Hostname is valid').css('color','black')
+        $('#registerAppFormSubmit').removeAttr('disabled')
+
+      } else {
+        $('#registerApp_status').text('Hostname is invalid').css('color','red')
+        $('#registerAppFormSubmit').attr('disabled', 'disabled')
+      }
+
+    })
+
+    $('#registerAppFormSubmit').click( function () {
+      $('#registerApp_id_input').attr('disabled', 'disabled')
+      var id = $('#registerApp_id_input').val()
+      $('#registerApp_status').text('Registering App "'+id+'"" ... ').css('color','black')
+      $('#registerApp_id_input').attr('disabled', 'disabled')
+      $('#registerAppFormSubmit').attr('disabled', 'disabled')
+      $('#registerAppFormCancel').attr('disabled', 'disabled')
+      $.post('/dashboard/new/app', { id: id}, function ( data, status ) {
+        if (data.error) {
+          $('#registerApp_status').text( data.error.message ).css('color','red')
+          $('#registerApp_id_input').removeAttr('disabled')
+          $('#registerAppFormSubmit').removeAttr('disabled')
+          $('#registerAppFormCancel').removeAttr('disabled')
+        } else {
+          updateDashboardTable()
+          $('#registerApp_form').fadeOut('fast')
+          showAppDetails( id, true )  // show user their new app
+        }
+      })
+    })
+
+
+    $('#registerAppFormCancel').click( function () {
+      $('#registerApp_form').fadeOut('fast')
+    })
+
+/*
     function updateDashboardTable () {
 
     }
@@ -127,8 +310,10 @@ console.log('data\n',data)
     $('#registerAppFormCancel').click( function () {
       $('#registerApp_form').fadeOut('fast')
     })
+*/
 
-
+    ///////////////////////////////////////////////////////////////////////////////////
+    // Init code
 
     function onReady() {
 
@@ -155,6 +340,8 @@ console.log('data\n',data)
       })
 
       // get registered apps and insert into Dashboard table
+      updateDashboardTable()
+
     } // onReady
 
     $(document).ready(onReady)

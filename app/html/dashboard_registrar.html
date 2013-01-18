@@ -232,7 +232,6 @@
     function showAppDetails ( app, fadeIn ) {
       currentApp = app
 
-      $('#appAdminDetailsTable').empty()
       if ( fadeIn ) $('#appDetails_popup').fadeIn('fast')
       $.post('/dashboard/app/details', {id: app}, function ( data, status ) {
         if (status == "success" && !data.error) {
@@ -299,7 +298,6 @@
       $('#registerAppFormSubmit').attr('disabled', 'disabled')
       $('#registerApp_id_input').removeAttr('disabled')
       $('#registerApp_name_input').removeAttr('disabled')
-      $('#registerAppFormOk').hide()
       $('#registerAppFormSubmit').show()
       $('#registerAppFormCancel').show()
       return false
@@ -345,7 +343,8 @@
       $('#registerApp_form').fadeOut('fast')
     })
 
-
+    ///////////////////////////////////////////////////////////////////////////////////
+    // Init code
 
     function onReady() {
 
@@ -375,8 +374,8 @@
       updateDashboardTable()
 
     } // onReady
-      $(document).ready( onReady )
 
+  $(document).ready( onReady )
 
   })(); // end wrapper
 </script>

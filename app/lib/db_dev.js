@@ -77,10 +77,6 @@ exports.addAgent = function ( asDI, asHost, name, cb ) {
   dummyNoSql['ix:di:' + ixDI][handle] = { 'name': name, 'AS': asHost, 'created': Date.now() }
   dummyNoSql['ix:di:' + ixDI + ':handle:' + handle + ':token'] = token
   dummyNoSql['registrar:agentHandle:' + token] = ixDI // registrarDI - need ixDI to map to RS for Authorization calls
-
-console.log('\naddAgent',asDI,asHost,name)
-console.log('handles\n',dummyNoSql['ix:di:' + ixDI])
-
   process.nextTick( function () { cb( null, token, handle ) } )
 }
 
@@ -98,12 +94,6 @@ exports.listAgents = function ( asDI, asHost, cb ) {
       , created: agents[handle].created
       }
   })
-
-console.log('\nlistAgents',asDI,asHost)
-console.log('handles\n',dummyNoSql['ix:di:' + ixDI])
-console.log('listAgent results\n', results)
-
-
   process.nextTick( function () { cb( null, results ) } )
 }
 
@@ -220,9 +210,14 @@ exports.checkApp = function ( reg, id, di, cb) {
   var email = dummyNoSql[reg + ':admin:di:' + di]
   if (!email) {
     e = new Error('unknown administrator')
+    e.code = 'UNKNOWN_USER'
   } else {
-    ok = ( dummyNoSql[reg + ':app:' + id + ':admins'][email] == 'ACTIVE' )
-    if (!ok) e = new Error('Account not authorative for '+id)
+    var key = reg + ':app:' + id + ':admins'
+    ok = ( dummyNoSql[key] && ( dummyNoSql[key][email] == 'ACTIVE' ) )
+    if (!ok) {
+      e = new Error('Account not authorative for '+id)
+      e.code = 'ACCESS_DENIED'
+    }
   }
   if (ok) name =  dummyNoSql[reg + ':app:' + id + ':name']
   process.nextTick( function () { cb( e, name ) } )
@@ -242,10 +237,6 @@ exports.deleteAppAdmin = function ( reg, id, admin, cb ) {
 }
 
 exports.deleteApp = function ( reg, id, cb ) {
-
-console.log('\ndeleteApp:\nreg:',reg,'\nid:',id)
-console.log('app admins:',dummyNoSql[reg + ':app:' + id + ':admins'])
-
   delete dummyNoSql[reg + ':app:' + id + ':name']
   delete keyChain[reg][id]
   var admins = Object.keys( dummyNoSql[reg + ':app:' + id + ':admins'] )
