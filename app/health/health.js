@@ -6,7 +6,7 @@
 
 var express = require('express')
   , vault = require('./vault')
-  , stdDashboard = require('../lib/stdDashboard')
+  , stdDashboard = require('../lib/stddashboard')
   , mw = require('../lib/middleware')
   , config = require('../config')
 
