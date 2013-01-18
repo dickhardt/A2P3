@@ -20,6 +20,7 @@ exports.app = function( ) {
   stdDashboard.routes( app, 'people', vault )  // add in routes for the registration paths
 
   app.get('/documentation', mw.md( config.rootAppDir+'/people/README.md' ) )
+  app.get(/\/scope[\w\/]*/, mw.trace, mw.scopes( __dirname + '/scopes.json', config.host.people ) )
 
   app.use( mw.errorHandler )
   return app

@@ -19,6 +19,7 @@ exports.app = function( ) {
   // All Dashboard Web pages and API
   stdDashboard.routes( app, 'health', vault )  // add in routes for the registration paths
 
+  app.get(/\/scope[\w\/]*/, mw.trace, mw.scopes( __dirname + '/scopes.json', config.host.health ) )
   app.get('/documentation', mw.md( config.rootAppDir+'/health/README.md' ) )
   app.use( mw.errorHandler )
   return app

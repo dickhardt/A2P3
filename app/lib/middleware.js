@@ -177,4 +177,32 @@ exports.md = function ( file, dontCache ) {
   }
 }
 
+/*
+* scopes() reads in a scopes.json file and serves out scope responses inserting the host
+*
+* serves the scope responses
+*/
+exports.scopes = function scopes ( fname, rs ) {
+  var rawResources = require( fname )
+  var resources = {}
+  Object.keys( rawResources ).forEach( function ( r ) {
+    resources[r] = {}
+    Object.keys( rawResources[r] ).forEach( function ( language ) {
+      resources[r][language] = rawResources[r][language].replace( '%host', rs )
+    })
+  })
+  delete rawResources
+  return function ( req, res, next ) {
+    if (req.path === '/scopes')  // special case to get all scopes
+      return res.send( resources )
+    if (!resources[req.path]) {
+      var e = new Error( 'Uknown scope "'+ req.path +'"' )
+      e.code = 'UNKNOWN_SCOPE'
+      return next( e )
+    }
+    return res.send( resources[req.path] )
+  }
+}
+
+
 

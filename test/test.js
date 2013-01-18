@@ -733,6 +733,19 @@ describe('Demo App calling ', function () {
     })
   })
 
+  describe('people:/photo', function(){
+    it('should return a URL to a photo ', function (done){
+      api.call( 'people.bc', '/photo', { token: rsTokens[config.host['people.bc']] }, function ( error, result) {
+        should.not.exist( error )
+        should.exist( result )
+        result.should.not.have.property('name')
+        result.should.have.property('photo')
+        result.photo.should.equal( config.testUser.photo )
+        done()
+      })
+    })
+  })
+
   describe('people:/details', function(){
     it('should return a detailed profile ', function (done){
       api.call( 'people.bc', '/details', { token: rsTokens[config.host['people.bc']] }, function ( error, result) {

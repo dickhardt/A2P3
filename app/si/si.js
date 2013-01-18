@@ -183,6 +183,7 @@ exports.app = function() {
           )
 
   app.get('/documentation', mw.md( config.rootAppDir+'/si/README.md' ) )
+  app.get(/\/scope[\w\/]*/, mw.trace, mw.scopes( __dirname + '/scopes.json', config.host.si ) )
 
   app.use( mw.errorHandler )
 

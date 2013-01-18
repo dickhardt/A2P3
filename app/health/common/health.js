@@ -232,6 +232,7 @@ exports.app = function( province ) {
           )
 
   app.get('/documentation', mw.md( config.rootAppDir+'/health/README.md' ) )
+  app.get(/\/scope[\w\/]*/, mw.trace, mw.scopes( config.rootAppDir + '/health/scopes.json', config.host['health.'+province] ) )
 
   app.use( mw.errorHandler )
 

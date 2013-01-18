@@ -93,6 +93,22 @@ function namePhoto ( province ) {
   }
 }
 
+// /photo API called from a registered App
+function photo ( province ) {
+  return function photo ( req, res, next ) {
+    var di = req.token.sub
+    db.getProfile( 'people.'+province, di, function ( e, profile ) {
+      if (e) next( e )
+      if (!profile || !profile.photo) {
+        var err = new Error('no photo for user')
+        err.code = 'NO_PROFILE'
+        return next( e )
+      }
+      res.send( {result: {'photo': profile.photo} } )
+    })
+  }
+}
+
 // /details API called from a registered App
 function details ( province ) {
   return function details ( req, res, next ) {
@@ -145,6 +161,12 @@ exports.app = function( province ) {
           , token.checkRS( vault.keys, 'people.'+province, ['/scope/namePhoto','/scope/details'], 'people' )
           , namePhoto( province )
           )
+  app.post('/photo'
+          , request.check( vault.keys, null, 'people.'+province )
+          , mw.a2p3Params( ['token'] )
+          , token.checkRS( vault.keys, 'people.'+province, ['/scope/namePhoto','/scope/details','/scope/photo'], 'people' )
+          , photo( province )
+          )
   app.post('/details'
           , request.check( vault.keys, null, 'people.'+province )
           , mw.a2p3Params( ['token'] )
@@ -152,8 +174,8 @@ exports.app = function( province ) {
           , details( province )
           )
 
-  app.get('/', function( req, res ) { res.sendfile( config.rootAppDir + '/html/homepage_rs.html' ) } )
   app.get('/documentation', mw.md( config.rootAppDir+'/people/README.md' ) )
+  app.get(/\/scope[\w\/]*/, mw.trace, mw.scopes( config.rootAppDir + '/people/scopes.json', config.host['people.'+province] ) )
 
   app.use( mw.errorHandler )
   return app

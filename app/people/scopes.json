@@ -1,0 +1,6 @@
+{ "/scope/over19":          { "en": "Access if you are over 19 years of age from '%host'." }
+, "/scope/under20over65":   { "en": "Access if you are under 20 or over 65 years in age from '%host'." }
+, "/scope/namePhoto":       { "en": "Access your name and photo from '%host'."}
+, "/scope/photo":           { "en": "Access your photo from '%host'."}
+, "/scope/details":         { "en": "Access your name, date of birth, address and photo from '%host'."}
+}
