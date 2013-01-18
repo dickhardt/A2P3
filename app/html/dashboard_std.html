@@ -3,6 +3,9 @@
 <head>
 <style type="text/css">
   .loginStatus {text-align:right;}
+  .registerAppForm{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:250px; height:140px; position: absolute; top:75px; left:50%; margin-left:-125px; padding:10px; border-radius:4px;}
+  .appDetailPopup{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:500px; height:300px; position: absolute; top:75px; left:5%; margin-left:-20px; padding:10px; border-radius:4px;}
+  .confirmDeleteForm{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:300px; height:80px; position: absolute; top:100px; left:10%; margin-left:-20px; padding:10px; border-radius:4px;}
 </style>
 
 </head>
@@ -11,43 +14,254 @@
   <script type="text/javascript"    src="/js/purl.js"></script>
   <script type="text/javascript"    src="/js/config.js"></script>
 
-<div class="loginStatus">
-  <span id="loginEmail"></span>
-  <a href="" id="login"> login </a>
-  <a href="/logout" id="logout">logout </a>
+  <div class="loginStatus">
+    <span id="loginEmail"></span>
+    <a href="" id="login"> login </a>
+    <a href="/logout" id="logout">logout </a>
+  </div>
+  <H1 id='title'>XX Dashboard</H1>
+
+  <a href="" id="registerApp">Register Application</a>
+
+ <hr>
+
+  <table id='appTable'>
+  </table>
+
+<div id="registerApp_form" class="registerAppForm">
+  <span class="form_title">Register an Existing App</span>
+    <form id="registerAppForm_input">
+      <dl>
+        <dt></dt><dd>
+          <label for="ApID">ID</label>
+          <input type="text" name="AppID" value="" id="registerApp_id_input">
+        </dd>
+        <dt></dt><dd>
+        <label id="registerApp_status"><i>ID is hostname</i></label>
+      </dd>
+      </dl>
+        <p><input id="registerAppFormCancel" type="button" value="Cancel">
+            <input id="registerAppFormSubmit" type="button" value="Register">
+          </p>
+    </form>
 </div>
 
-<H1 id='title'>XX Dashboard</H1>
-<h2> placeholder </h2>
 
-<script type="text/javascript">
-function onReady() {
+<div id="appDetails_popup" class="appDetailPopup">
+  <span id="appDetailsTitle" >App Details</span>
+    <table id="adminsList">
+        <tr><td>Name</td><td id="appDetails_Name"></td></tr>
+        <tr><td>ID</td><td id="appDetails_ID"></td></tr>
+        <tr><td>Keys</td>
+          <td id="appKeys" style="height:120px;width:120px;border:1px solid #ccc;overflow:auto;"></td></tr>
+        <tr><td></td><td><a href="" id="refreshAppKey">refresh key</a></td></tr>
+    </table>
+    <p>
+      <input id="appDetailsDelete" type="button" value="Delete">
+      <input id="appDetailsClose" type="button" value="Close">
+    </p>
+</div>
 
-  // Write title and pull in image based on host we are at
-  // URL is parsed in config.js and made available
-  var title = config.subhost.charAt(0).toUpperCase() + config.subhost.substr( 1 )
-  title += ' Standardized Resource Server Dashboard'
-  $('#title').text( title )
-  var flag = config.province || 'ca'
-  $('#title').before('<img src="/images/flags/' + flag + '.png">')
+<div id="confirmDelete_form" class="confirmDeleteForm">
+  <span id="confirmDeleteTitle">Confirm Deletion XX</span>
+    <form id="confirmDeleteForm_input">
+      <p>
+        <input id="confirmDeleteFormCancel" type="button" value="Cancel">
+        <input id="confirmDeleteFormDelete" type="button" value="Delete">
+      </p>
+    </form>
+</div>
 
-  // check if we are logged in, if so, then show email and enable logout
-  $.get('/login/check', function ( data, status ) {
-    if (data && data.result && data.result.user) {
-      $('#loginEmail').text(data.result.user)
-      $('#logout').show()
-      $('#login').hide()
-    } else {
-      $('#logout').hide()
-      $('#login').show()
+  <script type="text/javascript">
+    (function() { // wrapper
+
+    var currentApp = null
+
+    ///////////////////////////////////////////////////////////////////////////
+    // setup initial states
+
+    $('#confirmDelete_form').hide()
+    $('#appDetails_popup').hide()
+
+    $('#refreshAppKey').click( function () {
+      app = currentApp
+      $('#appKeys').fadeOut('fast')
+      $.post('/dashboard/refresh/keys', { id: app }, function ( data, status ) {
+        if (data.result) {
+          $('#appKeys').text( JSON.stringify( data.result ) )
+          $('#appKeys').fadeIn('fast')
+        } // TBD -- what do we show on error????
+      })
+      return false
+    })
+
+    /////////////////////////////////////////////////////////////////////////
+    // App Detail Popup
+
+    $('#appDetailsClose').click( function () {
+      $('#appDetails_popup').fadeOut('fast')
+    })
+
+    $('#confirmDeleteFormCancel').click( function () {
+      $('#confirmDelete_form').fadeOut('fast')
+    })
+
+    $('#confirmDeleteFormDelete').click( function() {
+      var app = currentApp
+      $.post('/dashboard/delete/app', { id: app }, function ( data, status ) {
+        $('#confirmDelete_form').fadeOut('fast')
+        $('#appDetails_popup').fadeOut('fast')
+        updateDashboardTable()
+      })
+      return false
+    })
+
+    $('#appDetailsDelete').click( function () {
+      app = currentApp
+      $('#confirmDelete_form').fadeIn('fast')
+      $('#confirmDeleteTitle').text('Delete registration of "'+app+'"?')
+      return false
+    })
+
+    function showAppDetails ( app, fadeIn ) {
+      currentApp = app
+
+      if ( fadeIn ) $('#appDetails_popup').fadeIn('fast')
+      $.post('/dashboard/app/details', {id: app}, function ( data, status ) {
+        if (status == "success" && !data.error) {
+          var details = data.result.details
+          var currentAdmin = data.result.email
+          $('#appDetails_Name').text( details.name )
+          $('#appDetails_ID').text( app )
+        }
+      })
+      // since a whole whack of calls happen here, we make it async to rest of showing details
+      $.post('/dashboard/getkeys', {id: app}, function ( data, status ) {
+        if (data.result)
+          $('#appKeys').text( JSON.stringify( data.result ) )
+
+        // TBD need to work on the display here!!!
+
+      })
+      return false
     }
-  })
 
-} // onReady
+    /////////////////////////////////////////////////////////////////////////////////////////////
+    // Dashboard refresh
+    function updateDashboardTable () {
+      $.get('/dashboard/list/apps', function ( data, status ) {
+        if (status == "success" && !data.error) {
+          $('#appTable').empty()
+          var list = data.result.list
+          var html = null
+          var item = 0  // use a counter since the app has '.'s which browser is cranky about in element IDs
+          Object.keys( list ).forEach( function ( app ) {
+            html = '<tr><td><a href="" id="' + item +'_details">' + list[app].name +'</a>' +
+              '</td><td>' + app + '</td></tr>'
+            $('#appTable').append( html )
+            $('#'+item+'_details').click( function () { return showAppDetails( app, true ); } )
+            item++
+          })
+        }
+      })
+    }
 
-$(document).ready(onReady)
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    // Register App form
 
-</script>
+    $('#registerApp_form').hide()
+
+    $('#registerApp').click( function () {
+      $('#registerApp_form').fadeIn('fast')
+      $('#registerApp_id_input').val('')
+      $('#registerApp_id_input').focus()
+      $('#registerAppFormSubmit').attr('disabled', 'disabled')
+      $('#registerApp_id_input').removeAttr('disabled')
+      $('#registerAppFormSubmit').removeAttr('disabled')
+      $('#registerAppFormCancel').removeAttr('disabled')
+      return false
+    })
+
+    $('#registerApp_id_input').bind('input', function () {
+      var host = $('#registerApp_id_input').val()
+      if (!host) {
+        $('#registerApp_status').text('Enter a valid hostname').css('color','black')
+        $('#registerAppFormSubmit').attr('disabled', 'disabled')
+
+      } else if // valid hostname
+          ( host.match( /^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9])$/ ) ) {
+        $('#registerApp_status').text('Hostname is valid').css('color','black')
+        $('#registerAppFormSubmit').removeAttr('disabled')
+
+      } else {
+        $('#registerApp_status').text('Hostname is invalid').css('color','red')
+        $('#registerAppFormSubmit').attr('disabled', 'disabled')
+      }
+
+    })
+
+    $('#registerAppFormSubmit').click( function () {
+      $('#registerApp_id_input').attr('disabled', 'disabled')
+      var id = $('#registerApp_id_input').val()
+      $('#registerApp_status').text('Registering App "'+id+'"" ... ').css('color','black')
+      $('#registerApp_id_input').attr('disabled', 'disabled')
+      $('#registerAppFormSubmit').attr('disabled', 'disabled')
+      $('#registerAppFormCancel').attr('disabled', 'disabled')
+      $.post('/dashboard/new/app', { id: id}, function ( data, status ) {
+        if (data.error) {
+          $('#registerApp_status').text( data.error.message ).css('color','red')
+          $('#registerApp_id_input').removeAttr('disabled')
+          $('#registerAppFormSubmit').removeAttr('disabled')
+          $('#registerAppFormCancel').removeAttr('disabled')
+        } else {
+          updateDashboardTable()
+          $('#registerApp_form').fadeOut('fast')
+          showAppDetails( id, true )  // show user their new app
+        }
+      })
+    })
+
+
+    $('#registerAppFormCancel').click( function () {
+      $('#registerApp_form').fadeOut('fast')
+    })
+
+    ///////////////////////////////////////////////////////////////////////////////////
+    // Init code
+
+    function onReady() {
+
+      // Write title and pull in image based on host we are at
+      // URL is parsed in config.js and made available
+      var title = config.subhost.charAt(0).toUpperCase() + config.subhost.substr( 1 )
+      if (title === 'Si') title = 'Social Insurance'
+      if ( config.province ) title += ' '+ config.provinceNames[config.province]
+      title += ' Resource Server Dashboard'
+      $('#title').text( title )
+      var flag = config.province || 'ca'
+      $('#title').before('<img src="/images/flags/' + flag + '.png">')
+
+      // check if we are logged in, if so, then show email and enable logout
+      $.get('/login/check', function ( data, status ) {
+        if (data && data.result && data.result.user) {
+          $('#loginEmail').text(data.result.user)
+          $('#logout').show()
+          $('#login').hide()
+        } else {
+          $('#logout').hide()
+          $('#login').show()
+        }
+      })
+
+      // get registered apps and insert into Dashboard table
+      updateDashboardTable()
+
+    } // onReady
+
+    $(document).ready(onReady)
+
+    })(); // end wrapper
+  </script>
 
 </body>
 </html>

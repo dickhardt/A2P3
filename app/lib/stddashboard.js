@@ -81,10 +81,12 @@ exports.routes = function ( app, RS, vault ) {
       if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
       var keys = {}
       Object.keys( results ).forEach( function ( host ) {
-        keys[host] =
-          { kid: results[host].result.key.kid
-          , key: results[host].result.key.key
-          }
+        if (results[host].key) {
+          keys[host] =
+            { kid: results[host].key.latest.kid
+            , key: results[host].key.latest.key
+            }
+        }
       })
       return res.send( {result: keys} )
     })
@@ -93,13 +95,14 @@ exports.routes = function ( app, RS, vault ) {
   function dashboardGetKey ( req, res, next ) {
     _callAllResources( '/std/getkey', {id: req.body.id}, function ( e, results ) {
       if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
-      if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
       var keys = {}
       Object.keys( results ).forEach( function ( host ) {
-        keys[host] =
-          { kid: results[host].result.key.kid
-          , key: results[host].result.key.key
-          }
+        if (results[host].key) {
+          keys[host] =
+            { kid: results[host].key.latest.kid
+            , key: results[host].key.latest.key
+            }
+        }
       })
       return res.send( {result: keys} )
     })
