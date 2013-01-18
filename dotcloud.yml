@@ -1,10 +1,8 @@
 www:
     type: nodejs
-    approot: app
+    approot: server
     processes:
-        app: node app.js
+        app: node app/app.js
     config:
         node_version: v0.8.x
-    
-db:
-    type: redis
+  
