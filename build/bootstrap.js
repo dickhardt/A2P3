@@ -202,71 +202,71 @@ function run ( complete ) {
     done( null, 'wrote vault.json for setup and registrar' )
   })
 
-  /*
-  * register apps at each RS
-  */
+  // /*
+  // * register apps at each RS
+  // */
 
-  var appHostKeys =
-    {'clinic': { 'keys': {}, 'secret': identity.makeSecret()}
-    , 'bank': { 'keys': {}, 'secret': identity.makeSecret()}
-    }
+  // var appHostKeys =
+  //   {'clinic': { 'keys': {}, 'secret': identity.makeSecret()}
+  //   , 'bank': { 'keys': {}, 'secret': identity.makeSecret()}
+  //   }
 
-  // clinic app
-  config.provinces.forEach( function ( province ) {
-    tasks.push( function (done) {
-      var hReg = 'health.' + province
-      db.registerAdmin( hReg, 'root', diRoot[config.host[hReg]], function (e) { // TBD -- need DI for each host
-        if (e) done (e)
-        db.newApp( hReg, config.host.clinic, 'Clinic', 'root', function ( e, keyObj) {
-          if (e) done (e)
-          appHostKeys.clinic.keys[config.host[hReg]] = keyObj
-          var pReg = 'people.' + province
-          db.registerAdmin( pReg, 'root', diRoot[config.host[pReg]], function (e) {
-            if (e) done (e)
-            db.newApp( pReg, config.host.clinic, 'Clinic', 'root', function ( e, keyObj) {
-              if (e) done (e)
-              appHostKeys.clinic.keys[config.host[pReg]] = keyObj
-              done( null, 'registered clinic at '+hReg+' & '+pReg)
-            })
-          })
-        })
-      })
-    })
-  })
+  // // clinic app
+  // config.provinces.forEach( function ( province ) {
+  //   tasks.push( function (done) {
+  //     var hReg = 'health.' + province
+  //     db.registerAdmin( hReg, 'root', diRoot[config.host[hReg]], function (e) { // TBD -- need DI for each host
+  //       if (e) done (e)
+  //       db.newApp( hReg, config.host.clinic, 'Clinic', 'root', function ( e, keyObj) {
+  //         if (e) done (e)
+  //         appHostKeys.clinic.keys[config.host[hReg]] = keyObj
+  //         var pReg = 'people.' + province
+  //         db.registerAdmin( pReg, 'root', diRoot[config.host[pReg]], function (e) {
+  //           if (e) done (e)
+  //           db.newApp( pReg, config.host.clinic, 'Clinic', 'root', function ( e, keyObj) {
+  //             if (e) done (e)
+  //             appHostKeys.clinic.keys[config.host[pReg]] = keyObj
+  //             done( null, 'registered clinic at '+hReg+' & '+pReg)
+  //           })
+  //         })
+  //       })
+  //     })
+  //   })
+  // })
 
-  tasks.push( function (done) {
-    syncWriteJSON( appHostKeys.clinic, projectRootDir + '/app/clinic/vault.json')
-    done( null, 'wrote vault.json for clinic' )
-  })
+  // tasks.push( function (done) {
+  //   syncWriteJSON( appHostKeys.clinic, projectRootDir + '/app/clinic/vault.json')
+  //   done( null, 'wrote vault.json for clinic' )
+  // })
 
-  // bank app
-  config.provinces.forEach( function ( province ) {
-    tasks.push( function (done) {
-      var reg = 'people.' + province
-      db.newApp( reg, config.host.bank, 'Bank', 'root', function ( e, keyObj) {
-        if (e) done (e)
-        appHostKeys.bank.keys[config.host[reg]] = keyObj
-        done( null, 'registered bank at '+reg)
-      })
-    })
-  })
+  // // bank app
+  // config.provinces.forEach( function ( province ) {
+  //   tasks.push( function (done) {
+  //     var reg = 'people.' + province
+  //     db.newApp( reg, config.host.bank, 'Bank', 'root', function ( e, keyObj) {
+  //       if (e) done (e)
+  //       appHostKeys.bank.keys[config.host[reg]] = keyObj
+  //       done( null, 'registered bank at '+reg)
+  //     })
+  //   })
+  // })
 
-  tasks.push( function (done) {
-    db.registerAdmin( 'si', 'root', diRoot[config.host.si], function (e) {
-      if (e) done (e)
-      db.newApp( 'si', config.host.bank, 'Bank', 'root', function ( e, keyObj) {
-        if (e) done (e)
-        appHostKeys.bank.keys[config.host.si] = keyObj
-        syncWriteJSON( appHostKeys.bank, projectRootDir + '/app/bank/vault.json')
-        done (null, 'added bank to si RS, and wrote out vault.json for bank')
-      })
-    })
-  })
+  // tasks.push( function (done) {
+  //   db.registerAdmin( 'si', 'root', diRoot[config.host.si], function (e) {
+  //     if (e) done (e)
+  //     db.newApp( 'si', config.host.bank, 'Bank', 'root', function ( e, keyObj) {
+  //       if (e) done (e)
+  //       appHostKeys.bank.keys[config.host.si] = keyObj
+  //       syncWriteJSON( appHostKeys.bank, projectRootDir + '/app/bank/vault.json')
+  //       done (null, 'added bank to si RS, and wrote out vault.json for bank')
+  //     })
+  //   })
+  // })
 
-  tasks.push( function (done) {
-    // store root DI for setup as agent
-    db.storeAgent( 'setup', { device:'root', di: diRoot[config.host.setup] }, done )
-  })
+  // tasks.push( function (done) {
+  //   // store root DI for setup as agent
+  //   db.storeAgent( 'setup', { device:'root', di: diRoot[config.host.setup] }, done )
+  // })
 
   tasks.push( function (done) {
     // save DB as built so we can restore it when testing
