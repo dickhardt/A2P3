@@ -48,12 +48,12 @@ exports.routes = function ( app, RS, vault ) {
   function dashboardNewApp ( req, res, next ) {
     stdApi.call( 'registrar', '/app/verify'
                 , {id: req.body.id, token: req.session.tokens[config.host.registrar]}
-                , function ( e ) {
+                , function ( e, result ) {
       if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
-      db.newApp( RS, req.body.id, req.body.name, req.session.email, function ( e ) {
+      db.newApp( RS, req.body.id, result.name, req.session.email, function ( e ) {
         if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
         _callAllResources( '/std/new/app'
-                    , {id: req.body.id, name: req.body.name, email: req.session.email}
+                    , {id: req.body.id, name: result.name, email: req.session.email}
                     , function ( e, results ) {
           if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
           var keys = {}
@@ -180,7 +180,7 @@ exports.routes = function ( app, RS, vault ) {
           )
   app.post('/dashboard/new/app'
           , checkSession
-          , mw.checkParams( {'body':['id','name']} )
+          , mw.checkParams( {'body':['id']} )
           , dashboardNewApp
           )
   app.post('/dashboard/delete/app'

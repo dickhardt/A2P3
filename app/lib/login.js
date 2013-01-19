@@ -54,6 +54,11 @@ function login ( details ) {
 // console.log('\n login req.body:\n', req.body )
 // console.log('\n login req.query:\n', req.query )
 
+
+// console.log('\nvault.keys\n',details.vault.keys)
+// console.log('\nconfig.host:\n',config.host)
+// console.log('\nconfig.baseUrl\n',config.baseUrl)
+
     var agentRequest = request.create( agentRequestPayload, details.vault.keys[config.host.ix].latest )
     req.session.agentRequest = agentRequest
     var redirectUrl = (req.query && req.query.returnURL) ? req.query.returnURL : 'a2p3.net://token'

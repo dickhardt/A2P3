@@ -14,6 +14,8 @@
 
 <script type="text/javascript">
     $(document).ready( function () {
+
+      var port = (config.port == '80') ? '' : '%3a' + config.port // :8080
       var servers =
         { 'registrar':  'Registar'
         , 'email':      'Email RS'
@@ -29,9 +31,11 @@
         }
       Object.keys( servers ).forEach( function (host ) {
         var url = config.protocol + '://' + host + '.' + config.baseDomain + ':' + config.port +
-          '/login?returnURL=http%3a%2f%2fsetup.' + config.baseDomain + '%3a8080%2fbackdoor%2flogin%2fdev%40example.com'
+          '/login?returnURL=http%3a%2f%2fsetup.' + config.baseDomain + port + '%2fbackdoor%2flogin%2fdev%40example.com'
         $('#loginList').append('<li><a href="' + url + '">' + servers[host] + '</a></li>')
       })
+
+      console.log(config)
     })
 
 </script>
