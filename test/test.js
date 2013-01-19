@@ -566,9 +566,10 @@ function registerDemoApp ( rs, standard ) {
       it('should return keys for the Demo app', function (done) {
         var options =
           { url: config.baseUrl[rs] + '/dashboard/new/app'
-          , form: { name: demoApp.name, id: demoApp.host }
+          , form: { id: demoApp.host }
           , method: 'POST'
           }
+        if (rs == 'registrar') options.form.name = demoApp.name
         fetch( options, function ( e, response, body ) {
           should.not.exist( e )
           should.exist( response )
