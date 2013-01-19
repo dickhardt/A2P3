@@ -282,7 +282,7 @@ exports.getAppKeys = function ( reg, list, vaultKeys, cb ) {
     , e = null
 
   list.forEach( function (id) {
-    keys[id] = keyChain[reg][id]
+    keys[id] = keyChain[reg] && keyChain[reg][id]
     if (!keys[id] && vaultKeys && vaultKeys[id]) {
       keys[id] = vaultKeys[id]
     }
