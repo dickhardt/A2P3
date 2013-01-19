@@ -9,6 +9,8 @@
 *
 */
 
+var fs = require('fs')
+
 /*
 *   Edit the following if you want to host the server somewhere besides your own machine
 */
@@ -16,6 +18,21 @@ var port = '8080'
 var baseDomain = 'local.a2p3.net' // this domain resolves to 127.0.0.1
 var scheme = 'http'
 var portListen = port
+
+/*
+*   Check if we are deployed on dotcloud, and if so, configure accordingly
+*/
+var dotcloud = null
+if ( fs.existsSync( __dirname + '/../../environment.json' ) )
+  dotcloud = require( '../../environment.json' )
+exports.dotcloud = dotcloud
+if (dotcloud) {
+  port = '80'
+  baseDomain = 'a2p3.net'
+  scheme = 'http'
+  portListen = '8080'
+  console.log('\n****** DOTCLOUD DEPLOYMENT *******\n')
+}
 
 /*
 *   The following builds out the configuration for all the hosts
