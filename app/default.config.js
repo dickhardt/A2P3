@@ -31,7 +31,7 @@ if (dotcloud) {
   baseDomain = 'a2p3.net'
   scheme = 'http'
   portListen = '8080'
-  console.log('\n****** DOTCLOUD DEPLOYMENT *******\n')
+  console.log('\n****** DOTCLOUD DEPLOYMENT MAGIC *******\n')
 }
 
 /*
