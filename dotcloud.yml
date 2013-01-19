@@ -1,8 +1,6 @@
 www:
     type: nodejs
-    approot: server
     processes:
         app: node app/app.js
     config:
         node_version: v0.8.x
-  
