@@ -1,4 +1,11 @@
 .DS_Store
 .dotcloud
+*.log
+app/config.js
 node_modules
-snapshots
+vault.json
+nosql.json
+*.sublime-*
+old.*
+snapshot.*
+old
