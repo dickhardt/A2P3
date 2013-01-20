@@ -6,7 +6,7 @@
 
 var crypto = require('crypto')
  , b64url = require('./b64url')
- , config = require('../config')
+// , config = require('../config') // only pulled in for maxTokenAge
  , util = require('util')
 
 // Concat KDF key generation and caching
@@ -120,9 +120,9 @@ assert.deepEqual(actual, expected, "concat KDF failure")
 * Decrypt and Encrypt code
 */
 
-var encryptAxxxCBC = function ( details, cipher, sign, numBytes) {
+var encryptAxxxCBC = function ( details, cipherEncrypt, sign, numBytes) {
 
-  var cmk = Buffer( b64url.b64( details.credentials.key ), 'base64' )
+  var cmk = new Buffer( b64url.b64( details.credentials.key ), 'base64' )
   if (numBytes != cmk.length)
     throw new Error("key is not "+numBytes+" long.")
 
@@ -132,7 +132,7 @@ var encryptAxxxCBC = function ( details, cipher, sign, numBytes) {
   var iv = crypto.randomBytes( 16)
 
   // encrypt
-  var cipher = crypto.createCipheriv( cipher, kdf.cek, iv)
+  var cipher = crypto.createCipheriv( cipherEncrypt, kdf.cek, iv)
   var cipherText = b64url.safe( cipher.update( plainText, 'utf8', 'base64' ) )
   cipherText += b64url.safe( cipher.final( 'base64')  )
 
@@ -162,13 +162,13 @@ var decryptAxxxCBC = function ( input, cmkEncrypted, ivB64url, ciphertextB64url,
   if (cmkEncrypted)
     throw new Error('Encrypted CMK is not supported in JWE')
 
-  var cmk = Buffer(b64url.b64(key), 'base64')
+  var cmk = new Buffer(b64url.b64(key), 'base64')
   if (numBytes != cmk.length)
     throw new Error("key is not "+numBytes+" long.")
 
   var kdf = concatKDF(cmk)
 
-  var iv = Buffer(b64url.b64(ivB64url), 'base64')
+  var iv = new Buffer(b64url.b64(ivB64url), 'base64')
 
   // check integrity
   var hmac = crypto.createHmac(sign, kdf.cik).update(input);
@@ -177,7 +177,7 @@ var decryptAxxxCBC = function ( input, cmkEncrypted, ivB64url, ciphertextB64url,
     throw new Error("JWE has invalid signature:"+signature)
 
   // decrypt
-  var cipherText = Buffer( b64url.b64( ciphertextB64url ), 'base64' )
+  var cipherText = new Buffer( b64url.b64( ciphertextB64url ), 'base64' )
   var decipher = crypto.createDecipheriv( cipher, kdf.cek, iv )
   var plainText = decipher.update( cipherText,'binary','utf8' )
   plainText += decipher.final( 'utf8' )
@@ -203,7 +203,7 @@ var decryptAlg =
 */
 
 var verifyHSxxx = function (input, signature, b64safeKey, alg) {
-  var key = Buffer( b64url.b64( b64safeKey ), 'base64' )
+  var key = new Buffer( b64url.b64( b64safeKey ), 'base64' )
   var hmac = crypto.createHmac( alg, key ).update( input )
   var inputSignature = b64url.safe( hmac.digest( 'base64' ) )
   return (inputSignature === signature)
@@ -224,9 +224,9 @@ var verifyAlg =
 
 var signHSxxx = function (details, alg) {
   details.header.kid = details.credentials.kid
-  var input = b64url.encode( JSON.stringify( details.header ) )
-        +'.'+ b64url.encode( JSON.stringify( details.payload ) )
-  var key = Buffer( b64url.b64(details.credentials.key), 'base64')
+  var input = b64url.encode( JSON.stringify( details.header ) ) +
+        '.'+ b64url.encode( JSON.stringify( details.payload ) )
+  var key = new Buffer( b64url.b64(details.credentials.key), 'base64')
   var hmac = crypto.createHmac(alg, key).update(input);
   var token = input +'.'+ b64url.safe(hmac.digest('base64'))
   return token.toString();
@@ -332,7 +332,7 @@ function Parse ( token ) {
     return this
 
   } else
-    throw new Error('Uknownn JWT header "typ":"'+header.typ+'"')
+    throw new Error('Uknownn JWT header "typ":"'+this.header.typ+'"')
 }
 
 Parse.prototype.verify = function (key) {
@@ -363,7 +363,7 @@ Parse.prototype.decrypt = function (key) {
 
 // generates a key for the passed algorithm
 function keygen (alg) {
-    algs =
+    var algs =
         { 'HS256': 256/8
         , 'HS512': 512/8
         , 'A128CBC+HS256': 256/8
