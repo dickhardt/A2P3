@@ -1,7 +1,7 @@
 /*
-* api.test.js
+* test.js
 *
-* API test suite
+* A2P3 API test suite
 *
 * Copyright (C) Province of British Columbia, 2013
 */

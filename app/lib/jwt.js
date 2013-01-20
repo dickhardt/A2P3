@@ -6,7 +6,7 @@
 
 var crypto = require('crypto')
  , b64url = require('./b64url')
-// , config = require('../config') // only pulled in for maxTokenAge
+ , config = require('../config') // only pulled in for maxTokenAge
  , util = require('util')
 
 // Concat KDF key generation and caching
