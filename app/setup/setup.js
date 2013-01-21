@@ -515,6 +515,7 @@ exports.app = function() {
 ///////////////////////////////////////////////////////////////////////////
 // TBD DEVELOPMENT FUNCTIONALITY THAT NEEDS TO BE DISABLED FOR PRODUCTION
   app.get('/backdoor', function ( req, res ) { res.sendfile( __dirname+'/html/backdoor.html') } )
+  app.get('/backdoor/login', function ( req, res ) { res.sendfile( __dirname+'/html/backdoorLogin.html') })
   app.get('/backdoor/login/:email', backdoorLogin )
 ////////////////////////////////////////////////////////////////////////////
 

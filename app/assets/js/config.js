@@ -6,6 +6,7 @@ var config = {};
   config.protocol = url.attr('protocol')
   config.fullhost = url.attr('host')
   config.port = url.attr('port')
+  config.query = url.attr('query')
   var parts =  config.fullhost.split('.')
   if (parts[1].length === 2) {  // we have a province
     config.province = parts[1]

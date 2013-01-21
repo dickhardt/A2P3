@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+  <script type="text/javascript"    src="/js/jquery-1.8.3.js"></script>
+  <script type="text/javascript"    src="/js/purl.js"></script>
+  <script type="text/javascript"    src="/js/config.js"></script>
+
+<H1>A2P3 Backdoor Login</H1>
+
+Enter an email address to login as a previous user
+<p>
+  <label for="email">Email</label>
+  <input type="text" name="email" value="dev@example.com" id="emailLogin">
+</p>
+<p>
+  <input id="loginButton" type="button" value="Login">
+</p>
+
+<script type="text/javascript">
+    $(document).ready( function () {
+
+      $('#loginButton').click( function () {
+        var query = config.query
+        var url = '/backdoor/login/' + $('#emailLogin').val() + '?' + query
+        window.location = url
+      })
+
+    })
+
+</script>
+
+<pre>
+NOTE: make sure you enter an email for a user that exists!
+</pre>
+</body>
+</html>
