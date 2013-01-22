@@ -3,8 +3,6 @@
 
 Authentication &amp; Authorization Privacy Protecting Protocol (A2P3)
 
-There is also the [A2P3 Agent](https://github.com/dickhardt/A2P3_agent)
-
 ##Prerequisites
 You will need [node](http://nodejs.org/download/) 0.8.* to run the server and a [git](http://git-scm.com/downloads) tool if you want to push changes.
 
