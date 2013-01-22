@@ -238,6 +238,9 @@ exports.app = function() {
   // show README.md as documentation
   app.get('/documentation', mw.md( __dirname+'/README.md' ) )
 
+  // key integrity checking API
+  app.post( '/key/check', mw.keyCheck( vault, config.host.ix ) )
+
   app.use( mw.errorHandler )
 
 	return app

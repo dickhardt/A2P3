@@ -9,10 +9,8 @@
 // debugging middleware to trace execution
 
 var config = require('../config')
-  , request = require('./request')
-  , api = require('./api')
+  , fetch = require('request')  // npm request, not to be confused with local request
   , jwt = require('./jwt')
-  , querystring = require('querystring')
   , util = require('util')
   , db = require('./db')
   , fs = require('fs')
@@ -20,9 +18,6 @@ var config = require('../config')
 
 exports.trace = function trace ( req, res, next ) {
   console.log('\nTRACE:',req.host,req.originalUrl,'\n',req.session)
-
-debugger;
-
   next()
 }
 
@@ -207,5 +202,87 @@ exports.scopes = function scopes ( fname, rs ) {
   }
 }
 
+/*
+*   keyCheck()
+*
+*   used during development and deployment to check that servers have matching keys
+*/
+exports.keyCheck = function ( vault, client ) {
+  return function keyCheck( req, res, next ) {
+
+debugger;
+
+    var request = req.body.request
+    var aud = req.body.host
+    var pass = ( aud && (req.body.pass == 'makeitso') )
+    var e = null
+    if ( request ) {
+
+      try {
+        var jws = new jwt.Parse( request )
+
+console.log('\tiss:'+jws.payload.iss+'->'+jws.payload.aud)
+
+        var issuer = jws.payload.iss
+        db.getAppKey( config.reverseHost[ client ], issuer, vault.keys, function ( e, key ) {
+          if (e) return next( e )
+          if ( !key )
+            return next( new Error('No key found for "'+issuer+'"') )
+          if ( key.latest.kid != jws.header.kid )
+            return next( new Error('Unknown KID "'+jws.header.kid+'", expected "'+key.latest.kid+'"') )
+          try {
+            if ( jws.verify( key.latest.key ) )
+              return res.send( { result: { success: true } } )
+            else
+              return next( new Error('Signature was invalid.') )
+          }
+          catch ( e ) {
+            return next( e )
+          }
+        })
+      }
+      catch (e) {
+        e.code = "INVALID_REQUEST"
+        return next( e )
+      }
+    } else if ( pass ) { // we are going to check our key with another server
+
+console.log(client+'->'+config.host[aud])
+
+      db.getAppKey( config.reverseHost[ client ], config.host[aud], vault.keys, function ( e, key ) {
+        if (e) return next( e )
+        if ( !key ) return next( new Error( 'No key found for '+config.host[aud] ) )
+        var jwsDetails =
+          { header:
+            { typ: 'JWS'
+            , alg: config.crypto.alg.JWS
+            , kid: key.latest.kid
+            }
+          , payload:
+            { iss: client
+            , aud: config.host[aud]
+            }
+          , credentials: key.latest
+          }
+        var jwsOut = jwt.jws( jwsDetails )
+        // send jws to other host
+        var options =
+          { url: config.baseUrl[ aud ] + '/key/check'
+          , form: { request: jwsOut }
+          , method: 'POST'
+          }
+        fetch( options, function ( e, response, body ) {
+          if ( e ) return next( e )
+          if ( response.statusCode != 200 ) return (new Error( '"'+aud+'" returned '+response.statusCode) )
+          return res.send( body )
+        })
+      })
+    } else {
+      e = new Error('No valid pass or request provided')
+      e.code = 'ACCESS_DENIED'
+      next(e)
+    }
+  }
+}
 
 

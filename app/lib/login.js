@@ -15,6 +15,7 @@ var express = require('express')
   , querystring = require('querystring')
   , util = require('util')
   , db = require('./db')
+  , mw = require('./middleware')
 
 function fetchIXToken ( agentRequest, ixToken, details, cb ) {
    var apiDetails =
@@ -139,7 +140,7 @@ function loginStateCheck ( details ) {
 }
 
 
-function logout ( req, res, next) {
+function logout ( req, res ) {
   req.session = null
   res.redirect( '/' )
 }
@@ -152,6 +153,7 @@ function loginCheck ( req, res ) {
   return res.send( { result: {'user': req.session.email } } )
 }
 
+// sets up all the login / out routes
 exports.router = function ( app, detailsOrig ) {
 
   // clone object as we are going to muck with it
@@ -200,6 +202,8 @@ exports.router = function ( app, detailsOrig ) {
   app.get( details.path.error, function( req, res ) { res.sendfile( config.rootAppDir + '/html/login_error.html' ) } )
   app.get( details.path.complete, function( req, res ) { res.sendfile( config.rootAppDir + '/html/login_complete.html' ) } )
 
+  // key integrity checking API
+  app.post( '/key/check', mw.keyCheck( details.vault, details.host ) )
 }
 
 

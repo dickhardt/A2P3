@@ -519,6 +519,9 @@ exports.app = function() {
   app.get('/backdoor/login/:email', backdoorLogin )
 ////////////////////////////////////////////////////////////////////////////
 
+  // key integrity checking API
+  app.post( '/key/check', mw.keyCheck( vault, config.host.setup ) )
+
   app.use( mw.errorHandler )
 
 

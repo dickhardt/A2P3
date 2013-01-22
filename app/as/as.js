@@ -240,13 +240,16 @@ exports.app = function() {
   app.get('/register', register )
 
    // TBD - REMOVE THIS! ... used by XHR to test
-  app.post('/ping', function( req, res, next ) {
+  app.post('/ping', function( req, res ) {
     console.log('\nping session:\n',req.session )
     res.send(req.session)
   } )
 
   // show README.md as documentation
   app.get('/documentation', mw.md( __dirname+'/README.md' ) )
+
+  // key integrity checking API
+  app.post( '/key/check', mw.keyCheck( vault, config.host.as ) )
 
   app.use( mw.errorHandler )
 
