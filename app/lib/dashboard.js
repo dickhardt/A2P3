@@ -23,7 +23,7 @@ exports.routes = function ( app, RS, vault ) {
   // only called at Registrar Dashboard
   function dashboardAddAdmin ( req, res, next ) {
     db.addAppAdmin( RS, req.body.id, req.body.admin, function ( e ) {
-      if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
+      if (e) { e.code = e.code || "INTERNAL_ERROR"; return next(e) }
       return res.send( {result:{'id': req.body.id, 'admin': req.body.admin}} )
     })
   }
@@ -31,7 +31,7 @@ exports.routes = function ( app, RS, vault ) {
   // only called at Registrar Dashboard
   function dashboardDeleteAdmin ( req, res, next ) {
     db.deleteAppAdmin( RS, req.body.id, req.body.admin, function ( e ) {
-      if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
+      if (e) { e.code = e.code || "INTERNAL_ERROR"; return next(e) }
       return res.send( { result: {success: true } } )
     })
   }
@@ -39,21 +39,21 @@ exports.routes = function ( app, RS, vault ) {
   // only called at Registrar Dashboard
   function dashboardAppIdTaken ( req, res, next ) {
     db.checkRegistrarAppIdTaken( req.body.id, function ( e, taken ) {
-      if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
+      if (e) { e.code = e.code || "INTERNAL_ERROR"; return next(e) }
       return res.send( {result:{'id': req.body.id, 'taken': taken}} )
     })
   }
 
   function dashboardlistApps ( req, res, next ) {
     db.listApps( RS, req.session.email, function ( e, list ) {
-      if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
+      if (e) { e.code = e.code || "INTERNAL_ERROR"; return next(e) }
       return res.send( { result: {'list': list, 'email': req.session.email } } )
     })
   }
 
   function dashboardAppDetails ( req, res, next ) {
     db.appDetails( RS, req.session.email, req.body.id, function ( e, details ) {
-      if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
+      if (e) { e.code = e.code || "INTERNAL_ERROR"; return next(e) }
       return res.send( { result: {'details': details, 'email': req.session.email } } )
     })
   }
@@ -64,7 +64,7 @@ exports.routes = function ( app, RS, vault ) {
 
     function newApp() {
       db.newApp( RS, req.body.id, req.body.name, req.session.email, req.body.anytime, function ( e, key ) {
-        if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
+        if (e) { e.code = e.code || "INTERNAL_ERROR"; return next(e) }
         return res.send( {result:{'key': key}} )
       })
     }
@@ -90,28 +90,28 @@ exports.routes = function ( app, RS, vault ) {
 
   function dashboardDeleteApp ( req, res, next ) {
     db.deleteApp( RS, req.body.id, function ( e ) {
-      if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
+      if (e) { e.code = e.code || "INTERNAL_ERROR"; return next(e) }
       return res.send( {result:{success: true }} )
     })
   }
 
   function dashboardRefreshKey ( req, res, next ) {
     db.refreshAppKey( RS, req.body.id, function ( e, key ) {
-      if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
+      if (e) { e.code = e.code || "INTERNAL_ERROR"; return next(e) }
       return res.send( {result:{'id': req.body.id, 'key': key}} )
     })
   }
 
   function dashboardGetKey ( req, res, next ) {
     db.getAppKey( RS, req.body.id, null, function ( e, key ) {
-      if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
+      if (e) { e.code = e.code || "INTERNAL_ERROR"; return next(e) }
       return res.send( {result:{'id': req.body.id, 'key': key}} )
     })
   }
 
   function checkAdminAuthorization ( req, res, next ) {
     db.checkAdminAuthorization( RS, req.body.id, req.session.di, function ( e, authorized ) {
-      if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
+      if (e) { e.code = e.code || "INTERNAL_ERROR"; return next(e) }
       if (!authorized) {
         var err = new Error( req.session.di + ' not authorized for ' + req.body.id )
         err.code = "ACCESS_DENIED"
@@ -246,7 +246,6 @@ exports.routes = function ( app, RS, vault ) {
           )
   app.post('/dashboard/new/app'
           , checkSession
-          , mw.trace
           , mw.checkParams( {'body':['id'],'session':['email','di']} ) // {'body':['id','name']} only Registrar takes name
           , dashboardNewApp
           )

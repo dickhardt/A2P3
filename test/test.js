@@ -603,6 +603,30 @@ function registerDemoApp ( rs, standard ) {
       })
     })
 
+    describe(' /dashboard/new/app', function () {
+      it('should fail adding app a second time', function (done) {
+        var options =
+          { url: config.baseUrl[rs] + '/dashboard/new/app'
+          , form: { id: demoApp.host }
+          , method: 'POST'
+          }
+        if (rs == 'registrar') options.form.name = demoApp.name
+        fetch( options, function ( e, response, body ) {
+          should.not.exist( e )
+          should.exist( response )
+          response.statusCode.should.equal( 200 )
+          should.exist( body )
+          var r = JSON.parse( body )
+          should.exist( r )
+          r.should.not.have.property('result')
+          r.should.have.property('error')
+          done( null )
+        })
+      })
+    })
+
+
+
     describe(' /dashboard/list/apps', function () {
       it('should return the Demo App', function (done) {
         var options =

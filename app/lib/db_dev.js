@@ -190,6 +190,11 @@ exports.newApp = function ( reg, id, name, adminEmail, anytime, cb ) {
     cb = anytime
     anytime = false
   }
+  if ( dummyNoSql[reg + ':app:' + id + ':name'] ) {
+    var err = new Error('"'+ id + '" already registered')
+    err.code = 'APP_ID_ALREADY_REGISTERED'
+    return process.nextTick( function () { cb( err ) } )
+  }
   // add to DB
   dummyNoSql[reg + ':app:' + id + ':name'] = name
   if (reg == 'registrar' && anytime)
