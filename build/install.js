@@ -13,7 +13,7 @@ function copyFileSync( src, dest ) {
 
 
 if ( fs.existsSync('./app/config.js') ) {
-  console.log('Using existing ./app/config.sys')
+  console.log('Using existing ./app/config.js')
 } else {
   console.log('Copying ./app/default.config.js -> ./app/config.js')
   copyFileSync( './app/default.config.js', './app/config.js')
@@ -35,5 +35,5 @@ require('./bootstrap').run( function ( e ) { // run bootstrap to build default v
   } else {
     process.exit(0)
   }
-})  
+})
 
