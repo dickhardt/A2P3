@@ -415,9 +415,9 @@ function databaseRestore ( req, res, next ) {
 //
 function backdoorLogin ( req, res, next ) {
   var email = req.params.email
-  var request = req.query.request
+  var agentRequest = req.query.request
   var state = req.query.state
-  var jws = jwt.Parse(request)
+  var jws = jwt.Parse( agentRequest )
   db.getProfile( 'setup', email, function ( e, profile ) {
     if ( e ) return next( e )
     var payload =
@@ -430,7 +430,8 @@ function backdoorLogin ( req, res, next ) {
         }
       }
     var ixToken = token.create( payload, vault.keys[config.host.ix].latest )
-    var returnURL = jws.payload['request.a2p3.org'].returnURL + '?token=' + ixToken
+    var returnURL = jws.payload['request.a2p3.org'].returnURL +
+        '?token=' + ixToken + '&request=' + agentRequest
     if (state) returnURL += '&state=' + state
     return res.redirect( returnURL )
   })
