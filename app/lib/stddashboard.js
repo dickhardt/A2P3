@@ -110,7 +110,7 @@ exports.routes = function ( app, RS, vault ) {
 
   function checkAdminAuthorization ( req, res, next ) {
     db.checkAdminAuthorization( RS, req.body.id, req.session.di, function ( e, authorized ) {
-      if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
+      if (e) { e.code = e.code || "INTERNAL_ERROR"; return next(e) }
       if (!authorized) {
         var err = new Error( req.session.di + ' not authorized for ' + req.body.id )
         err.code = "ACCESS_DENIED"
@@ -189,13 +189,13 @@ exports.routes = function ( app, RS, vault ) {
           , checkAdminAuthorization
           , dashboardDeleteApp
           )
-  app.post('/dashboard/refresh/keys'
+  app.post('/dashboard/refresh/key'
           , checkSession
           , mw.checkParams( {'body':['id']} )
           , checkAdminAuthorization
           , dashboardRefreshKey
           )
-  app.post('/dashboard/getkeys'
+  app.post('/dashboard/getkey'
           , checkSession
           , mw.checkParams( {'body':['id']} )
           , checkAdminAuthorization

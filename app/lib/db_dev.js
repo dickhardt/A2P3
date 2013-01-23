@@ -132,9 +132,23 @@ exports.checkRegistrarAppIdTaken = function ( id, cb ) {
 
 // called when an RS wants to know if admin is authorized for an app ID
 exports.checkAdminAuthorization = function ( reg, id, di, cb ) {
+  var e = null
   var adminEmail = dummyNoSql[reg + ':admin:di:' + di]
-  var authorized = dummyNoSql[reg + ':app:' + id + ':admins'][adminEmail] == 'ACTIVE'
-  process.nextTick( function () { cb( null, authorized ) } )
+  if (adminEmail && dummyNoSql[reg + ':app:' + id + ':admins']) {
+    var authorized = dummyNoSql[reg + ':app:' + id + ':admins'][adminEmail] == 'ACTIVE'
+    return process.nextTick( function () { cb( null, authorized ) } )
+  }
+  // something was wrong
+  if (!adminEmail) {
+    e = new Error('Unknown administrator')
+    e.code = 'UNKNOWN_USER'
+    return process.nextTick( function () { cb( e) } )
+  }
+  if (!dummyNoSql[reg + ':app:' + id + ':admins']) {
+    e = new Error('Unknown application "'+id+'"')
+    e.code = 'UNKNOWN_APP'
+    return process.nextTick( function () { cb( e) } )
+  }
 }
 
 /*
