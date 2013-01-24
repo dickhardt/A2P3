@@ -50,9 +50,8 @@ function requestVerify (req, res, next) {
     appId = request.verifyAndId( req.body.request, vault.keys )
     if ( appId ) {
       db.getAppName( appId, function (appName) {
-          res.send({result: { name: appName }})
+          return res.send({result: { name: appName }})
         })
-      return undefined
     } else {
         err = new Error('Invalid request signature')
         err.code = 'INVALID_REQUEST'
