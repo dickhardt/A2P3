@@ -131,6 +131,7 @@ exports.app = function() {
           )
 
   app.get('/documentation', mw.md( __dirname+'/README.md' ) )
+  app.get(/\/scope[\w\/]*/, mw.scopes( __dirname + '/scopes.json', config.host.registrar ) )
 
   app.use( mw.errorHandler )
 
