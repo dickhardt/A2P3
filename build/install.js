@@ -14,9 +14,7 @@ function copyFileSync( src, dest ) {
   fs.writeFileSync( dest, data )
 }
 
-console.log( process.env )
-
-if ( fs.existsSync('./app/config.js') ) {
+if ( fs.existsSync('./app/config.js') && !process.env.DOTCLOUD_PROJECT ) {
   console.log('Using existing ./app/config.js')
 } else {
   console.log('Copying ./app/default.config.js -> ./app/config.js')

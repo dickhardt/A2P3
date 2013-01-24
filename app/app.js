@@ -66,6 +66,3 @@ process.on('SIGTERM', cleanup( 'SIGTERM' ) )
 console.log( "A2P3 servers started on *."+config.baseDomain+':'+config.portListen)
 // TBD output DB, cluster config information
 console.log( "Setup available at "+config.baseUrl.setup+"\n")
-
-console.log( util.inspect( config, null, null ) )
-
