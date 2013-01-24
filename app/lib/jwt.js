@@ -136,6 +136,9 @@ console.log('\nencrypting with kid:',details.credentials.kid,'\nkey\n',details.c
 console.log('\nkdf\n',kdf)
 
   var plainText = JSON.stringify( details.payload)
+
+console.log('\ninput plainText\n',plainText)
+
   var iv = crypto.randomBytes( 16)
 
   // encrypt
