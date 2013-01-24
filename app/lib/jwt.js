@@ -192,7 +192,6 @@ console.log('\nkdf\n',kdf)
   // decrypt
   var cipherText = new Buffer( b64url.b64( ciphertextB64url ), 'base64' )
 
-console.log('\ncipherText:',cipherText)
   var decipher = crypto.createDecipheriv( cipher, kdf.cek, iv )
 console.log('\ndecipher:',decipher)
   var plainText = decipher.update( cipherText,'binary','utf8' )

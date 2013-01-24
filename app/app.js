@@ -7,6 +7,8 @@
 * Copyright (C) Province of British Columbia, 2013
 */
 
+require('./lib/crypto_test')
+
 var express = require('express')
   , config = require('./config')
   , app = express()
