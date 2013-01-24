@@ -5,7 +5,7 @@
 */
 
 // check that crypto is working
-require('../lib/crypto_test')
+require('../app/lib/decrypt_test')
 
 var fs = require('fs')
 
