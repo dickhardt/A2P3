@@ -82,10 +82,7 @@ exports.routes = function ( app, RS, vault ) {
       var keys = {}
       Object.keys( results ).forEach( function ( host ) {
         if (results[host].key) {
-          keys[host] =
-            { kid: results[host].key.latest.kid
-            , key: results[host].key.latest.key
-            }
+          keys[config.host[host]] = results[host].key
         }
       })
       return res.send( {result: keys} )
@@ -98,10 +95,7 @@ exports.routes = function ( app, RS, vault ) {
       var keys = {}
       Object.keys( results ).forEach( function ( host ) {
         if (results[host].key) {
-          keys[host] =
-            { kid: results[host].key.latest.kid
-            , key: results[host].key.latest.key
-            }
+          keys[config.host[host]] = results[host].key
         }
       })
       return res.send( {result: keys} )
