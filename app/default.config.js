@@ -22,9 +22,14 @@ var portListen = port
 /*
 *   Check if we are deployed on dotcloud, and if so, configure accordingly
 */
+
+console.log('pwd',__dirname)
+
 var dotcloud = null
-if ( fs.existsSync( '../environment.json' ) )
+if ( fs.existsSync( __dirname + '../environment.json' ) ) {
+  console.log('detected dotlcloud')
   dotcloud = require( '../environment.json' )
+}
 exports.dotcloud = dotcloud
 if (dotcloud) {
   port = '80'
