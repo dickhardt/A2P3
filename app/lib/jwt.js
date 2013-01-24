@@ -133,6 +133,8 @@ console.log('\nencrypting with kid:',details.credentials.kid,'\nkey\n',details.c
 
   var kdf = concatKDF(cmk)
 
+console.log('\nkdf\n',kdf)
+
   var plainText = JSON.stringify( details.payload)
   var iv = crypto.randomBytes( 16)
 
@@ -175,6 +177,9 @@ console.log('\ndecrypting with key\n', key)
     throw new Error("key is not "+numBytes+" long.")
 
   var kdf = concatKDF(cmk)
+
+
+console.log('\nkdf\n',kdf)
 
   var iv = new Buffer(b64url.b64(ivB64url), 'base64')
 

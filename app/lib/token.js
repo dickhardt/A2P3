@@ -60,7 +60,7 @@ exports.checkRS = function ( vault, rs, scopePaths, stdRS ) {
     try {
       jwe = new jwt.Parse(req.request['request.a2p3.org'].token)
 
-console.log('\ngoing to decrypt token\nkid:',jwe.kid)
+console.log('\ngoing to decrypt token\nkid:',jwe.header.kid)
 
       if ( !jwe.header.kid || !vault[config.host.ix][jwe.header.kid] ) {
         err = new Error("No valid key for "+config.host.ix)
