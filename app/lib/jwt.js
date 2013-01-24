@@ -123,7 +123,7 @@ assert.deepEqual(actual, expected, "concat KDF failure")
 var encryptAxxxCBC = function ( details, cipherEncrypt, sign, numBytes) {
 
 
-console.log('\nencrypting with kid:',details.credentials.kid,'\nkey\n',details.credentials.key)
+// console.log('\nencrypting with kid:',details.credentials.kid,'\nkey\n',details.credentials.key)
 
 
 
@@ -133,7 +133,7 @@ console.log('\nencrypting with kid:',details.credentials.kid,'\nkey\n',details.c
 
   var kdf = concatKDF(cmk)
 
-console.log('\nkdf\n',kdf)
+// console.log('\nkdf\n',kdf)
 
   var plainText = JSON.stringify( details.payload)
   var iv = crypto.randomBytes( 16)
@@ -166,7 +166,7 @@ var encryptAlg =
 
 var decryptAxxxCBC = function ( input, cmkEncrypted, ivB64url, ciphertextB64url, signature, key, cipher, sign, numBytes) {
 
-console.log('\ndecrypting with key\n', key)
+// console.log('\ndecrypting with key\n', key)
 
 
   if (cmkEncrypted)
@@ -179,7 +179,7 @@ console.log('\ndecrypting with key\n', key)
   var kdf = concatKDF(cmk)
 
 
-console.log('\nkdf\n',kdf)
+// console.log('\nkdf\n',kdf)
 
   var iv = new Buffer(b64url.b64(ivB64url), 'base64')
 
@@ -193,11 +193,11 @@ console.log('\nkdf\n',kdf)
   var cipherText = new Buffer( b64url.b64( ciphertextB64url ), 'base64' )
 
   var decipher = crypto.createDecipheriv( cipher, kdf.cek, iv )
-console.log('\ndecipher:',decipher)
+// console.log('\ndecipher:',decipher)
   var plainText = decipher.update( cipherText,'binary','utf8' )
-console.log('\nplainText:',plainText)
+// console.log('\nplainText:',plainText)
   plainText += decipher.final( 'utf8' )
-console.log('\nplainText:',plainText)
+// console.log('\nplainText:',plainText)
   return plainText;
 }
 

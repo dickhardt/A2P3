@@ -4,6 +4,9 @@
 * Copyright (C) Province of British Columbia, 2013
 */
 
+// check that crypto is working
+require('../lib/crypto_test')
+
 var fs = require('fs')
 
 function copyFileSync( src, dest ) {
