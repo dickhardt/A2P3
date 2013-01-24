@@ -181,7 +181,11 @@ console.log('\ndecrypting with key\n', key)
 
 console.log('\nkdf\n',kdf)
 
+console.log('ivB64url:', ivB64url)
+
   var iv = new Buffer(b64url.b64(ivB64url), 'base64')
+
+console.log('iv:',iv)
 
   // check integrity
   var hmac = crypto.createHmac(sign, kdf.cik).update(input);
@@ -189,15 +193,23 @@ console.log('\nkdf\n',kdf)
   if (inputSignature != signature)
     throw new Error("JWE has invalid signature:"+signature)
 
+console.log('ciphertextB64url:', ciphertextB64url)
+
   // decrypt
   var cipherText = new Buffer( b64url.b64( ciphertextB64url ), 'base64' )
 
   var decipher = crypto.createDecipheriv( cipher, kdf.cek, iv )
+
 console.log('\ndecipher:',decipher)
+
   var plainText = decipher.update( cipherText,'binary','utf8' )
+
 console.log('\nplainText:',plainText)
+
   plainText += decipher.final( 'utf8' )
+
 console.log('\nplainText:',plainText)
+
   return plainText;
 }
 
