@@ -122,6 +122,11 @@ assert.deepEqual(actual, expected, "concat KDF failure")
 
 var encryptAxxxCBC = function ( details, cipherEncrypt, sign, numBytes) {
 
+
+console.log('\nencrypting with kid:',details.credentials.kid,'\nkey\n',details.credentials.key)
+
+
+
   var cmk = new Buffer( b64url.b64( details.credentials.key ), 'base64' )
   if (numBytes != cmk.length)
     throw new Error("key is not "+numBytes+" long.")
@@ -158,6 +163,9 @@ var encryptAlg =
 
 
 var decryptAxxxCBC = function ( input, cmkEncrypted, ivB64url, ciphertextB64url, signature, key, cipher, sign, numBytes) {
+
+console.log('\ndecrypting with key\n', key)
+
 
   if (cmkEncrypted)
     throw new Error('Encrypted CMK is not supported in JWE')
