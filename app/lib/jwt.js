@@ -178,6 +178,7 @@ console.log('\ndecrypting with key\n', key)
 
   var kdf = concatKDF(cmk)
 
+debugger;
 
 console.log('\nkdf\n',kdf)
 

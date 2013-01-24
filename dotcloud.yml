@@ -1,6 +1,6 @@
 www:
-    type: nodejs
+    type: custom
+    buildscript: nodejs/builder
+    nodeversion: v0.8.17
     processes:
         app: node app/app.js
-    config:
-        node_version: v0.8.x
