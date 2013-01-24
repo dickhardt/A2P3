@@ -1,6 +1,8 @@
-www:
+nodejs:
     type: custom
     buildscript: nodejs/builder
     node_version: v0.8.17
     processes:
         app: node app/app.js
+    ports:
+      www: http
