@@ -65,6 +65,7 @@ function _fetchProfile ( di, complete ) {
     }
   api.call( details, function ( e, result ) {
     if (e) return complete( e )
+    if (!result) return complete( new Error('UNKNOWN') )
     var peopleHost = Object.keys(result.tokens)[0]
     var peopleToken = result.tokens[peopleHost]
     var peopleDetails =

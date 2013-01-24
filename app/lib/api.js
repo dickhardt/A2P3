@@ -54,7 +54,7 @@ exports.call = function ( details, callback ) {
     if (data.error) {
       var apiError = new Error(data.error.message + data.error.stack)
       apiError.code = data.error.code
-      callback( apiError, null)
+      return callback( apiError, null)
     }
     callback( null, data.result )
   })
