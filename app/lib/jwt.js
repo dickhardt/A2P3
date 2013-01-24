@@ -123,7 +123,7 @@ assert.deepEqual(actual, expected, "concat KDF failure")
 var encryptAxxxCBC = function ( details, cipherEncrypt, sign, numBytes) {
 
 
-console.log('\nencrypting with kid:',details.credentials.kid,'\nkey\n',details.credentials.key)
+// console.log('\nencrypting with kid:',details.credentials.kid,'\nkey\n',details.credentials.key)
 
 
 
@@ -133,11 +133,11 @@ console.log('\nencrypting with kid:',details.credentials.kid,'\nkey\n',details.c
 
   var kdf = concatKDF(cmk)
 
-console.log('\nkdf\n',kdf)
+// console.log('\nkdf\n',kdf)
 
   var plainText = JSON.stringify( details.payload)
 
-console.log('\ninput plainText\n',plainText)
+// console.log('\ninput plainText\n',plainText)
 
   var iv = crypto.randomBytes( 16)
 
@@ -169,7 +169,7 @@ var encryptAlg =
 
 var decryptAxxxCBC = function ( input, cmkEncrypted, ivB64url, ciphertextB64url, signature, key, cipher, sign, numBytes) {
 
-console.log('\ndecrypting with key\n', key)
+// console.log('\ndecrypting with key\n', key)
 
 
   if (cmkEncrypted)
@@ -181,15 +181,15 @@ console.log('\ndecrypting with key\n', key)
 
   var kdf = concatKDF(cmk)
 
-debugger;
+// debugger;
 
-console.log('\nkdf\n',kdf)
+// console.log('\nkdf\n',kdf)
 
-console.log('ivB64url:', ivB64url)
+// console.log('ivB64url:', ivB64url)
 
   var iv = new Buffer(b64url.b64(ivB64url), 'base64')
 
-console.log('iv:',iv)
+// console.log('iv:',iv)
 
   // check integrity
   var hmac = crypto.createHmac(sign, kdf.cik).update(input);
@@ -197,22 +197,22 @@ console.log('iv:',iv)
   if (inputSignature != signature)
     throw new Error("JWE has invalid signature:"+signature)
 
-console.log('ciphertextB64url:', ciphertextB64url)
+// console.log('ciphertextB64url:', ciphertextB64url)
 
   // decrypt
   var cipherText = new Buffer( b64url.b64( ciphertextB64url ), 'base64' )
 
   var decipher = crypto.createDecipheriv( cipher, kdf.cek, iv )
 
-console.log('\ndecipher:',decipher)
+// console.log('\ndecipher:',decipher)
 
   var plainText = decipher.update( cipherText,'binary','utf8' )
 
-console.log('\nplainText:',plainText)
+// console.log('\nplainText:',plainText)
 
   plainText += decipher.final( 'utf8' )
 
-console.log('\nplainText:',plainText)
+// console.log('\nplainText:',plainText)
 
   return plainText;
 }
