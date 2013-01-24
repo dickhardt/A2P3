@@ -26,7 +26,7 @@ var portListen = port
 console.log('pwd',__dirname)
 
 var dotcloud = null
-if ( fs.existsSync( __dirname + '../environment.json' ) ) {
+if ( fs.existsSync( '/home/dotcloud/environment.json' ) ) {
   console.log('detected dotlcloud')
   dotcloud = require( '../environment.json' )
 }

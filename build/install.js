@@ -14,6 +14,7 @@ function copyFileSync( src, dest ) {
   fs.writeFileSync( dest, data )
 }
 
+console.log( process.env )
 
 if ( fs.existsSync('./app/config.js') ) {
   console.log('Using existing ./app/config.js')
