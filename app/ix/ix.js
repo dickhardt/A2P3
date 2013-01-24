@@ -41,12 +41,19 @@ function getHosts ( scopes ) {
 
 // exchange IX Token for RS Tokens if all is good
 function exchange ( req, res, next ) {
-
   var jwe, jws, ixToken, e
-
-
   try {
     jwe = new jwt.Parse( req.request['request.a2p3.org'].token )
+    if (jwe.header.typ === 'JWS') {
+      e = new Error( 'Received a JWS when expecting a JWE')
+      e.code = "INVALID_TOKEN"
+      return next( e )
+    }
+    if (jwe.header.typ !== 'JWE') {
+      e = new Error( 'Uknown token type.')
+      e.code = "INVALID_TOKEN"
+      return next( e )
+    }
     if ( !jwe.header.kid || !vault.keys.as[jwe.header.kid] ) {
       e = new Error( "No AS key for 'kid' "+jwe.header.kid)
       e.code = "INVALID_TOKEN"
