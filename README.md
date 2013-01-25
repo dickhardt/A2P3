@@ -36,7 +36,7 @@ Will bootstrap new vaults and database if you have changed relevant settings in 
 
 ## Related
 
-[A2P3.CA](http://a2p3.ca) A2P3 project home page
+[A2P3 project home page](http://www.a2p3.net)
 
 [A2P3](https://github.com/dickhardt/A2P3) POC Server implementation source (node.js)
 
