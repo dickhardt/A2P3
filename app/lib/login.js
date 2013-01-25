@@ -100,7 +100,7 @@ function loginReturn ( details ) {
     if (!ixToken) return sendError( errorCode, errorMessage )
 
     fetchIXToken( req.session.agentRequest, ixToken, details, function ( error, result ) {
-      if (error) return sendError( result.error.code, result.error.message )
+      if (error) return sendError( error.code, error.message )
       req.session.di = result.sub
       req.session.tokens = result.tokens
       req.session.redirects = result.redirects
