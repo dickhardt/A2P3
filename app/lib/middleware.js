@@ -125,7 +125,7 @@ exports.colorLogger = function colorLogger ( express ) {
       : '-'
     })
 
-  return express.logger( ':wideHost\t:method\t:url\t:statusColor\t:response-time\tms\t:errorCode\t:errorMessage' )
+  return express.logger( '[:date] :wideHost\t:method\t:url\t:statusColor\t:response-time\tms\t:errorCode\t:errorMessage' )
 }
 
 /*
