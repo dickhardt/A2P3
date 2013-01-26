@@ -30,17 +30,21 @@ function diCreate ( req, res, next ) {
 // parses out hosts from passed in scopes
 function getHosts ( scopes ) {
   var results = {}
-  scopes.forEach( function ( scope ) {
-    var o = url.parse( scope )
-    results[o.hostname] = results[o.hostname] || []
-    results[o.hostname].push( scope )
-  })
+  if (scopes)
+    scopes.forEach( function ( scope ) {
+      var o = url.parse( scope )
+      results[o.hostname] = results[o.hostname] || []
+      results[o.hostname].push( scope )
+    })
   return results
 }
 
 
 // exchange IX Token for RS Tokens if all is good
 function exchange ( req, res, next ) {
+
+debugger;
+
   var jwe, jws, ixToken, e
   try {
     jwe = new jwt.Parse( req.request['request.a2p3.org'].token )
