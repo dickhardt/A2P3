@@ -40,28 +40,22 @@ function checkValidAgent (req, res, next) {
 
 // /request/verify
 function requestVerify (req, res, next) {
-  var appId, err
+
   if (!req.body || !req.body.request) {
-      err = new Error("No 'request' parameter in POST")
+      var err = new Error("No 'request' parameter in POST")
       err.code = 'INVALID_API_CALL'
       return next( err )
   }
-  try {
-    appId = request.verifyAndId( req.body.request, vault.keys )
-    if ( appId ) {
-      db.getAppName( appId, function (appName) {
-          return res.send({result: { name: appName }})
-        })
-    } else {
-        err = new Error('Invalid request signature')
-        err.code = 'INVALID_REQUEST'
-        return next( err )
-    }
-  }
-  catch (e) {
-    e.code = 'INVALID_REQUEST'
-    return next( e )
-  }
+  request.verifyAndId( req.body.request, 'registrar', vault.keys, function ( error, appID ) {
+    if ( error ) return next( error )
+    if ( appID ) {
+      db.getAppName( appID, function ( e, appName ) {
+        if ( e ) return next( e )
+        return res.send( {result: { name: appName } } )
+      })
+    } else
+      return next( new Error('unknown') )
+  })
 }
 
 // /report

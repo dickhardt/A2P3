@@ -32,29 +32,46 @@ exports.parse = function ( request ) {
 
 
 function paramCheck( jws ) {
-  if (!jws.payload.iss) {
-
-console.error('\nBad JWS:',jws)
-
-    throw new Error('No "iss" in JWS payload')
-  }
-  if (!jws.header.kid)
-    throw new Error('No "kid" in JWS header')
-  if (!jws.payload['request.a2p3.org'])
-    throw new Error('No "request.a2p3.org" in JWS payload')}
-
-function vaultKeys( jws, keys ) {
-  var haveKeys = keys && keys[jws.payload.iss] && keys[jws.payload.iss][jws.header.kid]
-  return ( haveKeys )
+  if (!jws.payload.iss) throw new Error('No "iss" in JWS payload')
+  if (!jws.header.kid) throw new Error('No "kid" in JWS header')
+  if (!jws.payload['request.a2p3.org']) throw new Error('No "request.a2p3.org" in JWS payload')
 }
 
 
-exports.verifyAndId = function ( request, keys ) {
-  var jws = new jwt.Parse( request )
-  paramCheck( jws )
-  if (!vaultKeys( jws, keys )) return undefined
-  var valid = jws.verify( keys[jws.payload.iss][jws.header.kid] )
-  return ( valid ) ? jws.payload.iss : undefined
+exports.verifyAndId = function ( request, RS, keys, callback ) {
+  var e = null
+    , jws
+  try {
+    jws = new jwt.Parse( request )
+    paramCheck( jws )
+  }
+  catch (e) {
+    e.code = 'INVALID_REQUEST'
+    return callback( e )
+  }
+  db.getAppKey( RS, jws.payload.iss, keys, function ( error, key ) {
+    if (error) {
+      error.code = 'INVALID_REQUEST'
+      return callback( error )
+    }
+    if (!key[ jws.header.kid ]) {
+      e = new Error('No key found for "'+jws.payload.iss+'" with KID "'+jws.header.kid+'"')
+      e.code = "INVALID_REQUEST"
+      return callback( error )
+    }
+    try {
+      if ( jws.verify( key[ jws.header.kid ] ) ) {
+        return callback( null, jws.payload.iss )
+      }
+      e = new Error('Invalid signature.')
+      e.code = "INVALID_REQUEST"
+      return callback( error )
+    }
+    catch ( e ) {
+      e.code = "INVALID_REQUEST"
+      callback( e )
+    }
+  })
 }
 
 

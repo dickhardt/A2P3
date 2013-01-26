@@ -122,7 +122,7 @@ exports.validAgent = function ( token, cb ) {
 
 exports.getAppName = function ( id, cb ) {
   var name = dummyNoSql['registrar:app:' + id + ':name']
-  process.nextTick( function () { cb('Example App') } )
+  process.nextTick( function () { cb( null, name ) } )
 }
 
 exports.checkRegistrarAppIdTaken = function ( id, cb ) {
@@ -272,12 +272,16 @@ exports.refreshAppKey = function ( reg, id, cb ) {
 
 exports.getAppKey = function ( reg, id, vaultKeys, cb ) {
   var key = null
+    , error = null
   if (reg && keyChain[reg])
     key = keyChain[reg][id]
   if (!key && vaultKeys) {
     key = vaultKeys[id]
   }
-  process.nextTick( function () { cb( null, key ) } )
+  if (!key) {
+    error = new Error('No key found for "'+id+'"')
+  }
+  process.nextTick( function () { cb( error, key ) } )
 }
 
 // used by Registrar to check if list of RS are Anytime and then get keys

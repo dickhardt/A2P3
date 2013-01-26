@@ -673,7 +673,6 @@ function registerDemoApp ( rs, standard ) {
       })
     })
 
-
   })
 }
 
@@ -724,6 +723,29 @@ describe('Demo App calling ', function () {
       })
     })
   })
+
+  //let's Registrar /app/verify since we have a valid Agent Request
+  describe('Registrar /request/verify', function () {
+    it('should return '+demoApp.name, function (done) {
+      var options =
+        { url: config.baseUrl.registrar + '/request/verify'
+        , json: { request: agentRequest, token: testUser.agent.token}
+        , method: 'POST'
+        }
+      fetch( options, function ( e, response, json ) {
+        should.not.exist( e )
+        should.exist( response )
+        response.statusCode.should.equal( 200 )
+        should.exist( 'json' )
+        json.should.not.have.property('error')
+        json.should.have.property('result')
+        json.result.should.have.property('name', demoApp.name)
+        done( null )
+      })
+    })
+  })
+
+
 
   var api = new API.Standard( 'demo', vault )
   describe('getting RS Tokens', function () {
