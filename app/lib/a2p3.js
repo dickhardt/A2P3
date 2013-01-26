@@ -12,12 +12,7 @@ var request = require('request')
 //  , fs = require('fs')
   , async = require('async')
 
-var vault = null
-  , config = null
-
-function init( c, v ) {
-  config = c
-  vault = v
+function init( config, vault ) {
   // makes sure config and vault have what we need, sets defaults not provided
   if (!config) throw new Error('Invalid config')
   if (!config.appID) throw new Error('No appID in config')
@@ -32,7 +27,7 @@ function init( c, v ) {
 }
 
 // create an Agent Request
-function createAgentRequest ( returnURL, resources ) {
+function createAgentRequest ( config, vault, returnURL, resources ) {
   if (!vault || !config) throw new Error('a2p3 needs to be initialized with init( config, vault) ')
   var credentials = vault[ config.ix ].latest
   var details =
@@ -57,8 +52,10 @@ function createAgentRequest ( returnURL, resources ) {
 }
 
 // Resource constructor
-function Resource ( ) {
+function Resource ( config, vault ) {
   if (!vault || !config) throw new Error('a2p3 needs to be initialized with init( config, vault) ')
+  this.config = config
+  this.vault = vault
   return this
 }
 
@@ -92,6 +89,8 @@ function processResponse ( callback ) {
 // Exchange the IX Token for the RS Tokens
 Resource.prototype.exchange = function exchange ( agentRequest, ixToken, callback ) {
   var that = this
+    , vault = that.vault
+    , config = that.config
     , credentials = vault[config.ix].latest
     , details =
       { header:
@@ -127,6 +126,8 @@ Resource.prototype.call = function call ( api, params, callback ) {
     params = {}
   }
   var that = this
+    , vault = that.vault
+    , config = that.config
     , url = urlParse( api )
     , apiHost = url.hostname
     , err = null

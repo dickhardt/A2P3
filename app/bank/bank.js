@@ -1,11 +1,10 @@
 /*
-* clinic.js
+* bank.js
 *
-* Simple Clinic check-in App
+* Bank web app and iPhone app front end
 *
 * Copyright (C) Province of British Columbia, 2013
 */
-
 
 var express = require('express')
   , fs = require('fs')
@@ -13,7 +12,7 @@ var express = require('express')
   , config = require('../config')
 
 var localConfig =
-  { appID: config.host.clinic
+  { appID: config.host.bank
   , ix: config.host.ix
   , ixURL: config.baseUrl.ix
   }
@@ -21,16 +20,16 @@ var vault = require('./vault.json').keys
 
 a2p3.init( localConfig, vault )
 
-var HOST_URL = config.baseUrl.clinic
+var HOST_URL = config.baseUrl.bank
 
 var RESOURCES =
     [ 'http://people.a2p3.net/scope/details'
-    , 'http://health.a2p3.net/scope/prov_number'
+    , 'http://si.a2p3.net/scope/number'
     ]
 
 var APIS =
   { 'http://people.a2p3.net/details': null
-  , 'http://health.a2p3.net/prov_number': null
+  , 'http://si.a2p3.net/number': null
   }
 
 // HTML for meta refresh and Agent Install Page
@@ -171,7 +170,13 @@ function loginResponse( req, res )  {
       return res.redirect( '/complete' )
     })
   } else {
+
+debugger;
+
     fetchProfile( agentRequest, ixToken, function ( error, results ) {
+
+console.log('fetchProfile',error,results)
+
       if ( error ) return res.redirect( '/error' )
       req.session.profile = results
       return res.redirect('/')
