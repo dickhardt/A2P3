@@ -211,6 +211,23 @@ function run ( complete ) {
     , 'bank': { 'keys': {}, 'secret': identity.makeSecret()}
     }
 
+  // register Clinic and Bank at Registrar
+  tasks.push( function (done) {
+    db.newApp( 'registrar', config.host.clinic, 'Clinic', 'root', function ( e, keyObj ) {
+      if (e) return done( e )
+      appHostKeys.clinic.keys[config.host.registrar] = appHostKeys.clinic.keys[config.host.ix] = keyObj
+      done ( null, "clinic registered at Registrar" )
+    })
+  })
+
+  tasks.push( function (done) {
+    db.newApp( 'registrar', config.host.bank, 'Bank', 'root', function ( e, keyObj ) {
+      if (e) return done( e )
+      appHostKeys.bank.keys[config.host.registrar] = appHostKeys.bank.keys[config.host.ix] = keyObj
+      done ( null, "Bank registered at Registrar" )
+    })
+  })
+
   // clinic app
   config.provinces.forEach( function ( province ) {
     tasks.push( function (done) {

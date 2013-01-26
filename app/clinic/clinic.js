@@ -1,44 +1,34 @@
 /*
-* server.js
+* clinic.js
 *
-* Sample App
-*
-* gets all profile data about a user and displays it
+* Simple Clinic check-in App
 *
 * Copyright (C) Province of British Columbia, 2013
 */
 
 
 var express = require('express')
-  , app = express()
   , fs = require('fs')
-  , os = require('os')
-  , a2p3 = require('a2p3')
+  , a2p3 = require('../lib/a2p3')
+  , config = require('../config')
 
-// make sure you have a config.json and vault.json per a2p3 documentation
-a2p3.init( require('./config.json'), require('./vault.json'))
+var localConfig =
+  { appID: config.host.clinic
+  , ix: config.host.ix
+  , ixURL: config.baseUrl.ix
+  }
 
-var LISTEN_PORT = 8080
+a2p3.init( localConfig, require('./vault.json').keys )
 
-var host = os.hostname() || 'localhost'
+var HOST_URL = config.baseUrl.clinic
 
-var HOST_URL = 'http://' + host + ':' + LISTEN_PORT    // for running locally
-
-if (process.env.DOTCLOUD_WWW_HTTP_URL) {  // looks like we are running on DotCloud, adjust our world
-  HOST_URL = process.env.DOTCLOUD_WWW_HTTP_URL
-  LISTEN_PORT = 8080
-}
 var RESOURCES =
-    [ 'http://email.a2p3.net/scope/default'
-    , 'http://people.a2p3.net/scope/details'
-    , 'http://si.a2p3.net/scope/number'
+    [ 'http://people.a2p3.net/scope/details'
     , 'http://health.a2p3.net/scope/prov_number'
     ]
 
 var APIS =
-  { 'http://email.a2p3.net/email/default': null
-  , 'http://people.a2p3.net/details': null
-  , 'http://si.a2p3.net/number': null
+  { 'http://people.a2p3.net/details': null
   , 'http://health.a2p3.net/prov_number': null
   }
 
@@ -47,25 +37,14 @@ var APIS =
 // time makes it easy to edit and reload for development
 var META_REFRESH_HTML_FILE = __dirname + '/html/meta_refresh.html'
 
-
-/*
-*  Users can use the Agent running on their mobile phone to log into a web site
-*  The server sends a qrURL down to the web page which draws a QR code
-*  When the WR reader on the Agent reads the QR code, it appends &json=true
-*  and the server then responds with a JSON response
-*  If the QR code is scanned with a standard reader, then the server returns
-*  the agent_install.html page which then tries to redirect the user to
-*  Agent scheme. If it is not successful, the User learns how to get an Agent
-*  for their phone
-*
-*  When an Agent is scanning the QR code, the User is running the App on a different
-*  device. We use the sessions object to pass the Agent Request and IX Token that
-*  we get from the Agent to the session where the App is running
-*
-*/
-
 // calculate this once
 var QR_SESSION_LENGTH = a2p3.random16bytes().length
+
+
+//////////////////////////////////////////////////////////////////
+//TBD - put following into a DB call
+/////////////////////////////////////////////////////////////////
+
 
 // Global for holding QR sessions, need to put in DB if running mulitple instances
 // NOTE: DOES NOT SCALE AS CODED
@@ -219,7 +198,6 @@ function checkQR( req, res ) {
         return res.send( response )
       })
     })
-
 }
 
 
@@ -232,47 +210,44 @@ function profile( req, res )  {
 }
 
 // set up middleware
+exports.app = function () {
+  var app = express()
 
-app.use( express.static( __dirname + '/html/assets' ) )   // put static assets here
-app.use( express.logger( 'dev' ) )                        // so that we only log page requests
-app.use( express.limit('10kb') )                          // protect against large POST attack
-app.use( express.bodyParser() )
+  app.use( express.limit('10kb') )                    // protect against large POST attack
+  app.use( express.bodyParser() )
 
-app.use( express.cookieParser() )                   // This does not scale to more than one machine
-var cookieOptions =                                 // Put in DB backend for session to scale
-  { 'secret': a2p3.random16bytes()
-  , 'cookie': { path: '/' } }
-app.use( express.cookieSession( cookieOptions ))
+  app.use( express.cookieParser() )                   // This does not scale to more than one machine
+  var cookieOptions =                                 // Put in DB backend for session to scale
+    { 'secret': a2p3.random16bytes()
+    , 'cookie': { path: '/' } }
+  app.use( express.cookieSession( cookieOptions ))
 
-//setup request routes
+  //setup request routes
 
-// these end points are all AJAX calls from the web app and return a JSON response
-app.get('/login/QR', loginQR )
-app.get('/profile', profile )
-app.post('/check/QR', checkQR )
+  // these end points are all AJAX calls from the web app and return a JSON response
+  app.get('/login/QR', loginQR )
+  app.get('/profile', profile )
+  app.post('/check/QR', checkQR )
 
-// this page is called by either the Agent or a QR Code reader
-// returns either the Agent Request in JSON if called by Agent
-// or sends a redirect to the a2p3.net://token URL
-app.get('/QR/:qrSession', qrCode )
-
-
-// these pages return a redirect
-app.get('/login/backdoor', loginBackdoor)
-app.get('/login/direct', loginDirect)
-app.get('/response', loginResponse )
-app.get('/logout', logout )
-
-// these endpoints serve static HTML pages
-app.get('/', function( req, res ) { res.sendfile( __dirname + '/html/index.html' ) } )
-app.get('/error', function( req, res ) { res.sendfile( __dirname + '/html/login_error.html' ) } )
-app.get('/complete', function( req, res ) { res.sendfile( __dirname + '/html/login_complete.html' ) } )
-app.get('/agent/install', function( req, res ) { res.sendfile( __dirname + '/html/agent_install.html' ) } )
+  // this page is called by either the Agent or a QR Code reader
+  // returns either the Agent Request in JSON if called by Agent
+  // or sends a redirect to the a2p3.net://token URL
+  app.get('/QR/:qrSession', qrCode )
 
 
-app.get('/test', function( req, res ) { res.sendfile( __dirname + '/html/test.html' ) } )
+  // these pages return a redirect
+  app.get('/login/backdoor', loginBackdoor)
+  app.get('/login/direct', loginDirect)
+  app.get('/response', loginResponse )
+  app.get('/logout', logout )
 
+  // these endpoints serve static HTML pages
+  app.get('/', function( req, res ) { res.sendfile( __dirname + '/html/index.html' ) } )
+  app.get('/error', function( req, res ) { res.sendfile( __dirname + '/html/login_error.html' ) } )
+  app.get('/complete', function( req, res ) { res.sendfile( __dirname + '/html/login_complete.html' ) } )
+  app.get('/agent/install', function( req, res ) { res.sendfile( __dirname + '/html/agent_install.html' ) } )
 
-app.listen( LISTEN_PORT )
+  return app
 
-console.log('\nSample App started and listening on ', HOST_URL)
+}
+

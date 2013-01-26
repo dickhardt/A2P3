@@ -9,7 +9,7 @@
 var request = require('request')
   , urlParse = require('url').parse
   , jwt = require('./jwt')
-  , fs = require('fs')
+//  , fs = require('fs')
   , async = require('async')
 
 var vault = null
@@ -21,8 +21,8 @@ function init( c, v ) {
   // makes sure config and vault have what we need, sets defaults not provided
   if (!config) throw new Error('Invalid config')
   if (!config.appID) throw new Error('No appID in config')
-  if (!config.device) throw new Error('No device in config')
-  if (!config.name) throw new Error('No name in config')
+  // if (!config.device) throw new Error('No device in config')
+  // if (!config.name) throw new Error('No name in config')
   if (!vault) throw new Error('Invalid vault')
   config.ix = config.ix || 'ix.a2p3.net'
   config.ixURL = config.ixURL || 'http://ix.a2p3.net'

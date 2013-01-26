@@ -2,7 +2,7 @@
 <html>
 <head>
 <style type="text/css">
-  .loginStatus {text-align:right;}
+  .loginStatus {text-align:center;}
   .loginItem {padding-left: 5px;}
   #qrcodeForm{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:500px; height:550px; position: absolute; top:25px; left:10%; margin-left:-50px; padding:10px; border-radius:4px;}
 </style>
@@ -10,13 +10,8 @@
 </head>
 <body>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-  <script type="text/javascript"    src="/jquery.qrcode.min.js"></script>
+  <script type="text/javascript"    src="/js/jquery.qrcode.min.js"></script>
 
-<div class="loginStatus">
-  <a href="" id="login" class="loginItem"> login </a>
-  <a href="/login/backdoor" id="loginBackdoor" class="loginItem"> login backdoor </a>
-  <a href="/logout" id="logout" class="loginItem">logout </a>
-</div>
 
 <div id="qrcodeForm">
     <p>Scan QR Code with your Agent to login</p>
@@ -24,9 +19,15 @@
 </div>
 
 
-<H1 id='title'>Sample App</H1>
+<H1 id='title'>Clinic Check In</H1>
 
 <hr>
+
+<div class="loginStatus">
+  <a href="" id="login" class="loginItem"> login </a>
+  <a href="/login/backdoor" id="loginBackdoor" class="loginItem"> login backdoor </a>
+  <a href="/logout" id="logout" class="loginItem">logout </a>
+</div>
 
 <table id="profileTable"> </table>
 
@@ -45,11 +46,11 @@ function onReady() {
 
   function drawProfile( profile ) {
     console.log( profile )
-    Object.keys( profile ).forEach( function ( rs ) {
-      $('#profileTable').append('<tr><td>' + rs + '</td><td></td><td></td></tr>')
-      Object.keys( profile[rs] ).forEach( function ( item ) {
-        $('#profileTable').append('<tr><td></td><td>' + item + '</td><td>' + profile[rs][item] + '</td></tr>')
-      })
+    var people = profile[ profile['people.a2p3.net'].redirects[0] ]
+    var healthNumber = profile[ profile['health.a2p3.net'].redirects[0] ].prov_number
+    $('#profileTable').append('<tr><td>Health Care Number</td><td>'+healthNumber+'</td></tr>')
+    Object.keys( people ).forEach( function ( item ) {
+      $('#profileTable').append('<tr><td>' + item + '</td><td>' + people[item] + '</td></tr>')
     })
   }
 
