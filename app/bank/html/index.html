@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style type="text/css">
+  .loginStatus {text-align:right;}
+  .loginItem {padding-left: 5px;}
+  #qrcodeForm{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:500px; height:550px; position: absolute; top:25px; left:10%; margin-left:-50px; padding:10px; border-radius:4px;}
+</style>
+
+</head>
+<body>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+  <script type="text/javascript"    src="/jquery.qrcode.min.js"></script>
+
+<div class="loginStatus">
+  <a href="" id="login" class="loginItem"> login </a>
+  <a href="/login/backdoor" id="loginBackdoor" class="loginItem"> login backdoor </a>
+  <a href="/logout" id="logout" class="loginItem">logout </a>
+</div>
+
+<div id="qrcodeForm">
+    <p>Scan QR Code with your Agent to login</p>
+    <div id="qrcode"></div>
+</div>
+
+
+<H1 id='title'>Sample App</H1>
+
+<hr>
+
+<table id="profileTable"> </table>
+
+<script type="text/javascript">
+
+function onReady() {
+
+  // check if are running on iOS or android, only agent platforms currently supported
+  var deviceAgent = navigator.userAgent.toLowerCase()
+  var iOS = deviceAgent.match(/(iphone|ipod|ipad)/)
+  var isAndroid = deviceAgent.indexOf("android") > -1
+  var agentDirect = iOS || isAndroid
+
+  $('#qrcodeForm').hide()
+  $('#logout').hide()
+
+  function drawProfile( profile ) {
+    console.log( profile )
+    Object.keys( profile ).forEach( function ( rs ) {
+      $('#profileTable').append('<tr><td>' + rs + '</td><td></td><td></td></tr>')
+      Object.keys( profile[rs] ).forEach( function ( item ) {
+        $('#profileTable').append('<tr><td></td><td>' + item + '</td><td>' + profile[rs][item] + '</td></tr>')
+      })
+    })
+  }
+
+  // function that polls to see if we are logged in yet
+  function checkQR ( qrSession ) {
+    $.post( '/check/QR', { qrSession: qrSession }, function ( data, status ) {
+      if ( status == 'success' && data) {
+      if ( data.status == 'waiting')
+        return setTimeout( checkQR, 500, qrSession )
+      if (data.error) console.log( data.error )
+      if (data.result) drawProfile( data.result )
+      }
+    })
+  }
+
+  $('#login').click( function () {
+    if (agentDirect) {
+      window.location = '/login/direct'
+    } else {  // put up QR code
+      $.get( '/login/QR', function ( data, status ) {
+        if (status == "success" && !data.error && data.result && data.result.qrURL ) {
+          $('#qrcode').empty()
+          $('#qrcodeForm').fadeIn('fast')
+          $('#qrcode').qrcode( {width: 500, height: 500, text: data.result.qrURL } )
+          setTimeout( checkQR, 500, data.result.qrSession )
+        }
+      })
+    }
+    return false
+  })
+
+  // see if we have a profile to show on a reload
+  $.get( '/profile', function ( data, status ) {
+    console.log( '/profile ->', data )
+    if (status == "success" && !data.error && data.result ) {   // TBD, deal with error
+      $('#logout').show()
+      $('#login').hide()
+      $('#loginBackdoor').hide()
+      drawProfile( data.result )
+    }
+  })
+
+} // onReady
+
+$(document).ready(onReady)
+
+</script>
+
+</body>
+</html>

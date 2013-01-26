@@ -1,0 +1,10 @@
+{ "appID":  "afd1420f3a6b49fe.example.com"
+, "name": "Example App"
+, "device": "SET_THIS_TO_THE_DEVICE_VALUE_FROM_YOUR_CLI_AGENT"
+, "resources":
+  [ "email.a2p3.net"
+  , "si.a2p3.net"
+  , "people.a2p3.net"
+  , "health.a2p3.net"
+  ]
+}
