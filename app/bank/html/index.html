@@ -19,15 +19,36 @@
 </div>
 
 
-<H1 id='title'>Bank Log In</H1>
+<H1 id='title'>Bank</H1>
+
+<div id="introduction">
+  <h2> Welcome to the Bank App </h2>
+  <p>This is an <a href="http://www.a2p3.net/">A2P3</a> demonstration site.</p>
+  <ul>
+    <li>Openning an account will prompt for the release of data, accept TOS and create an account.
+    </li>
+    <li>Login will authenticate the user, check if they have an account, and the SIN will be acquired with an anytime OAuth token.
+    </li>
+    <li>If the remember me box is checked during login while scanning a QR code, a button to login as that user will appear next time.</li>
+  </ul>
+</div>
 
 <hr>
 
 <div class="loginStatus">
+  <a href="" id="newAccount" class="loginItem"> Open an Account </a>
   <a href="" id="login" class="loginItem"> login </a>
-  <a href="/login/backdoor" id="loginBackdoor" class="loginItem"> login backdoor </a>
   <a href="/logout" id="logout" class="loginItem">logout </a>
 </div>
+
+<hr>
+<div class="loginStatus" id="backdoor">
+  ** Backdoor **
+  <a href="" id="newAccountBackdoor" class="loginItem"> Open an Account </a>
+  <a href="/login/backdoor" id="loginBackdoor" class="loginItem"> login </a>
+  ** Backdoor **
+</div>
+
 
 <table id="profileTable"> </table>
 
@@ -88,7 +109,9 @@ function onReady() {
     if (status == "success" && !data.error && data.result ) {   // TBD, deal with error
       $('#logout').show()
       $('#login').hide()
-      $('#loginBackdoor').hide()
+      $('#newAccount').hide()
+      $('#introduction').hide()
+      $('#backdoor').hide()
       drawProfile( data.result )
     }
   })
