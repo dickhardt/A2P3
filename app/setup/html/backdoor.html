@@ -11,10 +11,9 @@
 <b>will login as <i>dev@example.com</i></b>
 <ul id='loginList'>
 </ul>
-
 <script type="text/javascript">
     $(document).ready( function () {
-
+      var url = null
       var port = (config.port == '80') ? '' : '%3a' + config.port // :8080
       var servers =
         { 'registrar':  'Registar'
@@ -26,14 +25,20 @@
         , 'people':      'Standard People RS'
         , 'people.bc':    'BC People RS'
         , 'people.ab':    'Alberta People RS'
-        , 'clinic':       'Clinic App (NOT IMPLEMENTED)'
-        , 'bank':       'Bank App (NOT IMPLEMENTED)'
         }
       Object.keys( servers ).forEach( function (host ) {
-        var url = config.protocol + '://' + host + '.' + config.baseDomain + ':' + config.port +
+        url = config.protocol + '://' + host + '.' + config.baseDomain + ':' + config.port +
           '/login?returnURL=http%3a%2f%2fsetup.' + config.baseDomain + port + '%2fbackdoor%2flogin%2fdev%40example.com'
         $('#loginList').append('<li><a href="' + url + '">' + servers[host] + '</a></li>')
       })
+
+      $('#loginList').append('<li>-----------</li>')
+
+      url = config.protocol + '://clinic.' + config.baseDomain + ':' + config.port
+      $('#loginList').append('<li><a href="' + url + '">Clinic App</a></li>')
+
+      url = config.protocol + '://bank.' + config.baseDomain + ':' + config.port
+      $('#loginList').append('<li><a href="' + url + '">Bank App</a></li>')
 
       console.log(config)
     })
