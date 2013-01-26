@@ -42,9 +42,6 @@ function getHosts ( scopes ) {
 
 // exchange IX Token for RS Tokens if all is good
 function exchange ( req, res, next ) {
-
-debugger;
-
   var jwe, jws, ixToken, e
   try {
     jwe = new jwt.Parse( req.request['request.a2p3.org'].token )
