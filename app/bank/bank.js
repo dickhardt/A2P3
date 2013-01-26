@@ -170,13 +170,7 @@ function loginResponse( req, res )  {
       return res.redirect( '/complete' )
     })
   } else {
-
-debugger;
-
     fetchProfile( agentRequest, ixToken, function ( error, results ) {
-
-console.log('fetchProfile',error,results)
-
       if ( error ) return res.redirect( '/error' )
       req.session.profile = results
       return res.redirect('/')
