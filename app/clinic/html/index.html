@@ -30,7 +30,7 @@
 
 <hr>
 
-<div class="loginStatus">
+<div class="loginStatus" id="backdoor">
   ** Backdoor **
   <a href="/login/backdoor" id="loginBackdoor" class="loginItem"> Check In </a>
   ** Backdoor **
@@ -96,7 +96,7 @@ function onReady() {
     if (status == "success" && !data.error && data.result ) {   // TBD, deal with error
       $('#logout').show()
       $('#login').hide()
-      $('#loginBackdoor').hide()
+      $('#backdoor').hide()
       drawProfile( data.result )
     }
   })
