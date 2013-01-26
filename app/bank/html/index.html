@@ -47,7 +47,7 @@ function onReady() {
   function drawProfile( profile ) {
     console.log( profile )
     var people = profile[ profile['people.a2p3.net'].redirects[0] ]
-    var si = profile['si.a2p3.net'].number
+    var si = profile['si.a2p3.net'].si
     $('#profileTable').append('<tr><td>Social Insurance Number</td><td>'+si+'</td></tr>')
     Object.keys( people ).forEach( function ( item ) {
       $('#profileTable').append('<tr><td>' + item + '</td><td>' + people[item] + '</td></tr>')
