@@ -432,6 +432,11 @@ exports.deleteAgentFromHandle = function ( as, handle, cb) {
 */
 exports.updateProfile = function ( rs, di, profile, cb ) {
   var key = rs + ':di:' + di + ':profile'
+
+// console.log('\nupdateProfile from:',key)
+// console.log('profile\n',profile)
+
+
   dummyNoSql[key] = dummyNoSql[key] || {}
   Object.keys( profile ).forEach( function (item) {
     dummyNoSql[key][item] = profile[item]
@@ -441,6 +446,10 @@ exports.updateProfile = function ( rs, di, profile, cb ) {
 
 exports.getProfile = function ( rs, di, cb ) {
   var key = rs + ':di:' + di + ':profile'
+
+// console.log('\ngetProfile from:',key)
+// console.log('profile\n',dummyNoSql[key])
+
   if (!dummyNoSql[key]) {
     var e = new Error('unknown user')
     e.code = "UNKNOWN_USER"
