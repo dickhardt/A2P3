@@ -131,7 +131,7 @@ You will need to have a Personal Agent installed on your iOS device.
           $('#passcodeForm').fadeOut('fast')
           /// TBD - adjust size of popup and QR code to screen
           $('#qrcodeForm').fadeIn('fast')
-          $('#qrcode').qrcode({width: 300,height: 300,text: code})
+          $('#qrcode').qrcode({width: 300,height: 300,text: 'a2p3.net://enroll?code='+code})
 
         }
       })
