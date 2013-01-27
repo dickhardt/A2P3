@@ -163,7 +163,7 @@ exports.app = function() {
           , oauth()
           )
   app.post('/anytime/number'  // acquire SIN at anytime
-          , mw.checkParams( {'body':['access_token','series','data']} )
+          , mw.checkParams( {'body':['access_token']} )
           , oauthCheck()
           , number
           )
