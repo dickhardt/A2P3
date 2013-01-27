@@ -156,13 +156,9 @@ exports.app = function( province ) {
           , under20over65( province )
           )
   app.post('/namePhoto'
-          , mw.trace
           , request.check( vault.keys, null, 'people.'+province )
-          , mw.trace
           , mw.a2p3Params( ['token'] )
-          , mw.trace
           , token.checkRS( vault.keys, 'people.'+province, ['/scope/namePhoto','/scope/details'], 'people' )
-          , mw.trace
           , namePhoto( province )
           )
   app.post('/photo'
