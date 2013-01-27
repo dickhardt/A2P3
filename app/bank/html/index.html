@@ -21,6 +21,10 @@
 
 <H1 id='title'>Bank</H1>
 
+<div id="error">
+  <span id="errorMessage"></span>
+</div>
+
 <div id="introduction">
   <h2> Welcome to the Bank App </h2>
   <p>This is an <a href="http://www.a2p3.net/">A2P3</a> demonstration site.</p>
@@ -38,19 +42,31 @@
 <div class="loginStatus">
   <a href="" id="newAccount" class="loginItem"> Open an Account </a>
   <a href="" id="login" class="loginItem"> login </a>
-  <a href="/logout" id="logout" class="loginItem">logout </a>
+  <a href="/logout" id="logout" class="loginItem">logout</a>
+  <a href="/logout" id="cancel" class="loginItem">CANCEL</a>
 </div>
 
 <hr>
 <div class="loginStatus" id="backdoor">
   ** Backdoor **
-  <a href="" id="newAccountBackdoor" class="loginItem"> Open an Account </a>
+  <a href="/new/backdoor" id="newAccountBackdoor" class="loginItem"> Open an Account </a>
   <a href="/login/backdoor" id="loginBackdoor" class="loginItem"> login </a>
   ** Backdoor **
 </div>
 
-
 <table id="profileTable"> </table>
+
+
+<div id="TOS">
+
+<p>Terms of Service</p>
+<!-- make the a scrollable text box -->
+<p>
+  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+</p>
+<a href="" id="agreeTOS">I agree</a>
+</div>
+
 
 <script type="text/javascript">
 
@@ -64,34 +80,80 @@ function onReady() {
 
   $('#qrcodeForm').hide()
   $('#logout').hide()
+  $('#error').hide()
+  $('#cancel').hide()
+  $('#TOS').hide()
 
   function drawProfile( profile ) {
     console.log( profile )
-    var people = profile[ profile['people.a2p3.net'].redirects[0] ]
     var si = profile['si.a2p3.net'].si
     $('#profileTable').append('<tr><td>Social Insurance Number</td><td>'+si+'</td></tr>')
-    Object.keys( people ).forEach( function ( item ) {
-      $('#profileTable').append('<tr><td>' + item + '</td><td>' + people[item] + '</td></tr>')
-    })
+    var people = profile[ profile[ 'people.a2p3.net' ].redirects ] &&
+                 profile[ profile[ 'people.a2p3.net' ].redirects[0] ]
+    if (people) {
+      Object.keys( people ).forEach( function ( item ) {
+        $('#profileTable').append('<tr><td>' + item + '</td><td>' + people[item] + '</td></tr>')
+      })
+    }
   }
+
+  function approveTOS( profile ) {
+    drawProfile( profile )
+    $('#TOS').show()
+    $('#cancel').show()
+    $('#logout').hide()
+  }
+
+  $('#agreeTOS').click( function () {
+    $.post( '/agree/tos', function ( data, status ) {
+      window.location = '/'
+    })
+    return false
+  })
 
   // function that polls to see if we are logged in yet
   function checkQR ( qrSession ) {
     $.post( '/check/QR', { qrSession: qrSession }, function ( data, status ) {
       if ( status == 'success' && data) {
-      if ( data.status == 'waiting')
-        return setTimeout( checkQR, 500, qrSession )
-      if (data.error) console.log( data.error )
-      if (data.result) drawProfile( data.result )
+        if ( data.status == 'waiting')
+          return setTimeout( checkQR, 500, qrSession )
+        if (data.error) console.log( data.error )
+        if (data.result)
+          if (data.result['people.a2p3.net'])
+            approveTOS( data.result )
+          else
+            drawProfile( data.result )
+        if (data.error && data.error.code && data.error.code === 'UNKNOWN_USER') {
+          $('#errorMessage').text('No records found').css('color','red')
+          $('#error').show()
+        }
       }
     })
   }
 
   $('#login').click( function () {
+    $('#error').hide()
     if (agentDirect) {
       window.location = '/login/direct'
     } else {  // put up QR code
       $.get( '/login/QR', function ( data, status ) {
+        if (status == "success" && !data.error && data.result && data.result.qrURL ) {
+          $('#qrcode').empty()
+          $('#qrcodeForm').fadeIn('fast')
+          $('#qrcode').qrcode( {width: 500, height: 500, text: data.result.qrURL } )
+          setTimeout( checkQR, 500, data.result.qrSession )
+        }
+      })
+    }
+    return false
+  })
+
+  $('#newAccount').click( function () {
+    $('#error').hide()
+    if (agentDirect) {
+      window.location = '/new/direct'
+    } else {  // put up QR code
+      $.get( '/new/QR', function ( data, status ) {
         if (status == "success" && !data.error && data.result && data.result.qrURL ) {
           $('#qrcode').empty()
           $('#qrcodeForm').fadeIn('fast')
@@ -112,7 +174,13 @@ function onReady() {
       $('#newAccount').hide()
       $('#introduction').hide()
       $('#backdoor').hide()
-      drawProfile( data.result )
+      if (data.result['people.a2p3.net'])
+        approveTOS( data.result )
+      else
+        drawProfile( data.result )
+    } else if (data.error && data.error.code && data.error.code === 'UNKNOWN_USER') {
+      $('#errorMessage').text('No records found').css('color','red')
+      $('#error').show()
     }
   })
 
