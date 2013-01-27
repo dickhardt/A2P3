@@ -42,8 +42,9 @@
 <div class="loginStatus">
   <a href="" id="newAccount" class="loginItem"> Open an Account </a>
   <a href="" id="login" class="loginItem"> login </a>
-  <a href="/logout" id="logout" class="loginItem">logout</a>
+  <a href="/logout" id="logout" class="loginItem">LOGOUT</a>
   <a href="/logout" id="cancel" class="loginItem">CANCEL</a>
+  <a href="/close" id="closeAccount" class="loginItem">CLOSE ACCOUNT</a>
 </div>
 
 <hr>
@@ -82,18 +83,23 @@ function onReady() {
   $('#logout').hide()
   $('#error').hide()
   $('#cancel').hide()
+  $('#closeAccount').hide()
   $('#TOS').hide()
 
   function drawProfile( profile ) {
     console.log( profile )
     var si = profile['si.a2p3.net'].si
     $('#profileTable').append('<tr><td>Social Insurance Number</td><td>'+si+'</td></tr>')
-    var people = profile[ profile[ 'people.a2p3.net' ].redirects ] &&
-                 profile[ profile[ 'people.a2p3.net' ].redirects[0] ]
+    var people =  profile[ 'people.a2p3.net' ] &&
+                  profile[ 'people.a2p3.net' ].redirects &&
+                  profile[ 'people.a2p3.net' ].redirects[0] &&
+                  profile[ profile[ 'people.a2p3.net' ].redirects[0] ]
     if (people) {
       Object.keys( people ).forEach( function ( item ) {
         $('#profileTable').append('<tr><td>' + item + '</td><td>' + people[item] + '</td></tr>')
       })
+    } else {
+      $('#closeAccount').show()
     }
   }
 
@@ -178,10 +184,11 @@ function onReady() {
         approveTOS( data.result )
       else
         drawProfile( data.result )
-    } else if (data.error && data.error.code && data.error.code === 'UNKNOWN_USER') {
-      $('#errorMessage').text('No records found').css('color','red')
-      $('#error').show()
     }
+    // else if (data.error && data.error === 'NOT_LOGGED_IN') {
+    //   $('#errorMessage').text('No records found').css('color','red')
+    //   $('#error').show()
+    // }
   })
 
 } // onReady

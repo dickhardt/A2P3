@@ -114,7 +114,7 @@ function fetchProfile( agentRequest, ixToken, session, callback ) {
     if ( error ) return callback ( error )
     // see if user is registered
     db.getProfile( 'bank', di, function ( error, profile ) {
-      if ( error && error.code && error.code === 'UNKNOWN_USER') {
+      if ( error && error.code && error.code == 'UNKNOWN_USER') {
         if ( resource.ix.tokens && Object.keys( resource.ix.tokens ).length ) { //  new account
           resource.callMultiple( APIS, function ( error, results ) {
             if ( error ) return callback( error )
@@ -129,8 +129,8 @@ function fetchProfile( agentRequest, ixToken, session, callback ) {
               callback( null, results )
             })
           })
-        } else {
-          callback( null, new Error('Unknown error'))
+        } else {  // we have no data and no user, must have tried to login, so return the error
+          callback( error )
         }
       } else { // other error or we have a profile
         if ( error ) return callback( error )
@@ -259,7 +259,7 @@ function qrNewCode( req, res ) {
 }
 
 /*
-if we are getting a state parameter, we are getting the data
+if we are get a qrSession, we are getting the data
 directly from the Agent and not via a redirect to our app
 */
 
@@ -280,11 +280,11 @@ function loginResponse( req, res )  {
     fetchProfile( agentRequest, ixToken, req.session, function ( error, results ) {
 
 
-console.log('fetch profile error:',error)
-if (error && error.stack) console.log('fetch profile error:',error.stack)
-console.log('fetch profile returned:',results)
+// console.log('fetch profile error:',error)
+// if (error && error.stack) console.log('fetch profile error:',error.stack)
+// console.log('fetch profile returned:',results)
 
-      if ( error && error.code && error.code === 'UNKNOWN_USER')
+      if ( error && error.code && error.code == 'UNKNOWN_USER')
         return res.redirect( '/unknown' )
       if ( error ) return res.redirect( '/error' )
       req.session.profile = results
@@ -296,9 +296,6 @@ console.log('fetch profile returned:',results)
 // agreeTOS() - user has agreed to TOS
 // save profile
 function agreeTOS( req, res, next ) {
-
-console.log('\nagreeTOS session\n', req.session )
-
   var di = req.session && req.session.profile &&
       req.session.profile[config.host.ix] &&
       req.session.profile[config.host.ix].di
@@ -316,7 +313,21 @@ console.log('\nagreeTOS session\n', req.session )
     next( new Error('No access token found in session.'))
 }
 
-
+function closeAccount( req, res, next ) {
+  var di =  req.session &&
+            req.session.profile &&
+            req.session.profile[config.host.ix] &&
+            req.session.profile[config.host.ix].di
+  if ( di ) {
+    db.deleteProfile( 'bank', di, function ( e ) {
+      if ( e ) return next( e )
+      req.session = null
+      return res.redirect('/')
+    })
+  } else {
+    next( new Error('No DI found in session.') )
+  }
+}
 
 function checkQR( req, res ) {
   if (!req.body.qrSession)
@@ -339,10 +350,13 @@ function checkQR( req, res ) {
 
 
 function profile( req, res )  {
-  if ( req.session.profile ) {
+
+// console.log('req.session.profile\n',req.session.profile)
+
+  if ( req.session.profile && Object.keys( req.session.profile ).length ) {
     return res.send( { result: req.session.profile } )
   } else { //
-    return res.send( { errror: 'NOT_LOGGED_IN'} )
+    return res.send( { error: 'NOT_LOGGED_IN'} )
   }
 }
 
@@ -381,6 +395,7 @@ exports.app = function () {
   app.get('/new/direct', newDirect)
   app.get('/response', loginResponse )
   app.get('/logout', logout )
+  app.get('/close', closeAccount )
 
   // these endpoints serve static HTML pages
   app.get('/', function( req, res ) { res.sendfile( __dirname + '/html/index.html' ) } )
