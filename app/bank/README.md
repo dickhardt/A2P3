@@ -4,13 +4,13 @@
 
 State information is managed in a session cookie.
 
-#### /login/direct&json=true
+#### /login/direct?json=true
 Called to create an Agent Reuquest when the User already has an account.
 returns
 
 `{ "result": { "request": agentRequest } }`
 
-#### /new/direct&json=true
+#### /new/direct?json=true
 Called to create an Agent Request to create a new account.
 returns
 
