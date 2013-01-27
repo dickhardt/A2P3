@@ -86,7 +86,7 @@ function namePhoto ( province ) {
       if (!profile || !profile.name || !profile.photo) {
         var err = new Error('no name and/or photo for user')
         err.code = 'NO_PROFILE'
-        return next( e )
+        return next( err )
       }
       res.send( {result: {'name': profile.name, 'photo': profile.photo} } )
     })
@@ -156,9 +156,13 @@ exports.app = function( province ) {
           , under20over65( province )
           )
   app.post('/namePhoto'
+          , mw.trace
           , request.check( vault.keys, null, 'people.'+province )
+          , mw.trace
           , mw.a2p3Params( ['token'] )
+          , mw.trace
           , token.checkRS( vault.keys, 'people.'+province, ['/scope/namePhoto','/scope/details'], 'people' )
+          , mw.trace
           , namePhoto( province )
           )
   app.post('/photo'
