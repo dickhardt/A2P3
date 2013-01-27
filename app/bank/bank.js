@@ -175,10 +175,14 @@ function newQR( req, res )  {
 // we send a meta-refresh so that we show a info page in case there is no agent to
 // handle the a2p3.net: protcol scheme
 function loginDirect( req, res ) {
-  var redirectURL = 'a2p3.net://token?request=' +
-    a2p3.createAgentRequest( localConfig, vault, HOST_URL + '/response' )
-  var html = metaRedirectInfoPage( redirectURL )
-  res.send( html )
+  var agentRequest = a2p3.createAgentRequest( localConfig, vault, HOST_URL + '/response' )
+  if (req.query.json) {
+    return res.send( { result: { request: agentRequest } } )
+  } else {
+    var redirectURL = 'a2p3.net://token?request=' + agentRequest
+    var html = metaRedirectInfoPage( redirectURL )
+    return res.send( html )
+  }
 }
 
 // loginBackdoor -- development login that uses a development version of setup.a2p3.net
@@ -194,10 +198,14 @@ function loginBackdoor( req, res )  {
 // we send a meta-refresh so that we show a info page in case there is no agent to
 // handle the a2p3.net: protcol scheme
 function newDirect( req, res ) {
-  var redirectURL = 'a2p3.net://token?request=' +
-    a2p3.createAgentRequest( localConfig, vault, HOST_URL + '/response', RESOURCES )
-  var html = metaRedirectInfoPage( redirectURL )
-  res.send( html )
+  var agentRequest = a2p3.createAgentRequest( localConfig, vault, HOST_URL + '/response', RESOURCES )
+  if (req.query.json) {
+    return res.send( { result: { request: agentRequest } } )
+  } else {
+    var redirectURL = 'a2p3.net://token?request=' + agentRequest
+    var html = metaRedirectInfoPage( redirectURL )
+    res.send( html )
+  }
 }
 
 // newBackdoor -- development new account that uses a development version of setup.a2p3.net
