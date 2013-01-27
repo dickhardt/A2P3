@@ -1,0 +1,759 @@
+@import
+	url(http://fonts.googleapis.com/css?family=Open+Sans:300,400,700);
+
+/* This is the web title font */
+@font-face {
+	font-family: 'QuicksandBook';
+	src: url('/fonts/Quicksand_Book-webfont.eot');
+	src: url('/fonts/Quicksand_Book-webfont.eot?#iefix')
+		format('embedded-opentype'), url('/fonts/Quicksand_Book-webfont.woff')
+		format('woff'), url('/fonts/Quicksand_Book-webfont.ttf')
+		format('truetype'),
+		url('/fonts/Quicksand_Book-webfont.svg#QuicksandBook') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Sansus_Webissimo-Regular';
+	src: url('/fonts/Sansus_Webissimo-Regular.eot');
+	src: url('/fonts/Sansus_Webissimo-Regular.eot?#iefix')
+		format('embedded-opentype'),
+		url('/fonts/Sansus_Webissimo-Regular.woff') format('woff'),
+		url('/fonts/Sansus_Webissimo-Regular.ttf') format('truetype'),
+		url('/fonts/Sansus_Webissimo-Regular.svg#Sansus_Webissimo-Regular')
+		format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+footer,header,section {
+	display: block;
+}
+
+html {
+	font-size: 100%;
+	-webkit-overflow-scrolling: touch;
+	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+	-webkit-text-size-adjust: 100%;
+	-ms-text-size-adjust: 100%;
+}
+
+body {
+	margin: 0;
+	font-size: 13px;
+	line-height: 1.5;
+}
+
+body,input {
+	font-family: 'Open Sans', sans-serif;
+	color: #16343b;
+	font-weight: 400;
+	outline: none;
+}
+
+::-moz-selection {
+	background: #cd3737;
+	color: #fff;
+	text-shadow: none;
+}
+
+::selection {
+	background: #cd3737;
+	color: #fff;
+	text-shadow: none;
+}
+
+/* Links */
+a {
+	text-decoration: none;
+	color: #bbb;
+}
+
+a:visited {
+	color: inherit;
+}
+
+a:focus {
+	outline: thin dotted;
+}
+
+a:hover,a:active {
+	outline: 0;
+}
+
+/* Forms */
+form {
+	margin-top: 20px;
+}
+
+label {
+	cursor: pointer;
+}
+
+input {
+	font-size: 100%;
+	margin: 0;
+	vertical-align: baseline;
+	*vertical-align: middle;
+}
+
+button,input {
+	line-height: normal;
+	*overflow: visible;
+}
+
+/* Content Styling */
+body {
+	background: #fff;
+	-webkit-user-select: none;
+}
+
+body img[height="1"] {
+	position: absolute;
+	top: -20px;
+	left: -20px;
+}
+
+.header {
+	background: #fff;
+	margin-top: 18px;
+}
+
+.headerContainer {
+	width: 980px;
+	margin: auto;
+	text-align: left;
+	position: relative;
+	text-align: left;
+	padding-bottom: 10px;
+}
+
+.header h1 {
+	margin: 0;
+	margin-left: 40px;
+	padding-top: 20px;
+	width: 236px;
+	height: 48px;
+	font-size: 14px;
+	font-weight: 400;
+	-webkit-user-select: text;
+}
+
+.footerContent {
+	background-color: #FFFFFF;
+	border-bottom: solid 1px #ddd;
+	height: 70px;
+}
+
+.header h1 a {
+	color: #e9573f;
+	font-weight: 700;
+	-webkit-transition: color .3s linear;
+	-moz-transition: color .3s linear;
+	-ms-transition: color .3s linear;
+	-o-transition: color .3s linear;
+	transition: color .3s linear;
+}
+
+.header h1 a:hover {
+	color: #c74732;
+}
+
+.header a:active {
+	position: relative;
+	top: 1px;
+}
+
+.headerContainer .mainLogo {
+	
+}
+
+.mainTitle {
+	font-family: 'Sansus_Webissimo-Regular';
+	font-size: 47px;
+	line-height: 0.8;
+}
+
+.headerContainer h2 {
+	font-weight: 300;
+	font-size: 28px;
+	font-family: 'QuicksandBook';
+	margin-top: 65px;
+	-webkit-user-select: text;
+}
+
+form {
+	
+}
+
+.formItemImage,.formItem {
+	margin-top: 10px;
+}
+
+.formItemImage {
+	vertical-align: middle;
+}
+
+.formItemTitleImage,.formItemTitle {
+	font-family: 'Century Gothic';
+	color: #000000;
+	font-size: 15px;
+	outline: none;
+	margin-right: 10px;
+	width: 195px;
+	display: inline-block;
+	text-align: right;
+}
+
+.formItemTitleImage {
+	vertical-align: middle;
+}
+
+.formItemWrap {
+	margin-top: 5px;
+	margin-left: 100px;
+}
+
+.formItemButtonWrap {
+	margin-top: 15px;
+	text-align: right;
+	margin-right: 20%;
+}
+
+.formItemButtonSetupPage {
+	text-align: right;
+	margin-right: 2%;
+	padding-bottom: 5px;
+	margin-top: -5px;
+}
+
+.formItemProvince {
+	margin-top: 12px;
+	margin-bottom: 15px;
+	margin-left: 100px;
+}
+
+.text {
+	height: 44px;
+	width: 240px;
+	border: none;
+	border-radius: 10px;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	border: 1px solid #d1d1d1;
+	padding: 0 10px;
+	box-shadow: inset 0 1px 0 #fff, inset 0 0 10px rgba(0, 0, 0, .08);
+	-moz-box-shadow: inset 0 1px 0 #fff, inset 0 0 10px rgba(0, 0, 0, .08);
+	-webkit-box-shadow: inset 0 1px 0 #fff, inset 0 0 10px
+		rgba(0, 0, 0, .08);
+	font-size: 18px;
+	font-weight: 300;
+	-webkit-appearance: none;
+}
+
+.textEmail,.textName,.textAddress,.textCity,.textProvince,.textPostal,.textDOB,.textSIN,.textHealth
+	{
+	height: 44px;
+	width: 240px;
+	border: none;
+	border-radius: 6px;
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+	border: 1px solid #959595;
+	padding: 0 10px;
+	box-shadow: inset 0 1px 0 #fff, inset 0 0 10px rgba(0, 0, 0, .08);
+	-moz-box-shadow: inset 0 1px 0 #fff, inset 0 0 10px rgba(0, 0, 0, .08);
+	-webkit-box-shadow: inset 0 1px 0 #fff, inset 0 0 10px
+		rgba(0, 0, 0, .08);
+	font-size: 18px;
+	font-weight: 300;
+	-webkit-appearance: none;
+}
+
+.textAddress {
+	width: 400px;
+}
+
+.textCity {
+	width: 200px;
+}
+
+.textPostal {
+	width: 100px;
+}
+
+.textSIN {
+	width: 150px;
+}
+
+.textHealth {
+	width: 200px;
+}
+
+.textName {
+	width: 300px;
+}
+
+.textDOB {
+	width: 170px;
+	margin-right: 4px;
+}
+
+.dropDownStyle {
+	width: 240px;
+	height: 44px;
+	overflow: hidden;
+	border-radius: 6px;
+	background: url('/images/arrow.png') no-repeat right #FFF;
+	background-position-x: 95%;
+	padding-top: 12px;
+	padding-bottom: 12px;
+	border: 1px solid #959595;
+}
+
+.dropDownStyle select {
+	background: transparent;
+	-webkit-appearance: none;
+	font-size: 18px;
+	font-weight: 300;
+	border: 0;
+	border-radius: 8px;
+	padding-right: 40px;
+	font-family: 'Open Sans';
+	margin-left: 5px;
+}
+
+.photoImage {
+	border-radius: 6px;
+	border-width: 1px solid;
+	border-color: #959595;
+	vertical-align: middle;
+	width: 48px;
+	height: 48px;
+}
+
+.enrollSection {
+	border-radius: 6px;
+	margin-top: 20px;
+	padding: 10px;
+	margin-right: 20%;
+	background-color: #E9E8E8;
+}
+
+.categoryTitle {
+	font-family: 'Century Gothic';
+	color: #000000;
+	font-size: 18px;
+	font-weight: bold;
+	outline: none;
+	margin-bottom: 10px;
+}
+
+.categoryTitleDisclaimer {
+	font-family: 'Century Gothic';
+	color: #000000;
+	font-size: 13px;
+	outline: none;
+	margin-bottom: 25px;
+	line-height: 1.2;
+	margin-left: 8px;
+	margin-right: 8px;
+	margin-top: 15px;
+	height: 200px;
+	overflow: auto;
+	border-radius: 4px;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	border: 1px solid #959595;
+	height: 200px;
+	overflow: auto;
+	border-radius: 4px;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	border: 1px solid #959595;
+	padding: 8px;
+}
+
+.categoryTitleDetail {
+	font-family: 'Century Gothic';
+	color: #000000;
+	font-size: 13px;
+	outline: none;
+	margin-bottom: 25px;
+	line-height: 1.2;
+	margin-left: 5px;
+}
+
+.mainContent {
+	height: 100%;
+	background: #D0CFD1;
+	padding-bottom: 20px;
+}
+
+.mainContentWrap {
+	width: 980px;
+	margin: auto;
+	padding-top: 10px;
+	line-height: 1;
+}
+
+.mainContentDoubleWrap {
+	margin-left: 15px;
+}
+
+.mainContentSubTitle {
+	font-family: 'Century Gothic';
+	color: #000000;
+	font-size: 40px;
+	outline: none;
+}
+
+.mainContentSubTitleTwo {
+	font-family: 'Century Gothic';
+	color: #000000;
+	font-size: 15px;
+	outline: none;
+	line-height: 1.2;
+	color: #000000;
+	margin-left: 10px;
+	width: 80%;
+}
+
+.mainTitleText {
+	font-family: 'QuicksandBook';
+}
+
+.submitContinue,.submitCancel,.submitEnroll,.submit {
+	background: none;
+	border: none;
+	border-radius: 10px;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	-webkit-appearance: none;
+	font-weight: 700;
+	background: rgb(30, 130, 190);
+	background: -moz-linear-gradient(top, rgba(30, 130, 190, 1) 0%,
+		rgba(27, 116, 170, 1) 100% );
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(27,
+		116, 170, 1) ), color-stop(100%, rgba(190, 51, 34, 1) ) );
+	background: -webkit-linear-gradient(top, rgba(30, 130, 190, 1) 0%,
+		rgba(27, 116, 170, 1) 100% );
+	background: -o-linear-gradient(top, rgba(30, 130, 190, 1) 0%,
+		rgba(27, 116, 170, 1) 100% );
+	background: -ms-linear-gradient(top, rgba(30, 130, 190, 1) 0%,
+		rgba(27, 116, 170, 1) 100% );
+	background: linear-gradient(top, rgba(30, 130, 190, 1) 0%,
+		rgba(27, 116, 170, 1) 100% );
+	height: 44px;
+	width: 94px;
+	color: #fff;
+	font-size: 18px;
+	text-shadow: 0 1px 1px rgba(0, 0, 0, .5);
+	border: 1px solid #1890A0;
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3), inset 0 0 10px
+		rgba(0, 0, 0, .08);
+	position: relative;
+	top: -1px;
+	margin-left: 5px;
+	cursor: pointer;
+}
+
+.submitContinue {
+	width: 110px;
+}
+
+.submitEnroll {
+	margin-left: 5px;
+	margin-top: 5px;
+}
+
+.submitCancel {
+	
+}
+
+.ie7 .submit,.ie8 .submit {
+	filter: progid:DXImageTransform.Microsoft.gradient(          
+		                     
+		                     startColorstr='#e9573f', endColorstr='#be3322',
+		GradientType=0 );
+}
+
+.ie7 .text,.ie8 .text {
+	line-height: 44px;
+}
+
+.submitContinue:hover,.submitCancel:hover,.submitEnroll:hover,
+.submit:hover {
+	background: rgb(240, 80, 56);
+	background: -moz-linear-gradient(top, rgba(63, 164, 239, 1) 0%,
+		rgba(16, 116, 190, 1) 100% );
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(63,
+		164, 239, 1) ), color-stop(100%, rgba(16, 116, 190, 1) ) );
+	background: -webkit-linear-gradient(top, rgba(63, 164, 239, 1) 0%,
+		rgba(16, 116, 190, 1) 100% );
+	background: -o-linear-gradient(top, rgba(63, 164, 239, 1) 0%,
+		rgba(16, 116, 190, 1) 100% );
+	background: -ms-linear-gradient(top, rgba(63, 164, 239, 1) 0%,
+		rgba(16, 116, 190, 1) 100% );
+	background: linear-gradient(top, rgba(63, 164, 239, 1) 0%,
+		rgba(16, 116, 190, 1) 100% );
+}
+
+.submitContinue:active,.submitCancel:active,.submitEnroll:active,
+.submit:active {
+	background: rgb(190, 52, 34);
+	background: -moz-linear-gradient(top, rgba(27, 116, 170, 1) 0%,
+		rgba(30, 86, 190, 1) 100% );
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(190,
+		52, 34, 1) ), color-stop(100%, rgba(30, 86, 190, 1) ) );
+	background: -webkit-linear-gradient(top, rgba(27, 116, 170, 1) 0%,
+		rgba(30, 86, 190, 1) 100% );
+	background: -o-linear-gradient(top, rgba(27, 116, 170, 1) 0%,
+		rgba(30, 86, 190, 1) 100% );
+	background: -ms-linear-gradient(top, rgba(27, 116, 170, 1) 0%,
+		rgba(30, 86, 190, 1) 100% );
+	background: linear-gradient(top, rgba(27, 116, 170, 1) 0%,
+		rgba(30, 86, 190, 1) 100% );
+}
+
+.getStarted {
+	position: absolute;
+	left: 135px;
+	bottom: 20px;
+	width: 160px;
+	height: 54px;
+}
+
+.features {
+	margin: 0;
+}
+
+.featureWrap {
+	width: 980px;
+	margin: auto;
+	padding-top: 10px;
+}
+
+.feature {
+	width: 400px;
+	float: left;
+	position: relative;
+	margin-left: 50px;
+	margin-bottom: 20px;
+}
+
+.feature:nth-of-type(odd) {
+	margin-left: 65px;
+}
+
+.feature img {
+	float: left;
+	padding: 10px;
+	padding-bottom: 20px;
+	padding-right: 20px;
+}
+
+.feature h3 {
+	margin: 0;
+	margin-top: 10px;
+	font-size: 18px;
+	-webkit-user-select: text;
+}
+
+.feature p {
+	margin: 0;
+	font-size: 15px;
+	font-weight: 300;
+	margin-right: 10px;
+	-webkit-user-select: text;
+}
+
+.feature.link {
+	font-family: 'JournalRegular', sans-serif;
+	line-height: 1;
+}
+
+.feature.link h3 {
+	font-size: 34px;
+	color: #e3523b;
+	text-shadow: 0 1px 1px #fff;
+	font-weight: normal;
+}
+
+.feature.link p {
+	font-size: 28px;
+	color: #16343B !important;
+}
+
+hr {
+	visibility: hidden;
+	clear: both;
+}
+
+.enrollmentDivStyle {
+	margin-top: 5px;
+}
+
+/*For screens with max width of 980px */
+@media only screen and (max-width: 979px) {
+	.headerContainer,.features {
+		width: 730px;
+		background: none;
+		overflow: hidden;
+	}
+	.mainContentWrap {
+		width: 730px;
+		margin: auto;
+		padding-top: 10px;
+		line-height: 1;
+	}
+	.formItemWrap {
+		margin-left: 15px;
+	}
+	.formItemProvince {
+		margin-left: 15px;
+	}
+	.textAddress {
+		width: 300px;
+	}
+	.header h2 {
+		font-size: 25px;
+	}
+	.getStarted {
+		display: none;
+	}
+	.feature {
+		width: 301px;
+	}
+	.feature img {
+		padding-bottom: 30px;
+	}
+	.footer {
+		width: auto;
+	}
+}
+
+/*For screens with max width of 730px */
+@media only screen and (max-width: 729px) {
+	.headerContainer,.features {
+		width: 400px;
+		background: none;
+	}
+	.mainContentWrap {
+		width: 400px;
+		margin: auto;
+		padding-top: 10px;
+		line-height: 1;
+	}
+	.formItemTitle {
+		font-size: 13px;
+		margin-right: 0px;
+		display: inline-block;
+		text-align: left;
+		margin-top: 10px;
+		margin-bottom: 5px;
+	}
+	.formItemTitleImage {
+		font-size: 13px;
+		text-align: left;
+		margin-bottom: 5px;
+		margin-top: 10px;
+		width: 300px;
+	}
+	.formItemWrap {
+		margin-left: 15px;
+	}
+	.formItemProvince {
+		margin-left: 15px;
+	}
+	.provinceSelect {
+		width: 220px;
+	}
+	.textName,.textSIN,.textAddress,.textCity,.textHealth {
+		width: 160px;
+	}
+	.textPostal {
+		width: 100px;
+	}
+	.textDOB {
+		width: 110px;
+		margin-right: 4px;
+	}
+	.dropDownStyle {
+		width: 160px;
+	}
+	.header h2 {
+		font-size: 22px;
+	}
+	.feature {
+		width: 400px;
+		margin: 0 !important;
+		padding-bottom: 20px;
+	}
+}
+
+/*For screens with max width of 420px */
+@media only screen and (max-width: 419px) {
+	.headerContainer,.features {
+		width: 300px;
+		background: none;
+		height: auto;
+		overflow: hidden;
+	}
+	.mainContentWrap {
+		width: 300px;
+		margin: auto;
+		padding-top: 10px;
+		line-height: 1;
+	}
+	.formItemTitle {
+		font-size: 13px;
+		margin-right: 0px;
+		display: inline-block;
+		text-align: left;
+		margin-top: 10px;
+		margin-bottom: 5px;
+	}
+	.formItemWrap {
+		margin-left: 15px;
+	}
+	.formItemProvince {
+		margin-left: 15px;
+	}
+	.formItemTitleImage {
+		font-size: 13px;
+		text-align: left;
+		margin-bottom: 5px;
+		margin-top: 10px;
+	}
+	.provinceSelect {
+		width: 160px;
+	}
+	.mainContentSubTitle {
+		font-size: 35px;
+	}
+	.mainContentSubTitleTwo {
+		font-size: 14px;
+	}
+	.textEmail {
+		width: 160px;
+	}
+	.header h1 {
+		margin-left: 10px;
+	}
+	.header h2 {
+		font-size: 22px;
+	}
+	.feature {
+		width: 320px;
+		margin: 0 !important;
+		padding-bottom: 20px;
+	}
+	.submit {
+		margin-top: 15px;
+	}
+	.footer p {
+		text-align: center;
+	}
+}
