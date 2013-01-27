@@ -5,4 +5,4 @@ nodejs:
     processes:
         app: node app/app.js
     ports:
-      www: http
+      nodejs: http

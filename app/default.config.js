@@ -27,14 +27,17 @@ var dotcloud = null
 if ( fs.existsSync( '/home/dotcloud/environment.json' ) ) {
   dotcloud = require( '../environment.json' )
 }
+
 exports.dotcloud = dotcloud
 if (dotcloud) {
   port = '80'
   baseDomain = 'a2p3.net'
   scheme = 'http'
-  portListen = dotcloud.PORT_WWW
+  portListen = dotcloud.PORT_NODEJS
   console.log('\n****** DOTCLOUD DEPLOYMENT MAGIC *******\n')
 }
+
+console.log('config.dotcloud',dotcloud)
 
 /*
 *   The following builds out the configuration for all the hosts
