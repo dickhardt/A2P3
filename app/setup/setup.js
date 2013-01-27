@@ -15,6 +15,7 @@ var express = require('express')
   , api = require('../lib/api')
   , jwt = require('../lib/jwt')
   , mw = require('../lib/middleware')
+  , fetch = require('request')
 
 
 var useFB = false
@@ -151,6 +152,9 @@ function _registerUser ( profile, complete ) {
 
 function enrollRegister ( req, res, next ) {
   var passedProfile = req.body
+
+console.log('\nenrollRegister passed profile\n',passedProfile)
+
   var profile = {}
   profile.email = req.session.profile.email
   profile.si = passedProfile.si
@@ -163,11 +167,16 @@ function enrollRegister ( req, res, next ) {
   profile.province = passedProfile.province
   profile.postal = passedProfile.postal
   profile.photo = profile.photo || req.session.profile.photo
+
+console.log('\nenrollRegister profile\n',profile)
+
   _registerUser( profile, function ( e, di ) {
     if (e) return next(e)
-    db.updateProfile( 'setup', profile.email, {di: di}, function ( e ) {
+    var id = req.session.profile.fbID || profile.email
+    db.updateProfile( 'setup', id, {di: di}, function ( e ) {
       if (e) return next(e)
       req.session.di = di // indicates we have enrolled user
+      req.session.id = id
       if (req.body.json) {
         return res.send( {'response': {'success': true } } )
       } else {
@@ -178,38 +187,26 @@ function enrollRegister ( req, res, next ) {
 }
 
 
-function _loadProfile ( id, profile, req, res ) {
-  db.getProfile( 'setup', id, function ( e, existingProfile ) {
-    req.session = {}
-    if (e) {
-      req.session.profile = profile
-      return res.redirect( '/enroll' )
-    } else {
-      req.session.di = existingProfile.di
-      return res.redirect( '/dashboard' )
-    }
-  })
-}
-
-function fbRedirect ( req, res, next ) {
-  if (!useFB) return res.redirect('/')
-  // make FB calls to find out who user is
-  var userID = null // TBD
-  var profile = null // TBD
-  _loadProfile( userID, profile, req, res )
-}
-
-
 function devLogin ( req, res, next ) {
 
 // console.log('\n login req.session:\n', req.session )
 // console.log('\n login req.body:\n', req.body )
 // console.log('\n login req.query:\n', req.query )
 
-  if (useFB) return res.redirect('/')
+//  if (useFB) return res.redirect('/')
   var profile = JSON.parse( JSON.stringify( config.testUser ))  // clone test user object
   profile.email = req.body.email
-  _loadProfile( req.body.email, profile, req, res )
+  db.getProfile( 'setup', req.body.email, function ( e, existingProfile ) {
+    req.session = {}
+    if (e) {
+      req.session.profile = profile
+      return res.redirect( '/enroll' )
+    } else {
+      req.session.di = existingProfile.di
+      req.session.id = req.body.email
+      return res.redirect( '/dashboard' )
+    }
+  })
 }
 
 
@@ -391,7 +388,7 @@ function agentToken ( req, res, next ) {
 function homepage ( req, res, next ) {
 
   if (useFB) {
-    res.sendfile( __dirname+'/html/homepageFB.html' )
+    res.sendfile( __dirname+'/html/homepage.html' )
   } else {
     res.sendfile( __dirname+'/html/homepageDev.html' )
   }
@@ -412,6 +409,61 @@ function databaseRestore ( req, res, next ) {
   if (e) return next(e)
   return res.send({ result: { success: true } } )
 }
+
+function deleteUser ( req, res, next ) {
+  db.getProfile( 'setup', req.session.id, function ( e, profile ) {
+    if (profile.di == req.session.di) {
+      db.deleteProfile( 'setup', req.session.id, function ( e ) {
+        // TBD: remove authorization from FB? is that possible?
+        // remove data from RSes? ... it is orphaned as the DI / FB ID is lost
+        if (e) return next( e )
+        res.redirect( '/user/deleted' )
+      })
+    }
+  })
+}
+
+function fbLogin ( req, res, next ) {
+  var userID = req.body.userID
+  var accessToken = req.body.accessToken
+  var expiresIn = req.body.expiresIn
+  var signedRequest = req.body.signedRequest
+
+  // TBD verify signed responses signedRequest
+
+  db.getProfile( 'setup', userID, function ( e, existingProfile ) {
+    req.session = {}
+    if (e) {
+      var url = 'https://graph.facebook.com/' + userID +
+          '/?fields=id,name,picture.type(square),email&access_token=' + accessToken
+      fetch.get( url, function ( error, response, body ) {
+        var data = null
+        if ( error ) return next( new Error(error) )
+        if ( response.statusCode != 200 ) return next ( new Error('Facebook responded with '+response.statusCode) )
+        try {
+          data = JSON.parse( body )
+        }
+        catch (e){
+          return next( e )
+        }
+        var profile = JSON.parse( JSON.stringify( config.testUser ))  // clone test user object
+        profile.email = data.email
+        profile.name = data.name
+        if (data.picture && data.picture.data && data.picture.data.url && !data.picture.data.is_silhouette)
+          profile.photo = data.picture.data.url
+        profile.fbID = userID
+        req.session.profile = profile
+        return res.send( { result: { url: '/enroll' } } )
+      })
+    } else {
+      req.session.di = existingProfile.di
+      req.session.id = userID
+      return res.send( { result: { url: '/dashboard' } } )
+    }
+  })
+}
+
+
 
 //
 function backdoorLogin ( req, res, next ) {
@@ -446,13 +498,15 @@ exports.app = function() {
   var cookieOptions = { 'secret': vault.secret, 'cookie': { path: '/' } }
   app.use( express.cookieSession( cookieOptions ))
 
-  // FB response
-  app.get('/fb/redirect', fbRedirect )
-
   // dev login
   app.post('/dev/login'
           , mw.checkParams( {'body':['email']} )
           , devLogin )
+
+  // FB Login pages
+  app.post('/fb/login'
+          , mw.checkParams( {'body':['userID','accessToken','expiresIn','signedRequest']} )
+          , fbLogin )
 
   // enroll web app API
   app.post('/enroll/register'
@@ -462,6 +516,11 @@ exports.app = function() {
   app.post('/enroll/profile'
           , mw.checkParams( {'session':['profile']} )
           , enrollProfile
+          )
+  // delete User
+  app.get('/delete/user'
+          , mw.checkParams( {'session':['di','id']} )
+          , deleteUser
           )
 
   // CLI agent token exchange API
@@ -510,6 +569,7 @@ exports.app = function() {
 	app.get('/', homepage )
   app.get('/enroll', enroll )
   app.get('/dashboard', dashboard )
+  app.get('/user/deleted', function( req, res ) { res.sendfile( __dirname + '/html/delete_user.html' ) } )
 
   // show README.md as documentation
   app.get('/documentation', mw.md( __dirname+'/README.md' ) )
