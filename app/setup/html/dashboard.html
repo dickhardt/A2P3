@@ -9,6 +9,10 @@
   <script type="text/javascript"    src="/js/jquery-1.8.3.js"></script>
 
 <H1>A2P3 Personal Agent Dashboard</H1>
+
+<!-- TBD put up a confirm box, and then delete -->
+
+<a href="/delete/user">Delete User</a>
 <div id="profile"></div>
 <hr>
   <dl>
@@ -92,17 +96,17 @@
             var created = new Date( handles[handle].created )
             var html  = '<dt><a class="agent_delete" href="" id="' + handle + '">delete </a>'
                       + '<b id="' + handle + '_name">&nbsp;' + name + '</b>'
-                      + '<dd id="' + handle + '_created">' 
+                      + '<dd id="' + handle + '_created">'
                       + 'created '+created.toISOString() + '</dd>'
             $('#agents').append( html )
           })
           $('.agent_delete').click( deleteAgent )
         } else {
-          $('#agents').append('<p>You have no personal agents. Enroll one below.</p>')          
+          $('#agents').append('<p>You have no personal agents. Enroll one below.</p>')
         }
       }
     })
-  }      
+  }
 
   function onReady() {
     fetchNamePhoto()
@@ -110,18 +114,18 @@
     $('#agentCLI_form').hide()
     $('#agentCLI_success').hide()
     $('#agentCLI_delete').hide()
-    
+
     $('#agentCLI_cancel').click( function() {
         $('#agentCLI_form').fadeOut('fast')
         return false
     })
 
-    $('#agentCLI_create').click( function (){                   
+    $('#agentCLI_create').click( function (){
       // create a CLI Agent and add it to list of Personal Agents
       var name = $('#agentCLI_name_input').val()
       $.post( 'dashboard/agent/create', {name: name}, function ( data, status ) {
         if (status == 'success') {
-          $('#agentCLI_device').text('device: ' + data.result.device) 
+          $('#agentCLI_device').text('device: ' + data.result.device)
           $('#agentCLI_token').text('token: ' + data.result.token)
         } else {
           $('#agentCLI_device').text = 'Error creating CLI Agent'
@@ -131,13 +135,13 @@
         $('#agentCLI_success').fadeIn('fast')
       })
       return false
-    }) 
-    
-    $('#agentCLI_close').click( function (){                   
+    })
+
+    $('#agentCLI_close').click( function (){
         $('#agentCLI_success').fadeOut('fast')
         refreshAgents()
         return false
-    }) 
+    })
 
     $('#agentCLI').click( function (e) {
       $('#agentCLI_form').fadeIn('fast')
@@ -147,7 +151,7 @@
 
     $('#agentCLI_delete_cancel').click( function() {
       $('#agentCLI_delete').fadeOut('fast')
-      return false    
+      return false
     })
 
     $('#agentCLI_delete_confirm').click( function() {
@@ -156,7 +160,7 @@
         $('#agentCLI_delete').fadeOut('fast')
         refreshAgents()
       })
-      return false    
+      return false
     })
   }
 
