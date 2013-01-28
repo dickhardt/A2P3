@@ -578,3 +578,20 @@ exports.oauthDelete = function ( rs, di, appID, cb ) {
   process.nextTick( function () { cb( null ) } )
 }
 
+
+// AS notification URL info
+
+exports.createNotificationURL = function ( device, cb ) {
+  var code = jwt.handle()
+  var key = 'as:notification:'+code
+  dummyNoSql[key] = device
+  var url = config.baseUrl.as + '/notification/'+code
+  process.nextTick( function () { cb( url ) } )
+}
+
+exports.getDeviceFromNotificationCode = function ( code, cb ) {
+  var key = 'as:notification:'+code
+  var device = dummyNoSql[key]
+  process.nextTick( function () { cb( device ) } )
+}
+
