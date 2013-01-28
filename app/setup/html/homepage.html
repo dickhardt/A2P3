@@ -32,7 +32,7 @@
 
 			FB.Event.subscribe('auth.statusChange', function( response) {
 
-console.log('status change',response)
+// console.log('status change',response)
 
 				if (response.status === 'connected') {
 					$.post( '/fb/login', response.authResponse, function ( data, status ) {

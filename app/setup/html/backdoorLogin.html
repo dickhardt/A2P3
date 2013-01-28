@@ -29,10 +29,51 @@ Enter an email address to login as a previous user
 
     })
 
+    window.fbAsyncInit = function() {
+      // init the FB JS SDK
+      FB.init({
+        appId : '311669472267358', // App ID from the App Dashboard
+        channelUrl : 'http://setup.a2p3.net/facebook_channel.html', // Channel File for x-domain communication
+        status : true, // check the login status upon init?
+        cookie : true, // set sessions cookies to allow your server to access the session?
+        xfbml : true  // parse XFBML tags on this page?
+      });
+
+      FB.Event.subscribe('auth.statusChange', function( response) {
+        if (response.status === 'connected') {
+          $.post( '/fb/login', response.authResponse, function ( data, status ) {
+            if ( status != 'success') return console.error( status, 'returned from Setup server ')
+            if ( data.error ) return console.error( 'Setup returned error', data.error )
+            if ( !data.result && !data.result.url ) console.error('No URL received from Setup')
+            if (data.result.url == '/dashboard')
+              data.result.url = '/backdoor/login/' + response.authResponse.userID + '?' + config.query
+            window.location = data.result.url
+          })
+        }
+      })
+    };
+
+    // Load the SDK Asynchronously
+    (function(d){
+      var js
+        , id = 'facebook-jssdk'
+        , ref = d.getElementsByTagName('script')[0];
+       if (d.getElementById(id)) {return;}
+       js = d.createElement('script');
+       js.id = id;
+       js.async = true;
+       js.src = "//connect.facebook.net/en_US/all.js";
+       ref.parentNode.insertBefore(js, ref);
+     }(document));
+
+
 </script>
 
 <pre>
 NOTE: make sure you enter an email for a user that exists!
 </pre>
+Or you can use Facebook
+ <div class="fb-login-button" scope="email">Login with Facebook</div>
+
 </body>
 </html>

@@ -385,14 +385,6 @@ function agentToken ( req, res, next ) {
 }
 
 // static page serving
-function homepage ( req, res, next ) {
-
-  if (useFB) {
-    res.sendfile( __dirname+'/html/homepage.html' )
-  } else {
-    res.sendfile( __dirname+'/html/homepageDev.html' )
-  }
-}
 
 function enroll ( req, res, next ) {
   if (!req.session.profile) return res.redirect('/')
@@ -566,7 +558,7 @@ exports.app = function() {
   app.get('/dashboard/agent/token', agentToken )
 
   // static pages
-	app.get('/', homepage )
+	app.get('/', function ( req, res ) { res.sendfile( __dirname+'/html/homepage.html' ) } )
   app.get('/enroll', enroll )
   app.get('/dashboard', dashboard )
   app.get('/user/deleted', function( req, res ) { res.sendfile( __dirname + '/html/delete_user.html' ) } )
@@ -577,7 +569,7 @@ exports.app = function() {
 ///////////////////////////////////////////////////////////////////////////
 // TBD DEVELOPMENT FUNCTIONALITY THAT NEEDS TO BE DISABLED FOR PRODUCTION
   app.get('/backdoor', function ( req, res ) { res.sendfile( __dirname+'/html/backdoor.html') } )
-  app.get('/backdoor/login', function ( req, res ) { res.sendfile( __dirname+'/html/backdoorLogin.html') })
+  app.get('/backdoor/login', function ( req, res ) { res.sendfile( __dirname+'/html/backdoorLogin.html') } )
   app.get('/backdoor/login/:email', backdoorLogin )
 ////////////////////////////////////////////////////////////////////////////
 

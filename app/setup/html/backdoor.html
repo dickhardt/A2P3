@@ -8,7 +8,14 @@
   <script type="text/javascript"    src="/js/config.js"></script>
 
 <H1>A2P3 Backdoor</H1>
-<b>will login as <i>dev@example.com</i></b>
+<h2>Development Mode</h2>
+Enter an email address to login as a previous user, or to create a new user.
+<p>
+<form action="/dev/login" method="post">
+Email: <input type="text" name="email"><br>
+<input type="submit" value="Submit">
+</form>
+<b>Below will login as <i>dev@example.com</i></b>
 <ul id='loginList'>
 </ul>
 <script type="text/javascript">
