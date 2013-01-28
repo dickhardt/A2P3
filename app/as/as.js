@@ -73,7 +73,15 @@ function tokenHandler ( req, res, next ) {
         }
       }
     var ixToken = token.create( payload, vault.keys[config.host.ix].latest )
-    return res.send( {'result': {'token': ixToken }})
+    var response = {'result': {'token': ixToken } }
+    if (req.body.notificationURL) {
+      db.createNotificationURL( device, function ( url ) {
+        if ( url ) response.result.notificationURL = url
+        return res.send( response )
+        } )
+    } else {
+      return res.send( response )
+    }
   })
 }
 
