@@ -104,7 +104,7 @@ exports.check = function ( keys, accessList, reg ) {
       }
       db.getAppKey( reg, jws.payload.iss, keys, function ( e, key ) {
         if (e) {
-          err.code = 'INTERNAL_ERROR'
+          e.code = 'INTERNAL_ERROR'
           return next( err )
         }
         if (!key) {
