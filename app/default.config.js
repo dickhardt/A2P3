@@ -76,16 +76,16 @@ Object.keys(host).forEach( function (key) {
 * Edit information below if you want a different defailt user installed
 */
 var profile =
-    { 'si': '123456789'
-    , 'prov_number': '0123456789'
-    , 'email': 'john@example.com'
-    , 'name': 'John Smith'
+    { 'si': '123 456 789'
+    , 'prov_number': '1111 22 33 4444'
+    , 'email': 'pat@example.com'
+    , 'name': 'Pat Smith'
     , 'dob': 'January 1, 1960'
     , 'address1': '100 Main Street'
     , 'address2': 'Suite 1000'
-    , 'city': 'Victoria'
+    , 'city': 'Anyville'
     , 'province': 'BC'
-    , 'postal': 'V1A 1A1'
+    , 'postal': 'U1U 1A1'
     , 'photo': baseUrl.setup + '/images/white-face.jpg'
     }
 exports.testProfile =
