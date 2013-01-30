@@ -169,6 +169,10 @@ body img[height="1"] {
 	
 }
 
+.removeUserButton {
+	margin-top: 10px;
+}
+
 .mainTitle {
 	font-family: 'Sansus_Webissimo-Regular';
 	font-size: 47px;
@@ -252,11 +256,59 @@ form {
 	-webkit-appearance: none;
 }
 
-.textEmail,.textName,.textAddress,.textCity,.textProvince,.textPostal,.textDOB,.textSIN,.textHealth
-	{
+.dashboardName {
 	height: 44px;
 	width: 240px;
 	border: none;
+	border-radius: 6px;
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+	padding: 0 10px;
+	font-size: 18px;
+	font-weight: 600;
+	-webkit-appearance: none;
+}
+
+.dashboardSplit1 {
+	width: 300px;
+	display: inline-block;
+	vertical-align: top;
+}
+
+.dashboardSplit2 {
+	width: 600px;
+	display: inline-block;
+	vertical-align: top;
+}
+
+.dashboardImage {
+	font-family: 'Century Gothic';
+	color: #000000;
+	font-size: 15px;
+	outline: none;
+}
+
+.dashboardSection {
+	border-radius: 6px;
+	margin-top: 10px;
+	padding: 10px;
+	margin-right: 10px;
+	background-color: #E9E8E8;
+	width: 500px;
+}
+
+.cliDialogSpan {
+	width: 70px;
+	text-align: right;
+	display: inline-block;
+	margin-right: 10px;
+	font-weight: bold;
+}
+
+.textAgentPasscode,.textAgentName,.textEmail,.textName,.textAddress,.textCity,.textProvince,.textPostal,.textDOB,.textSIN,.textHealth
+	{
+	height: 44px;
+	width: 240px;
 	border-radius: 6px;
 	-moz-border-radius: 6px;
 	-webkit-border-radius: 6px;
@@ -269,6 +321,22 @@ form {
 	font-size: 18px;
 	font-weight: 300;
 	-webkit-appearance: none;
+}
+
+.textAgentPasscode {
+	width: 50px;
+	height: 24px;
+	margin-left: 5px;
+}
+
+.passcodeConfirmLabel {
+	width: 190px;
+	display: block;
+	text-align: right;
+}
+
+.textAgentName {
+	height: 34px;
 }
 
 .textAddress {
@@ -385,6 +453,16 @@ form {
 	margin-left: 5px;
 }
 
+.dashboardCategoryTitleDetail {
+	font-family: 'Century Gothic';
+	color: #000000;
+	font-size: 13px;
+	outline: none;
+	margin-bottom: 15px;
+	line-height: 1.2;
+	margin-left: 5px;
+}
+
 .mainContent {
 	height: 100%;
 	background: #D0CFD1;
@@ -424,7 +502,8 @@ form {
 	font-family: 'QuicksandBook';
 }
 
-.submitContinue,.submitCancel,.submitEnroll,.submit {
+.buttonRemoveAgent,.buttonAddIOS,.buttonCreateCLI,.submitContinue,.submitCancel,.submitEnroll,.submit
+	{
 	background: none;
 	border: none;
 	border-radius: 10px;
@@ -459,6 +538,108 @@ form {
 	cursor: pointer;
 }
 
+.buttonAddIOS {
+	width: 150px;
+	height: 24px;
+	font-size: 13px;
+	border-radius: 4px;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+}
+
+.buttonRemoveAgent {
+	width: 65px;
+	height: 18px;
+	font-size: 10px;
+	text-align: center;
+	border-radius: 4px;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+}
+
+.tableRowAgentName {
+	width: 45%;
+}
+
+.tableRowAgentDate {
+	width: 35%;
+}
+
+.tableRowAgentDelete {
+	width: 10%;
+}
+
+.agentsTable {
+	padding: 5px;
+	border-radius: 6px;
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+	font-family: 'Century Gothic';
+	color: #000000;
+	font-size: 13px;
+	width: 100%;
+}
+
+.formIOS {
+	margin-top: 0px;
+}
+
+.agentTableWrapper {
+	height: 265px;
+	margin: 10px;
+	margin-bottom: 0px;
+	border: 1px solid #959595;
+	border-radius: 6px;
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+	border: 1px solid #959595;
+}
+
+.cliDialogStyle {
+	margin-top: 10px;
+	font-family: 'Century Gothic';
+	color: #000000;
+	font-size: 15px;
+	outline: none;
+}
+
+.passcodeForm {
+	border: 1px solid #999;
+	-webkit-box-shadow: 0px 0px 6px #CCC;
+	background-color: #FFF;
+	width: 300px;
+	height: 130px;
+	position: absolute;
+	top: 75px;
+	left: 50%;
+	margin-left: -125px;
+	padding: 10px;
+	border-radius: 4px;
+}
+
+.qrcodeForm {
+	border: 1px solid #999;
+	-webkit-box-shadow: 0px 0px 6px #CCC;
+	background-color: #FFF;
+	width: 305px;
+	height: 305px;
+	position: absolute;
+	top: 75px;
+	left: 50%;
+	margin-left: -125px;
+	padding: 10px;
+	border-radius: 4px;
+}
+
+.buttonCreateCLI {
+	width: 150px;
+	height: 24px;
+	font-size: 13px;
+	border-radius: 4px;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+}
+
 .submitContinue {
 	width: 110px;
 }
@@ -473,7 +654,8 @@ form {
 }
 
 .ie7 .submit,.ie8 .submit {
-	filter: progid:DXImageTransform.Microsoft.gradient(          
+	filter: progid:DXImageTransform.Microsoft.gradient(              
+		                     
 		                     
 		                     startColorstr='#e9573f', endColorstr='#be3322',
 		GradientType=0 );
@@ -483,9 +665,9 @@ form {
 	line-height: 44px;
 }
 
-.submitContinue:hover,.submitCancel:hover,.submitEnroll:hover,
-.submit:hover {
-	background: rgb(240, 80, 56);
+.buttonRemoveAgent:hover,.buttonCreateCLI:hover,.buttonAddIOS:hover,.submitContinue:hover,.submitCancel:hover,.submitEnroll:hover,.submit:hover
+	{
+	background: rgb(63, 164, 239);
 	background: -moz-linear-gradient(top, rgba(63, 164, 239, 1) 0%,
 		rgba(16, 116, 190, 1) 100% );
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(63,
@@ -500,13 +682,13 @@ form {
 		rgba(16, 116, 190, 1) 100% );
 }
 
-.submitContinue:active,.submitCancel:active,.submitEnroll:active,
-.submit:active {
-	background: rgb(190, 52, 34);
+.buttonRemoveAgent:active,.buttonCreateCLI:active,.buttonAddIOS:active,.submitContinue:active,.submitCancel:active,.submitEnroll:active,.submit:active
+	{
+	background: rgb(30, 86, 190);
 	background: -moz-linear-gradient(top, rgba(27, 116, 170, 1) 0%,
 		rgba(30, 86, 190, 1) 100% );
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(190,
-		52, 34, 1) ), color-stop(100%, rgba(30, 86, 190, 1) ) );
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(27,
+		116, 170, 1) ), color-stop(100%, rgba(30, 86, 190, 1) ) );
 	background: -webkit-linear-gradient(top, rgba(27, 116, 170, 1) 0%,
 		rgba(30, 86, 190, 1) 100% );
 	background: -o-linear-gradient(top, rgba(27, 116, 170, 1) 0%,
@@ -646,6 +828,9 @@ hr {
 		padding-top: 10px;
 		line-height: 1;
 	}
+	.dashboardSection {
+		width: 400px;
+	}
 	.formItemTitle {
 		font-size: 13px;
 		margin-right: 0px;
@@ -706,6 +891,9 @@ hr {
 		margin: auto;
 		padding-top: 10px;
 		line-height: 1;
+	}
+	.dashboardSection {
+		width: 280px;
 	}
 	.formItemTitle {
 		font-size: 13px;

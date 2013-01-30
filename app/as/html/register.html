@@ -1,146 +1,248 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-  <style>
-        #passcodeForm{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:300px; height:130px; position: absolute; top:75px; left:50%; margin-left:-125px; padding:10px; border-radius:4px;}
-        #qrcodeForm{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:300px; height:320px; position: absolute; top:75px; left:50%; margin-left:-125px; padding:10px; border-radius:4px;}
-  </style>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>A2P3</title>
+<meta name="description" content="A2P3">
+<meta name="viewport"
+	content="width=device-width,initial-scale=1, maximum-scale=1,user-scalable=no">
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet"
+	href="http://code.jquery.com/ui/1.10.0/themes/base/jquery-ui.css">
+<script type="text/javascript"
+	src="http://code.jquery.com/jquery-1.9.0.js"></script>
+<script type="text/javascript"
+	src="http://code.jquery.com/ui/1.10.0/jquery-ui.js"></script>
+<script type="text/javascript" src="/js/jquery.qrcode.min.js"></script>
 </head>
 <body>
-  <script type="text/javascript"    src="/js/jquery-1.8.3.js"></script>
-  <script type="text/javascript"    src="/js/jquery.qrcode.min.js"></script>
-<H1>Personal Agent Enrollment</H1>
-<hr>
-You will need to have a Personal Agent installed on your iOS device.
-<p>If you are running this on a PC, <a id="QRinstall" href="">click here</a>.</p>
-<p>If you are running this site on your iOS device, <a id="iOSinstall" href="">click here</a>.</p>
+	<header class="header">
+		<section class="headerContainer">
+			<span class="mainTitle">A2P3</span>
+			<div class="mainTitleText">Authentication & Authorization
+				Privacy Protecting Protocol</div>
+		</section>
 
-<div id="passcodeForm">
-    <span class="form_title">Personal Agent Passcode</span>
-    <form id="passcode_form_input">
-        <dl>
-            <dt></dt><dd><span id="status">&nbsp;</span></dd>
-            <dt></dt><dd><label for="passcode_input">passcode</label>
-              <input type="password" size="4" maxlength="4" name="passcode" value="" id="passcode_input"> </dd>
-            <dt></dt><dd><label for="passcode_input2">again</label>
-              <input type="password" size="4" maxlength="4" name="passcode2" value="" id="passcode_input2"> </dd>
-        </dl>
-        <p><input id="passcode_cancel" type="button" value="Cancel">
-            <input id="passcode_next" type="button" value="Next">
-          </p>
-    </form>
-</div>
+	</header>
 
-<div id="qrcodeForm">
-    <span class="form_title">Scan the QR Code with your Personal Agent</span>
-    <div id="qrcode"></div>
-</div>
+	<section class="mainContent">
+		<div class="mainContentWrap">
 
-<script>
-  var iOSinstall = false
+			<div class="mainContentSubTitle">Personal Agent Enrollment</div>
+			<div class="mainContentSubTitleTwo">You will need to have a
+				Personal Agent installed on your iOS device.</div>
+			<div id="profile" class="mainContentDoubleWrap"
+				style="margin-top: 10px;">
 
-  function showPasscodeForm () {
-    $('#passcodeForm').fadeIn('fast')
-    $('#passcode_input').val('').focus()
-    $('#passcode_input2').val('')
-    $('#status').text('please enter four digits').css('color','black')
-    $('#passcode_next').attr("disabled", "disabled")
-  }
+				<div>
+					<div class="dashboardSection">
+						<form class="formIOS" method="get" id="iOSAgents"
+							action="/dashboard/agent/basic">
+							<div class="categoryTitle">
+								<span id="peopleServerLabel">PC Users</span>
+							</div>
 
-  function comparePasscodes ( fromPasscode ) {
-    var passcode = $('#passcode_input').val()
-    var passcode2 = $('#passcode_input2').val()
-    if ( (passcode.length == passcode2.length) && (passcode.length == 4) ) {
-      if (passcode == passcode2) {
-        $('#status').text('matching passcodes entered')
-        $('#passcode_next').removeAttr("disabled").focus()
-      } else {
-        if (fromPasscode) {
-          $('#passcode_input2').val('')
-          $('#status').text('please enter four digits').css('color','black')
-          $('#passcode_next').attr("disabled", "disabled")
-        } else {
-          $('#status').text("PASSCODES DON'T MATCH").css('color','red')
-          $('#passcode_next').attr("disabled", "disabled")
-        }
-      }
-    } else {
-      $('#status').text('please enter four digits').css('color','black')
-      $('#passcode_next').attr("disabled", "disabled")
-    }
-  }
+							<div class="dashboardCategoryTitleDetail">If you are
+								currently running on a PC click the button below add an agent.</div>
 
-  function onReady() {
-    $('#passcodeForm').hide()
-    $('#qrcodeForm').hide()
+							<input id="QRinstall" type="submit" value="Add Agent via PC"
+								ontouchstart="" class="buttonAddIOS">
+						</form>
+					</div>
+					<div class="dashboardSection">
+						<div class="categoryTitle">
+							<span id="peopleServerLabel">iOS Users</span>
+						</div>
+						<div class="dashboardCategoryTitleDetail">If you are
+							currently running on an iOS device, click the button below add an
+							agent.</div>
 
-    $('#QRinstall').click( function () {
-      iOSinstall = false
-      showPasscodeForm()
-      return false
-    })
+						<input type="submit" value="Add Agent via iOS" ontouchstart=""
+							class="buttonCreateCLI" id="iOSinstall">
+					</div>
 
-    $('#iOSinstall').click( function () {
-      iOSinstall = true
-      showPasscodeForm( )
-      return false
-    })
+				</div>
 
-    $('#passcode_cancel').click( function () {
-      $('#passcodeForm').fadeOut('fast')
-      return false
-    })
+			</div>
+		</div>
+	</section>
 
-    $('#passcode_input').bind('input', function () {
-      // strip out non-numeric
-      $('#passcode_input').val($('#passcode_input').val().replace(/[^\d]+/g, ''))
-      // move focus to next input if done
-      if ($('#passcode_input').val().length >= 4) {
-        // Safari does not seem to want to execute this focus change, but will do others ... hmmmm
-        $('#passcode_input2').focus()
-      }
-      comparePasscodes( true )
-    })
+	<section class="footerContent"></section>
 
-    $('#passcode_input2').bind('input', function () {
-      // strip out non-numeric
-      $('#passcode_input2').val($('#passcode_input2').val().replace(/[^\d]+/g, ''))
-      // move focus to next input if done
-      if ($('#passcode_input2').val().length >= 4) $('#passcode_input').focus()
-      comparePasscodes()
-    })
+	<!-- Dialogs -->
 
-    $('#passcode_next').click( function () {
-      // get passcode
-      var passcode = $('#passcode_input').val()
-      $.post( '/register/agent/code', {'passcode':passcode}, function ( data, status ) {
-        // TBD deal with errors  data.error exists ...
-        if (data.error) {
-          $('#passcodeForm').fadeOut('fast')
-        }
-        var code = data.result.code
+	<div title="Personal Agent Passcode" id="passcodeForm">
+		<div class="dashboardCategoryTitleDetail">Lorem ipsum dolor sit
+			amet, consectetur adipiscing elit. Etiam ac condimentum sapien.
+			Vivamus mattis congue adipiscing.</div>
+		<form id="passcode_form_input">
 
-        console.log('code:',code)
+			<div class="cliDialogStyle">
+				<span class="passcodeConfirmLabel"> <label
+					for="passcode_input">Passcode</label> <input type="password"
+					name="passcode" size="4" maxlength="4" value="" id="passcode_input"
+					class="textAgentPasscode">
+				</span>
+			</div>
+			<div class="cliDialogStyle">
+				<span class="passcodeConfirmLabel"> <label
+					for="passcode_input2">Confirm</label> <input type="password"
+					name="passcode2" size="4" maxlength="4" value=""
+					id="passcode_input2" class="textAgentPasscode">
+				</span>
+			</div>
+			<div style="margin-top: 20px"
+				class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix"
+				style="width:95%">
+				<div class="ui-dialog-buttonset" style="margin-top: 5px">
+					<input class="ui-button" id="passcode_cancel" type="button"
+						value="Cancel"> <input class="ui-button"
+						id="passcode_next" type="button" value="Next">
+				</div>
+			</div>
+		</form>
+	</div>
 
-        // TBD check we really got a code!!!
-        if (iOSinstall) { // launch Personal Agent on iOS device!!! cross your fingers!
-          var agentURL = 'a2p3.net://enroll?code='+code
-          console.log('sending User to:'+agentURL)
-          window.location = agentURL
-        } else {
-          $('#passcodeForm').fadeOut('fast')
-          /// TBD - adjust size of popup and QR code to screen
-          $('#qrcodeForm').fadeIn('fast')
-          $('#qrcode').qrcode({width: 300,height: 300,text: 'a2p3.net://enroll?code='+code})
+	<div title="Scan the QR Code with your Personal
+			Agent"
+		id="qrcodeForm">
+		<div style="text-align: center;" id="qrcode"></div>
+	</div>
 
-        }
-      })
-      return false
-    })
-  }
+	<script>
+		var iOSinstall = false
 
-  $(document).ready(onReady)
-</script>
+		function showPasscodeForm() {
+			$('#passcodeForm').dialog();
+			$('#passcode_input').val('').focus()
+			$('#passcode_input2').val('')
+			$('#status').text('Please enter four digits').css('color', 'black')
+			$('#passcode_next').attr("disabled", "disabled")
+		}
+
+		function comparePasscodes(fromPasscode) {
+			var passcode = $('#passcode_input').val()
+			var passcode2 = $('#passcode_input2').val()
+			if ((passcode.length == passcode2.length) && (passcode.length == 4)) {
+				if (passcode == passcode2) {
+					$('#status').text('matching passcodes entered')
+					$('#passcode_next').removeAttr("disabled").focus()
+				} else {
+					if (fromPasscode) {
+						$('#passcode_input2').val('')
+						$('#status').text('please enter four digits').css(
+								'color', 'black')
+						$('#passcode_next').attr("disabled", "disabled")
+					} else {
+						$('#status').text("PASSCODES DON'T MATCH").css('color',
+								'red')
+						$('#passcode_next').attr("disabled", "disabled")
+					}
+				}
+			} else {
+				$('#status').text('please enter four digits').css('color',
+						'black')
+				$('#passcode_next').attr("disabled", "disabled")
+			}
+		}
+
+		function onReady() {
+			$('#passcodeForm').hide()
+			$('#qrcodeForm').hide()
+
+			$('#QRinstall').click(function() {
+				iOSinstall = false
+				showPasscodeForm()
+				return false
+			})
+
+			$('#iOSinstall').click(function() {
+				iOSinstall = true
+				showPasscodeForm()
+				return false
+			})
+
+			$('#passcode_cancel').click(function() {
+				$('#passcodeForm').dialog("close");
+			})
+
+			$('#passcode_input').bind(
+					'input',
+					function() {
+						// strip out non-numeric
+						$('#passcode_input').val(
+								$('#passcode_input').val().replace(/[^\d]+/g,
+										''))
+						// move focus to next input if done
+						if ($('#passcode_input').val().length >= 4) {
+							// Safari does not seem to want to execute this focus change, but will do others ... hmmmm
+							$('#passcode_input2').focus()
+						}
+						comparePasscodes(true)
+					})
+
+			$('#passcode_input2').bind(
+					'input',
+					function() {
+						// strip out non-numeric
+						$('#passcode_input2').val(
+								$('#passcode_input2').val().replace(/[^\d]+/g,
+										''))
+						// move focus to next input if done
+						if ($('#passcode_input2').val().length >= 4)
+							$('#passcode_input').focus()
+						comparePasscodes()
+					})
+
+			$('#passcode_next').click(function() {
+				// get passcode
+				var passcode = $('#passcode_input').val()
+				$.post('/register/agent/code', {
+					'passcode' : passcode
+				}, function(data, status) {
+					// TBD deal with errors  data.error exists ...
+					if (data.error) {
+						$('#passcodeForm').fadeOut('fast')
+					}
+					var code = data.result.code
+
+					console.log('code:', code)
+
+					// TBD check we really got a code!!!
+					if (iOSinstall) { // launch Personal Agent on iOS device!!! cross your fingers!
+						var agentURL = 'a2p3.net://enroll?code=' + code
+						console.log('sending User to:' + agentURL)
+						window.location = agentURL
+					} else {
+						$('#passcodeForm').dialog("close");
+
+						/// TBD - adjust size of popup and QR code to screen
+						// $('#qrcodeForm').fadeIn('fast')
+						$('#qrcodeForm').dialog({
+							width : 415,
+							height : 370
+						});
+						$('#qrcode').qrcode({
+							width : 300,
+							height : 300,
+							text : 'a2p3.net://enroll?code=' + code
+						})
+
+					}
+				})
+				return false
+			})
+		}
+
+		$(document).ready(onReady)
+	</script>
 
 </body>
 </html>
+
+
+
+
+
