@@ -45,31 +45,24 @@
 				style="margin-top: 10px;">
 
 				<div>
-					<div class="dashboardSection" style="width:300px;">
-						<form class="formIOS" method="get" id="removeUserId"
-							action="/delete/user">
-							<TABLE id="nameTable">
-								<tbody>
-									<TR>
-										<td rowspan="2"><img class="photoImage" src="" alt="" id="photo"
-											border="1"></span> <span class="formItem"></td>
-										<td><label type="text" id="name_input"
-											placeholder="Your name" class="dashboardName" name="name"></label></td>
-									</TR>
-									<TR>
-			
-										<td><input style="margin-top:5px;margin-left: 15px;" type="submit" value="Remove this User"
-											ontouchstart="" class="buttonAddIOS"></td>
-									</TR>
-								</tbody>
-							</TABLE>
-							<!-- 
-							<span class="dashboardImage"> <label type="text"
-								id="name_input" placeholder="Your name" class="dashboardName"
-								name="name"></label> <input type="submit"
-								value="Remove this User" ontouchstart="" class="buttonAddIOS">
-							</span> -->
-						</form>
+					<div class="dashboardSection">
+						<TABLE id="nameTable">
+							<tbody>
+								<TR>
+									<td rowspan="2"><img class="photoImage" src="" alt=""
+										id="photo" border="1"></span> <span class="formItem"></td>
+									<td><label type="text" id="name_input"
+										placeholder="Your name" class="dashboardName" name="name"></label></td>
+								</TR>
+								<TR>
+
+									<td><input name="removeUserButton"
+										style="margin-top: 5px; margin-left: 15px;" type="button"
+										value="Remove this User" ontouchstart="" id="removeUserButton"
+										class="buttonAddIOS"></td>
+								</TR>
+							</tbody>
+						</TABLE>
 					</div>
 					<div class="dashboardSection">
 						<div class="categoryTitle">
@@ -182,6 +175,15 @@
 		<div style="margin-top: 8px;" id="confirmAgentDelete"
 			name="confirmAgentDelete" class="dashboardCategoryTitleDetail">Are
 			you sure you wish to remove this agent?</div>
+
+	</div>
+
+	<div title="Confirm User Removal" name="userDeleteDialogConfirm"
+		id="userDeleteDialogConfirm" class="agentCLI" style="display: none;">
+
+		<div style="margin-top: 8px;" id="confirmUserDelete"
+			name="confirmUserDelete" class="dashboardCategoryTitleDetail">Are
+			you sure you wish to remove this user?</div>
 
 	</div>
 
@@ -346,6 +348,25 @@
 					$('#agentCLI_delete').fadeOut('fast')
 					refreshAgents()
 				})
+				return false
+			})
+
+			$('#removeUserButton').click(function() {
+
+				$("#userDeleteDialogConfirm").dialog({
+					width : 400,
+					buttons : {
+						"No" : function() {
+							$(this).dialog("close");
+						},
+
+						"Yes" : function() {
+							window.location = "/delete/user";
+						}
+
+					}
+				});
+
 				return false
 			})
 

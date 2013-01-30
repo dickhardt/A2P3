@@ -305,7 +305,7 @@ form {
 	font-weight: bold;
 }
 
-.textAgentName,.textEmail,.textName,.textAddress,.textCity,.textProvince,.textPostal,.textDOB,.textSIN,.textHealth
+.textAgentPasscode,.textAgentName,.textEmail,.textName,.textAddress,.textCity,.textProvince,.textPostal,.textDOB,.textSIN,.textHealth
 	{
 	height: 44px;
 	width: 240px;
@@ -321,6 +321,18 @@ form {
 	font-size: 18px;
 	font-weight: 300;
 	-webkit-appearance: none;
+}
+
+.textAgentPasscode {
+	width: 50px;
+	height: 24px;
+	margin-left: 5px;
+}
+
+.passcodeConfirmLabel {
+	width: 190px;
+	display: block;
+	text-align: right;
 }
 
 .textAgentName {
@@ -546,11 +558,11 @@ form {
 }
 
 .tableRowAgentName {
-	width: 55%;
+	width: 45%;
 }
 
 .tableRowAgentDate {
-	width: 25%;
+	width: 35%;
 }
 
 .tableRowAgentDelete {
@@ -591,10 +603,38 @@ form {
 	outline: none;
 }
 
+.passcodeForm {
+	border: 1px solid #999;
+	-webkit-box-shadow: 0px 0px 6px #CCC;
+	background-color: #FFF;
+	width: 300px;
+	height: 130px;
+	position: absolute;
+	top: 75px;
+	left: 50%;
+	margin-left: -125px;
+	padding: 10px;
+	border-radius: 4px;
+}
+
+.qrcodeForm {
+	border: 1px solid #999;
+	-webkit-box-shadow: 0px 0px 6px #CCC;
+	background-color: #FFF;
+	width: 305px;
+	height: 305px;
+	position: absolute;
+	top: 75px;
+	left: 50%;
+	margin-left: -125px;
+	padding: 10px;
+	border-radius: 4px;
+}
+
 .buttonCreateCLI {
 	width: 150px;
 	height: 24px;
-	font-size: 14px;
+	font-size: 13px;
 	border-radius: 4px;
 	-moz-border-radius: 4px;
 	-webkit-border-radius: 4px;
@@ -614,7 +654,7 @@ form {
 }
 
 .ie7 .submit,.ie8 .submit {
-	filter: progid:DXImageTransform.Microsoft.gradient(            
+	filter: progid:DXImageTransform.Microsoft.gradient(              
 		                     
 		                     
 		                     startColorstr='#e9573f', endColorstr='#be3322',
