@@ -109,16 +109,24 @@ function loginQR( req, res )  {
 // we send a meta-refresh so that we show a info page in case there is no agent to
 // handle the a2p3.net: protcol scheme
 function loginDirect( req, res ) {
-  var redirectURL = 'a2p3.net://token?request=' +
-    a2p3.createAgentRequest( localConfig, vault, HOST_URL + '/response', RESOURCES )
+  var agentRequest = a2p3.createAgentRequest( localConfig, vault, HOST_URL + '/response', RESOURCES )
+  var redirectURL = 'a2p3.net://token?request=' + agentRequest
   var html = metaRedirectInfoPage( redirectURL )
+
+
+
+// var jwt = require('../lib/jwt')
+// var jws = jwt.Parse( agentRequest )
+// console.log('clinic Agent Request signature:', jws.signature )
+
+
   res.send( html )
 }
 
 // loginBackdoor -- development login that uses a development version of setup.a2p3.net
 function loginBackdoor( req, res )  {
-  var redirectURL = 'http://setup.a2p3.net/backdoor/login?request=' +
-    a2p3.createAgentRequest( localConfig, vault, HOST_URL + '/response', RESOURCES )
+  var agentRequest = a2p3.createAgentRequest( localConfig, vault, HOST_URL + '/response', RESOURCES )
+  var redirectURL = 'http://setup.a2p3.net/backdoor/login?request=' + agentRequest
   res.redirect( redirectURL )
 }
 
@@ -142,6 +150,11 @@ function qrCode( req, res ) {
     return res.redirect('/error')
   }
   var agentRequest = a2p3.createAgentRequest( localConfig, vault, HOST_URL + '/response', RESOURCES )
+
+// var jwt = require('../lib/jwt')
+// var jws = jwt.Parse( agentRequest )
+// console.log('clinic Agent Request signature:', jws.signature )
+
   var json = req.query.json
   if ( json ) {
     return res.send( { result: { agentRequest: agentRequest, state: qrSession } } )
