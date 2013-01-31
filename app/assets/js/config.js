@@ -19,7 +19,7 @@ var config = {};
     config.baseDomain = config.fullhost.replace( config.host+'.', '' )
   }
   catch (e) {
-    console.log(e)
+    //console.log(e)
   }
   config.provinceNames =
     { 'ab': 'Alberta'
@@ -37,7 +37,7 @@ var config = {};
     , 'yt': 'Yukon'
     }
 
-console.log('config\n',config)
+//console.log('config\n',config)
 
 })();
 

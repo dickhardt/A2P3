@@ -33,12 +33,14 @@ Email: <input type="text" name="email"><br>
         , 'people.bc':    'BC People RS'
         , 'people.ab':    'Alberta People RS'
         }
-      Object.keys( servers ).forEach( function (host ) {
+      
+      //Added for compatibility with IE
+      $.each(servers, function (host, name ) {
         url = config.protocol + '://' + host + '.' + config.baseDomain + ':' + config.port +
           '/login?returnURL=http%3a%2f%2fsetup.' + config.baseDomain + port + '%2fbackdoor%2flogin%2fdev%40example.com'
         $('#loginList').append('<li><a href="' + url + '">' + servers[host] + '</a></li>')
       })
-
+     
       $('#loginList').append('<li>-----------</li>')
 
       url = config.protocol + '://clinic.' + config.baseDomain + ':' + config.port
@@ -47,7 +49,7 @@ Email: <input type="text" name="email"><br>
       url = config.protocol + '://bank.' + config.baseDomain + ':' + config.port
       $('#loginList').append('<li><a href="' + url + '">Bank App</a></li>')
 
-      console.log(config)
+      //console.log(config)
     })
 
 </script>
