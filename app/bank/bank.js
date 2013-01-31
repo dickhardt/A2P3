@@ -25,14 +25,13 @@ a2p3.init( localConfig, vault )
 var HOST_URL = config.baseUrl.bank
 
 var RESOURCES =
-    [ 'http://people.a2p3.net/scope/details'
-    , 'http://si.a2p3.net/scope/anytime/number'
+    [ config.baseUrl.people + '/scope/details'
+    , config.baseUrl.si + '/scope/anytime/number'
     ]
 
-var APIS =
-  { 'http://people.a2p3.net/details': null
-  , 'http://si.a2p3.net/oauth': null
-  }
+var APIS = {}
+APIS[ config.baseUrl.people + '/details' ] =  null
+APIS[ config.baseUrl.si + '/oauth' ] = null
 
 // HTML for meta refresh and Agent Install Page
 // we could read this in once, but reading it in each
@@ -187,8 +186,8 @@ function loginDirect( req, res ) {
 
 // loginBackdoor -- development login that uses a development version of setup.a2p3.net
 function loginBackdoor( req, res )  {
-  var redirectURL = 'http://setup.a2p3.net/backdoor/login?request=' +
-    a2p3.createAgentRequest( localConfig, vault, HOST_URL + '/response' )
+  var agentRequest = a2p3.createAgentRequest( localConfig, vault, HOST_URL + '/response' )
+  var redirectURL = config.baseUrl.setup + '/backdoor/login?request=' + agentRequest
   res.redirect( redirectURL )
 }
 
@@ -210,8 +209,8 @@ function newDirect( req, res ) {
 
 // newBackdoor -- development new account that uses a development version of setup.a2p3.net
 function newBackdoor( req, res )  {
-  var redirectURL = 'http://setup.a2p3.net/backdoor/login?request=' +
-    a2p3.createAgentRequest( localConfig, vault, HOST_URL + '/response', RESOURCES )
+  var agentRequest = a2p3.createAgentRequest( localConfig, vault, HOST_URL + '/response', RESOURCES )
+  var redirectURL = config.baseUrl.setup + '/backdoor/login?request=' + agentRequest
   res.redirect( redirectURL )
 }
 

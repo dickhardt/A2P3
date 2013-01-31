@@ -24,14 +24,13 @@ a2p3.init( localConfig, vault )
 var HOST_URL = config.baseUrl.clinic
 
 var RESOURCES =
-    [ 'http://people.a2p3.net/scope/details'
-    , 'http://health.a2p3.net/scope/prov_number'
+    [ config.baseUrl.people + '/scope/details'
+    , config.baseUrl.health + '/scope/prov_number'
     ]
 
-var APIS =
-  { 'http://people.a2p3.net/details': null
-  , 'http://health.a2p3.net/prov_number': null
-  }
+var APIS = {}
+APIS[ config.baseUrl.people + '/details' ] =  null
+APIS[ config.baseUrl.health + '/prov_number' ] = null
 
 // HTML for meta refresh and Agent Install Page
 // we could read this in once, but reading it in each
@@ -126,7 +125,7 @@ function loginDirect( req, res ) {
 // loginBackdoor -- development login that uses a development version of setup.a2p3.net
 function loginBackdoor( req, res )  {
   var agentRequest = a2p3.createAgentRequest( localConfig, vault, HOST_URL + '/response', RESOURCES )
-  var redirectURL = 'http://setup.a2p3.net/backdoor/login?request=' + agentRequest
+  var redirectURL = config.baseUrl.setup + '/backdoor/login?request=' + agentRequest
   res.redirect( redirectURL )
 }
 
