@@ -37,7 +37,7 @@ var config = {};
     , 'yt': 'Yukon'
     }
 
-console.log('config\n',config)
+// console.log('config\n',config)
 
 })();
 
