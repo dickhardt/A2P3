@@ -13,6 +13,7 @@
   , "request": "*"
   , "underscore": "*"
   , "marked": "*"
+  , "apn": "*"
   }
 , "devDependencies":
   { "chai": "*"
