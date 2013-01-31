@@ -242,9 +242,17 @@
       var flag = config.province || 'ca'
       $('#title').before('<img src="/images/flags/' + flag + '.png">')
 
+      // called when tokens are about to expire
+      function logout() {
+        window.location = '/logout'
+      }
+
       // check if we are logged in, if so, then show email and enable logout
       $.get('/login/check', function ( data, status ) {
         if (data && data.result && data.result.user) {
+          if (data.result.expiresIn) {
+            window.setTimeout( logout, data.result.expiresIn*1000)
+          }
           $('#loginEmail').text(data.result.user)
           $('#logout').show()
           $('#login').hide()
