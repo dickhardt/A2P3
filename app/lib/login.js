@@ -149,7 +149,7 @@ function logout ( req, res ) {
 
 // web app API to check which user is logged in
 function loginCheck ( req, res ) {
-  var expiresIn = req.session.iat + config.maxTokenAge - (4 * 60) - jwt.iat()
+  var expiresIn = req.session.iat + config.maxTokenAge - 60 - jwt.iat() // logout a minute before it expires
   if (!req.session || !req.session.di) {
     return res.send( { error: {'code': 'NO_USER_LOGGED_IN' } } )
   }
