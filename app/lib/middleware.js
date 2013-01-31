@@ -210,8 +210,6 @@ exports.scopes = function scopes ( fname, rs ) {
 exports.keyCheck = function ( vault, client ) {
   return function keyCheck( req, res, next ) {
 
-debugger;
-
     var request = req.body.request
     var aud = req.body.host
     var pass = ( aud && (req.body.pass == 'makeitso') )
@@ -221,7 +219,7 @@ debugger;
       try {
         var jws = new jwt.Parse( request )
 
-console.log('\tiss:'+jws.payload.iss+'->'+jws.payload.aud)
+// console.log('\tiss:'+jws.payload.iss+'->'+jws.payload.aud)
 
         var issuer = jws.payload.iss
         db.getAppKey( config.reverseHost[ client ], issuer, vault.keys, function ( e, key ) {
@@ -247,7 +245,7 @@ console.log('\tiss:'+jws.payload.iss+'->'+jws.payload.aud)
       }
     } else if ( pass ) { // we are going to check our key with another server
 
-console.log(client+'->'+config.host[aud])
+// console.log(client+'->'+config.host[aud])
 
       db.getAppKey( config.reverseHost[ client ], config.host[aud], vault.keys, function ( e, key ) {
         if (e) return next( e )
