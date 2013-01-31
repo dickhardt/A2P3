@@ -62,6 +62,8 @@ function login ( details ) {
 
     var agentRequest = request.create( agentRequestPayload, details.vault.keys[config.host.ix].latest )
     req.session.agentRequest = agentRequest
+    var jws = jwt.Parse( agentRequest )
+    req.session.iat = jws.payload.iat  // tokens expire then, so we want to expire the user session by logging out
     var redirectUrl = (req.query && req.query.returnURL) ? req.query.returnURL : 'a2p3.net://token'
     redirectUrl += '?request=' + agentRequest
     if (req.query && req.query.json) {  // client wants JSON, likely will generate QR code
@@ -147,10 +149,11 @@ function logout ( req, res ) {
 
 // web app API to check which user is logged in
 function loginCheck ( req, res ) {
+  var expiresIn = req.session.iat + config.maxTokenAge - (4 * 60) - jwt.iat()
   if (!req.session || !req.session.di) {
     return res.send( { error: {'code': 'NO_USER_LOGGED_IN' } } )
   }
-  return res.send( { result: {'user': req.session.email } } )
+  return res.send( { result: {'user': req.session.email, 'expiresIn': expiresIn } } )
 }
 
 // sets up all the login / out routes
