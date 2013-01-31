@@ -777,6 +777,43 @@ describe('Demo App calling ', function () {
     })
   })
 
+
+  var access_token = null
+  describe('si:/oauth', function(){
+    it('should return an OAuth access token ', function (done){
+      api.call( 'si', '/oauth', { token: rsTokens[config.host['si']] }, function ( error, result) {
+        should.not.exist( error )
+        should.exist( result )
+        result.should.have.property( 'access_token' )
+        access_token = result.access_token
+        done()
+      })
+    })
+  })
+
+  describe('si:/anytime/number', function(){
+    it('should return SI number', function (done){
+      var options =
+        { url: config.baseUrl.si + '/anytime/number'
+        , form: { access_token: access_token }
+        , method: 'POST'
+        }
+      fetch( options, function ( e, response, body ) {
+        should.not.exist( e )
+        should.exist( response )
+        response.statusCode.should.equal( 200 )
+        should.exist( body )
+        var r = JSON.parse( body )
+        should.exist( r )
+        r.should.not.have.property('error')
+        r.should.have.property('result')
+        r.result.should.have.property('si')
+        r.result.si.should.equal( config.testUser.si )
+        done()
+      })
+    })
+  })
+
   describe('email:/email/default', function(){
     it('should return email address', function (done){
       api.call( 'email', '/email/default', { token: rsTokens[config.host.email] }, function ( error, result) {
@@ -941,12 +978,28 @@ describe('Agent Authorizations ', function () {
     })
   })
 
-  describe('deleting authorization ', function () {
+  describe('deleting health.bc authorization ', function () {
     it('should return success', function ( done ) {
       var userAgent = new agent.Create( testUser.agent )
       should.exist( userAgent )
       userAgent.deleteAuthorization( config.host['health.bc']
             , apps[demoApp.host][config.host['health.bc']].request
+            , function ( e, result ) {
+        should.not.exist( e )
+        should.exist( result )
+        result.should.have.property( 'success' )
+        done()
+      })
+    })
+  })
+
+
+  describe('deleting SI authorization ', function () {
+    it('should return success', function ( done ) {
+      var userAgent = new agent.Create( testUser.agent )
+      should.exist( userAgent )
+      userAgent.deleteAuthorization( config.host.si
+            , apps[demoApp.host][config.host.si].request
             , function ( e, result ) {
         should.not.exist( e )
         should.exist( result )
