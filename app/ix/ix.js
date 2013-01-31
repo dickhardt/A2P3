@@ -87,6 +87,11 @@ function exchange ( req, res, next ) {
   }
   // check agent request signature matches 'sar' that AS got
   if (ixToken['token.a2p3.org'].sar != jws.signature) {
+
+// console.log('IX /exchange -> bad "sar"\nixToken->sar',ixToken['token.a2p3.org'].sar)
+// console.log('jws.signature',jws.signature)
+// console.log('IX Token', ixToken)
+
       e = new Error("IX Token 'sar' does not match request signature")
       e.code = 'INVALID_IXREQUEST'
       return next( e )
