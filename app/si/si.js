@@ -91,12 +91,15 @@ function oauthCheck () {
 function _makeDeleteAuthNRequest ( rs, di, app ) {
   // impersonate Registrar calling us
   var tokenPayload =
-    { 'iss': config.host.registrar
+    { 'iss': config.host.ix
     , 'aud': config.host[rs]
     , 'sub': di
-    , 'token.a2p3.org': { 'app': app }
+    , 'token.a2p3.org':
+      { 'app': config.host.registrar
+      , 'auth': { passcode: true, authorization: true }
+      }
     }
-  var rsToken = token.create( tokenPayload, vault.keys[config.host.registrar].latest )
+  var rsToken = token.create( tokenPayload, vault.keys[config.host.ix].latest )
   var requestDetails =
     { 'iss': config.host.registrar
     , 'aud': config.host[rs]
