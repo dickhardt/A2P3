@@ -206,7 +206,7 @@ function onReady() {
         if (status == "success" && !data.error && data.result && data.result.qrURL && data.result.qrSession ) {
           $('#qrcode').empty()
           $('#qrcodeForm').fadeIn('fast')
-          $('#qrcode').qrcode( {width: 500, height: 500, text: data.result.qrURL } )
+          $('#qrcode').qrcode( {width: 400, height: 400, text: data.result.qrURL } )
           setTimeout( checkQR, 500, data.result.qrSession )
         }
       })
