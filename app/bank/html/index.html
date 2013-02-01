@@ -10,8 +10,9 @@
 </head>
 <body>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+  <script type="text/javascript"    src="/js/purl.js"></script>
+  <script type="text/javascript"    src="/js/config.js"></script>
   <script type="text/javascript"    src="/js/jquery.qrcode.min.js"></script>
-
 
 <div id="qrcodeForm">
     <p>Scan QR Code with your Agent to login</p>
@@ -78,6 +79,8 @@ function onReady() {
   var iOS = deviceAgent.match(/(iphone|ipod|ipad)/)
   var isAndroid = deviceAgent.indexOf("android") > -1
   var agentDirect = iOS || isAndroid
+  var PEOPLE_RS = 'people.' + config.baseDomain
+  var SI_RS = 'si.'+ config.baseDomain
 
   $('#qrcodeForm').hide()
   $('#logout').hide()
@@ -88,16 +91,17 @@ function onReady() {
 
   function drawProfile( profile ) {
     console.log( profile )
-    var si = profile['si.a2p3.net'].si
+    var si = profile[ SI_RS ].si
     $('#profileTable').append('<tr><td>Social Insurance Number</td><td>'+si+'</td></tr>')
-    var people =  profile[ 'people.a2p3.net' ] &&
-                  profile[ 'people.a2p3.net' ].redirects &&
-                  profile[ 'people.a2p3.net' ].redirects[0] &&
-                  profile[ profile[ 'people.a2p3.net' ].redirects[0] ]
+    var people =  profile[ PEOPLE_RS ] &&
+                  profile[ PEOPLE_RS ].redirects &&
+                  profile[ PEOPLE_RS ].redirects[0] &&
+                  profile[ profile[ PEOPLE_RS ].redirects[0] ]
     if (people) {
       Object.keys( people ).forEach( function ( item ) {
         $('#profileTable').append('<tr><td>' + item + '</td><td>' + people[item] + '</td></tr>')
       })
+      $('#TOS').show()
     } else {
       $('#closeAccount').show()
     }
@@ -125,7 +129,7 @@ function onReady() {
           return setTimeout( checkQR, 500, qrSession )
         if (data.error) console.log( data.error )
         if (data.result)
-          if (data.result['people.a2p3.net'])
+          if (data.result[PEOPLE_RS])
             approveTOS( data.result )
           else
             drawProfile( data.result )
