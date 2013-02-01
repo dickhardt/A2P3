@@ -92,7 +92,7 @@ function onReady() {
 
   // see if we have a profile to show on a reload
   $.get( '/profile', function ( data, status ) {
-    console.log( '/profile ->', data )
+    //console.log( '/profile ->', data )
     if (status == "success" && !data.error && data.result ) {   // TBD, deal with error
       $('#logout').show()
       $('#login').hide()

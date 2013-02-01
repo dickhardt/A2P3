@@ -90,7 +90,7 @@ function onReady() {
   $('#TOS').hide()
 
   function drawProfile( profile ) {
-    console.log( profile )
+    //console.log( profile )
     var si = profile[ SI_RS ].si
     $('#profileTable').append('<tr><td>Social Insurance Number</td><td>'+si+'</td></tr>')
     var people =  profile[ PEOPLE_RS ] &&
@@ -131,7 +131,8 @@ function onReady() {
       if ( status == 'success' && data) {
         if ( data.status == 'waiting')
           return setTimeout( checkQR, 500, qrSession )
-        if (data.error) console.log( data.error )
+        /* if (data.error) 
+        	console.log( data.error ) */
         if (data.result)
           if (data.result[PEOPLE_RS])
             approveTOS( data.result )
@@ -181,7 +182,7 @@ function onReady() {
 
   // see if we have a profile to show on a reload
   $.get( '/profile', function ( data, status ) {
-    console.log( '/profile ->', data )
+    //console.log( '/profile ->', data )
     if (status == "success" && !data.error && data.result ) {   // TBD, deal with error
       $('#logout').show()
       $('#login').hide()
