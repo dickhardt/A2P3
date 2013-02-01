@@ -14,6 +14,7 @@
   , "underscore": "*"
   , "marked": "*"
   , "apn": "*"
+  , "debug": "*"
   }
 , "devDependencies":
   { "chai": "*"
