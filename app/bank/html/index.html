@@ -115,6 +115,10 @@ function onReady() {
   }
 
   $('#agreeTOS').click( function () {
+    $.ajaxSetup(
+      { type: 'POST'
+      , headers: { "cache-control": "no-cache" }
+      } )
     $.post( '/agree/tos', function ( data, status ) {
       window.location = '/'
     })
