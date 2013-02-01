@@ -158,7 +158,7 @@ function loginQR( req, res )  {
   var qrSession = a2p3.random16bytes()
   req.session.qrSession = qrSession
   var qrCodeURL = HOST_URL + '/QR/' + qrSession
-  res.send( { result: { qrURL: qrCodeURL } } )
+  res.send( { result: { qrURL: qrCodeURL, qrSession: qrSession } } )
 }
 
 // newQR() - called by web app when it wants a QR code link for creating a new account
@@ -166,7 +166,7 @@ function newQR( req, res )  {
   var qrSession = a2p3.random16bytes()
   req.session.qrSession = qrSession
   var qrCodeURL = HOST_URL + '/QRnew/' + qrSession
-  res.send( { result: { qrURL: qrCodeURL } } )
+  res.send( { result: { qrURL: qrCodeURL, qrSession: qrSession } } )
 }
 
 
@@ -258,7 +258,8 @@ function qrNewCode( req, res ) {
   var agentRequest = a2p3.createAgentRequest( localConfig, vault, HOST_URL + '/response', RESOURCES )
   var json = req.query.json
   if ( json ) {
-    return res.send( { result: { agentRequest: agentRequest, state: qrSession } } )
+    var response = { result: { agentRequest: agentRequest, state: qrSession } }
+    return res.send( response )
   } else {
     var redirectURL = 'a2p3://token?request=' + agentRequest + '&state=' + qrSession
     var html =  metaRedirectInfoPage( redirectURL )
@@ -275,7 +276,6 @@ function loginResponse( req, res )  {
   var ixToken = req.query.token
   var agentRequest = req.query.request
   var qrSession = req.query.state
-
   if (!ixToken || !agentRequest) {
     return res.redirect( '/error' )
   }

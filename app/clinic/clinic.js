@@ -100,7 +100,7 @@ function loginQR( req, res )  {
   var qrSession = a2p3.random16bytes()
   req.session.qrSession = qrSession
   var qrCodeURL = HOST_URL + '/QR/' + qrSession
-  res.send( { result: { qrURL: qrCodeURL } } )
+  res.send( { result: { qrURL: qrCodeURL, qrSession: qrSession } } )
 }
 
 // loginDirect -- loaded when web app thinks it is running on a mobile device that
@@ -111,14 +111,6 @@ function loginDirect( req, res ) {
   var agentRequest = a2p3.createAgentRequest( localConfig, vault, HOST_URL + '/response', RESOURCES )
   var redirectURL = 'a2p3.net://token?request=' + agentRequest
   var html = metaRedirectInfoPage( redirectURL )
-
-
-
-// var jwt = require('../lib/jwt')
-// var jws = jwt.Parse( agentRequest )
-// console.log('clinic Agent Request signature:', jws.signature )
-
-
   res.send( html )
 }
 
@@ -149,11 +141,6 @@ function qrCode( req, res ) {
     return res.redirect('/error')
   }
   var agentRequest = a2p3.createAgentRequest( localConfig, vault, HOST_URL + '/response', RESOURCES )
-
-// var jwt = require('../lib/jwt')
-// var jws = jwt.Parse( agentRequest )
-// console.log('clinic Agent Request signature:', jws.signature )
-
   var json = req.query.json
   if ( json ) {
     return res.send( { result: { agentRequest: agentRequest, state: qrSession } } )
