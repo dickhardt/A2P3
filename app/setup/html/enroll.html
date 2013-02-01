@@ -195,7 +195,7 @@
 
 			$.post('enroll/profile', null, function(data, status) {
 				if (status == 'success') {
-					Object.keys(data).forEach(function(key) {
+					$.each( data, function( key ) {
 						$('#' + key + '_input').val(data[key])
 					})
 					$('#email').val(data.email)

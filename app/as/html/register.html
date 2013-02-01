@@ -215,12 +215,12 @@
               }
               var code = data.result.code
 
-              console.log('code:', code)
+              // console.log('code:', code)
 
               // TBD check we really got a code!!!
               if (iOSinstall) { // launch Personal Agent on iOS device!!! cross your fingers!
                 var agentURL = 'a2p3.net://enroll?code=' + code
-                console.log('sending User to:' + agentURL)
+                // console.log('sending User to:' + agentURL)
                 window.location = agentURL
               } else {
                 $('#passcodeForm').dialog("close");

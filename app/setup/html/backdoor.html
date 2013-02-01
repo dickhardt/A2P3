@@ -33,7 +33,7 @@ Email: <input type="text" name="email"><br>
         , 'people.bc':    'BC People RS'
         , 'people.ab':    'Alberta People RS'
         }
-      Object.keys( servers ).forEach( function (host ) {
+      $.each( servers, function (host ) {
         url = config.protocol + '://' + host + '.' + config.baseDomain + ':' + config.port +
           '/login?returnURL=http%3a%2f%2fsetup.' + config.baseDomain + port + '%2fbackdoor%2flogin%2fdev%40example.com'
         $('#loginList').append('<li><a href="' + url + '">' + servers[host] + '</a></li>')

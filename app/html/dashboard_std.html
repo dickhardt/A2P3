@@ -155,7 +155,7 @@
           var list = data.result.list
           var html = null
           var item = 0  // use a counter since the app has '.'s which browser is cranky about in element IDs
-          Object.keys( list ).forEach( function ( app ) {
+          $.each( list, function ( app ) {
             html = '<tr><td><a href="" id="' + item +'_details">' + list[app].name +'</a>' +
               '</td><td>' + app + '</td></tr>'
             $('#appTable').append( html )

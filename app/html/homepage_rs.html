@@ -39,7 +39,7 @@
   $('#loginQR').click( function () {
     $.get( '/login?json=true', function ( data, status ) {
       if (status == "success" && !data.error && data.result && data.result.request) {   // TBD, deal with error
-        console.log('login for qr',data)
+        // console.log('login for qr',data)
         $('#qrcodeForm').fadeIn('fast')
         $('#qrcode').qrcode( {width: 500, height: 500, text: data.result.request } )
       }

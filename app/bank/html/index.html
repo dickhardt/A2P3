@@ -160,7 +160,7 @@ function onReady() {
       if ( status == 'success' && data) {
         if ( data.status == 'waiting')
           return setTimeout( checkQR, 500, qrSession )
-        if (data.error) console.log( data.error )
+        // if (data.error) console.log( data.error )
         if (data.result)
           if (data.result[PEOPLE_RS])
             approveTOS( data.result )
