@@ -100,8 +100,13 @@ exports.colorLogger = function colorLogger ( express ) {
     return (code != 200 && code != 302 && code != 304)
   }
 
+
+  express.logger.token( 'localTime', function (req, res) {
+    return new Date()
+    })
+
   express.logger.token( 'wideHost', function (req, res) {
-    var wideHost = '                              '.slice(req.host.length) + req.host
+    var wideHost = '                            '.slice(req.host.length) + req.host
     return ( errorStatusCode( res.statusCode ) )
       ? '\x1b[31m'+wideHost+'\x1b[0m'
       : wideHost
@@ -125,7 +130,7 @@ exports.colorLogger = function colorLogger ( express ) {
       : '-'
     })
 
-  return express.logger( '[:date] :wideHost\t:method\t:url\t:statusColor\t:response-time\tms\t:errorCode\t:errorMessage' )
+  return express.logger( '[:localTime] :wideHost\t:method\t:url\t:statusColor\t:response-time\tms\t:errorCode\t:errorMessage' )
 }
 
 /*
