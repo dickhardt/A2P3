@@ -12,6 +12,7 @@ var express = require('express')
   , config = require('../config')
   , db = require('../lib/db')
   , fetch = require('request')
+  , debug = require('debug')('bank')
 
 var localConfig =
   { appID: config.host.bank
@@ -361,8 +362,10 @@ function profile( req, res )  {
 // console.log('req.session.profile\n',req.session.profile)
 
   if ( req.session.profile && Object.keys( req.session.profile ).length ) {
+    debug(req.session.profile)
     return res.send( { result: req.session.profile } )
   } else { //
+    debug('error: not logged in')
     return res.send( { error: 'NOT_LOGGED_IN'} )
   }
 }
