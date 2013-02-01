@@ -143,8 +143,9 @@ function registerAgentCode ( req, res, next ) {
   var passcode = req.body.passcode
   var di = req.session.di
   var code = jwt.handle()
-  db.updateProfile( 'as', code,
-                  {'passcode': passcode, 'di': di }
+  db.updateProfile( 'as'
+                  , code
+                  , {'passcode': passcode, 'di': di }
                   , function ( e ) {
     if (e) return next( e )
     return res.send( { result: {code: code } } )
