@@ -48,7 +48,7 @@ function tokenHandler ( req, res, next ) {
     , sar = req.body.sar
     , auth = req.body.auth
 
-// console.log('\nAS /token received\n',req.body)
+ console.log('\nAS received\n',req.body)
 
   db.retrieveAgentFromDevice( 'as', device, function ( e, agent ) {
     if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
