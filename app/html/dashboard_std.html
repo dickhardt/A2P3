@@ -86,7 +86,7 @@
     $('#refreshAppKey').click( function () {
       app = currentApp
       $('#appKeys').fadeOut('fast')
-      $.post('/dashboard/refresh/keys', { id: app }, function ( data, status ) {
+      $.post('/dashboard/refresh/key', { id: app }, function ( data, status ) {
         if (data.result) {
           $('#appKeys').text( JSON.stringify( data.result ) )
           $('#appKeys').fadeIn('fast')
@@ -136,7 +136,7 @@
         }
       })
       // since a whole whack of calls happen here, we make it async to rest of showing details
-      $.post('/dashboard/getkeys', {id: app}, function ( data, status ) {
+      $.post('/dashboard/getkey', {id: app}, function ( data, status ) {
         if (data.result)
           $('#appKeys').text( JSON.stringify( data.result ) )
 
