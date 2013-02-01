@@ -16,6 +16,7 @@ var config = require('../config')
   , fs = require('fs')
   , marked = require('marked')
   , time = require('time')
+  , dateFormat = require('dateformat')
 
 
 console.log( time.Date() )
@@ -106,11 +107,11 @@ exports.colorLogger = function colorLogger ( express ) {
 
 
   express.logger.token( 'localTime', function (req, res) {
-    return  time.Date()
+    return  dateFormat( time.Date(), "isoDateTime" )
     })
 
   express.logger.token( 'wideHost', function (req, res) {
-    var wideHost = '                          '.slice(req.host.length) + req.host
+    var wideHost = '                         '.slice(req.host.length) + req.host
     return ( errorStatusCode( res.statusCode ) )
       ? '\x1b[31m'+wideHost+'\x1b[0m'
       : wideHost
@@ -134,7 +135,7 @@ exports.colorLogger = function colorLogger ( express ) {
       : '-'
     })
 
-  return express.logger( '[:localTime] :remote-addr :wideHost\t:method\t:url\t:statusColor\t:response-time\tms\t:errorCode\t:errorMessage' )
+  return express.logger( '\x1b[2m:localTime\x1b[0m|\x1b[2m:remote-addr\x1b[0m :wideHost\t:method\t:url\t:statusColor\t:response-time\tms\t:errorCode\t:errorMessage' )
 }
 
 /*

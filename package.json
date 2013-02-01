@@ -16,6 +16,7 @@
   , "apn": "*"
   , "debug": "*"
   , "time": "*"
+  , "dateformat": "*"
   }
 , "devDependencies":
   { "chai": "*"
