@@ -3,6 +3,7 @@
 <head>
 <style type="text/css">
   .loginStatus {text-align:center;}
+  .di {text-align:right;}
   .loginItem {padding-left: 5px;}
   #qrcodeForm{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:500px; height:550px; position: absolute; top:25px; left:10%; margin-left:-50px; padding:10px; border-radius:4px;}
 </style>
@@ -10,6 +11,8 @@
 </head>
 <body>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+  <script type="text/javascript"    src="/js/purl.js"></script>
+  <script type="text/javascript"    src="/js/config.js"></script>
   <script type="text/javascript"    src="/js/jquery.qrcode.min.js"></script>
 
 
@@ -18,6 +21,11 @@
     <div id="qrcode"></div>
 </div>
 
+<div class="di">
+  <div id="directedIdentifier"></div>
+  <a href="" id="showDI">show DI</a>
+  <a href="" id="hideDI">hide DI</a>
+</div>
 
 <H1 id='title'>Clinic Check In</H1>
 
@@ -48,17 +56,38 @@ function onReady() {
   var iOS = deviceAgent.match(/(iphone|ipod|ipad)/)
   var isAndroid = deviceAgent.indexOf("android") > -1
   var agentDirect = iOS || isAndroid
+  var PEOPLE_RS = 'people.' + config.baseDomain
+  var HEALTH_RS = 'health.' + config.baseDomain
+  var IX_ID = 'ix.'+ config.baseDomain
+
 
   $('#qrcodeForm').hide()
   $('#logout').hide()
+  $('#hideDI').hide()
+  $('#directedIdentifier').hide()
+
+  $('#hideDI').click( function () {
+    $('#directedIdentifier').hide()
+    $('#hideDI').hide()
+    $('#showDI').show()
+    return false
+  })
+
+  $('#showDI').click( function () {
+    $('#showDI').hide()
+    $('#hideDI').show()
+    $('#directedIdentifier').show()
+    return false
+  })
 
   function drawProfile( profile ) {
-    console.log( profile )
-    var people = profile[ profile['people.a2p3.net'].redirects[0] ]
-    var healthNumber = profile[ profile['health.a2p3.net'].redirects[0] ].prov_number
+    // console.log( profile )
+    var people = profile[ profile[ PEOPLE_RS ].redirects[0] ]
+    var healthNumber = profile[ profile[ HEALTH_RS ].redirects[0] ].prov_number
     $('#profileTable').append('<tr><td>Health Care Number</td><td>'+healthNumber+'</td></tr>')
-    Object.keys( people ).forEach( function ( item ) {
-      $('#profileTable').append('<tr><td>' + item + '</td><td>' + people[item] + '</td></tr>')
+    $('#directedIdentifier').text( profile[ IX_ID ].di )
+    $.each( people, function ( item, value ) {
+      $('#profileTable').append('<tr><td>' + item + '</td><td>' + value + '</td></tr>')
     })
   }
 
