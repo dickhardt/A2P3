@@ -3,6 +3,7 @@
 <head>
 <style type="text/css">
   .loginStatus {text-align:center;}
+  .di {text-align:right;}
   .loginItem {padding-left: 5px;}
   #qrcodeForm{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:500px; height:550px; position: absolute; top:25px; left:10%; margin-left:-50px; padding:10px; border-radius:4px;}
 </style>
@@ -24,6 +25,12 @@
 
 <div id="error">
   <span id="errorMessage"></span>
+</div>
+
+<div class="di">
+  <div id="directedIdentifier"></div>
+  <a href="" id="showDI">show DI</a>
+  <a href="" id="hideDI">hide DI</a>
 </div>
 
 <div id="introduction">
@@ -81,6 +88,7 @@ function onReady() {
   var agentDirect = iOS || isAndroid
   var PEOPLE_RS = 'people.' + config.baseDomain
   var SI_RS = 'si.'+ config.baseDomain
+  var IX_ID = 'ix.'+ config.baseDomain
 
   $('#qrcodeForm').hide()
   $('#logout').hide()
@@ -88,11 +96,28 @@ function onReady() {
   $('#cancel').hide()
   $('#closeAccount').hide()
   $('#TOS').hide()
+  $('#hideDI').hide()
+  $('#directedIdentifier').hide()
+
+  $('#hideDI').click( function () {
+    $('#directedIdentifier').hide()
+    $('#hideDI').hide()
+    $('#showDI').show()
+    return false
+  })
+
+  $('#showDI').click( function () {
+    $('#showDI').hide()
+    $('#hideDI').show()
+    $('#directedIdentifier').show()
+    return false
+  })
 
   function drawProfile( profile ) {
     console.log( profile )
     var si = profile[ SI_RS ].si
     $('#profileTable').append('<tr><td>Social Insurance Number</td><td>'+si+'</td></tr>')
+    $('#directedIdentifier').text( profile[ IX_ID ].di )
     var people =  profile[ PEOPLE_RS ] &&
                   profile[ PEOPLE_RS ].redirects &&
                   profile[ PEOPLE_RS ].redirects[0] &&
