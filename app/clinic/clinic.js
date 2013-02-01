@@ -83,7 +83,7 @@ function fetchProfile( agentRequest, ixToken, callback ) {
     var userDI = di // App's directed identifier for User
     resource.callMultiple( APIS, function ( error, results ) {
       if (results)
-        results['ix.a2p3.net'] = { di: userDI }
+        results[config.host.ix] = { di: userDI }
       callback( error, results )
     })
   })
