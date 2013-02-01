@@ -15,6 +15,7 @@
   , "marked": "*"
   , "apn": "*"
   , "debug": "*"
+  , "time": "*"
   }
 , "devDependencies":
   { "chai": "*"

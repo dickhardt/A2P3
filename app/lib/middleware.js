@@ -15,7 +15,10 @@ var config = require('../config')
   , db = require('./db')
   , fs = require('fs')
   , marked = require('marked')
+  , time = require('time')
 
+
+console.log( time.Date() )
 exports.trace = function trace ( req, res, next ) {
   console.log('\nTRACE:',req.host,req.originalUrl,'\n',req.session)
   next()
@@ -93,6 +96,7 @@ exports.a2p3Params = function ( params ) {
   }
 }
 
+time.tzset('US/Pacific')  // show time in PST
 // custom logger that color codes non 200 stats codes and A2P3 errors
 exports.colorLogger = function colorLogger ( express ) {
 
@@ -102,11 +106,11 @@ exports.colorLogger = function colorLogger ( express ) {
 
 
   express.logger.token( 'localTime', function (req, res) {
-    return new Date()
+    return  time.Date()
     })
 
   express.logger.token( 'wideHost', function (req, res) {
-    var wideHost = '                            '.slice(req.host.length) + req.host
+    var wideHost = '                          '.slice(req.host.length) + req.host
     return ( errorStatusCode( res.statusCode ) )
       ? '\x1b[31m'+wideHost+'\x1b[0m'
       : wideHost
@@ -130,7 +134,7 @@ exports.colorLogger = function colorLogger ( express ) {
       : '-'
     })
 
-  return express.logger( '[:localTime] :wideHost\t:method\t:url\t:statusColor\t:response-time\tms\t:errorCode\t:errorMessage' )
+  return express.logger( '[:localTime] :remote-addr :wideHost\t:method\t:url\t:statusColor\t:response-time\tms\t:errorCode\t:errorMessage' )
 }
 
 /*
