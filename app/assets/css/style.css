@@ -118,14 +118,15 @@ body img[height="1"] {
 .header {
 	background: #fff;
 	margin-top: 18px;
+	text-align: center;
+	width: 100%;
 }
 
 .headerContainer {
 	width: 980px;
-	margin: auto;
+	margin: 0 auto;
 	text-align: left;
 	position: relative;
-	text-align: left;
 	padding-bottom: 10px;
 }
 
@@ -307,6 +308,7 @@ form {
 
 .textAgentPasscode,.textAgentName,.textEmail,.textName,.textAddress,.textCity,.textProvince,.textPostal,.textDOB,.textSIN,.textHealth
 	{
+	line-height:44px;
 	height: 44px;
 	width: 240px;
 	border-radius: 6px;
@@ -321,11 +323,13 @@ form {
 	font-size: 18px;
 	font-weight: 300;
 	-webkit-appearance: none;
+	vertical-align: middle;
 }
 
 .textAgentPasscode {
 	width: 50px;
 	height: 24px;
+	line-height: 24px;
 	margin-left: 5px;
 }
 
@@ -337,6 +341,7 @@ form {
 
 .textAgentName {
 	height: 34px;
+	line-height: 34px;
 }
 
 .textAddress {
@@ -654,7 +659,7 @@ form {
 }
 
 .ie7 .submit,.ie8 .submit {
-	filter: progid:DXImageTransform.Microsoft.gradient(              
+	filter: progid:DXImageTransform.Microsoft.gradient(               
 		                     
 		                     
 		                     startColorstr='#e9573f', endColorstr='#be3322',

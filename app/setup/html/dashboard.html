@@ -24,14 +24,14 @@
 	src="http://code.jquery.com/ui/1.10.0/jquery-ui.js"></script>
 </head>
 <body>
-	<header class="header">
-		<section class="headerContainer">
+	<div class="header">
+		<div class="headerContainer">
 			<span class="mainTitle">A2P3</span>
 			<div class="mainTitleText">Authentication & Authorization
 				Privacy Protection Protocol</div>
-		</section>
+		</div>
 
-	</header>
+	</div>
 
 	<section class="mainContent">
 		<div class="mainContentWrap">
@@ -206,10 +206,6 @@
 		function fetchNamePhoto() {
 			$.post('dashboard/profile', null, function(data, status) {
 				if (status == 'success') {
-					/*var html  = '<img width="48" height="48" id="photo" border="1" alt="'+ data.result.name + '" '
-                  + 'src="'+ data.result.photo +'" >'
-					          + '<h2>'+ data.result.name +'</h2>'
-					$("#profile").append( html )*/
 					$('#name_input').text(data.result.name);
 					$('#photo').attr('src', data.result.photo)
 				}
@@ -227,10 +223,8 @@
 									clearTable();
 									var handles = data.result.handles;
 									if (handles) {
-										Object
-												.keys(handles)
-												.forEach(
-														function(handle) {
+										//Added for compatibility with IE
+									      $.each(handles, function (handle ) {
 															addRow(
 																	handle,
 																	handles[handle].name,
@@ -463,17 +457,6 @@
 							return false
 						})
 	</script>
-
-	<!--[if IE]>
-	<script src="/static/js/libs/placeholder.min.js"></script>
-	<script>
-		(function($) {
-		    $(document).ready(function() {
-		        $("#input").placeholder();
-		    });
-		})(jQuery);
-	</script>
-	<![endif]-->
 
 </body>
 </html>
