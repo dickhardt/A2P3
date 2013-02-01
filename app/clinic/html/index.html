@@ -87,7 +87,11 @@ function onReady() {
     $('#profileTable').append('<tr><td>Health Care Number</td><td>'+healthNumber+'</td></tr>')
     $('#directedIdentifier').text( profile[ IX_ID ].di )
     $.each( people, function ( item, value ) {
-      $('#profileTable').append('<tr><td>' + item + '</td><td>' + value + '</td></tr>')
+       if (item !== 'photo') {
+          $('#profileTable').append('<tr><td>' + item + '</td><td>' + value + '</td></tr>')
+        } else {
+          $('#profileTable').append('<tr><td>' + item + '</td><td><img src="' + value + '"></td></tr>')
+        }
     })
   }
 
