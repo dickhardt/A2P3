@@ -47,6 +47,12 @@ function tokenHandler ( req, res, next ) {
   var device = req.body.device
     , sar = req.body.sar
     , auth = req.body.auth
+
+console.log('\n token handler\n', req.body )
+
+
+req.body.notificationURL = true;
+
    db.retrieveAgentFromDevice( 'as', device, function ( e, agent ) {
     if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
     if (!agent) {
@@ -77,9 +83,17 @@ function tokenHandler ( req, res, next ) {
     if (req.body.notificationURL) {
       db.createNotificationURL( device, function ( url ) {
         if ( url ) response.result.notificationURL = url
+
+console.log('\n tokenHandler w/ notification responding with\n',response)
+
         return res.send( response )
         } )
     } else {
+
+
+console.log('\n tokenHandler w/o notification responding with\n',response)
+
+
       return res.send( response )
     }
   })
@@ -145,8 +159,38 @@ function registerAgentCode ( req, res, next ) {
                   , {'passcode': passcode, 'di': di }
                   , function ( e ) {
     if (e) return next( e )
-    return res.send( { result: {code: code } } )
+    var qrURL = 'a2p3.net://enroll?code=' + code
+    return res.send( { result: {qrURL: qrURL, code: code } } )
   } )
+}
+
+// API called by register web app to generate an agent registration code
+function registerAgentCode ( req, res, next ) {
+  var passcode = req.body.passcode
+  var di = req.session.di
+  var code = jwt.handle()
+  db.updateProfile( 'as'
+                  , code
+                  , {'passcode': passcode, 'di': di }
+                  , function ( e ) {
+    if (e) return next( e )
+    var qrURL = 'a2p3.net://enroll?code=' + code
+    return res.send( { result: {qrURL: qrURL, code: code } } )
+  } )
+}
+
+// called by web app to see if we have completed enrollment
+function checkCode( req, res ) {
+  if (!req.body.code)
+    return res.send( { error: 'No code provided' } )
+  // if profile is gone, then we have registered
+  db.getProfile( 'as', req.body.code, function ( e, profile ) {
+    if ( e && e.code != 'UNKNOWN_USER') res.send( { error: e.message } )
+    var response = { result: { success: true } }
+    if ( profile )
+      response.status = 'waiting'
+    return res.send( response )
+  })
 }
 
 // called by Setup to create an Agent Request
@@ -237,7 +281,12 @@ exports.app = function() {
           , mw.checkParams( { 'body': ['passcode', 'code', 'name', 'device' ] } )
           , registerAgent
           )
-  // new entry points
+  // called by web app to see if QR code has been read
+  app.post('/register/check/code'
+          , mw.checkParams( { 'body': ['code'] } )
+          , checkCode
+          )
+
   // called by Setup to create an Agent Request
   app.get('/setup/request', setupRequest )
 
