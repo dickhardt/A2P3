@@ -386,12 +386,18 @@ function agentToken ( req, res, next ) {
 
 // static page serving
 
-function enroll ( req, res, next ) {
+function homepage ( req, res ) {
+  if ( req.query.agent )
+    req.session.agentDirect = true
+  res.sendfile( __dirname+'/html/homepage.html' )
+}
+
+function enroll ( req, res ) {
   if (!req.session.profile) return res.redirect('/')
   res.sendfile( __dirname+'/html/enroll.html')
 }
 
-function dashboard ( req, res, next ) {
+function dashboard ( req, res ) {
   if (!req.session.di) return res.redirect('/')
   res.sendfile( __dirname+'/html/dashboard.html')
 }
@@ -558,7 +564,7 @@ exports.app = function() {
   app.get('/dashboard/agent/token', agentToken )
 
   // static pages
-	app.get('/', function ( req, res ) { res.sendfile( __dirname+'/html/homepage.html' ) } )
+	app.get('/', homepage )
   app.get('/enroll', enroll )
   app.get('/dashboard', dashboard )
   app.get('/user/deleted', function( req, res ) { res.sendfile( __dirname + '/html/delete_user.html' ) } )
