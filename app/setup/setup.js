@@ -335,8 +335,12 @@ function agentBasic ( req, res, next ) {
   // sends browser over to AS to generate an Agent Request
   // which then redirects back to /dashboard/agent/token agentToken()
   // user must be authenticated
-  if (!req.session.di) return res.redirect('/')
-  res.redirect( config.baseUrl.as + '/setup/request')
+  if (!req.session.di)
+    return res.redirect('/')
+  var url = config.baseUrl.as + '/setup/request'
+  if (req.session.agentDirect)
+    url += '?agent=true'
+  res.redirect( url )
 }
 
 function agentToken ( req, res, next ) {
@@ -370,7 +374,6 @@ function agentToken ( req, res, next ) {
     console.log('Invalid Agent Request was passed.', e )
     return res.redirect('/')
   }
-
   var payload =
     { 'iss': config.host.setup
     , 'aud': config.host.ix
@@ -387,8 +390,9 @@ function agentToken ( req, res, next ) {
 // static page serving
 
 function homepage ( req, res ) {
-  if ( req.query.agent )
+  if ( req.query.agent ) {
     req.session.agentDirect = true
+  }
   res.sendfile( __dirname+'/html/homepage.html' )
 }
 
@@ -399,6 +403,8 @@ function enroll ( req, res ) {
 
 function dashboard ( req, res ) {
   if (!req.session.di) return res.redirect('/')
+  if (req.session.agentDirect)
+    return res.redirect( config.baseUrl.as + '/setup/request?agent=true' )
   res.sendfile( __dirname+'/html/dashboard.html')
 }
 
@@ -430,7 +436,9 @@ function fbLogin ( req, res, next ) {
   // TBD verify signed responses signedRequest
 
   db.getProfile( 'setup', userID, function ( e, existingProfile ) {
+    var agentDirect = req.session.agentDirect
     req.session = {}
+    req.session.agentDirect = true
     if (e) {
       var url = 'https://graph.facebook.com/' + userID +
           '/?fields=id,name,picture.type(square),email&access_token=' + accessToken

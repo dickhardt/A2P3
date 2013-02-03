@@ -195,6 +195,8 @@ function checkCode( req, res ) {
 
 // called by Setup to create an Agent Request
 function setupRequest ( req, res, next ) {
+  if (req.query.agent)
+    req.session.agentDirect = true
   var agentRequest = _makeAgentRequest ( '/register/login' )
   req.session.agentRequest = agentRequest
   res.redirect( config.baseUrl.setup + '/dashboard/agent/token?request=' + agentRequest)
@@ -234,7 +236,10 @@ function registerLogin  ( req, res, next ) {
       return res.redirect('/')
     }
     req.session.di = result.sub
-    return res.redirect('/register')
+    if (req.session && req.session.agentDirect)
+      return res.redirect('/register/direct')
+    else
+      return res.redirect('/register')
   })
 }
 
@@ -248,6 +253,10 @@ function register ( req, res, next ) {
   res.sendfile( __dirname+'/html/register.html')
 }
 
+function registerDirect ( req, res, next ) {
+  if (!req.session.di) return res.redirect('/')
+  res.sendfile( __dirname+'/html/register_direct.html')
+}
 
 // setup AS middleware
 exports.app = function() {
@@ -296,6 +305,7 @@ exports.app = function() {
   // static pages
   app.get('/', homepage )
   app.get('/register', register )
+  app.get('/register/direct', registerDirect )
 
    // TBD - REMOVE THIS! ... used by XHR to test
   app.post('/ping', function( req, res ) {
