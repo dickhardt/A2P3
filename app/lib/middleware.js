@@ -106,6 +106,12 @@ exports.colorLogger = function colorLogger ( express ) {
   }
 
 
+  express.logger.token( 'remoteIP', function (req, res) {
+    var remoteIP = req.headers['x-real-ip'] || req.ip
+    remoteIP = remoteIP.replace('::ffff:','')
+    return  remoteIP
+    })
+
   express.logger.token( 'localTime', function (req, res) {
     return  dateFormat( time.Date(), "isoDateTime" )
     })
@@ -135,7 +141,7 @@ exports.colorLogger = function colorLogger ( express ) {
       : '-'
     })
 
-  return express.logger( '\x1b[2m:localTime\x1b[0m|\x1b[2m:remote-addr\x1b[0m :wideHost\t:method\t:url\t:statusColor\t:response-time\tms\t:errorCode\t:errorMessage' )
+  return express.logger( '\x1b[2m:localTime\x1b[0m|\x1b[2m:remoteIP\x1b[0m :wideHost\t:method\t:url\t:statusColor\t:response-time\tms\t:errorCode\t:errorMessage' )
 }
 
 /*
