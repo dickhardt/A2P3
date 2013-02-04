@@ -539,7 +539,7 @@ function registerDemoApp ( rs, standard ) {
           should.exist( response )
           response.statusCode.should.equal( 302 )
           response.headers.should.exist
-          response.headers.should.have.property( 'location', config.baseUrl[rs] + '/dashboard')
+          response.headers.should.have.property( 'location', '/dashboard')
           done( null )
         })
       })
