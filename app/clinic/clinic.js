@@ -203,20 +203,20 @@ function loginResponseCallback( req, res )  {
 function checkQR( req, res ) {
   if (!req.body.qrSession)
     return res.send( { error: 'No QR Session provided' } )
-    checkForTokenRequest( req.body.qrSession, function ( ixToken, agentRequest ) {
-      if (!ixToken || !agentRequest) {
-        return res.send( { status: 'waiting'} )
+  checkForTokenRequest( req.body.qrSession, function ( ixToken, agentRequest ) {
+    if (!ixToken || !agentRequest) {
+      return res.send( { status: 'waiting'} )
+    }
+    fetchProfile( agentRequest, ixToken, function ( error, results ) {
+      var response = {}
+      if ( error ) response.error = error
+      if ( results ) {
+        response.result = results
+        req.session.profile = results
       }
-      fetchProfile( agentRequest, ixToken, function ( error, results ) {
-        var response = {}
-        if ( error ) response.error = error
-        if ( results ) {
-          response.result = results
-          req.session.profile = results
-        }
-        return res.send( response )
-      })
+      return res.send( response )
     })
+  })
 }
 
 
