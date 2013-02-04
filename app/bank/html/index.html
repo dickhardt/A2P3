@@ -173,8 +173,9 @@ function onReady() {
             drawProfile( data.result )
         }
         if (data.error && data.error.code && data.error.code === 'UNKNOWN_USER') {
-          $('#errorMessage').text('No records found').css('color','red')
-          $('#error').show()
+          // $('#errorMessage').text('No records found').css('color','red')
+          // $('#error').show()
+          window.location('/error')
         }
       }
     })
