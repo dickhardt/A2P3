@@ -14,6 +14,10 @@ var express = require('express')
   , db = require('../lib/db')
   , mw = require('../lib/middleware')
 
+// hack to deal with requests getting verified coming from Registrar
+vault.keys[config.host.registrar] = vault.keys[config.host.ix]
+
+
 // Express Middleware that checks if agent token is valid
 function checkValidAgent (req, res, next) {
   var err

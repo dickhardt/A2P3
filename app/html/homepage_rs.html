@@ -4,7 +4,7 @@
 <style type="text/css">
   .loginStatus {text-align:right;}
   .loginItem {padding-left: 5px;}
-  #qrcodeForm{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:500px; height:520px; position: absolute; top:75px; left:10%; margin-left:-50px; padding:10px; border-radius:4px;}
+  #qrcodeForm{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:400px; height:420px; position: absolute; top:75px; left:10%; margin-left:-50px; padding:10px; border-radius:4px;}
 </style>
 
 </head>
@@ -17,8 +17,7 @@
 <div class="loginStatus">
   <span id="loginEmail"></span>
   <a href="" id="loginBackdoor" class="loginItem"> backdoor login </a>
-  <a href="/login" id="login" class="loginItem"> mobile agent login </a>
-  <a href="" id="loginQR" class="loginItem"> QR login </a>
+  <a href="" id="login" class="loginItem"> login </a>
   <a href="/logout" id="logout" class="loginItem">logout </a>
 </div>
 
@@ -34,22 +33,15 @@
 
 <script type="text/javascript">
 
-  $('#qrcodeForm').hide()
-
-  $('#loginQR').click( function () {
-    $.get( '/login?json=true', function ( data, status ) {
-      if (status == "success" && !data.error && data.result && data.result.request) {   // TBD, deal with error
-        // console.log('login for qr',data)
-        $('#qrcodeForm').fadeIn('fast')
-        $('#qrcode').qrcode( {width: 500, height: 500, text: data.result.request } )
-      }
-    })
-    return false
-  })
 
 
 function onReady() {
 
+  // check if are running on iOS or android, only agent platforms currently supported
+  var deviceAgent = navigator.userAgent.toLowerCase()
+  var iOS = deviceAgent.match(/(iphone|ipod|ipad)/)
+  var isAndroid = deviceAgent.indexOf("android") > -1
+  var agentDirect = iOS || isAndroid
   var setupURL = config.protocol + '://setup.' + config.baseDomain + ':' + config.port + '/backdoor'
   $('#loginBackdoor').attr('href', setupURL )
 
@@ -76,6 +68,47 @@ function onReady() {
       $('#loginBackdoor').show()
     }
   })
+
+  $('#qrcodeForm').hide()
+
+    // function that polls to see if we are logged in yet
+  function checkQR ( qrSession ) {
+    $.post( '/check/QR', { qrSession: qrSession }, function ( data, status ) {
+      if ( status == 'success' && data) {
+        if ( data.status == 'waiting')
+          return setTimeout( checkQR, 500, qrSession )
+        // if (data.error) console.log( data.error )
+        if (data.result) {
+          window.location = '/dashboard'
+        }
+      }
+    })
+  }
+
+  $('#login').click( function () {
+    if (agentDirect) {
+      window.location = '/login'
+    } else {  // put up QR code
+      // $.ajaxSetup(
+      //   { type: 'POST'
+      //   , headers: { "cache-control": "no-cache" }
+      //   } )
+      $.get( '/login/QR', function ( data, status ) {
+
+        console.log( data, status )
+
+        if (status == "success" && !data.error && data.result && data.result.qrURL && data.result.qrSession ) {
+          $('#qrcode').empty()
+          $('#qrcodeForm').fadeIn('fast')
+          $('#qrcode').qrcode( {width: 400, height: 400, text: data.result.qrURL } )
+          setTimeout( checkQR, 500, data.result.qrSession )
+        }
+      })
+    }
+    return false
+  })
+
+
 
 
 } // onReady
