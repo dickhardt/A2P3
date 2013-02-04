@@ -152,9 +152,6 @@ function _registerUser ( profile, complete ) {
 
 function enrollRegister ( req, res, next ) {
   var passedProfile = req.body
-
-console.log('\nenrollRegister passed profile\n',passedProfile)
-
   var profile = {}
   profile.email = req.session.profile.email
   profile.si = passedProfile.si
@@ -167,9 +164,6 @@ console.log('\nenrollRegister passed profile\n',passedProfile)
   profile.province = passedProfile.province
   profile.postal = passedProfile.postal
   profile.photo = profile.photo || req.session.profile.photo
-
-console.log('\nenrollRegister profile\n',profile)
-
   _registerUser( profile, function ( e, di ) {
     if (e) return next(e)
     var id = req.session.profile.fbID || profile.email
@@ -405,6 +399,7 @@ function dashboard ( req, res ) {
   if (!req.session.di) return res.redirect('/')
   if (req.session.agentDirect)
     return res.redirect( config.baseUrl.as + '/setup/request?agent=true' )
+  req.session.agentDirect = false
   res.sendfile( __dirname+'/html/dashboard.html')
 }
 
@@ -438,7 +433,8 @@ function fbLogin ( req, res, next ) {
   db.getProfile( 'setup', userID, function ( e, existingProfile ) {
     var agentDirect = req.session.agentDirect
     req.session = {}
-    req.session.agentDirect = true
+    if ( agentDirect )
+      req.session.agentDirect = true
     if (e) {
       var url = 'https://graph.facebook.com/' + userID +
           '/?fields=id,name,picture.type(square),email&access_token=' + accessToken
