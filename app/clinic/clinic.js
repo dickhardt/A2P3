@@ -108,16 +108,22 @@ function loginQR( req, res )  {
 // we send a meta-refresh so that we show a info page in case there is no agent to
 // handle the a2p3.net: protcol scheme
 function loginDirect( req, res ) {
-  var agentRequest = a2p3.createAgentRequest( localConfig, vault, HOST_URL + '/response', RESOURCES )
-  var redirectURL = 'a2p3.net://token?request=' + agentRequest
-  var html = metaRedirectInfoPage( redirectURL )
-  res.send( html )
+  var params = { returnURL: HOST_URL + '/response/redirect', resources: RESOURCES }
+    , agentRequest = a2p3.createAgentRequest( localConfig, vault, params )
+  if (req.query.json) {
+    return res.send( { result: { request: agentRequest } } )
+  } else {
+    var redirectURL = 'a2p3.net://token?request=' + agentRequest
+      , html = metaRedirectInfoPage( redirectURL )
+    res.send( html )
+  }
 }
 
 // loginBackdoor -- development login that uses a development version of setup.a2p3.net
 function loginBackdoor( req, res )  {
-  var agentRequest = a2p3.createAgentRequest( localConfig, vault, HOST_URL + '/response', RESOURCES )
-  var redirectURL = config.baseUrl.setup + '/backdoor/login?request=' + agentRequest
+  var params = { returnURL: HOST_URL + '/response/redirect', resources: RESOURCES }
+    , agentRequest = a2p3.createAgentRequest( localConfig, vault, params )
+    , redirectURL = config.baseUrl.setup + '/backdoor/login?request=' + agentRequest
   res.redirect( redirectURL )
 }
 
@@ -140,8 +146,9 @@ function qrCode( req, res ) {
   if ( !qrSession || qrSession.length != QR_SESSION_LENGTH || qrSession.match(/[^\w-]/g) ) {
     return res.redirect('/error')
   }
-  var agentRequest = a2p3.createAgentRequest( localConfig, vault, HOST_URL + '/response', RESOURCES )
-  var json = req.query.json
+  var params = { callbackURL: HOST_URL + '/response/callback', resources: RESOURCES }
+    , agentRequest = a2p3.createAgentRequest( localConfig, vault, params )
+    , json = req.query.json
   if ( json ) {
     return res.send( { result: { agentRequest: agentRequest, state: qrSession } } )
   } else {
@@ -178,6 +185,46 @@ function loginResponse( req, res )  {
   }
 }
 
+
+/*
+* We are getting called back through the redirect which means we are running on the
+* same device as the Agent is
+*/
+function loginResponseRedirect( req, res )  {
+  var ixToken = req.query.token
+  var agentRequest = req.query.request
+
+  if (!ixToken || !agentRequest) {
+    return res.redirect( '/error' )
+  }
+  fetchProfile( agentRequest, ixToken, function ( error, results ) {
+    if ( error ) return res.redirect( '/error' )
+    req.session.profile = results
+    return res.redirect('/')
+  })
+}
+
+
+/*
+* Agent is calling us back with the IX Token and Agent Request, but
+* Agent is running on a different device
+*/
+function loginResponseCallback( req, res )  {
+  var ixToken = req.body.token
+  var agentRequest = req.body.request
+  var qrSession = req.body.state
+
+  if (!ixToken || !agentRequest || !qrSession) {
+    var code = 'MISSING_STATE'
+    if (!agentRequest) code = 'MISSING_REQUEST'
+    if (!ixToken) code = 'MISSING_TOKEN'
+    return res.send( { error: { code: code, message: 'token, request and state are required' } } )
+  }
+  storeTokenRequest( qrSession, agentRequest, ixToken, function ( error ) {
+    if ( error ) return res.send( { error: error } )
+    return res.send( { result: { success: true } } )
+  })
+}
 
 
 
@@ -236,10 +283,11 @@ exports.app = function () {
 
 
   // these pages return a redirect
+  app.get('/logout', logout )
   app.get('/login/backdoor', loginBackdoor)
   app.get('/login/direct', loginDirect)
-  app.get('/response', loginResponse )
-  app.get('/logout', logout )
+  app.get('/response/redirect', loginResponseRedirect )
+  app.post('/response/callback', loginResponseCallback )
 
   // these endpoints serve static HTML pages
   app.get('/', function( req, res ) { res.sendfile( __dirname + '/html/index.html' ) } )
