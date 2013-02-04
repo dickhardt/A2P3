@@ -158,34 +158,24 @@ function qrCode( req, res ) {
   }
 }
 
-/*
-if we are getting a state parameter, we are getting the data
-directly from the Agent and not via a redirect to our app
-*/
 
-function loginResponse( req, res )  {
+/*
+* We are getting called back through the redirect which means we are running on the
+* same device as the Agent is
+*/
+function loginResponseRedirect( req, res )  {
   var ixToken = req.query.token
   var agentRequest = req.query.request
-  var qrSession = req.query.state
 
   if (!ixToken || !agentRequest) {
     return res.redirect( '/error' )
   }
-  if ( qrSession ) {
-    storeTokenRequest( qrSession, agentRequest, ixToken, function ( error ) {
-      if ( error ) return res.redirect( '/error' )
-      return res.redirect( '/complete' )
-    })
-  } else {
-    fetchProfile( agentRequest, ixToken, function ( error, results ) {
-      if ( error ) return res.redirect( '/error' )
-      req.session.profile = results
-      return res.redirect('/')
-    })
-  }
+  fetchProfile( agentRequest, ixToken, function ( error, results ) {
+    if ( error ) return res.redirect( '/error' )
+    req.session.profile = results
+    return res.redirect('/')
+  })
 }
-
-
 
 /*
 * Agent is calling us back with the IX Token and Agent Request, but
