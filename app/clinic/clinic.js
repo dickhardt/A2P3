@@ -186,24 +186,6 @@ function loginResponse( req, res )  {
 }
 
 
-/*
-* We are getting called back through the redirect which means we are running on the
-* same device as the Agent is
-*/
-function loginResponseRedirect( req, res )  {
-  var ixToken = req.query.token
-  var agentRequest = req.query.request
-
-  if (!ixToken || !agentRequest) {
-    return res.redirect( '/error' )
-  }
-  fetchProfile( agentRequest, ixToken, function ( error, results ) {
-    if ( error ) return res.redirect( '/error' )
-    req.session.profile = results
-    return res.redirect('/')
-  })
-}
-
 
 /*
 * Agent is calling us back with the IX Token and Agent Request, but
