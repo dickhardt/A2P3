@@ -188,7 +188,7 @@ function loginDirect( req, res ) {
 
 // loginBackdoor -- development login that uses a development version of setup.a2p3.net
 function loginBackdoor( req, res )  {
-  var params = { returnURL: HOST_URL + '/response/redirect', resources: RESOURCES }
+  var params = { returnURL: HOST_URL + '/response/redirect', resources: [] }
     , agentRequest = a2p3.createAgentRequest( localConfig, vault, params )
     , redirectURL = config.baseUrl.setup + '/backdoor/login?request=' + agentRequest
   res.redirect( redirectURL )
@@ -200,7 +200,7 @@ function loginBackdoor( req, res )  {
 // we send a meta-refresh so that we show a info page in case there is no agent to
 // handle the a2p3.net: protcol scheme
 function newDirect( req, res ) {
-  var params = { returnURL: HOST_URL + '/response/redirect', resources: [] }
+  var params = { returnURL: HOST_URL + '/response/redirect', resources: RESOURCES }
     , agentRequest = a2p3.createAgentRequest( localConfig, vault, params )
   if (req.query.json) {
     return res.send( { result: { request: agentRequest } } )
