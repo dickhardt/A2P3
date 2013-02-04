@@ -141,7 +141,7 @@ exports.colorLogger = function colorLogger ( express ) {
       : '-'
     })
 
-  return express.logger( '\x1b[2m:localTime\x1b[0m|\x1b[2m:remoteIP\x1b[0m :wideHost\t:method\t:url\t:statusColor\t:response-time\tms\t:errorCode\t:errorMessage' )
+  return express.logger( '\x1b[2m:remoteIP\x1b[0m :wideHost\t:method\t:url\t:statusColor\t:response-time\tms\t:errorCode\t:errorMessage' )
 }
 
 /*

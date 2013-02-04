@@ -4,10 +4,11 @@
 <style type="text/css">
   .loginStatus {text-align:center;}
   .di {text-align:right;}
-  .loginItem {padding-left: 5px;}
-  #qrcodeForm{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:400px; height:450px; position: absolute; top:25px; left:10%; margin-left:-50px; padding:10px; border-radius:4px;}
+  #qrcodeForm{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:400px; height:450px; position: absolute; top:25px; left:10%; margin-left:-50px; padding:10px; border-radius:4px; z-index: 1}
 </style>
-
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width,initial-scale=1, maximum-scale=1,user-scalable=no">
+	<link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
@@ -15,66 +16,73 @@
   <script type="text/javascript"    src="/js/config.js"></script>
   <script type="text/javascript"    src="/js/jquery.qrcode.min.js"></script>
 
-<div id="qrcodeForm">
-    <p>Scan QR Code with your Agent to login</p>
-    <div id="qrcode"></div>
-</div>
 
 
-<H1 id='title'>Bank</H1>
+<header class="header">
+	<section class="headerContainer">
+		<span class="mainTitle">Bank</span>
+		<div class="mainTitleText">Welcome to the Bank App</div>
+	</section>
+</header>
 
-<div id="error">
-  <span id="errorMessage"></span>
-</div>
-
-<div class="di">
-  <div id="directedIdentifier"></div>
-  <a href="" id="showDI">show DI</a>
-  <a href="" id="hideDI">hide DI</a>
-</div>
-
-<div id="introduction">
-  <h2> Welcome to the Bank App </h2>
-  <p>This is an <a href="http://www.a2p3.net/">A2P3</a> demonstration site.</p>
-  <ul>
-    <li>Openning an account will prompt for the release of data, accept TOS and create an account.
-    </li>
-    <li>Login will authenticate the user, check if they have an account, and the SIN will be acquired with an anytime OAuth token.
-    </li>
-    <li>If the remember me box is checked during login while scanning a QR code, a button to login as that user will appear next time.</li>
-  </ul>
-</div>
-
-<hr>
-
-<div class="loginStatus">
-  <a href="" id="newAccount" class="loginItem"> Open an Account </a>
-  <a href="" id="login" class="loginItem"> login </a>
-  <a href="/logout" id="logout" class="loginItem">LOGOUT</a>
-  <a href="/logout" id="cancel" class="loginItem">CANCEL</a>
-  <a href="/close" id="closeAccount" class="loginItem">CLOSE ACCOUNT</a>
-</div>
-
-<hr>
-<div class="loginStatus" id="backdoor">
-  ** Backdoor **
-  <a href="/new/backdoor" id="newAccountBackdoor" class="loginItem"> Open an Account </a>
-  <a href="/login/backdoor" id="loginBackdoor" class="loginItem"> login </a>
-  ** Backdoor **
-</div>
-
-<table id="profileTable"> </table>
-
-
-<div id="TOS">
-
-<p>Terms of Service</p>
-<!-- make the a scrollable text box -->
-<p>
-  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-</p>
-<a href="" id="agreeTOS">I agree</a>
-</div>
+<section class="mainContent">
+	<div class="mainContentWrap">
+		<div id="error">
+		  <span id="errorMessage"></span>
+		</div>
+		<div id="qrcodeForm">
+		    <p>Scan QR Code with your Agent to login</p>
+		    <div id="qrcode"></div>
+		</div>
+		<div class="di">
+		  <div id="directedIdentifier"></div>
+		  <a class="otherLinks" href="" id="showDI">show DI</a>
+		  <a class="otherLinks" href="" id="hideDI">hide DI</a>
+		</div>
+		<div id="introduction">
+		  This is an <a class="otherLinks" href="http://www.a2p3.net/">A2P3</a> demonstration site.
+		  <ul>
+		    <li>Openning an account will prompt for the release of data, accept TOS and create an account.
+		    </li>
+		    <li>Login will authenticate the user, check if they have an account, and the SIN will be acquired with an anytime OAuth token.
+		    </li>
+		    <li>If the remember me box is checked during login while scanning a QR code, a button to login as that user will appear next time.</li>
+		  </ul>
+		</div>
+		<br><br>		
+		<div class="loginStatus">
+		  <a href="" id="newAccount" class="genericButton"> Open an Account </a>
+		  <a href="" id="login" class="genericButton"> Login </a>
+		  <a href="/logout" id="logout" class="genericButton">Logout</a>
+		  <a href="/logout" id="cancel" class="genericButton">Cancel</a>
+		  <a href="/close" id="closeAccount" class="genericButton">Close Account</a>
+		</div>
+		<br><br>
+		<div id="profileSection" class="genericSection">
+			<p class="categoryTitle">Profile</p>
+			<table id="profileTable" class=""> </table>
+		</div>
+		
+		<div id="TOS" class="genericSection">
+			<p class="categoryTitle">Terms of Service</p>
+			<!-- make the a scrollable text box -->
+			<p>
+			  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+			</p>
+			<p align="right">
+				<a class="genericButton"s href="" id="agreeTOS">I Agree</a>
+			</p>
+		</div>
+	</div>
+</section>
+<section class="footerContent">
+	<div class="loginStatus" id="backdoor">
+	  * Backdoor *
+	  <a href="/new/backdoor" id="newAccountBackdoor" class="backdoorLinks"> Open an Account </a> | 
+	  <a href="/login/backdoor" id="loginBackdoor" class="backdoorLinks"> Login </a>
+	  * Backdoor *
+	</div>
+</section>
 
 
 <script type="text/javascript">
@@ -96,6 +104,7 @@ function onReady() {
   $('#cancel').hide()
   $('#closeAccount').hide()
   $('#TOS').hide()
+  $('#profileSection').hide()
   $('#hideDI').hide()
   $('#directedIdentifier').hide()
 
@@ -116,7 +125,7 @@ function onReady() {
   function drawProfile( profile ) {
     // console.log( profile )
     var si = profile[ SI_RS ].si
-    $('#profileTable').append('<tr><td>Social Insurance Number</td><td>'+si+'</td></tr>')
+    $('#profileTable').append('<tr><td class="genericLabel">Social Insurance<br>Number:</td><td class="">'+si+'</td></tr>')
     $('#directedIdentifier').text( profile[ IX_ID ].di )
     var people =  profile[ PEOPLE_RS ] &&
                   profile[ PEOPLE_RS ].redirects &&
@@ -125,12 +134,13 @@ function onReady() {
     if (people) {
       $.each( people, function ( item, value ) {
         if (item !== 'photo') {
-          $('#profileTable').append('<tr><td>' + item + '</td><td>' + value + '</td></tr>')
+          $('#profileTable').append('<tr><td class="genericLabel">' + item + ':</td><td class="">' + value + '</td></tr>')
         } else {
-          $('#profileTable').append('<tr><td>' + item + '</td><td><img src="' + value + '"></td></tr>')
+          $('#profileTable').append('<tr><td class="genericLabel">' + item + ':</td><td><img class="photoImage" src="' + value + '"></td></tr>')
         }
       })
       $('#TOS').show()
+      $('#profileSection').show()
     } else {
       $('#closeAccount').show()
     }
@@ -139,6 +149,7 @@ function onReady() {
   function approveTOS( profile ) {
     drawProfile( profile )
     $('#TOS').show()
+    $('#profileSection').show()
     $('#cancel').show()
     $('#logout').hide()
   }
@@ -167,6 +178,7 @@ function onReady() {
           $('#newAccount').hide()
           $('#introduction').hide()
           $('#backdoor').hide()
+          $('#profileSection').show()
           if (data.result[PEOPLE_RS])
             approveTOS( data.result )
           else
@@ -220,6 +232,7 @@ function onReady() {
     // console.log( '/profile ->', data )
     if (status == "success" && !data.error && data.result ) {   // TBD, deal with error
       $('#logout').show()
+      $('#profileSection').show()
       $('#login').hide()
       $('#newAccount').hide()
       $('#introduction').hide()
