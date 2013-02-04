@@ -1,7 +1,7 @@
 /*
 * A2P3 App Module
 *
-* library to make it easy to build A2P3 apps with node.js
+* hacked version of a2p3-node library
 *
 * Copyright (C) Province of British Columbia, 2013
 */
@@ -27,7 +27,7 @@ function init( config, vault ) {
 }
 
 // create an Agent Request
-function createAgentRequest ( config, vault, returnURL, resources ) {
+function createAgentRequest ( config, vault, params ) {
   if (!vault || !config) throw new Error('a2p3 needs to be initialized with init( config, vault) ')
   var credentials = vault[ config.ix ].latest
   var details =
@@ -40,13 +40,16 @@ function createAgentRequest ( config, vault, returnURL, resources ) {
     , 'aud': config.ix
     , 'iat': jwt.iat()
     , 'request.a2p3.org':
-      { 'resources': resources
+      { 'resources': params.resources  || []
       , 'auth': config.auth
-      , 'returnURL': returnURL
       }
     }
   , credentials: credentials
   }
+  if ( params.returnURL )
+    details.payload['request.a2p3.org'].returnURL = params.returnURL
+  else if ( params.callbackURL )
+    details.payload['request.a2p3.org'].callbackURL = params.callbackURL
   this.agentRequest = jwt.jws( details )
   return this.agentRequest
 }
