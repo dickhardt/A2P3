@@ -48,10 +48,8 @@ function tokenHandler ( req, res, next ) {
     , sar = req.body.sar
     , auth = req.body.auth
 
-console.log('\n token handler\n', req.body )
-
-
-req.body.notificationURL = true;
+// console.log('\n token handler\n', req.body )
+// req.body.notificationURL = true;
 
    db.retrieveAgentFromDevice( 'as', device, function ( e, agent ) {
     if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
@@ -84,14 +82,14 @@ req.body.notificationURL = true;
       db.createNotificationURL( device, function ( url ) {
         if ( url ) response.result.notificationURL = url
 
-console.log('\n tokenHandler w/ notification responding with\n',response)
+// console.log('\n tokenHandler w/ notification responding with\n',response)
 
         return res.send( response )
         } )
     } else {
 
 
-console.log('\n tokenHandler w/o notification responding with\n',response)
+// console.log('\n tokenHandler w/o notification responding with\n',response)
 
 
       return res.send( response )
