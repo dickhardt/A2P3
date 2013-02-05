@@ -412,6 +412,15 @@ form {
 	height: 48px;
 }
 
+.fullPhotoImage {
+	border-radius: 6px;
+	border-width: 1px solid;
+	border-color: #959595;
+	vertical-align: middle;
+	width: 200px;
+	height: 200px;
+}
+
 .enrollSection {
 	border-radius: 6px;
 	margin-top: 20px;
