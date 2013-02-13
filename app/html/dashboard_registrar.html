@@ -356,7 +356,7 @@
       title += ' Resource Server Dashboard'
       $('#title').text( title )
       var flag = config.province || 'ca'
-      $('#title').before('<img src="/images/flags/' + flag + '.png">')
+      $('#title').before('<img class="flagImage" src="/images/flags/' + flag + '.png">')
 
       // called when tokens are about to expire
       function logout() {
