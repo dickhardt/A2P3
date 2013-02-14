@@ -3,13 +3,15 @@
 <head>
 <style type="text/css">
   .loginStatus {text-align:right;}
-  .registerAppForm{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:250px; height:140px; position: absolute; top:75px; left:50%; margin-left:-125px; padding:10px; border-radius:4px;}
-  .appDetailPopup{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:500px; height:300px; position: absolute; top:75px; left:5%; margin-left:-20px; padding:10px; border-radius:4px;}
-  .confirmDeleteForm{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:300px; height:80px; position: absolute; top:100px; left:10%; margin-left:-20px; padding:10px; border-radius:4px;}
+  .registerAppForm{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:250px; height:200px; position: absolute; top:75px; left:50%; margin-left:-125px; padding:10px; border-radius:4px;}
+  .appDetailPopup{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:320px; height:300px; position: absolute; top:75px; left:5%; margin-left:-20px; padding:10px; border-radius:4px;}
+  .confirmDeleteForm{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:300px; height:120px; position: absolute; top:100px; left:10%; margin-left:-20px; padding:10px; border-radius:4px;}
   .addAppAdminForm{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:300px; height:120px; position: absolute; top:100px; left:10%; margin-left:-20px; padding:10px; border-radius:4px;}
 
 </style>
-
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width,initial-scale=1, maximum-scale=1,user-scalable=no">
+	<link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
 
@@ -17,100 +19,103 @@
   <script type="text/javascript"    src="/js/purl.js"></script>
   <script type="text/javascript"    src="/js/config.js"></script>
 
-  <div class="loginStatus">
-    <span id="loginEmail"></span>
-    <a href="" id="login"> login </a>
-    <a href="/logout" id="logout">logout </a>
-  </div>
+<header class="header">
+	<section class="headerContainer">
+		<span class="mainTitle" id='title'>XX Dashboard</span>
+		<div class="mainTitleText"></div>
+	</section>
+</header>
+<section class="mainContent">
+	<div class="mainContentWrap">
+		<h2>Welcome <span id="loginEmail"></span></h2>
+		<br>
+		<a class="genericButton" href="" id="login"> login </a>
+		<a class="genericButton" href="/logout" id="logout">logout </a>
+		<a class="genericButton" href="" id="registerApp">Register Application</a>
+		<br><br>
+		<div class="appsTableWrapper">
+			<table class="appsTable" id='appTable'>
+			</table>
+		</div>
+		
+		<div id="registerApp_form" class="registerAppForm">
+		  <div class="genericTitle">Register an new App</div>
+		    <form id="registerAppForm_input">
+		      <dl>
+		        <dt></dt><dd>
+		          <label class="genericLabel" for="AppName" style="text-align: left;">Name</label>
+		          <input type="text" name="AppName" value="" id="registerApp_name_input">
+		          <br><br>
+		        </dd>
+		        <dt></dt><dd>
+		          <label class="genericLabel" for="ApID" style="text-align: left;">ID</label>
+		          <input type="text" name="AppID" value="" id="registerApp_id_input">
+		        </dd>
+		        <dt></dt><dd>
+		        <label id="registerApp_status"><i>ID is hostname</i></label>
+		      </dd>
+		      </dl>
+		        <p>
+		          <input class="genericButton" id="registerAppFormCancel" type="button" value="Cancel">
+		          <input class="genericButton" id="registerAppFormSubmit" type="button" value="Register">
+		        </p>
+		    </form>
+		</div>
+		<div id="appDetails_popup" class="appDetailPopup">
+		  <div class="genericTitle" id="appDetailsTitle" >App Details</div>
+		    <table id="adminsList">
+		        <tr><td class="genericLabel" width="50px">Name:</td><td id="appDetails_Name"></td></tr>
+		        <tr><td class="genericLabel">ID:</td><td id="appDetails_ID"></td></tr>
+		        <tr><td class="genericLabel">Key:</td><td><textarea id="appKey"rows="3" style="width: 225px;" readonly="readonly"></textarea></td></tr>
+		        <tr><td class="genericLabel">Key ID:</td><td id="appKID"></td></tr>
+		        <tr><td class="genericLabel">Admins:</td><td><a class="otherLinks" href="" id="addAppAdmin">add</a></td></tr>
+		        <div id="appAdminDetailsTable">
+		        </div>
+		    </table>
+		    <p>
+		      <input class="genericSmallButton" id="appDetailsDelete" type="button" value="Delete">
+		      <a class="genericSmallButton" href="" id="refreshAppKey">Renew Key</a>
+		      <input class="genericSmallButton" id="appDetailsClose" type="button" value="Close">
+		    </p>
+		</div>
+		
+		<div id="confirmDelete_form" class="confirmDeleteForm">
+		  <div class="genericTitle" id="confirmDeleteTitle">Confirm Deletion XX</div>
+		    <form id="confirmDeleteForm_input">
+		      <p>
+		        <input class="genericSmallButton" id="confirmDeleteFormCancel" type="button" value="Cancel">
+		        <input class="genericSmallButton" id="confirmDeleteFormDelete" type="button" value="Delete">
+		      </p>
+		    </form>
+		</div>
 
-  <H1 id='title'>XX Dashboard</H1>
-
-  <a href="" id="registerApp">Register Application</a>
-  <hr>
-  <table id='appTable'>
-  </table>
-
-<div id="registerApp_form" class="registerAppForm">
-  <span>Register an new App</span>
-    <form id="registerAppForm_input">
-      <dl>
-        <dt></dt><dd>
-          <label for="AppName">Name</label>
-          <input type="text" name="AppName" value="" id="registerApp_name_input">
-        </dd>
-        <dt></dt><dd>
-          <label for="ApID">ID</label>
-          <input type="text" name="AppID" value="" id="registerApp_id_input">
-        </dd>
-        <dt></dt><dd>
-        <label id="registerApp_status"><i>ID is hostname</i></label>
-      </dd>
-      </dl>
-        <p>
-          <input id="registerAppFormCancel" type="button" value="Cancel">
-          <input id="registerAppFormSubmit" type="button" value="Register">
-        </p>
-    </form>
-</div>
-
-
-<div id="appDetails_popup" class="appDetailPopup">
-  <span id="appDetailsTitle" >App Details</span>
-    <table id="adminsList">
-        <tr><td>Name</td><td id="appDetails_Name"></td></tr>
-        <tr><td>ID</td><td id="appDetails_ID"></td></tr>
-        <tr><td>Key</td><td id="appKey"></td></tr>
-        <tr><td>Key ID</td><td id="appKID"></td></tr>
-        <tr><td></td><td><a href="" id="refreshAppKey">refresh key</a></td></tr>
-        <tr><td>Admins</td><td><a href="" id="addAppAdmin">add</a></td></tr>
-        <div id="appAdminDetailsTable">
-        </div>
-    </table>
-    <p>
-      <input id="appDetailsDelete" type="button" value="Delete">
-      <input id="appDetailsClose" type="button" value="Close">
-    </p>
-</div>
-
-
-<div id="confirmDelete_form" class="confirmDeleteForm">
-  <span id="confirmDeleteTitle">Confirm Deletion XX</span>
-    <form id="confirmDeleteForm_input">
-      <p>
-        <input id="confirmDeleteFormCancel" type="button" value="Cancel">
-        <input id="confirmDeleteFormDelete" type="button" value="Delete">
-      </p>
-    </form>
-</div>
-
-
-<div id="confirmAdminDelete_form" class="confirmDeleteForm">
-  <span id="confirmAdminDeleteTitle">Confirm Deletion XX</span>
-    <form id="confirmAdminDeleteForm_input">
-      <p>
-        <input id="confirmAdminDeleteFormCancel" type="button" value="Cancel">
-        <input id="confirmAdminDeleteFormDelete" type="button" value="Delete">
-      </p>
-    </form>
-</div>
-
-<div id="addAppAdmin_form" class="addAppAdminForm">
-  <span id="addAppAdminTitle">Add App Administrator</span>
-    <form id="addAppAdminForm_input">
-       <dl>
-        <dt></dt><dd>
-          <label for="adminEmail">Email</label>
-          <input type="text" name="adminEmail" value="" id="adminEmail_input">
-        </dd>
-        </dl>
-      <p>
-        <input id="addAppAdminFormCancel" type="button" value="Cancel">
-        <input id="addAppAdminFormAdd" type="button" value="Add">
-      </p>
-    </form>
-</div>
-
-
+		<div id="confirmAdminDelete_form" class="confirmDeleteForm">
+		  <div class="genericTitle" id="confirmAdminDeleteTitle">Confirm Deletion XX</div>
+		    <form id="confirmAdminDeleteForm_input">
+		     
+		        <input class="genericSmallButton" id="confirmAdminDeleteFormCancel" type="button" value="Cancel">
+		        <input class="genericSmallButton" id="confirmAdminDeleteFormDelete" type="button" value="Delete">
+		     
+		    </form>
+		</div>
+		
+		<div id="addAppAdmin_form" class="addAppAdminForm">
+		  <div class="genericTitle" id="addAppAdminTitle">Add App Administrator</div>
+		    <form id="addAppAdminForm_input">
+		       <dl>
+		        <dt></dt><dd>
+		          <label class="genericLabel" for="adminEmail" style="text-align: left;">Email</label>
+		          <input type="text" name="adminEmail" value="" id="adminEmail_input">
+		        </dd>
+		        </dl>
+		      <p>
+		        <input class="genericSmallButton" id="addAppAdminFormCancel" type="button" value="Cancel">
+		        <input class="genericSmallButton" id="addAppAdminFormAdd" type="button" value="Add">
+		      </p>
+		    </form>
+		</div>
+	</div>
+</section>
 
 <script type="text/javascript">
 
@@ -139,7 +144,7 @@
       $.post('/dashboard/refresh/key', { id: app }, function ( data, status ) {
         if (status == "success" && !data.error) {
           $('#appKID').text( data.result.key.latest.kid )
-          $('#appKey').text( data.result.key.latest.key )
+          $('#appKey').val( data.result.key.latest.key )
           $('#appKID').fadeIn('fast')
           $('#appKey').fadeIn('fast')
         } // TBD -- what do we show on error????
@@ -239,7 +244,7 @@
           var currentAdmin = data.result.email
           $('#appDetails_Name').text( details.name )
           $('#appDetails_ID').text( app )
-          $('#appKey').text( details.keys.latest.key )
+          $('#appKey').val( details.keys.latest.key )
 
           // TBD - will need to make Key line wrap so that it is on multiple lines, but can be selected easily as a single
           // text string for developers to copy and paste into code
@@ -274,8 +279,9 @@
           var list = data.result.list
           var html = null
           var item = 0  // use a counter since the app has '.'s which browser is cranky about in element IDs
+          $('#appTable').append( "<thead><th style='width: 30%; text-align:left;'>Name</th><th style='width: 30%; text-align:left;'>Id</th></thead>" )
           $.each( list, function ( app ) {
-            html = '<tr><td><a href="" id="' + item +'_details">' + list[app].name +'</a>' +
+            html = '<tr><td><a class="otherLinks" href="" id="' + item +'_details">' + list[app].name +'</a>' +
               '</td><td>' + app + '</td></tr>'
             $('#appTable').append( html )
             $('#'+item+'_details').click( function () { return showAppDetails( app, true ); } )
