@@ -82,6 +82,11 @@ a:hover,a:active {
 	outline: 0;
 }
 
+.backdoorLinks, .otherLinks {
+	text-decoration: underline;
+	color: #000000;
+}
+
 /* Forms */
 form {
 	margin-top: 20px;
@@ -127,6 +132,7 @@ body img[height="1"] {
 	position: relative;
 	text-align: left;
 	padding-bottom: 10px;
+	padding-top: 10px;
 }
 
 .header h1 {
@@ -288,13 +294,12 @@ form {
 	outline: none;
 }
 
-.dashboardSection {
+.dashboardSection, .genericSection {
 	border-radius: 6px;
 	margin-top: 10px;
 	padding: 10px;
 	margin-right: 10px;
 	background-color: #E9E8E8;
-	width: 500px;
 }
 
 .cliDialogSpan {
@@ -332,6 +337,12 @@ form {
 .passcodeConfirmLabel {
 	width: 190px;
 	display: block;
+	text-align: right;
+}
+
+.genericLabel {
+	display: block;
+	font-weight: bold;
 	text-align: right;
 }
 
@@ -399,6 +410,15 @@ form {
 	vertical-align: middle;
 	width: 48px;
 	height: 48px;
+}
+
+.fullPhotoImage {
+	border-radius: 6px;
+	border-width: 1px solid;
+	border-color: #959595;
+	vertical-align: middle;
+	width: 200px;
+	height: 200px;
 }
 
 .enrollSection {
@@ -538,6 +558,48 @@ form {
 	cursor: pointer;
 }
 
+
+.genericButton
+	{
+	background: none;
+	border: none;
+	border-radius: 10px;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	-webkit-appearance: none;
+	font-weight: 700;
+	background: rgb(30, 130, 190);
+	background: -moz-linear-gradient(top, rgba(30, 130, 190, 1) 0%,
+		rgba(27, 116, 170, 1) 100% );
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(27,
+		116, 170, 1) ), color-stop(100%, rgba(190, 51, 34, 1) ) );
+	background: -webkit-linear-gradient(top, rgba(30, 130, 190, 1) 0%,
+		rgba(27, 116, 170, 1) 100% );
+	background: -o-linear-gradient(top, rgba(30, 130, 190, 1) 0%,
+		rgba(27, 116, 170, 1) 100% );
+	background: -ms-linear-gradient(top, rgba(30, 130, 190, 1) 0%,
+		rgba(27, 116, 170, 1) 100% );
+	background: linear-gradient(top, rgba(30, 130, 190, 1) 0%,
+		rgba(27, 116, 170, 1) 100% );
+	height: 44px;
+	width: 94px;
+	color: #fff;
+	font-size: 18px;
+	text-shadow: 0 1px 1px rgba(0, 0, 0, .5);
+	border: 1px solid #1890A0;
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3), inset 0 0 10px
+		rgba(0, 0, 0, .08);
+	position: relative;
+	top: -1px;
+	margin-left: 5px;
+	cursor: pointer;
+	padding: 8px;
+}
+
+.genericButton:visited {
+	color: #fff;
+}
+
 .buttonAddIOS {
 	width: 150px;
 	height: 24px;
@@ -569,7 +631,7 @@ form {
 	width: 10%;
 }
 
-.agentsTable {
+.agentsTable, .profileTable {
 	padding: 5px;
 	border-radius: 6px;
 	-moz-border-radius: 6px;
