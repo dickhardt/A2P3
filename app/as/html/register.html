@@ -212,7 +212,7 @@
               return window.location = SETUP_DASHBOARD
             // still waiting for QR code to be scanned
             if ( data.status == 'waiting')
-              return setTimeout( checkCode, 500, code )
+              return setTimeout( function () { checkCode( code ) }, 500)
             // we are logged in, goto Dashboard
             if (data.result) {
               window.location = SETUP_DASHBOARD
@@ -256,7 +256,7 @@
                   height : 300,
                   text : qrURL
                 })
-                setTimeout( checkCode, 500, data.result.code )
+                setTimeout( function () { checkCode( data.result.code ), 500 )
               }
             })
         return false

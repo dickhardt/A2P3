@@ -49,7 +49,7 @@
 		    <li>If the remember me box is checked during login while scanning a QR code, a button to login as that user will appear next time.</li>
 		  </ul>
 		</div>
-		<br><br>		
+		<br><br>
 		<div class="loginStatus">
 		  <a href="" id="newAccount" class="genericButton"> Open an Account </a>
 		  <a href="" id="login" class="genericButton"> Login </a>
@@ -62,7 +62,7 @@
 			<p class="categoryTitle">Profile</p>
 			<table id="profileTable" class=""> </table>
 		</div>
-		
+
 		<div id="TOS" class="genericSection">
 			<p class="categoryTitle">Terms of Service</p>
 			<!-- make the a scrollable text box -->
@@ -78,7 +78,7 @@
 <section class="footerContent">
 	<div class="loginStatus" id="backdoor">
 	  * Backdoor *
-	  <a href="/new/backdoor" id="newAccountBackdoor" class="backdoorLinks"> Open an Account </a> | 
+	  <a href="/new/backdoor" id="newAccountBackdoor" class="backdoorLinks"> Open an Account </a> |
 	  <a href="/login/backdoor" id="loginBackdoor" class="backdoorLinks"> Login </a>
 	  * Backdoor *
 	</div>
@@ -170,7 +170,7 @@ function onReady() {
     $.post( '/check/QR', { qrSession: qrSession }, function ( data, status ) {
       if ( status == 'success' && data) {
         if ( data.status == 'waiting')
-          return setTimeout( new function(inQrSession) { checkQR(inQrSession) }(qrSession), 500 )
+          return setTimeout( function () { checkQR( qrSession ) }, 500 )
         // if (data.error) console.log( data.error )
         if (data.result) {
           $('#qrcodeForm').hide()
@@ -203,7 +203,7 @@ function onReady() {
           $('#qrcode').empty()
           $('#qrcodeForm').fadeIn('fast')
           $('#qrcode').qrcode( {width: 400, height: 400, text: data.result.qrURL } )
-          setTimeout( new function(qrSession) { checkQR(qrSession) }(data.result.qrSession), 500)
+          setTimeout( function () { checkQR( qrSession ) }, 500 )
         }
       })
     }
@@ -220,7 +220,7 @@ function onReady() {
           $('#qrcode').empty()
           $('#qrcodeForm').fadeIn('fast')
           $('#qrcode').qrcode( {width: 400, height: 400, text: data.result.qrURL } )
-          setTimeout( new function(qrSession) { checkQR(qrSession) }(data.result.qrSession), 500 )
+          setTimeout( function () { checkQR( data.result.qrSession ) }, 500 )
         }
       })
     }

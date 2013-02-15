@@ -104,7 +104,7 @@ function onReady() {
     $.post( '/check/QR', { qrSession: qrSession }, function ( data, status ) {
       if ( status == 'success' && data) {
         if ( data.status == 'waiting')
-          return setTimeout( checkQR, 500, qrSession )
+          return setTimeout( function () { checkQR( qrSession ) }, 500 )
         // if (data.error) console.log( data.error )
         if (data.result) {
           $('#qrcodeForm').hide()
@@ -126,7 +126,7 @@ function onReady() {
           $('#qrcode').empty()
           $('#qrcodeForm').fadeIn('fast')
           $('#qrcode').qrcode( {width: 400, height: 400, text: data.result.qrURL } )
-          setTimeout( checkQR, 500, data.result.qrSession )
+          setTimeout( function () { checkQR( data.result.qrSession ) }, 500 )
         }
       })
     }
