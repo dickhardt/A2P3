@@ -412,6 +412,16 @@ form {
 	height: 48px;
 }
 
+.flagImage {
+	border-radius: 0px;
+	border-width: 1px solid;
+	border-color: #959595;
+	vertical-align: bottom;
+	/*width: 48px;*/
+	height: 40px;
+	padding:5px;
+}
+
 .fullPhotoImage {
 	border-radius: 6px;
 	border-width: 1px solid;
@@ -429,7 +439,7 @@ form {
 	background-color: #E9E8E8;
 }
 
-.categoryTitle {
+.categoryTitle, .genericTitle {
 	font-family: 'Century Gothic';
 	color: #000000;
 	font-size: 18px;
@@ -559,7 +569,7 @@ form {
 }
 
 
-.genericButton
+.genericButton, .genericSmallButton
 	{
 	background: none;
 	border: none;
@@ -596,8 +606,13 @@ form {
 	padding: 8px;
 }
 
-.genericButton:visited {
+.genericButton:visited, .genericSmallButton:visited {
 	color: #fff;
+}
+
+.genericSmallButton {
+	font-size: 14px;
+	height: 35px;
 }
 
 .buttonAddIOS {
@@ -631,7 +646,7 @@ form {
 	width: 10%;
 }
 
-.agentsTable, .profileTable {
+.agentsTable, .profileTable, .appsTable {
 	padding: 5px;
 	border-radius: 6px;
 	-moz-border-radius: 6px;
@@ -642,11 +657,13 @@ form {
 	width: 100%;
 }
 
+
+
 .formIOS {
 	margin-top: 0px;
 }
 
-.agentTableWrapper {
+.agentTableWrapper, .appsTableWrapper {
 	height: 265px;
 	margin: 10px;
 	margin-bottom: 0px;
