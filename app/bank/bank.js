@@ -186,6 +186,14 @@ function loginDirect( req, res ) {
   }
 }
 
+// LoginApp -- called by mobile Bank App
+function loginApp( req, res ) {
+  var params = { returnURL: 'bank.a2p3.net://logon', resources: [] }
+    , agentRequest = a2p3.createAgentRequest( localConfig, vault, params )
+    return res.send( { result: { request: agentRequest } } )
+}
+
+
 // loginBackdoor -- development login that uses a development version of setup.a2p3.net
 function loginBackdoor( req, res )  {
   var params = { returnURL: HOST_URL + '/response/redirect', resources: [] }
@@ -209,6 +217,13 @@ function newDirect( req, res ) {
     var html = metaRedirectInfoPage( redirectURL )
     res.send( html )
   }
+}
+
+// newApp -- called by Mobile Bank App to create a new account
+function newApp( req, res ) {
+  var params = { returnURL: 'bank.a2p3.net://logon', resources: RESOURCES }
+    , agentRequest = a2p3.createAgentRequest( localConfig, vault, params )
+    return res.send( { result: { request: agentRequest } } )
 }
 
 // newBackdoor -- development new account that uses a development version of setup.a2p3.net
@@ -310,6 +325,25 @@ function loginResponseCallback( req, res )  {
   }
   storeTokenRequest( qrSession, agentRequest, ixToken, function ( error ) {
     if ( error ) return res.send( { error: error } )
+    return res.send( { result: { success: true } } )
+  })
+}
+
+/*
+* Bank App is calling us back after a login Agent Request
+*/
+function loginResponseApp( req, res )  {
+  var ixToken = req.body.token
+  var agentRequest = req.body.request
+
+  if (!ixToken || !agentRequest ) {
+    var code = 'MISSING_REQUEST'
+    if (!ixToken) code = 'MISSING_TOKEN'
+    return res.send( { error: { code: code, message: 'token and request are required' } } )
+  }
+  fetchProfile( agentRequest, ixToken, req.session, function ( error, results ) {
+    if ( error ) return res.send( { error: error } )
+    req.session.profile = results
     return res.send( { result: { success: true } } )
   })
 }
@@ -420,7 +454,11 @@ exports.app = function () {
   app.get('/logout', logout )
   app.get('/close', closeAccount )
   app.get('/response/redirect', loginResponseRedirect )
+
   app.post('/response/callback', loginResponseCallback )
+  app.post('/response/app', loginResponseApp )
+  app.post('/login/app', loginApp )
+  app.post('/new/app', newApp )
 
   // these endpoints serve static HTML pages
   app.get('/', function( req, res ) { res.sendfile( __dirname + '/html/index.html' ) } )
