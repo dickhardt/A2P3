@@ -203,7 +203,7 @@ function onReady() {
           $('#qrcode').empty()
           $('#qrcodeForm').fadeIn('fast')
           $('#qrcode').qrcode( {width: 400, height: 400, text: data.result.qrURL } )
-          setTimeout( function () { checkQR( qrSession ) }, 500 )
+          setTimeout( function () { checkQR( data.result.qrSession ) }, 500 )
         }
       })
     }
