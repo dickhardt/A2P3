@@ -188,7 +188,7 @@ function loginResponseRedirect ( details ) {
     if (!agentRequest || !ixToken) res.redirect( '/error' )
 
     fetchIXToken( agentRequest, ixToken, details, function ( error, result ) {
-      if (error) return req.redirect( '/error' )
+      if (error) return res.redirect( '/error' )
       req.session.di = result.sub
       req.session.tokens = result.tokens
       req.session.redirects = result.redirects
