@@ -378,7 +378,10 @@ function closeAccount( req, res, next ) {
     db.deleteProfile( 'bank', di, function ( e ) {
       if ( e ) return next( e )
       req.session = null
-      return res.redirect('/')
+      if (req.query.json)
+        return res.send( { result: { success: true } } )
+      else
+        return res.redirect('/')
     })
   } else {
     next( new Error('No DI found in session.') )
