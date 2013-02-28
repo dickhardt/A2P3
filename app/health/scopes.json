@@ -1,4 +1,4 @@
 { "/scope/prov_number":           { "en": "Access your Provincial Health Care Number from '%host'." }
-, "/scope/series/weight/update":  { "en": "Update your weight records at '%host' at anytime." }
-, "/scope/series/weight/retrieve":{ "en": "Retrieve your weight records at '%host' at anytime." }
+, "/scope/series/weight/update":  { "en": "Update your weight records at '%host' at <b>anytime</b>." }
+, "/scope/series/weight/retrieve":{ "en": "Retrieve your weight records at '%host' at <b>anytime</b>." }
 }
