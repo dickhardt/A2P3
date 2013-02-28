@@ -64,9 +64,12 @@ function requestVerify (req, res, next) {
 
 // /report
 function report (req, res, next) {
-  db.logAgentReport( req.body.token , req.body.request, function ( e ) {
-    if ( e ) return next( e )
-    res.send( {result: {success: true } } )
+  request.verifyAndId( req.body.request, 'registrar', vault.keys, function ( error, appID ) {
+    if (e) return next( e )
+    db.logAgentReport( req.body.token , req.body.request, appID, function ( e ) {
+      if ( e ) return next( e )
+      res.send( {result: {success: true } } )
+    })
   })
 }
 
