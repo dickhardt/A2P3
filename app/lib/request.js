@@ -13,7 +13,7 @@ var config = require('../config')
 
 exports.create = function (  payload, credentials ) {
   payload['request.a2p3.org'] = payload['request.a2p3.org'] || {}
-  payload['request.a2p3.org'].ix = 'ix.a2p3.net'
+  payload['request.a2p3.org'].ix = 'a2p3.net'
   var details =
     { header:
       { typ: 'JWS'
