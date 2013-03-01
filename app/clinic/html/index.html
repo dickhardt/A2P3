@@ -56,11 +56,6 @@
 
 function onReady() {
 
-  // check if are running on iOS or android, only agent platforms currently supported
-  var deviceAgent = navigator.userAgent.toLowerCase()
-  var iOS = deviceAgent.match(/(iphone|ipod|ipad)/)
-  var isAndroid = deviceAgent.indexOf("android") > -1
-  var agentDirect = iOS || isAndroid
   var PEOPLE_RS = 'people.' + config.baseDomain
   var HEALTH_RS = 'health.' + config.baseDomain
   var IX_ID = 'ix.'+ config.baseDomain
@@ -118,7 +113,7 @@ function onReady() {
   }
 
   $('#login').click( function () {
-    if (agentDirect) {
+    if (config.agentDirect) {
       window.location = '/login/direct'
     } else {  // put up QR code
       $.get( '/login/QR', function ( data, status ) {

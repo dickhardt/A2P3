@@ -49,11 +49,6 @@
 
 function onReady() {
 
-  // check if are running on iOS or android, only agent platforms currently supported
-  var deviceAgent = navigator.userAgent.toLowerCase()
-  var iOS = deviceAgent.match(/(iphone|ipod|ipad)/)
-  var isAndroid = deviceAgent.indexOf("android") > -1
-  var agentDirect = iOS || isAndroid
   var setupURL = config.protocol + '://setup.' + config.baseDomain + ':' + config.port + '/backdoor'
   $('#loginBackdoor').attr('href', setupURL )
 
@@ -98,7 +93,7 @@ function onReady() {
   }
 
   $('#login').click( function () {
-    if (agentDirect) {
+    if (config.agentDirect) {
       window.location = '/login'
     } else {  // put up QR code
       // $.ajaxSetup(

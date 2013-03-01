@@ -37,6 +37,13 @@ var config = {};
     , 'yt': 'Yukon'
     }
 
+// detect if running on platform that supports having a Personal Agent
+
+  var deviceAgent = navigator.userAgent.toLowerCase()
+  var iOS = deviceAgent.match(/(iphone|ipod|ipad)/)
+  var isAndroid = deviceAgent.indexOf("android") > -1
+  config.agentDirect = iOS   // || isAndroid // don't support Android yet
+
 // Google Analytics
 
   var _gaq = _gaq || [];
