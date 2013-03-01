@@ -1,3 +1,3 @@
 { "/scope/number": { "en": "Access your Social Insurance number from '%host'." }
-, "/scope/anytime/number": { "en": "Access your Social Insurance number from '%host' at <b>anytime</b>." }
+, "/scope/anytime/number": { "en": "Access your Social Insurance number from '%host' at **anytime**." }
 }
