@@ -18,8 +18,7 @@ var config = require('../config')
   , time = require('time')
   , dateFormat = require('dateformat')
 
-
-console.log( time.Date() )
+// outputs trace information if added to middleware
 exports.trace = function trace ( req, res, next ) {
   console.log('\nTRACE:',req.host,req.originalUrl,'\n',req.session)
   next()
