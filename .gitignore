@@ -9,3 +9,4 @@ nosql.json
 old.*
 snapshot.*
 old
+*.p12
