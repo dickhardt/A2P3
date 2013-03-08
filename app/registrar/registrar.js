@@ -63,8 +63,14 @@ function requestVerify (req, res, next) {
 }
 
 // /report
-function report (req, res) {
-    res.send(501, 'NOT IMPLEMENTED');
+function report (req, res, next) {
+  request.verifyAndId( req.body.request, 'registrar', vault.keys, function ( error, appID ) {
+    if (error) return next( error )
+    db.logAgentReport( req.body.token , req.body.request, appID, function ( e ) {
+      if ( e ) return next( e )
+      res.send( {result: {success: true } } )
+    })
+  })
 }
 
 // /authorizationsRequests

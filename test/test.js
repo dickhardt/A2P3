@@ -877,6 +877,18 @@ describe('Demo App calling ', function () {
     })
   })
 
+  describe('people:/region', function(){
+    it('should return a region ', function (done){
+      api.call( 'people.bc', '/region', { token: rsTokens[config.host['people.bc']] }, function ( error, result) {
+        should.not.exist( error )
+        should.exist( result )
+        result.should.have.property('region')
+        result.region.should.equal( config.testUser.postal.slice( 0, 3) )
+        done()
+      })
+    })
+  })
+
   describe('people:/details', function(){
     it('should return a detailed profile ', function (done){
       api.call( 'people.bc', '/details', { token: rsTokens[config.host['people.bc']] }, function ( error, result) {

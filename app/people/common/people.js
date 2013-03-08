@@ -109,6 +109,24 @@ function photo ( province ) {
   }
 }
 
+
+// /region API called from a registered App
+function region ( province ) {
+  return function details ( req, res, next ) {
+    var di = req.token.sub
+    db.getProfile( 'people.'+province, di, function ( e, profile ) {
+      if (e) next( e )
+      if (!profile) {
+        var err = new Error('no profile for user')
+        err.code = 'NO_PROFILE'
+        return next( e )
+      }
+      var region = profile.postal.slice( 0, 3 )
+      res.send( {'result': {'region': region} } )
+    })
+  }
+}
+
 // /details API called from a registered App
 function details ( province ) {
   return function details ( req, res, next ) {
@@ -166,6 +184,12 @@ exports.app = function( province ) {
           , mw.a2p3Params( ['token'] )
           , token.checkRS( vault.keys, 'people.'+province, ['/scope/namePhoto','/scope/details','/scope/photo'], 'people' )
           , photo( province )
+          )
+  app.post('/region'
+          , request.check( vault.keys, null, 'people.'+province )
+          , mw.a2p3Params( ['token'] )
+          , token.checkRS( vault.keys, 'people.'+province, ['/scope/region','/scope/details'], 'people' )
+          , region( province )
           )
   app.post('/details'
           , request.check( vault.keys, null, 'people.'+province )

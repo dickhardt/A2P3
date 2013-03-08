@@ -25,7 +25,7 @@
 	<div class="mainContentWrap">
 		<h2>Welcome <span id="loginEmail"></span></h2>
 		<br>
-		
+
 		<a href="" id="login" class="genericButton"> login </a>
 		<a href="/logout" id="logout" class="genericButton">logout </a>
 		<div id="qrcodeForm">
@@ -49,11 +49,6 @@
 
 function onReady() {
 
-  // check if are running on iOS or android, only agent platforms currently supported
-  var deviceAgent = navigator.userAgent.toLowerCase()
-  var iOS = deviceAgent.match(/(iphone|ipod|ipad)/)
-  var isAndroid = deviceAgent.indexOf("android") > -1
-  var agentDirect = iOS || isAndroid
   var setupURL = config.protocol + '://setup.' + config.baseDomain + ':' + config.port + '/backdoor'
   $('#loginBackdoor').attr('href', setupURL )
 
@@ -88,7 +83,7 @@ function onReady() {
     $.post( '/check/QR', { qrSession: qrSession }, function ( data, status ) {
       if ( status == 'success' && data) {
         if ( data.status == 'waiting')
-          return setTimeout( checkQR, 500, qrSession )
+          return setTimeout( function () { checkQR( qrSession ) }, 500 )
         // if (data.error) console.log( data.error )
         if (data.result) {
           window.location = '/dashboard'
@@ -98,7 +93,7 @@ function onReady() {
   }
 
   $('#login').click( function () {
-    if (agentDirect) {
+    if (config.agentDirect) {
       window.location = '/login'
     } else {  // put up QR code
       // $.ajaxSetup(
@@ -113,7 +108,7 @@ function onReady() {
           $('#qrcode').empty()
           $('#qrcodeForm').fadeIn('fast')
           $('#qrcode').qrcode( {width: 400, height: 400, text: data.result.qrURL } )
-          setTimeout( checkQR, 500, data.result.qrSession )
+          setTimeout( function () { checkQR( data.result.qrSession ) }, 500 )
         }
       })
     }

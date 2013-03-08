@@ -596,3 +596,37 @@ exports.getDeviceFromNotificationCode = function ( code, cb ) {
   process.nextTick( function () { cb( device ) } )
 }
 
+// App Reporting
+
+exports.logAgentReport = function ( token, request, appID, cb ) {
+  var agentKey = 'registrar:report:agent:' + token
+  var appKey = 'registrar:report:app:' + appID
+  var reportsKey = 'registrar:report'
+  var time = Date.now()
+  dummyNoSql[agentKey] = dummyNoSql[agentKey] || {}
+  dummyNoSql[agentKey][time] = request
+  dummyNoSql[appKey] = dummyNoSql[appKey] || {}
+  dummyNoSql[appKey][token] =  time
+  dummyNoSql[reportsKey] = dummyNoSql[reportsKey] || []
+  dummyNoSql[reportsKey].push( appID )
+  process.nextTick( function () { cb( null ) } )
+}
+
+exports.getReportedApps = function ( cb ) {
+  var reportsKey = 'registrar:report'
+  var result = dummyNoSql[reportsKey]
+  process.nextTick( function () { cb( null, result) } )
+}
+
+exports.getAppReports = function ( appID, cb ) {
+  var appKey = 'registrar:report:app:' + appID
+  var result = dummyNoSql[appKey]
+  process.nextTick( function () { cb( null, result) } )
+}
+
+exports.getAgentReports = function ( token, cb ) {
+  var agentKey = 'registrar:report:agent:' + token
+  var result = dummyNoSql[agentKey]
+  process.nextTick( function () { cb( null, result) } )
+}
+
