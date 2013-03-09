@@ -109,8 +109,6 @@ function registerAgent ( req, res, next ) {
     , device = req.body.device
     , notificationDeviceToken = req.body.notificationDeviceToken
 
-console.log('register body\n',req.body)
-
   db.getProfile( 'as', code, function ( e, profile ) {
     if (e) return next( e )
     if ( passcode != profile.passcode ) {

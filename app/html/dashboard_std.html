@@ -34,7 +34,7 @@
 			<table id='appTable'>
 			</table>
 		</div>
-		
+
 		<div id="registerApp_form" class="registerAppForm">
 		  <div class="genericTitle">Register an Existing App</div>
 		    <form id="registerAppForm_input">
@@ -52,8 +52,8 @@
 		          </p>
 		    </form>
 		</div>
-		
-		
+
+
 		<div id="appDetails_popup" class="appDetailPopup">
 		  <div class="genericTitle" id="appDetailsTitle" >App Details</div>
 		    <table id="adminsList">
@@ -68,7 +68,7 @@
 		      <input class="genericSmallButton" id="appDetailsClose" type="button" value="Close">
 		    </p>
 		</div>
-		
+
 		<div id="confirmDelete_form" class="confirmDeleteForm">
 		  <div class="genericTitle" id="confirmDeleteTitle">Confirm Deletion XX</div>
 		    <form id="confirmDeleteForm_input">
@@ -158,7 +158,7 @@
     /////////////////////////////////////////////////////////////////////////////////////////////
     // Dashboard refresh
     function updateDashboardTable () {
-      $.get('/dashboard/list/apps', function ( data, status ) {
+      $.post('/dashboard/list/apps', function ( data, status ) {
         if (status == "success" && !data.error) {
           $('#appTable').empty()
           var list = data.result.list
@@ -257,7 +257,7 @@
       }
 
       // check if we are logged in, if so, then show email and enable logout
-      $.get('/login/check', function ( data, status ) {
+      $.post('/login/check', function ( data, status ) {
         if (data && data.result && data.result.user) {
           if (data.result.expiresIn) {
             window.setTimeout( logout, data.result.expiresIn*1000)

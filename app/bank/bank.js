@@ -437,9 +437,9 @@ exports.app = function () {
   //setup request routes
 
   // these end points are all AJAX calls from the web app and return a JSON response
-  app.get('/login/QR', loginQR )
-  app.get('/new/QR', newQR )
-  app.get('/profile', profile )
+  app.post('/login/QR', loginQR )
+  app.post('/new/QR', newQR )
+  app.post('/profile', profile )
   app.post('/check/QR', checkQR )
   app.post('/agree/tos', agreeTOS )
 
