@@ -102,7 +102,7 @@ function onReady() {
       //   } )
       $.post( '/login/QR', function ( data, status ) {
 
-        console.log( data, status )
+        // console.log( data, status )
 
         if (status == "success" && !data.error && data.result && data.result.qrURL && data.result.qrSession ) {
           $('#qrcode').empty()
