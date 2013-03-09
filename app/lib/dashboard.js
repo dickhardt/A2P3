@@ -234,7 +234,7 @@ exports.routes = function ( app, RS, vault ) {
     app.get('/dashboard', checkSession, function( req, res ) { res.sendfile( config.rootAppDir + '/html/dashboard.html' ) } )
   }
 
-  app.get('/dashboard/list/apps'
+  app.post('/dashboard/list/apps'
           , checkSession
           , dashboardlistApps
           )
