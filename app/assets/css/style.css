@@ -111,7 +111,6 @@ button,input {
 /* Content Styling */
 body {
 	background: #fff;
-	-webkit-user-select: none;
 }
 
 body img[height="1"] {
@@ -143,7 +142,6 @@ body img[height="1"] {
 	height: 48px;
 	font-size: 14px;
 	font-weight: 400;
-	-webkit-user-select: text;
 }
 
 .footerContent {
@@ -190,7 +188,6 @@ body img[height="1"] {
 	font-size: 28px;
 	font-family: 'QuicksandBook';
 	margin-top: 65px;
-	-webkit-user-select: text;
 }
 
 form {
@@ -819,7 +816,6 @@ form {
 	margin: 0;
 	margin-top: 10px;
 	font-size: 18px;
-	-webkit-user-select: text;
 }
 
 .feature p {
@@ -827,7 +823,6 @@ form {
 	font-size: 15px;
 	font-weight: 300;
 	margin-right: 10px;
-	-webkit-user-select: text;
 }
 
 .feature.link {
