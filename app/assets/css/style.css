@@ -526,7 +526,8 @@ form {
 }
 
 .mainTitleText {
-	font-family: 'QuicksandBook';
+	font-family: 'Century Gothic';
+	font-size: 15px;
 }
 
 .buttonRemoveAgent,.buttonAddIOS,.buttonCreateCLI,.submitContinue,.submitCancel,.submitEnroll,.submit
