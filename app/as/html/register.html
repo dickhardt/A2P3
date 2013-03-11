@@ -14,7 +14,8 @@
 <script type="text/javascript" src="/js/jquery.qrcode.min.js"></script>
 <script type="text/javascript" src="/js/purl.js"></script>
 <script type="text/javascript" src="/js/config.js"></script>
-
+<script type="text/javascript"    src="/js/common.js"></script>
+  
 </head>
 <body>
   <header class="header">
@@ -245,13 +246,14 @@
                 /// TBD - adjust size of popup and QR code to screen
                 // $('#qrcodeForm').fadeIn('fast')
                 $('#qrcodeForm').dialog({
-                  width : 415,
-                  height : 370
+                  width : getQRCodeSize() + 70,
+                  height : getQRCodeSize() + 70
                 });
                 $('#qrcode').qrcode({
-                  width : 300,
-                  height : 300,
-                  text : qrURL
+                  width : getQRCodeSize(),
+                  height : getQRCodeSize(),
+                  text : qrURL,
+                  render: 'table'
                 })
                 setTimeout( function () { checkCode( data.result.code ) }, 500 )
               }
