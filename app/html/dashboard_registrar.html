@@ -39,18 +39,26 @@
 		</div>
 
 		<div id="registerApp_form" class="registerAppForm">
-		  <div class="genericTitle">Register an new App</div>
+		  <div class="genericTitle">Register a new App</div>
 		    <form id="registerAppForm_input">
 		      <dl>
-		        <dt></dt><dd>
-		          <label class="genericLabel" for="AppName" style="text-align: left;">Name</label>
-		          <input type="text" name="AppName" value="" id="registerApp_name_input">
-		          <br><br>
-		        </dd>
+            <dt></dt><dd>
+              <label class="genericLabel" for="AppName" style="text-align: left;">Name</label>
+              <input type="text" name="AppName" value="" id="registerApp_name_input">
+              <br><br>
+            </dd>
 		        <dt></dt><dd>
 		          <label class="genericLabel" for="ApID" style="text-align: left;">ID</label>
 		          <input type="text" name="AppID" value="" id="registerApp_id_input">
 		        </dd>
+
+           <!-- Greg: would like the checkbox label to be right beside the checkbox -- size of the dialog needs to be adjusted -->
+
+            <dt></dt><dd>
+              <label class="genericLabel" for="AppAnytime" style="text-align: left;">Anytime Resource</label>
+              <input type="checkbox" name="AppAnytime" value="" id="registerApp_anytime_input">
+              <br><br>
+            </dd>
 		        <dt></dt><dd>
 		        <label id="registerApp_status"><i>ID is hostname</i></label>
 		      </dd>
@@ -67,6 +75,12 @@
 		        <tr><td class="genericLabel" width="50px">Name:</td><td id="appDetails_Name"></td></tr>
 		        <tr><td class="genericLabel">ID:</td><td id="appDetails_ID"></td></tr>
 		        <tr><td class="genericLabel">Key:</td><td><textarea id="appKey"rows="3" style="width: 225px;" readonly="readonly"></textarea></td></tr>
+
+        <!-- Greg: please put the checkbox to the left and the label on the right -->
+
+            <tr><td class="genericLabel">Anytime Resource:</td><td><input type="checkbox" name="AppAnytime" value="" id="appDetails_Anytime" disabled="true">
+</td></tr>
+
 		        <tr><td class="genericLabel">Key ID:</td><td id="appKID"></td></tr>
 		        <tr><td class="genericLabel">Admins:</td><td><a class="otherLinks" href="" id="addAppAdmin">add</a></td></tr>
 		        <div id="appAdminDetailsTable">
@@ -243,6 +257,7 @@
           var details = data.result.details
           var currentAdmin = data.result.email
           $('#appDetails_Name').text( details.name )
+          $('#appDetails_Anytime').prop('checked', details.anytime )
           $('#appDetails_ID').text( app )
           $('#appKey').val( details.keys.latest.key )
 
@@ -301,11 +316,13 @@
       $('#registerApp_id_input').val('')
       $('#registerApp_name_input').val('')
       $('#registerApp_name_input').focus()
+      $('#appDetails_Anytime').prop('checked', false )
       $('#registerAppFormSubmit').attr('disabled', 'disabled')
       $('#registerApp_id_input').removeAttr('disabled')
       $('#registerApp_name_input').removeAttr('disabled')
       $('#registerAppFormSubmit').show()
       $('#registerAppFormCancel').show()
+      $('#registerApp_status').text('').css('color','black')
       return false
     })
 
@@ -332,10 +349,11 @@
       $('#registerApp_name_input').attr('disabled', 'disabled')
       var id = $('#registerApp_id_input').val()
       var name = $('#registerApp_name_input').val()
+      var anytime = $('#registerApp_anytime_input').prop('checked')
       $('#registerApp_status').text('Registering App "'+id+'"" ... ').css('color','black')
       $('#registerAppFormSubmit').hide()
       $('#registerAppFormCancel').hide()
-      $.post('/dashboard/new/app', { name: name, id: id}, function ( data, status ) {
+      $.post('/dashboard/new/app', { name: name, id: id, anytime: anytime}, function ( data, status ) {
         updateDashboardTable()
         if (status == "success" && !data.error) {
           $('#registerApp_form').fadeOut('fast')

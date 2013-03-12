@@ -63,7 +63,8 @@ exports.routes = function ( app, RS, vault ) {
   function dashboardNewApp ( req, res, next ) {
 
     function newApp() {
-      db.newApp( RS, req.body.id, req.body.name, req.session.email, req.body.anytime, function ( e, key ) {
+      var anytime = ( req.body.anytime == 'true' )
+      db.newApp( RS, req.body.id, req.body.name, req.session.email, anytime, function ( e, key ) {
         if (e) { e.code = e.code || "INTERNAL_ERROR"; return next(e) }
         return res.send( {result:{'key': key}} )
       })

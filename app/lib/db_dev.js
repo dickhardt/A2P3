@@ -192,6 +192,8 @@ exports.appDetails = function ( reg, admin, id, cb ) {
     , admins: dummyNoSql[reg + ':app:' + id + ':admins']
     , keys: keyChain[reg][id]
     }
+  if (reg == 'registrar')
+    result.anytime = dummyNoSql[reg + ':app:' + id + ':anytime']
   process.nextTick( function () { cb( null, result ) } )
 }
 
@@ -210,8 +212,11 @@ exports.newApp = function ( reg, id, name, adminEmail, anytime, cb ) {
     return process.nextTick( function () { cb( err ) } )
   }
   // add to DB
+
+debugger;
+
   dummyNoSql[reg + ':app:' + id + ':name'] = name
-  if (reg == 'registrar' && anytime)
+  if ( (reg == 'registrar') && anytime)
     dummyNoSql[reg + ':app:' + id + ':anytime'] = true
   dummyNoSql[reg + ':app:' + id + ':admins'] = {}
   dummyNoSql[reg + ':app:' + id + ':admins'][adminEmail] = 'ACTIVE'
