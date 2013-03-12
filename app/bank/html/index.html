@@ -5,7 +5,7 @@
   .loginStatus {text-align:center;}
   .di {text-align:right;}
   #qrcodeForm{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:400px; height:450px; position: absolute; top:25px; left:10%; margin-left:-50px; padding:10px; border-radius:4px; z-index: 1}
-</style>
+  .confirmRe-authForm{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:300px; height:120px; position: absolute; top:100px; left:10%; margin-left:-20px; padding:10px; border-radius:4px;}</style>
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 	<meta name="viewport" content="width=device-width,initial-scale=1, maximum-scale=1,user-scalable=no">
 	<link rel="stylesheet" href="/css/style.css">
@@ -34,6 +34,15 @@
 		    <p>Scan QR Code with your Agent to login</p>
 		    <div id="qrcode"></div>
 		</div>
+        <div id="confirmRe-auth_form" class="confirmRe-authForm">
+      <div class="genericTitle" id="confirmRe-authTitle">Access to resources has been revoked. Re-authorize?</div>
+        <form id="confirmRe-authForm_input">
+          <p>
+            <input class="genericSmallButton" id="confirmRe-authFormCancel" type="button" value="Cancel">
+            <input class="genericSmallButton" id="confirmRe-authFormOK" type="button" value="OK">
+          </p>
+        </form>
+    </div>
 		<div class="di">
 		  <div id="directedIdentifier"></div>
 		  <a class="otherLinks" href="" id="showDI">show DI</a>
@@ -102,6 +111,7 @@ function onReady() {
   $('#profileSection').hide()
   $('#hideDI').hide()
   $('#directedIdentifier').hide()
+  $('#confirmRe-auth_form').hide()
 
   $('#hideDI').click( function () {
     $('#directedIdentifier').hide()
@@ -116,6 +126,40 @@ function onReady() {
     $('#directedIdentifier').show()
     return false
   })
+
+  function login () {
+    $('#error').hide()
+    if (config.agentDirect) {
+      window.location = '/login/direct'
+    } else {  // put up QR code
+      $.post( '/login/QR', function ( data, status ) {
+        if (status == "success" && !data.error && data.result && data.result.qrURL ) {
+          $('#qrcode').empty()
+          $('#qrcodeForm').fadeIn('fast')
+          $('#qrcode').qrcode( {width: 400, height: 400, text: data.result.qrURL } )
+          setTimeout( function () { checkQR( data.result.qrSession ) }, 500 )
+        }
+      })
+    }
+    return false
+  }
+
+  function newAccount () {
+    $('#error').hide()
+    if (config.agentDirect) {
+      window.location = '/new/direct'
+    } else {  // put up QR code
+      $.post( '/new/QR', function ( data, status ) {
+        if (status == "success" && !data.error && data.result && data.result.qrURL && data.result.qrSession ) {
+          $('#qrcode').empty()
+          $('#qrcodeForm').fadeIn('fast')
+          $('#qrcode').qrcode( {width: 400, height: 400, text: data.result.qrURL } )
+          setTimeout( function () { checkQR( data.result.qrSession ) }, 500 )
+        }
+      })
+    }
+    return false
+  }
 
   function drawProfile( profile ) {
     // console.log( profile )
@@ -169,6 +213,7 @@ function onReady() {
           return setTimeout( function () { checkQR( qrSession ) }, 500 )
         // if (data.error) console.log( data.error )
         if (data.result) {
+          $('#confirmRe-auth_form').hide()
           $('#qrcodeForm').hide()
           $('#login').hide()
           $('#newAccount').hide()
@@ -180,48 +225,27 @@ function onReady() {
           else
             drawProfile( data.result )
         }
-        if (data.error && data.error.code && data.error.code === 'UNKNOWN_USER') {
-          // $('#errorMessage').text('No records found').css('color','red')
-          // $('#error').show()
-          window.location('/error')
+        if ( data.error ) {
+          if (data.error.code == "INVALID_ACCESS_TOKEN") {
+            $('#qrcodeForm').hide()
+            $('#confirmRe-auth_form').show()
+          } else {
+            window.location = '/error'
+          }
         }
       }
     })
   }
 
-  $('#login').click( function () {
-    $('#error').hide()
-    if (config.agentDirect) {
-      window.location = '/login/direct'
-    } else {  // put up QR code
-      $.post( '/login/QR', function ( data, status ) {
-        if (status == "success" && !data.error && data.result && data.result.qrURL ) {
-          $('#qrcode').empty()
-          $('#qrcodeForm').fadeIn('fast')
-          $('#qrcode').qrcode( {width: 400, height: 400, text: data.result.qrURL } )
-          setTimeout( function () { checkQR( data.result.qrSession ) }, 500 )
-        }
-      })
-    }
-    return false
+  $('#login').click( login )
+
+  $('#newAccount').click( newAccount )
+
+  $('#confirmRe-authFormCancel').click( function () {
+    window.location = '/'
   })
 
-  $('#newAccount').click( function () {
-    $('#error').hide()
-    if (config.agentDirect) {
-      window.location = '/new/direct'
-    } else {  // put up QR code
-      $.post( '/new/QR', function ( data, status ) {
-        if (status == "success" && !data.error && data.result && data.result.qrURL && data.result.qrSession ) {
-          $('#qrcode').empty()
-          $('#qrcodeForm').fadeIn('fast')
-          $('#qrcode').qrcode( {width: 400, height: 400, text: data.result.qrURL } )
-          setTimeout( function () { checkQR( data.result.qrSession ) }, 500 )
-        }
-      })
-    }
-    return false
-  })
+  $('#confirmRe-authFormOK').click( newAccount )
 
   // see if we have a profile to show on a reload
   $.post( '/profile', function ( data, status ) {
@@ -238,9 +262,8 @@ function onReady() {
       else
         drawProfile( data.result )
     }
-    // else if (data.error && data.error === 'NOT_LOGGED_IN') {
-    //   $('#errorMessage').text('No records found').css('color','red')
-    //   $('#error').show()
+    // else if ( data.error ) {
+    //   window.location = '/'
     // }
   })
 

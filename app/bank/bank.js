@@ -101,6 +101,7 @@ function fetchSI( access_token, callback ) {
         }
         if (data.error) {
           err = new Error(data.error.message)
+          err.code = data.error.code
           return callback( err, null)
         }
         if ( !data || !data.result || !data.result.si ) return callback( new Error('no data or SI returned'))
@@ -109,6 +110,9 @@ function fetchSI( access_token, callback ) {
 }
 
 function fetchProfile( agentRequest, ixToken, session, callback ) {
+
+// debugger;
+
   var resource = new a2p3.Resource( localConfig, vault )
   resource.exchange( agentRequest, ixToken, function ( error, di ) {
     if ( error ) return callback ( error )
@@ -137,7 +141,28 @@ function fetchProfile( agentRequest, ixToken, session, callback ) {
         if ( !profile || !profile.access_token )
           return callback( new Error('No profile or access token'))
         fetchSI( profile.access_token, function ( error, si ) {
-          if ( error ) return callback( error )
+          if ( error && error.code && error.code == 'INVALID_ACCESS_TOKEN' ) {
+            // user revoked the access token
+            if ( !resource.ix.tokens || !Object.keys( resource.ix.tokens ).length ) {
+              // user tried logging in, need to send down INVALID_ACCESS_TOKEN error
+              callback( error, null )
+            }
+            return resource.call( config.baseUrl.si + '/oauth', null, function ( error, results ) {
+              if ( error ) return callback( error )
+              if ( !results.access_token ) return callback( new Error('UNKNOWN') )
+              var access_token = results.access_token
+              fetchSI( access_token, function ( error, si ) {
+                if ( error ) return callback( error )
+                db.updateProfile( 'bank', di, { access_token: access_token }, function ( e ) {
+                  if ( e ) return callback( e )
+                  var results = {}
+                  results[config.host.si] = { si: si }
+                  results[config.host.ix] = { di: di }
+                  callback( null, results )
+                })
+              })
+            })
+          } else if ( error ) return callback( error )
           var results = {}
           results[config.host.si] = { si: si }
           results[config.host.ix] = { di: di }
@@ -299,7 +324,7 @@ function loginResponseRedirect( req, res )  {
     return res.redirect( '/error' )
   }
   fetchProfile( agentRequest, ixToken, req.session, function ( error, results ) {
-  if ( error && error.code && error.code == 'UNKNOWN_USER')
+    if ( error && error.code && error.code == 'UNKNOWN_USER')
       return res.redirect( '/unknown' )
     if ( error ) return res.redirect( '/error' )
     req.session.profile = results

@@ -537,7 +537,7 @@ exports.oauthCreate = function ( rs, details, cb) {
   process.nextTick( function () { cb( null, accessToken ) } )
 }
 
-// retrieve in an OAuth access token, reset last access
+// retrieve an OAuth access token, reset last access
 exports.oauthRetrieve = function ( rs, accessToken, cb ) {
   var keyAccess = rs + ':oauth:' + accessToken
   if ( !dummyNoSql[keyAccess] ) {
