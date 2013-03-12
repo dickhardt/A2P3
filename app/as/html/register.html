@@ -255,6 +255,7 @@
                   text : qrURL,
                   render: 'table'
                 })
+                $('#qrcode').css({cursor: 'none'});
                 setTimeout( function () { checkCode( data.result.code ) }, 500 )
               }
             })
