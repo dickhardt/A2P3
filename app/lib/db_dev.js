@@ -540,9 +540,14 @@ exports.oauthCreate = function ( rs, details, cb) {
 // retrieve in an OAuth access token, reset last access
 exports.oauthRetrieve = function ( rs, accessToken, cb ) {
   var keyAccess = rs + ':oauth:' + accessToken
+  if ( !dummyNoSql[keyAccess] ) {
+    var e = new Error('Invalid Access Token:'+accessToken)
+    e.code = "INVALID_ACCESS_TOKEN"
+    return process.nextTick( function() { cb( e ) } )
+  }
   // we want to send current state of details so that
   // we know last time was accessed
-  var details = JSON.parse( JSON.stringify( dummyNoSql[keyAccess] ) )
+  var details = JSON.parse( JSON.stringify( dummyNoSql[keyAccess] ) ) // clone object
   dummyNoSql[keyAccess].lastAccess = Date.now()
   process.nextTick( function () { cb( null, details ) } )
 }
