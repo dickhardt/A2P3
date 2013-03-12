@@ -362,7 +362,18 @@
 			$('#agentCLI').click(function(e) {
 				$("#cliDialog").dialog({
 					width : 400,
+					open: function() {
+				        var $this = $(this);
+				
+				        $this.keypress(function(e) {
+				            if( e.keyCode == 13 ) {
+				                $this.parent().find('.ui-dialog-buttonpane button:last').click();
+				                return false;
+				            }
+				        });
+				    },
 					buttons : {
+						
 						"Cancel" : function() {
 							$(this).dialog("close");
 						},
