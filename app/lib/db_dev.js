@@ -212,9 +212,6 @@ exports.newApp = function ( reg, id, name, adminEmail, anytime, cb ) {
     return process.nextTick( function () { cb( err ) } )
   }
   // add to DB
-
-debugger;
-
   dummyNoSql[reg + ':app:' + id + ':name'] = name
   if ( (reg == 'registrar') && anytime)
     dummyNoSql[reg + ':app:' + id + ':anytime'] = true
@@ -562,7 +559,7 @@ exports.oauthList = function ( rs, di, cb ) {
     var appID = details.app
     results[appID] = results[appID] || {}
     var lastAccess = results[appID].lastAccess || details.lastAccess
-    if (lastAccess < details.lastAccess) results[appID].lastAccess = details.lastAccess
+    if (lastAccess <= details.lastAccess) results[appID].lastAccess = details.lastAccess
     results[appID].name = dummyNoSql[rs + ':app:' + appID + ':name']
     results[appID].resources = results[appID].resources || []
     results[appID].resources = underscore.union( results[appID].resources, details.scopes )
