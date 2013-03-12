@@ -121,6 +121,7 @@ function onReady() {
           $('#qrcode').empty()
           $('#qrcodeForm').fadeIn('fast')
           $('#qrcode').qrcode( {width: getQRCodeSize(), height: getQRCodeSize(), text: data.result.qrURL, render: 'table' } )
+          $('#qrcode').css({cursor: 'none'});
           setTimeout( function () { checkQR( data.result.qrSession ) }, 500 )
         }
       })
