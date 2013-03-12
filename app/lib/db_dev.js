@@ -192,6 +192,8 @@ exports.appDetails = function ( reg, admin, id, cb ) {
     , admins: dummyNoSql[reg + ':app:' + id + ':admins']
     , keys: keyChain[reg][id]
     }
+  if (reg == 'registrar')
+    result.anytime = dummyNoSql[reg + ':app:' + id + ':anytime']
   process.nextTick( function () { cb( null, result ) } )
 }
 
@@ -210,8 +212,11 @@ exports.newApp = function ( reg, id, name, adminEmail, anytime, cb ) {
     return process.nextTick( function () { cb( err ) } )
   }
   // add to DB
+
+debugger;
+
   dummyNoSql[reg + ':app:' + id + ':name'] = name
-  if (reg == 'registrar' && anytime)
+  if ( (reg == 'registrar') && anytime)
     dummyNoSql[reg + ':app:' + id + ':anytime'] = true
   dummyNoSql[reg + ':app:' + id + ':admins'] = {}
   dummyNoSql[reg + ':app:' + id + ':admins'][adminEmail] = 'ACTIVE'
@@ -582,12 +587,11 @@ exports.oauthDelete = function ( rs, di, appID, cb ) {
 
 // AS notification URL info
 
-exports.createNotificationURL = function ( device, cb ) {
+exports.createNotificationCode = function ( device, cb ) {
   var code = jwt.handle()
   var key = 'as:notification:'+code
   dummyNoSql[key] = device
-  var url = config.baseUrl.as + '/notification/'+code
-  process.nextTick( function () { cb( url ) } )
+  process.nextTick( function () { cb( code ) } )
 }
 
 exports.getDeviceFromNotificationCode = function ( code, cb ) {

@@ -24,7 +24,7 @@ exports.routes = function ( app, RS, vault ) {
   function dashboardAddAdmin ( req, res, next ) {
     db.addAppAdmin( RS, req.body.id, req.body.admin, function ( e ) {
       if (e) { e.code = e.code || "INTERNAL_ERROR"; return next(e) }
-      return res.send( {result:{'id': req.body.id, 'admin': req.body.admin}} )
+      return res.send( { result: {success: true } } )
     })
   }
 
@@ -63,7 +63,8 @@ exports.routes = function ( app, RS, vault ) {
   function dashboardNewApp ( req, res, next ) {
 
     function newApp() {
-      db.newApp( RS, req.body.id, req.body.name, req.session.email, req.body.anytime, function ( e, key ) {
+      var anytime = ( req.body.anytime == 'true' )
+      db.newApp( RS, req.body.id, req.body.name, req.session.email, anytime, function ( e, key ) {
         if (e) { e.code = e.code || "INTERNAL_ERROR"; return next(e) }
         return res.send( {result:{'key': key}} )
       })
@@ -234,7 +235,7 @@ exports.routes = function ( app, RS, vault ) {
     app.get('/dashboard', checkSession, function( req, res ) { res.sendfile( config.rootAppDir + '/html/dashboard.html' ) } )
   }
 
-  app.get('/dashboard/list/apps'
+  app.post('/dashboard/list/apps'
           , checkSession
           , dashboardlistApps
           )

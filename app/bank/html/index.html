@@ -194,7 +194,7 @@ function onReady() {
     if (config.agentDirect) {
       window.location = '/login/direct'
     } else {  // put up QR code
-      $.get( '/login/QR', function ( data, status ) {
+      $.post( '/login/QR', function ( data, status ) {
         if (status == "success" && !data.error && data.result && data.result.qrURL ) {
           $('#qrcode').empty()
           $('#qrcodeForm').fadeIn('fast')
@@ -212,7 +212,7 @@ function onReady() {
     if (config.agentDirect) {
       window.location = '/new/direct'
     } else {  // put up QR code
-      $.get( '/new/QR', function ( data, status ) {
+      $.post( '/new/QR', function ( data, status ) {
         if (status == "success" && !data.error && data.result && data.result.qrURL && data.result.qrSession ) {
           $('#qrcode').empty()
           $('#qrcodeForm').fadeIn('fast')
@@ -226,7 +226,7 @@ function onReady() {
   })
 
   // see if we have a profile to show on a reload
-  $.get( '/profile', function ( data, status ) {
+  $.post( '/profile', function ( data, status ) {
     // console.log( '/profile ->', data )
     if (status == "success" && !data.error && data.result ) {   // TBD, deal with error
       $('#logout').show()

@@ -348,7 +348,7 @@ describe('Enrolling agent at AS', function () {
     , token = null
 
   describe('AS /register/agent', function () {
-    it.skip('should fail', function (done) {
+    it('should fail', function (done) {
       var options =
         { url: config.baseUrl.as + '/register/agent'
         , form: { passcode: 6666, name: nameAgent, device: device, code: code }
@@ -386,7 +386,7 @@ describe('Enrolling agent at AS', function () {
         done( null )
       })
     })
-    it.skip('should not return a handle for the agent the second time the code is used', function (done) {
+    it('should not return a handle for the agent the second time the code is used', function (done) {
       var options =
         { url: config.baseUrl.as + '/register/agent'
         , form: { passcode: passcode, name: nameAgent, device: device, code: code }
@@ -628,10 +628,10 @@ function registerDemoApp ( rs, standard ) {
 
 
     describe(' /dashboard/list/apps', function () {
-      it('should return the Demo App', function (done) {
+      it('should return the Demo App in the list', function (done) {
         var options =
           { url: config.baseUrl[rs] + '/dashboard/list/apps'
-          , method: 'GET'
+          , method: 'POST'
           }
         fetch( options, function ( e, response, body ) {
           should.not.exist( e )
@@ -662,16 +662,114 @@ function registerDemoApp ( rs, standard ) {
           should.exist( body )
           var r = JSON.parse( body )
           should.exist( r )
+          r.should.not.have.property('error')
           r.should.have.property('result')
           r.result.should.have.property('details')
           r.result.details.should.have.property('admins')
           r.result.details.admins.should.have.property( devUser.email )
-          r.should.not.have.property('error')
-          r.should.have.property('result')
           done( null )
         })
       })
     })
+
+    // test adding, listing and deleting an admin
+    if (rs == 'registrar') {
+      describe(' /dashboard/add/admin', function () {
+        it('should return success', function (done) {
+          var options =
+            { url: config.baseUrl[rs] + '/dashboard/add/admin'
+            , form: { id: demoApp.host, admin: 'test@example.com' }
+            , method: 'POST'
+            }
+          fetch( options, function ( e, response, body ) {
+            should.not.exist( e )
+            should.exist( response )
+            response.statusCode.should.equal( 200 )
+            should.exist( body )
+            var r = JSON.parse( body )
+            should.exist( r )
+            r.should.not.have.property('error')
+            r.should.have.property('result')
+            r.result.should.have.property('success',true)
+            done( null )
+          })
+        })
+      })
+
+      describe(' /dashboard/app/details', function () {
+        it('should return the new admin', function (done) {
+          var options =
+            { url: config.baseUrl[rs] + '/dashboard/app/details'
+            , form: { id: demoApp.host }
+            , method: 'POST'
+            }
+          fetch( options, function ( e, response, body ) {
+            should.not.exist( e )
+            should.exist( response )
+            response.statusCode.should.equal( 200 )
+            should.exist( body )
+            var r = JSON.parse( body )
+            should.exist( r )
+            r.should.not.have.property('error')
+            r.should.have.property('result')
+            r.result.should.have.property('details')
+            r.result.details.should.have.property('admins')
+            r.result.details.admins.should.have.property( devUser.email )
+            r.result.details.admins.should.have.property( 'test@example.com' )
+            done( null )
+          })
+        })
+      })
+
+     describe(' /dashboard/delete/admin', function () {
+        it('should return success', function (done) {
+          var options =
+            { url: config.baseUrl[rs] + '/dashboard/delete/admin'
+            , form: { id: demoApp.host, admin: 'test@example.com' }
+            , method: 'POST'
+            }
+          fetch( options, function ( e, response, body ) {
+            should.not.exist( e )
+            should.exist( response )
+            response.statusCode.should.equal( 200 )
+            should.exist( body )
+            var r = JSON.parse( body )
+            should.exist( r )
+            r.should.not.have.property('error')
+            r.should.have.property('result')
+            r.result.should.have.property('success',true)
+            done( null )
+          })
+        })
+      })
+
+
+      describe(' /dashboard/app/details', function () {
+        it('should NOT return the new admin', function (done) {
+          var options =
+            { url: config.baseUrl[rs] + '/dashboard/app/details'
+            , form: { id: demoApp.host }
+            , method: 'POST'
+            }
+          fetch( options, function ( e, response, body ) {
+            should.not.exist( e )
+            should.exist( response )
+            response.statusCode.should.equal( 200 )
+            should.exist( body )
+            var r = JSON.parse( body )
+            should.exist( r )
+            r.should.not.have.property('error')
+            r.should.have.property('result')
+            r.result.should.have.property('details')
+            r.result.details.should.have.property('admins')
+            r.result.details.admins.should.have.property( devUser.email )
+            r.result.details.admins.should.not.have.property( 'test@example.com' )
+            done( null )
+          })
+        })
+      })
+
+    } // if registrar -> admin add, list and delete tests
 
   })
 }
@@ -1030,13 +1128,107 @@ describe('Agent Authorizations ', function () {
         should.not.exist( e )
         should.exist( result )
         result.should.not.have.property( demoApp.host )
-        done()
+        done( null )
       })
     })
   })
 
 })
 
+// callback URL check
+describe('CallbackURL check ', function () {
+  var userAgent
+    , qrURL
+    , qrSession
+    , agentRequest
+    , ixToken
+    , appURL = config.baseUrl.clinic
+  describe('agent.Create ', function () {
+    it('should return an Agent ', function ( done ) {
+      userAgent = new agent.Create( testUser.agent )
+      should.exist( userAgent )
+      done( null )
+    })
+  })
+  describe('/loginQR', function () {
+    it('should return a QR code URL', function ( done ) {
+      var options =
+        { url: appURL + '/login/QR'
+        , method: 'POST'
+        }
+      fetch( options, function ( e, response, body ) {
+        should.not.exist( e )
+        should.exist( response )
+        response.statusCode.should.equal( 200 )
+        should.exist( body )
+        var r = JSON.parse( body )
+        should.exist( r )
+        r.should.not.have.property('error')
+        r.should.have.property('result')
+        r.result.should.have.property('qrSession')
+        qrSession = r.result.qrSession
+        r.result.should.have.property('qrURL')
+        qrURL = r.result.qrURL
+        done( null )
+      })
+    })
+  })
+  describe('/QR/xxx', function () {
+    it('should return an Agent Request', function ( done ) {
+      var options =
+        { url: qrURL + '?json=true'
+        , method: 'GET'
+        }
+      fetch( options, function ( e, response, body ) {
+        should.not.exist( e )
+        should.exist( response )
+        response.statusCode.should.equal( 200 )
+        should.exist( body )
+        var r = JSON.parse( body )
+        should.exist( r )
+        r.should.not.have.property('error')
+        r.should.have.property('result')
+        r.result.should.have.property('state', qrSession)
+        r.result.should.have.property('agentRequest')
+        agentRequest = r.result.agentRequest
+        done( null )
+      })
+    })
+  })
+  describe('agent.ixToken', function () {
+    it('should return an IX Token', function ( done ) {
+      userAgent.ixToken( agentRequest, function( e, ixTokenLocal ) {
+        should.not.exist( e )
+        should.exist( ixTokenLocal )
+        ixToken = ixTokenLocal
+        done( null )
+      })
+    })
+  })
+  describe('/response/callback', function () {
+    it('should return success', function ( done ) {
+      var options =
+        { url: appURL + '/response/callback'
+        , method: 'POST'
+        , json:
+          { token: ixToken
+          , request: agentRequest
+          , state: qrSession
+          }
+        }
+      fetch( options, function ( e, response, json ) {
+        should.not.exist( e )
+        should.exist( response )
+        response.statusCode.should.equal( 200 )
+        should.exist( json )
+        json.should.not.have.property('error')
+        json.should.have.property('result')
+        json.result.should.have.property('success', true )
+        done( null )
+      })
+    })
+  })
+})
 
 // describe('Restoring ', function () {
 //   describe('Database', function () {

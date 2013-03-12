@@ -317,8 +317,8 @@ exports.router = function ( app, detailsOrig ) {
 
   app.get( '/login', login( details ) )
   app.get( '/logout', logout )
-  app.get( '/login/check', loginCheck )
-  app.get( '/login/QR', loginQR( details ) )
+  app.post( '/login/check', loginCheck )
+  app.post( '/login/QR', loginQR( details ) )
   app.post( '/check/QR', checkQR( details ) )
   app.get(  '/QR/:qrSession', qrCode( details ) )
 

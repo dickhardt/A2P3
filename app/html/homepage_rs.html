@@ -64,7 +64,7 @@ function onReady() {
   $('#title').before('<img class="flagImage" src="/images/flags/' + flag + '.png">')
 
   // check if we are logged in, if so, then show email and enable logout
-  $.get('/login/check', function ( data, status ) {
+  $.post('/login/check', function ( data, status ) {
     if (data && data.result && data.result.user) {
       $('#loginEmail').text(data.result.user)
       $('#logout').show()
@@ -101,9 +101,9 @@ function onReady() {
       //   { type: 'POST'
       //   , headers: { "cache-control": "no-cache" }
       //   } )
-      $.get( '/login/QR', function ( data, status ) {
+      $.post( '/login/QR', function ( data, status ) {
 
-        console.log( data, status )
+        // console.log( data, status )
 
         if (status == "success" && !data.error && data.result && data.result.qrURL && data.result.qrSession ) {
           $('#qrcode').empty()

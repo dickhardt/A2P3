@@ -14,6 +14,7 @@ var express = require('express')
   , mw = require('../lib/middleware')
   , jwt = require('../lib/jwt')
   , api = require('../lib/api')
+  , apns = require('../apns/apns')
 
 // creates an Agent Request for registering agent
 function _makeAgentRequest ( returnURL ) {
@@ -48,9 +49,6 @@ function tokenHandler ( req, res, next ) {
     , sar = req.body.sar
     , auth = req.body.auth
 
-// console.log('\n token handler\n', req.body )
-// req.body.notificationURL = true;
-
    db.retrieveAgentFromDevice( 'as', device, function ( e, agent ) {
     if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
     if (!agent) {
@@ -79,21 +77,27 @@ function tokenHandler ( req, res, next ) {
     var ixToken = token.create( payload, vault.keys[config.host.ix].latest )
     var response = {'result': {'token': ixToken } }
     if (req.body.notificationURL) {
-      db.createNotificationURL( device, function ( url ) {
-        if ( url ) response.result.notificationURL = url
-
-// console.log('\n tokenHandler w/ notification responding with\n',response)
-
+      db.createNotificationCode( agent.notificationDeviceToken, function ( code ) {
+        if ( code ) {
+          response.result.notificationURL = config.baseUrl.as + '/notification/' + code
+        }
         return res.send( response )
         } )
     } else {
-
-
-// console.log('\n tokenHandler w/o notification responding with\n',response)
-
-
       return res.send( response )
     }
+  })
+}
+
+// called when App wants to nofify Agent that User wants to login
+function notificationHandler ( req, res, next ) {
+  var code = req.params.code
+  var url = req.body.url
+  var alert = req.body.alert || 'An app has requested to login'
+  db.getDeviceFromNotificationCode( code, function ( notificationDeviceToken ) {
+    if (!notificationDeviceToken) return next( new Error('Unknown notification URL') )
+    apns.notification( notificationDeviceToken, url, alert )
+    return res.send( { result: { success: true } } )
   })
 }
 
@@ -103,6 +107,8 @@ function registerAgent ( req, res, next ) {
     , passcode = req.body.passcode
     , name = req.body.name
     , device = req.body.device
+    , notificationDeviceToken = req.body.notificationDeviceToken
+
   db.getProfile( 'as', code, function ( e, profile ) {
     if (e) return next( e )
     if ( passcode != profile.passcode ) {
@@ -130,6 +136,7 @@ function registerAgent ( req, res, next ) {
           , 'handle': result.handle
           , 'sub': profile.di
           , 'passcode': passcode
+          , 'notificationDeviceToken': notificationDeviceToken
           }
       db.storeAgent( 'as', agent, function (e) {
         if (e) return next( e )
@@ -270,6 +277,12 @@ exports.app = function() {
   app.post('/token'
           , mw.checkParams( {'body':['device', 'sar', 'auth']} )
           , tokenHandler
+          )
+
+  // notification endpoint called by App when remember me / device login notification is used
+  app.post('/notification/:code'
+          , mw.checkParams( { 'body':['url'], 'params':['code'] } )
+          , notificationHandler
           )
 
   // A2P3 Protocol API  called from IX when an agent is deleted

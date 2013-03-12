@@ -244,8 +244,8 @@ exports.app = function () {
   //setup request routes
 
   // these end points are all AJAX calls from the web app and return a JSON response
-  app.get('/login/QR', loginQR )
-  app.get('/profile', profile )
+  app.post('/login/QR', loginQR )
+  app.post('/profile', profile )
   app.post('/check/QR', checkQR )
 
   // this page is called by either the Agent or a QR Code reader
