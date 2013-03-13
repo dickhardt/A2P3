@@ -71,11 +71,15 @@
 							<div class="categoryTitle">
 								<span id="peopleServerLabel">Personal Agents</span>
 							</div>
-							<div class="dashboardCategoryTitleDetail"
+							<div id="hasAgentIntroText" class="dashboardCategoryTitleDetail"
 							style="margin-bottom: 0px;">
 								You have the following personal agents.
 							</div>
-							<div class="agentTableWrapper">
+							<div id="hasNoAgentIntroText" class="dashboardCategoryTitleDetail"
+							style="margin-bottom: 0px;">
+								You have no agents enrolled, please enroll one below.
+							</div>
+							<div id="agentTableWrap" class="agentTableWrapper">
 								<TABLE id="dataTable" class="agentsTable">
 									<thead>
 										<tr role="row">
@@ -234,11 +238,17 @@
 						clearTable();
 						var handles = data.result.handles;
 						if (handles) {
+							$('#agentTableWrap').show();
+							$('#hasAgentIntroText').show();
+							$('#hasNoAgentIntroText').hide();
 							Object.keys(handles).forEach(function(handle) {
 								addRow(handle, handles[handle].name, handles[handle].created);
 
 							})
 						} else {
+							$('#agentTableWrap').hide();
+							$('#hasAgentIntroText').hide();
+							$('#hasNoAgentIntroText').show();
 							$('#agents').append('<p>You have no personal agents. Enroll one below.</p>')
 						}
 						$('.buttonRemoveAgent').click(function(e) {
@@ -288,6 +298,10 @@
 				$('#agentCLI_form').hide()
 				$('#agentCLI_success').hide()
 				$('#agentCLI_delete').hide()
+				
+				$('#agentTableWrap').hide();
+				$('#hasAgentIntroText').hide();
+				$('#hasNoAgentIntroText').hide();
 
 				$('#agentCLI_cancel').click(function() {
 					$('#agentCLI_form').fadeOut('fast')
