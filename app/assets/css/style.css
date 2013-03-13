@@ -230,9 +230,6 @@ form {
 
 .formItemButtonSetupPage {
 	text-align: right;
-	margin-right: 2%;
-	padding-bottom: 5px;
-	margin-top: -5px;
 }
 
 .formItemProvince {
@@ -662,7 +659,6 @@ form {
 }
 
 .agentTableWrapper, .appsTableWrapper {
-	height: 265px;
 	margin: 10px;
 	margin-bottom: 0px;
 	border: 1px solid #959595;
