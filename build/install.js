@@ -30,12 +30,14 @@ if ( !config.db && fs.existsSync('./app/nosql.json') ) {
   copyFileSync( './app/default.nosql.json', './app/nosql.json')
 }
 
-require('./bootstrap').run( function ( e ) { // run bootstrap to build default vaults and register default apps
-  if (e) {
-    console.log(e)
-    process.exit(1)
-  } else {
-    process.exit(0)
-  }
-})
+// invoke bootstrap with 'npm run bootstrap' so that it only happens when we want it to
+
+// require('./bootstrap').run( function ( e ) { // run bootstrap to build default vaults and register default apps
+//   if (e) {
+//     console.log(e)
+//     process.exit(1)
+//   } else {
+//     process.exit(0)
+//   }
+// })
 
