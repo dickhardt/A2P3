@@ -33,6 +33,28 @@ exports.saveSync = function saveSync () {
   fs.writeFileSync( config.rootAppDir+'/nosql.json', JSON.stringify( dummyNoSql ) )
 }
 
+// syncronous save of DB to snapshot
+var SNAPSHOTFILE = config.rootAppDir+'/snapshot.nosql.json'
+
+exports.saveSnapshotSync = function saveSnapshotSync ( name ) {
+  var fName = (name) ? config.rootAppDir + '/' + name + '.snapshot.nosql.json' : SNAPSHOTFILE
+  return fs.writeFileSync( fName, JSON.stringify( dummyNoSql ) )
+}
+
+// syncronous restore of DB from last snapshot
+exports.restoreSnapshotSync = function restoreSnapshotSync ( name ) {
+  var fName = (name) ? config.rootAppDir + '/' + name + '.snapshot.nosql.json' : SNAPSHOTFILE
+  if ( fs.existsSync( fName ) ) {
+    var data = fs.readFileSync( fName )
+    fs.writeFileSync( config.rootAppDir+'/nosql.json', data )
+    dummyNoSql = JSON.parse(data)
+    keyChain = dummyNoSql.keyChain
+    return null
+  } else {
+    return new Error( fName + ' could not be found')
+  }
+}
+
 // maps an IX DI to the directed id fo a host
 function mapDI ( host, ixDI ) {
   var input = vaultIX.secret + host + ixDI
