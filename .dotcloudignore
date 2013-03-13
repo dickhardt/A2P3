@@ -2,6 +2,7 @@
 .dotcloud
 *.log
 node_modules
+environment.json
 *.sublime-*
 old.*
 old
