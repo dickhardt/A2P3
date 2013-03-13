@@ -30,8 +30,7 @@ if ( fs.existsSync( envPath + 'environment.json' ) ) {
   dotcloud = require( '../environment.json' )
 }
 
-exports.dotcloud = dotcloud
-if (dotcloud) {
+if (process.env.DOTCLOUD_ENVIRONMENT) {
   port = '80'
   baseDomain = 'a2p3.net'
   scheme = 'http'
@@ -45,11 +44,11 @@ console.log('config.dotcloud\n',dotcloud)
 * Check if we have a Redis database available and grab config if we do
 */
 var database = null
-if ( process.env.DOTCLOUD ) {
+if ( dotcloud ) {
   database =
-    { port: process.env.DOTCLOUD_DATA_REDIS_PORT
-    , host: process.env.DOTCLOUD_DATA_REDIS_HOST
-    , password:  process.env.DOTCLOUD_DATA_REDIS_PASSWORD
+    { port: dotcloud.DOTCLOUD_DATA_REDIS_PORT
+    , host: dotcloud.DOTCLOUD_DATA_REDIS_HOST
+    , password:  dotcloud.DOTCLOUD_DATA_REDIS_PASSWORD
   }
 }
 
@@ -176,6 +175,7 @@ exports.roles = roles
 exports.provinces = provinces
 exports.rootAppDir = __dirname
 exports.database = database
+exports.dotcloud = dotcloud
 
 // how long requests and tokens are valid for
 exports.maxTokenAge = 5 * 60 // 5 minutes
