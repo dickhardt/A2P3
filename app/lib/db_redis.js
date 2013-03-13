@@ -45,7 +45,7 @@ exports.initialize = function (dbNumber, cb) {
 
   var ready = function () {
     console.log("Redis "+db.server_info.redis_version+" ready.")
-    db.select(dbNumber, function (err, res) {
+    db.select( dbNumber, function (err, res) {
       if (!err) {
         console.log("Redis DB " + dbNumber + " selected.")
         if (callback) {
@@ -78,7 +78,7 @@ exports.initialize = function (dbNumber, cb) {
   db.on("reconnecting", reconnecting)
 
   if (config.database.password) {
-    db.auth(config.database.password, function (err, res) {
+    db.auth( config.database.password, function (err, res) {
       if (res == 'OK') {
         console.log("Redis AUTH successful.")
       } else {

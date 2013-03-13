@@ -37,16 +37,19 @@ if (dotcloud) {
   console.log('\n****** DOTCLOUD DEPLOYMENT MAGIC *******\n')
 }
 
-console.log('config.dotcloud',dotcloud)
+console.log('config.dotcloud\n',dotcloud)
 
 /*
-* Check if we have a Redis database available
+* Check if we have a Redis database available and grab config if we do
 */
 var database = null
-
-
-
-exports.database
+if ( process.env.DOTCLOUD ) {
+  database =
+    { port: process.env.DOTCLOUD
+    , host: process.env.DOTCLOUD
+    , password:  process.env.DOTCLOUD
+  }
+}
 
 /*
 *   The following builds out the configuration for all the hosts
@@ -170,6 +173,7 @@ exports.baseUrl = baseUrl
 exports.roles = roles
 exports.provinces = provinces
 exports.rootAppDir = __dirname
+exports.database = database
 
 // how long requests and tokens are valid for
 exports.maxTokenAge = 5 * 60 // 5 minutes
