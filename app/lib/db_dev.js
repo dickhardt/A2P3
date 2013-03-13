@@ -65,6 +65,19 @@ function mapDI ( host, ixDI ) {
 }
 exports.mapDI = mapDI
 
+
+/*
+*   Functions to create, get and delete Key Objects
+*/
+// generate new app keys and add to Vault
+exports.newKeyObj = function newKeyObj ( reg, id, cb ) {
+  var keyObj = identity.makeKeyObj()
+  keyChain[reg] = keyChain[reg] || {}
+  keyChain[reg][id] = keyObj
+  process.nextTick( function () { cb( null, keyObj ) } )
+}
+
+
 /*
 * functions to add, list and delete agents from IX and Registrar DB
 */
@@ -154,13 +167,7 @@ exports.checkAdminAuthorization = function ( reg, id, di, cb ) {
 /*
 * General App Registration Functions
 */
-// generate new app keys and add to Vault
-function newKeyObj( reg, id ) {
-  var keyObj = identity.makeKeyObj()
-  keyChain[reg] = keyChain[reg] || {}
-  keyChain[reg][id] = keyObj
-  return keyObj
-}
+
 
 // called when an admin logs in to link email with DI
 exports.registerAdmin = function ( reg, adminEmail, di, cb ) {
@@ -220,8 +227,9 @@ exports.newApp = function ( reg, id, name, adminEmail, anytime, cb ) {
   dummyNoSql[reg + ':admin:' + adminEmail + ':apps'] = dummyNoSql[reg + ':admin:' + adminEmail + ':apps'] || {}
   dummyNoSql[reg + ':admin:' + adminEmail + ':apps'][id] = 'ACTIVE'
   // gen key pair
-  var keyObj = newKeyObj( reg, id )
-  process.nextTick( function () { cb( null, keyObj ) } )
+  newKeyObj( reg, id, function ( e, keyObj ) {
+    cb( e, keyObj )
+  })
 }
 
 exports.checkApp = function ( reg, id, di, cb) {
@@ -268,8 +276,9 @@ exports.deleteApp = function ( reg, id, cb ) {
 }
 
 exports.refreshAppKey = function ( reg, id, cb ) {
-  var keyObj = newKeyObj( reg, id )
-  process.nextTick( function () { cb( null, keyObj ) } )
+  newKeyObj( reg, id, function ( e, keyObj ) {
+    cb( e, keyObj )
+  })
 }
 
 exports.getAppKey = function ( reg, id, vaultKeys, cb ) {
