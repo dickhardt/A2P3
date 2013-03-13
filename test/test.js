@@ -62,6 +62,8 @@ var devUser =
 
 var PASSCODE = '1234'
 
+var access_tokenSI = null
+
 // add our demo host in so modules work properly
 config.host.demo = demoApp.host
 
@@ -884,6 +886,7 @@ describe('Demo App calling ', function () {
         should.exist( result )
         result.should.have.property( 'access_token' )
         access_token = result.access_token
+        access_tokenSI = access_token // used in test that we have revoked access
         done()
       })
     })
@@ -1129,6 +1132,28 @@ describe('Agent Authorizations ', function () {
         should.exist( result )
         result.should.not.have.property( demoApp.host )
         done( null )
+      })
+    })
+  })
+
+  describe('si:/anytime/number', function(){
+    it('should return error with code INVALID_ACCESS_TOKEN', function (done){
+      var options =
+        { url: config.baseUrl.si + '/anytime/number'
+        , form: { access_token:  access_tokenSI } // access_tokenSI was set up above
+        , method: 'POST'
+        }
+      fetch( options, function ( e, response, body ) {
+        should.not.exist( e )
+        should.exist( response )
+        response.statusCode.should.equal( 200 )
+        should.exist( body )
+        var r = JSON.parse( body )
+        should.exist( r )
+        r.should.not.have.property('result')
+        r.should.have.property('error')
+        r.error.should.have.property('code', 'INVALID_ACCESS_TOKEN')
+        done()
       })
     })
   })

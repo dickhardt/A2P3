@@ -24,14 +24,14 @@
 			FB.init({
 				appId : '311669472267358', // App ID from the App Dashboard
 				channelUrl : 'http://setup.a2p3.net/facebook_channel.html', // Channel File for x-domain communication
-				status : true, // check the login status upon init?
+				status : false, // check the login status upon init?
 				cookie : true, // set sessions cookies to allow your server to access the session?
 				xfbml : true  // parse XFBML tags on this page?
 			});
 
 			FB.Event.subscribe('auth.statusChange', function( response) {
 
-// console.log('status change',response)
+ 				// console.log('status change',response)
 
 				if (response.status === 'connected') {
 					$.post( '/fb/login', response.authResponse, function ( data, status ) {

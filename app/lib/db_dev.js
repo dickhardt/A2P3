@@ -212,9 +212,6 @@ exports.newApp = function ( reg, id, name, adminEmail, anytime, cb ) {
     return process.nextTick( function () { cb( err ) } )
   }
   // add to DB
-
-debugger;
-
   dummyNoSql[reg + ':app:' + id + ':name'] = name
   if ( (reg == 'registrar') && anytime)
     dummyNoSql[reg + ':app:' + id + ':anytime'] = true
@@ -540,12 +537,17 @@ exports.oauthCreate = function ( rs, details, cb) {
   process.nextTick( function () { cb( null, accessToken ) } )
 }
 
-// retrieve in an OAuth access token, reset last access
+// retrieve an OAuth access token, reset last access
 exports.oauthRetrieve = function ( rs, accessToken, cb ) {
   var keyAccess = rs + ':oauth:' + accessToken
+  if ( !dummyNoSql[keyAccess] ) {
+    var e = new Error('Invalid Access Token:'+accessToken)
+    e.code = "INVALID_ACCESS_TOKEN"
+    return process.nextTick( function() { cb( e ) } )
+  }
   // we want to send current state of details so that
   // we know last time was accessed
-  var details = JSON.parse( JSON.stringify( dummyNoSql[keyAccess] ) )
+  var details = JSON.parse( JSON.stringify( dummyNoSql[keyAccess] ) ) // clone object
   dummyNoSql[keyAccess].lastAccess = Date.now()
   process.nextTick( function () { cb( null, details ) } )
 }
@@ -562,7 +564,7 @@ exports.oauthList = function ( rs, di, cb ) {
     var appID = details.app
     results[appID] = results[appID] || {}
     var lastAccess = results[appID].lastAccess || details.lastAccess
-    if (lastAccess < details.lastAccess) results[appID].lastAccess = details.lastAccess
+    if (lastAccess <= details.lastAccess) results[appID].lastAccess = details.lastAccess
     results[appID].name = dummyNoSql[rs + ':app:' + appID + ':name']
     results[appID].resources = results[appID].resources || []
     results[appID].resources = underscore.union( results[appID].resources, details.scopes )

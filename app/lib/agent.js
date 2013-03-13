@@ -88,6 +88,7 @@ Create.prototype.listAuthorizations = function ( list , cb ) {
           response[app][rs] =
             { resources: results[rs][app].resources
             , request: results[rs][app].request
+            , lastAccess: results[rs][app].lastAccess
             }
           response[app].name = results[rs][app].name
         })
