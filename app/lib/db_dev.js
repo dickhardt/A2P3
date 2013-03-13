@@ -27,6 +27,9 @@ if ( !fExist ) {
 var dummyNoSql = require('../nosql.json')
 var keyChain = dummyNoSql.keyChain
 
+exports.initialize = function (dbNumber, cb) {
+  process.nextTick( function () { cb( null ) } )
+}
 
 // save DB state
 exports.saveSync = function saveSync () {

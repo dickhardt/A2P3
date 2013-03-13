@@ -71,6 +71,8 @@ function run ( complete ) {
   // an array of tasks and then execute them in order
   var tasks = []
 
+  tasks.push( function (done) { db.initialize( null, done ) } )
+
   // DI for all hosts
   var diRoot
   tasks.push( function (done) {
