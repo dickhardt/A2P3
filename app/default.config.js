@@ -24,7 +24,9 @@ var portListen = port
 */
 
 var dotcloud = null
-if ( fs.existsSync( '../environment.json' ) ) {
+var envPath = __dirname
+envPath = envPath.replace('app', '')
+if ( fs.existsSync( envPath + 'environment.json' ) ) {
   dotcloud = require( '../environment.json' )
 }
 
