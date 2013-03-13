@@ -2,8 +2,6 @@
 .dotcloud
 *.log
 node_modules
-vault.json
-nosql.json
 *.sublime-*
 old.*
 old
