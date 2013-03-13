@@ -45,9 +45,9 @@ console.log('config.dotcloud\n',dotcloud)
 var database = null
 if ( process.env.DOTCLOUD ) {
   database =
-    { port: process.env.DOTCLOUD
-    , host: process.env.DOTCLOUD
-    , password:  process.env.DOTCLOUD
+    { port: process.env.DOTCLOUD_DATA_REDIS_PORT
+    , host: process.env.DOTCLOUD_DATA_REDIS_HOST
+    , password:  process.env.DOTCLOUD_DATA_REDIS_PASSWORD
   }
 }
 

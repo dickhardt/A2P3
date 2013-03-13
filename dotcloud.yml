@@ -6,3 +6,5 @@ nodejs:
         app: node app/app.js
     ports:
       nodejs: http
+data:
+    type: redis
