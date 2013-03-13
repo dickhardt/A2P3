@@ -391,6 +391,9 @@
 						"Create" : function() {
 
 							var name = $('#agentCLI_name_input').val()
+							if (!name) {
+								return;
+							}
 							$.post('dashboard/agent/create', {
 								name : name
 							}, function(data, status) {
