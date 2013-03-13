@@ -70,13 +70,13 @@ exports.mapDI = mapDI
 *   Functions to create, get and delete Key Objects
 */
 // generate new app keys and add to Vault
-exports.newKeyObj = function newKeyObj ( reg, id, cb ) {
+function newKeyObj ( reg, id, cb ) {
   var keyObj = identity.makeKeyObj()
   keyChain[reg] = keyChain[reg] || {}
   keyChain[reg][id] = keyObj
   process.nextTick( function () { cb( null, keyObj ) } )
 }
-
+exports.newKeyObj = newKeyObj
 
 /*
 * functions to add, list and delete agents from IX and Registrar DB
