@@ -18,11 +18,6 @@ var express = require('express')
   , fetch = require('request')
 
 
-var useFB = false
-if (config.facebook.appID) {  // Facebook is configured
-  useFB = true
-}
-
 // fetch name and photo from People to show on Dashboard
 function _fetchProfile ( di, complete ) {
   // build an Agent Request and IX Token, get RS Tokens, then call People RS to get name and photo
@@ -187,7 +182,6 @@ function devLogin ( req, res, next ) {
 // console.log('\n login req.body:\n', req.body )
 // console.log('\n login req.query:\n', req.query )
 
-//  if (useFB) return res.redirect('/')
   var profile = JSON.parse( JSON.stringify( config.testUser ))  // clone test user object
   profile.email = req.body.email
   db.getProfile( 'setup', req.body.email, function ( e, existingProfile ) {

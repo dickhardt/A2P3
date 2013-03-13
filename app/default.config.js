@@ -100,15 +100,6 @@ exports.testProfile =
     }
 exports.testUser = profile
 
-
-/*
-*   Insert Facebook App credentials if you want to Setup to use Facebook to gather data
-*/
-exports.facebook =
-  { appID: null
-  , appSecret: null
-  }
-
 /*
 * Edit roles.as entry to add additional Authentication Servers
 */
