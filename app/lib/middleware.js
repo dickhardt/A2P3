@@ -16,7 +16,6 @@ var config = require('../config')
   , fs = require('fs')
   , marked = require('marked')
   , time = require('time')
-  , dateFormat = require('dateformat')
 
 // outputs trace information if added to middleware
 exports.trace = function trace ( req, res, next ) {
