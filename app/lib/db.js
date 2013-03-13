@@ -6,9 +6,10 @@
 
 var config = require('../config')
 
-if (!config.db) {
+if (!config.database) {
   var db_dev = require('./db_dev')
   module.exports = db_dev
 } else {
-  console.error("Ummm, I think you need to write some code!")
+  var db_redis = require('./db_redis')
+  module.exports = db_redis
 }

@@ -40,6 +40,15 @@ if (dotcloud) {
 console.log('config.dotcloud',dotcloud)
 
 /*
+* Check if we have a Redis database available
+*/
+var database = null
+
+
+
+exports.database
+
+/*
 *   The following builds out the configuration for all the hosts
 *   No configurable information is here
 */

@@ -288,7 +288,6 @@ function run ( complete ) {
   tasks.push( function (done) {
     // save DB as built so we can restore it when testing
     db.saveSync()
-    db.saveSnapshotSync()
     done()
   })
 

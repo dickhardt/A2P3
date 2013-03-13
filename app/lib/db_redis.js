@@ -1,7 +1,5 @@
 /*
-* Development Database layer
-*
-* NOTE: will not work with cluster or other multi-process!!!
+* REDIS Database layer
 *
 * Copyright (C) Province of British Columbia, 2013
 */
@@ -9,6 +7,7 @@
 var fs = require('fs')
   , underscore = require('underscore')
   , async = require('async')
+  , redis = require('redis')
   , config = require('../config')
   , crypto = require('crypto')
   , b64url = require('./b64url')
@@ -16,22 +15,97 @@ var fs = require('fs')
   , vaultIX = require('../ix/vault')
   , jwt = require('./jwt')
 
-// Development JSON DB
-// create empty file if does not exist
-var fExist = fs.existsSync( config.rootAppDir+'/nosql.json' )
-if ( !fExist ) {
-  var nosql = {'keyChain': {} }
-  fs.writeFileSync( config.rootAppDir+'/nosql.json', JSON.stringify( nosql ) )
+/*
+* initialize DB
+*
+*/
+
+var db = null;
+
+exports.initialize = function (dbNumber, cb) {
+
+  if (!config.database.host) return cb("No config.database.host configured!")
+  if (!config.database.port) return cb("No config.database.port configured!")
+
+  if (!dbNumber) dbNumber = 0
+  var callback = cb // allows us to track if we have called back
+
+  // Redis handlers
+  var error = function (err) {
+    console.error("Redis ERROR: " + err)
+    if (callback) {
+      callback( err )
+      callback = null
+    }
+  }
+
+  var connect = function () {
+    console.log("Redis connected at " + db.host + ":" + db.port + ".")
+  }
+
+  var ready = function () {
+    console.log("Redis "+db.server_info.redis_version+" ready.")
+    db.select(dbNumber, function (err, res) {
+      if (!err) {
+        console.log("Redis DB " + dbNumber + " selected.")
+        if (callback) {
+          callback( null )
+          callback = null
+        }
+      } else {
+        console.error("Redis SELECT error:" + err)
+      }
+    })
+  }
+
+  var reconnecting = function (arg) {
+    console.log("Redis reconnecting: ", arg)
+  }
+
+    // init logic
+  if (db) {
+    console.error("Database already initialized.")
+    return callback("Database already initialized.")
+  }
+
+  console.log("Redis attempting connection to " + config.database.host + ":" + config.database.port + ".")
+  db = redis.createClient( config.database.port, config.database.host )
+
+  // setup handlers
+  db.on("error", error)
+  db.on("ready", ready)
+  db.on("connect", connect)
+  db.on("reconnecting", reconnecting)
+
+  if (config.database.password) {
+    db.auth(config.database.password, function (err, res) {
+      if (res == 'OK') {
+        console.log("Redis AUTH successful.")
+      } else {
+        console.error("Redis AUTH error:" + err)
+      }
+    })
+  }
+
 }
-// load DB
-var dummyNoSql = require('../nosql.json')
-var keyChain = dummyNoSql.keyChain
 
 
-// save DB state
-exports.saveSync = function saveSync () {
-  fs.writeFileSync( config.rootAppDir+'/nosql.json', JSON.stringify( dummyNoSql ) )
+/*
+*   clear the database. Yes, like really throw everything away!
+*   used for test scripts and debugging
+*/
+exports.flushdb = function () {
+  db.flushdb()
 }
+
+exports.quit = function () {
+  db.quit()
+}
+
+exports.saveSync = function () {
+  // TBD save the DB -- can we do this syncronously????
+}
+
 
 // maps an IX DI to the directed id fo a host
 function mapDI ( host, ixDI ) {
