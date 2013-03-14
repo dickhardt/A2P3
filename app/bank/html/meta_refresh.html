@@ -2,7 +2,6 @@
 <html>
 <head>
 	<title>Start Agent</title>
-	<meta http-equiv="refresh" content="0;URL='$REDIRECT_URL'">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 	<meta name="viewport" content="width=device-width,initial-scale=1, maximum-scale=1,user-scalable=no">
 	<link rel="stylesheet" href="/css/style.css">
@@ -17,10 +16,57 @@
 </header> 
 <section class="mainContent">
 	<div class="mainContentWrap">
-		<H1>Your Personal Agent should be starting...</H1>
+		<H1 id="hiddentest">Your Personal Agent should be starting...</H1>
 		<p>
 		</p>
 	</div>
 </section>
+ <!-- iframe used for attempting to load a custom protocol -->
+<iframe style="display:none" height="0" width="0" id="loader">
+	
+</iframe>
+ 
+  <script>(function(){
+ 
+    // For desktop browser, remember to pass though any metadata on the link for deep linking
+    var fallbackLink = 'http://a2p3.net/';
+ 
+ 
+    // Simple device detection
+    var isiOS = navigator.userAgent.match('iPad') || navigator.userAgent.match('iPhone'),
+        isAndroid = navigator.userAgent.match('Android');
+ 
+    // Mobile
+    if (isiOS) {
+      // Load our custom protocol in the iframe, for Chrome and Opera this burys the error dialog (which is actually HTML)
+      // for iOS we will get a popup error if this protocol is not supported, but it won't block javascript
+      document.getElementById('loader').src = '$REDIRECT_URL';
+      
+      window.onblur = function(event) {
+        window.setTimeout(function (){ window.location.replace(fallbackLink); }, 1);
+      }
+ 
+      // The fallback link for Android needs to be https:// rather than market:// or the device will try to 
+      // load both URLs and only the last one will win. (Especially FireFox, where an "Are You Sure" dialog will appear)
+      // on iOS we can link directly to the App Store as our app switch will fire prior to the switch
+      // If you have a mobile web app, your fallback could be that instead. 
+      fallbackLink = 'itms-apps://itunes.apple.com/app/my-app/idxxxxxxxx?mt=8' ;
+      
+ 		
+
+    }
+ 
+    // Now we just wait for everything to execute, if the user is redirected to your custom app
+    // the timeout below will never fire, if a custom app is not present (or the user is on the Desktop)
+    // we will replace the current URL with the fallbackLink (store URL or desktop URL as appropriate)
+    window.setTimeout(function () { 
+    	//window.location.replace(fallbackLink); 
+    	}, 300);
+    
+  })();</script>
+  
+  <script>
+
+  </script>
 </body>
 </html>
