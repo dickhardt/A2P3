@@ -15,7 +15,6 @@
   , "marked": "*"
   , "apn": "*"
   , "debug": "*"
-  , "time": "*"
   , "redis": "*"
   }
 , "devDependencies":

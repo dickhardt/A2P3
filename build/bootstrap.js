@@ -61,7 +61,7 @@ function run ( complete ) {
   //  write out vault.json files for coreHostKeys
   Object.keys( coreHostKeys ).forEach( function (host) {
     coreHostKeys[host].private = identity.makeKey()
-    syncWriteJSON( coreHostKeys[host], 'app/'+host+'/vault.json' )
+    syncWriteJSON( coreHostKeys[host], projectRootDir + '/app/'+host+'/vault.json' )
   } )
 
   // NOTE: we cannot load db until registrar keys have been created or it will fail to load
@@ -71,17 +71,27 @@ function run ( complete ) {
   // an array of tasks and then execute them in order
   var tasks = []
 
+  var status = function( done, message ) {
+    console.log(message)
+    done( null, message )
+  }
+
   tasks.push( function (done) { db.initialize( null, done ) } )
+
+  if (config.database) { // we are in Redis land, so flush the DB
+    tasks.push( function (done) { db.flushdb( done ) } )
+  }
+
 
   // DI for all hosts
   var diRoot
   tasks.push( function (done) {
-    var hosts = []
+    var hosts = [config.host.registrar]
     for (var key in config.host) { hosts.push( config.host[ key ] ) }
     db.newUser( config.host.as, hosts, null, function ( e, dis ) {
       if (e) return done( e )
       diRoot = dis
-      done( null, "created root user")
+      status( done, "created root user")
     })
   })
 
@@ -119,7 +129,7 @@ function run ( complete ) {
         rsHostKeys[rs].keys[config.host.registrar] = rsHostKeys[rs].keys[config.host.ix] = keyObj
         // add key pair with setup
         rsHostKeys[rs].keys[config.host.setup] = setupVault.keys[config.host[rs]] = identity.makeKeyObj()
-        done ( null, "registered "+rs )
+        status( done, "registered "+rs )
       })
     })
   })
@@ -134,7 +144,7 @@ function run ( complete ) {
       var hostPeople = 'people.'+province
       rsHostKeys.people.keys[config.host[hostPeople]] = rsHostKeys[hostPeople].keys[config.host.people] = identity.makeKeyObj()
     })
-    done( null, 'setup standardized resources')
+    status( done, 'setup standardized resources')
   })
 
 
@@ -148,7 +158,7 @@ function run ( complete ) {
         db.newApp( 'email', config.host.si, 'Social Insurance', 'root', function ( e, keyObj) {
           if (e) done (e)
           rsHostKeys.si.keys[config.host.email] = keyObj
-            done( null, 'SI and Registrar registered at email RS')
+            status( done, 'SI and Registrar registered at email RS')
         })
       })
     })
@@ -165,7 +175,7 @@ function run ( complete ) {
         db.newApp( 'email', config.host[pReg], pReg, 'root', function ( e, keyObj) {
           if (e) done (e)
           rsHostKeys[pReg].keys[config.host.email] = keyObj
-          done( null, 'registered '+province+ ' for people and health at email RS')
+          status( done, 'registered '+province+ ' for people and health at email RS')
         })
       })
     })
@@ -179,7 +189,7 @@ function run ( complete ) {
       db.newApp( 'email', config.host.people, 'people', 'root', function ( e, keyObj) {
         if (e) done (e)
         rsHostKeys.people.keys[config.host.email] = keyObj
-        done( null, 'registered people and health at email RS')
+        status( done, 'registered people and health at email RS')
       })
     })
   })
@@ -195,13 +205,13 @@ function run ( complete ) {
       syncWriteJSON( rsHostKeys[rs], fullpath + '/vault.json')
       result.push( 'wrote vault.json for '+rs)
     })
-    done( null, result )
+    status( done, result )
   })
 
   // write out updated vault file for setup and registrar
   tasks.push( function (done) {
     syncWriteJSON( setupVault, projectRootDir + '/app/setup/vault.json')
-    done( null, 'wrote vault.json for setup and registrar' )
+    status( done, 'wrote vault.json for setup and registrar' )
   })
 
   /*
@@ -218,7 +228,7 @@ function run ( complete ) {
     db.newApp( 'registrar', config.host.clinic, 'Clinic', 'root', function ( e, keyObj ) {
       if (e) return done( e )
       appHostKeys.clinic.keys[config.host.registrar] = appHostKeys.clinic.keys[config.host.ix] = keyObj
-      done ( null, "clinic registered at Registrar" )
+      status( done, "clinic registered at Registrar" )
     })
   })
 
@@ -226,7 +236,7 @@ function run ( complete ) {
     db.newApp( 'registrar', config.host.bank, 'Bank', 'root', function ( e, keyObj ) {
       if (e) return done( e )
       appHostKeys.bank.keys[config.host.registrar] = appHostKeys.bank.keys[config.host.ix] = keyObj
-      done ( null, "Bank registered at Registrar" )
+      status( done, "Bank registered at Registrar" )
     })
   })
 
@@ -245,7 +255,7 @@ function run ( complete ) {
             db.newApp( pReg, config.host.clinic, 'Clinic', 'root', function ( e, keyObj) {
               if (e) done (e)
               appHostKeys.clinic.keys[config.host[pReg]] = keyObj
-              done( null, 'registered clinic at '+hReg+' & '+pReg)
+              status( done, 'registered clinic at '+hReg+' & '+pReg)
             })
           })
         })
@@ -255,7 +265,7 @@ function run ( complete ) {
 
   tasks.push( function (done) {
     syncWriteJSON( appHostKeys.clinic, projectRootDir + '/app/clinic/vault.json')
-    done( null, 'wrote vault.json for clinic' )
+    status( done, 'wrote vault.json for clinic' )
   })
 
   // bank app
@@ -265,7 +275,7 @@ function run ( complete ) {
       db.newApp( reg, config.host.bank, 'Bank', 'root', function ( e, keyObj) {
         if (e) done (e)
         appHostKeys.bank.keys[config.host[reg]] = keyObj
-        done( null, 'registered bank at '+reg)
+        status( done, 'registered bank at '+reg)
       })
     })
   })
@@ -277,7 +287,7 @@ function run ( complete ) {
         if (e) done (e)
         appHostKeys.bank.keys[config.host.si] = keyObj
         syncWriteJSON( appHostKeys.bank, projectRootDir + '/app/bank/vault.json')
-        done (null, 'added bank to si RS, and wrote out vault.json for bank')
+        status( done, 'added bank to si RS, and wrote out vault.json for bank')
       })
     })
   })

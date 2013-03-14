@@ -95,16 +95,27 @@ exports.initialize = function (dbNumber, cb) {
 *   clear the database. Yes, like really throw everything away!
 *   used for test scripts and debugging
 */
-exports.flushdb = function () {
-  db.flushdb()
+exports.flushdb = function ( cb ) {
+  db.flushdb( cb )
 }
 
-exports.quit = function () {
-  db.quit()
+exports.quit = function ( cb ) {
+  db.quit( cb )
 }
 
 exports.saveSync = function () {
   // TBD save the DB -- can we do this syncronously????
+  //console.error( 'db.saveSync() to be implemnted!!!' )
+}
+
+exports.saveSnapshotSync = function ( name ) {
+  // TBD
+  //console.error( 'db.saveSnapshotSync() to be implemnted!!!', name )
+}
+
+exports.restoreSnapshotSync = function  ( name ) {
+  // TBD
+ // console.error( 'db.restoreSnapshotSync() to be implemnted!!!', name )
 }
 
 
@@ -126,7 +137,10 @@ exports.mapDI = mapDI
 function newKeyObj ( reg, id, cb ) {
   var keyObj = identity.makeKeyObj()
   var keyStr = JSON.stringify( keyObj )
-  db.hset( 'keychain:'+reg, id, keyStr, cb )
+  db.hset( 'keychain:'+reg, id, keyStr, function( e ) {
+    if (e) return cb( e )
+    cb( null, keyObj )
+  })
 }
 
 function getKeyObj ( reg, id, cb ) {
@@ -165,7 +179,7 @@ exports.addAgent = function ( asDI, asHost, name, cb ) {
       .set( 'ix:di:' + ixDI + ':handle:' + handle + ':token', token )
       .set( 'registrar:agentHandle:' + token, ixDI )  // registrarDI - need ixDI to map to RS for Authorization calls
       .exec( function ( e ) {
-        cb( e, token, handle )
+        return cb( e, token, handle )
       })
   })
 }
@@ -175,6 +189,12 @@ exports.listAgents = function ( asDI, asHost, cb ) {
     if (e) return cb( e )
     db.hgetall( 'ix:di:' + ixDI, function ( e, agents ) {
       if ( e ) return cb( e )
+
+// console.log('db.listAgents() agents',agents)
+
+      if (!agents) {
+        return cb( null, null )
+      }
       // don't want to share agent AS with other AS, just return what is needed for User to decide
       var results = {}
       Object.keys(agents).forEach( function ( handle ) {
@@ -182,8 +202,8 @@ exports.listAgents = function ( asDI, asHost, cb ) {
         try { agentObj = JSON.parse( agents[handle] ) }
         catch(e) { return cb( e ) }
         results[handle] =
-          { name: agentObj[handle].name
-          , created: agentObj[handle].created
+          { name: agentObj.name
+          , created: agentObj.created
           }
       })
       cb( null, results )
@@ -221,7 +241,7 @@ exports.validAgent = function ( token, cb ) {
 }
 
 exports.getAppName = function ( id, cb ) {
-  db.get( 'registrar:app:' + id + ':name', cb )
+  db.hget( 'registrar:app:' + id, 'name', cb )
 }
 
 exports.checkRegistrarAppIdTaken = function ( id, cb ) {
@@ -281,6 +301,7 @@ exports.appDetails = function ( reg, admin, id, cb ) {
     db.hgetall( reg + ':app:' + id, function ( e, results ) {
       if (e) return cb( e )
       if (!results) return cb( new Error('INVALID_APP_ID') )
+        results.anytime = (results.anytime == 'true') // convert from string to boolean
       db.hgetall( reg + ':app:' + id + ':admins', function ( e, admins ) {
         if (e) return cb( e )
         if (!admins) return cb( new Error('UNKNOWN_ERROR') )
@@ -315,16 +336,16 @@ exports.appDetails = function ( reg, admin, id, cb ) {
 exports.newApp = function ( reg, id, name, adminEmail, anytime, cb ) {
   if (typeof anytime === 'function') {
     cb = anytime
-    anytime = null
+    anytime = 'NA'
   }
-  db.exists( reg + ':app:' + id, function ( exist ) {
+  db.exists( reg + ':app:' + id, function ( e, exist ) {
     if ( exist ) {
       var err = new Error('"'+ id + '" already registered')
       err.code = 'APP_ID_ALREADY_REGISTERED'
       return cb( err )
     }
     var app = { name: name }
-    if ( (reg == 'registrar') && (anytime !== null) ) app.anytime = anytime
+    if ( (reg == 'registrar') && (anytime !== 'NA') ) app.anytime = anytime
     db.multi()
       .hmset( reg + ':app:' + id, app )
       .hset( reg + ':app:' + id + ':admins', adminEmail, 'ACTIVE' )
@@ -453,24 +474,40 @@ exports.getAppKey = function ( reg, id, vaultKeys, cb ) {
 
 // used by Registrar to check if list of RS are Anytime and then get keys
 exports.getAnytimeAppKeys = function ( list, vaultKeys, cb ) {
-  var tasks = {}
+
+// console.log('\n getAnytimeAppKeys() searching:',list)
+
+  var tasks = []
+  var results = {}
   list.forEach( function ( id ) {
-    db.hget( 'registrar:app:' + id, 'anytime', function ( e, anytime ) {
-      if (e) return cb( e )
-      if (anytime) {
-        tasks[id] = function ( done ) {
+    tasks.push( function ( done ) {
+      db.hget( 'registrar:app:' + id, 'anytime', function ( e, anytime ) {
+        if (e) return done( e )
+
+// console.log('\n getAnytimeAppKeys() anytime:"'+anytime+'"\n')
+
+        if (anytime == "true") {
           getKeyObj( 'registrar', id, function ( e, keyObj ) {
             if (e) return done( e )
             if (!keyObj && vaultKeys) {
               keyObj = vaultKeys[id]
             }
-            done( e, keyObj )
+            results[id] = keyObj
+            done( null )
           })
+        } else {
+          done( null )
         }
-      }
+      })
     })
   })
-  async.parallel( tasks, cb )
+  async.parallel( tasks, function ( e ) {
+    if (e) return cb( e )
+
+// console.log('\n getAnytimeAppKeys() results\n',results)
+
+    cb( null, results)
+  })
 
   // var tasks = {}
   // list.forEach( function ( id ) {
@@ -529,8 +566,10 @@ exports.newUser = function ( asHost, rsHosts, redirects, cb ) {
       multi.sadd( 'ix:redirect:di:' + ixDI + ':' + std, redirects[std] )
     })
   }
-  multi.exec( cb )
-
+  multi.exec( function ( e ) {
+    if (e) return cb( e )
+    cb( null, dis )
+  })
   // // store DI pointers
   // dummyNoSql['ix:di:' + ixDI] = {}
   // Object.keys( config.roles.as ).forEach( function (asHost) {
@@ -625,7 +664,7 @@ exports.deleteAgentFromHandle = function ( as, handle, cb) {
   db.get( as + ':agent:handle:' + handle, function ( e, device ) {
     if (e) return cb( e )
     if (!device) return cb( new Error('Agent handle "'+handle+'" not found') )
-    db.mult()
+    db.multi()
       .del( as + ':agent:device:' + device )
       .del( as + ':agent:handle:' + handle )
       .exec( cb )
@@ -660,10 +699,13 @@ exports.updateProfile = function ( rs, di, profile, cb ) {
 exports.getProfile = function ( rs, di, cb ) {
   db.hgetall( rs + ':di:' + di + ':profile', function ( e, profile ) {
     if (e) return cb( e )
-    if (!profile) {
+
+// console.log('db.getProfile profile:\n',profile)
+
+    if (!profile || profile == {}) {
       var err = new Error('unknown user')
       err.code = "UNKNOWN_USER"
-      cb( e )
+      return cb( err )
     }
     cb( null, profile)
   })
@@ -684,11 +726,14 @@ exports.getProfile = function ( rs, di, cb ) {
 
 exports.deleteProfile = function ( rs, di, cb ) {
   var key = rs + ':di:' + di + ':profile'
-  db.exists( key, function ( exists ) {
+  db.exists( key, function ( e, exists ) {
+
+// console.log('db.deleteProfile()\ne:',e,'\nexists:',exists)
+
     if (!exists) {
-      var e = new Error('unknown user')
-      e.code = "UNKNOWN_USER"
-      cb( e )
+      var err = new Error('unknown user')
+      err.code = "UNKNOWN_USER"
+      return cb( err )
     }
     db.del( key, cb)
   })
@@ -755,16 +800,19 @@ exports.retrieveSeries = function ( rs, di, series, cb ) {
 */
 // create an OAuth access token
 exports.oauthCreate = function ( rs, details, cb) {
+  details.lastAccess = details.created = Date.now().toString()
+  // need to serialize scopes
+  details.scopes = JSON.stringify( details.scopes )
+
+// console.log('oauthCreate() details\n',details)
+
   var accessToken = jwt.handle()
-  var appID = details.app
   var keyAccess = rs + ':oauth:' + accessToken
   // NOTE: an App may have multiple Access Tokens, and with different priveleges
-
-  details.lastAccess = details.created = Date.now()
   db.hmset( keyAccess, details, function ( e ) {
     if (e) return cb( e )
     var keyDI = rs + ':oauthGrants:' + details.sub
-    db.hset( keyDI, accessToken, appID, function ( e ) {
+    db.hset( keyDI, accessToken, details.app, function ( e ) {
       if (e) return cb( e )
       cb( null, accessToken )
     })
@@ -786,9 +834,11 @@ exports.oauthRetrieve = function ( rs, accessToken, cb ) {
     if (!details) {
       var err = new Error('Invalid Access Token:'+accessToken )
       err.code = "INVALID_ACCESS_TOKEN"
-      cb( err )
+      return cb( err )
     }
-    db.hset( keyAccess, 'lastAccess', Date.now() )
+    try { details.scopes = JSON.parse( details.scopes ) }
+    catch(e) { cb( e ) }
+    db.hset( keyAccess, 'lastAccess', Date.now().toString() )
     cb( null, details )
   })
 
@@ -807,6 +857,9 @@ exports.oauthRetrieve = function ( rs, accessToken, cb ) {
 // list which apps have been granted OAuth access tokens
 exports.oauthList = function ( rs, di, cb ) {
   var keyDI = rs + ':oauthGrants:' + di
+
+// console.log('\n oauthList() getting grants for:', keyDI, '\n')
+
   db.hkeys( keyDI, function ( e, grants ) {
     if (e) return cb( e )
     if (!grants) return cb( null )
@@ -816,6 +869,8 @@ exports.oauthList = function ( rs, di, cb ) {
       tasks.push( function( done ) {
         db.hgetall( keyAccess, function ( e, details) {
           if (e) return done( e )
+          try { details.scopes = JSON.parse( details.scopes ) }
+          catch(e) { cb( e ) }
           db.hget( rs + ':app:' + details.app, 'name', function ( e, name ) {
             if (e) return done( e )
               details.name = name
@@ -825,6 +880,9 @@ exports.oauthList = function ( rs, di, cb ) {
       })
     })
     async.parallel( tasks, function ( e, detailsList ) {
+
+// console.log('\n oauthList() detailsList\n',detailsList)
+
       var results = {}
       detailsList.forEach( function ( details ) {
         var appID = details.app
@@ -835,6 +893,9 @@ exports.oauthList = function ( rs, di, cb ) {
         results[appID].resources = results[appID].resources || []
         results[appID].resources = underscore.union( results[appID].resources, details.scopes )
       })
+
+// console.log('\n oauthList() results\n',results)
+
       cb( null, results )
     })
   })
@@ -888,7 +949,7 @@ exports.oauthDelete = function ( rs, di, appID, cb ) {
 exports.createNotificationCode = function ( device, cb ) {
   var code = jwt.handle()
   var key = 'as:notification:'+code
-  db.key( key, device, function ( e ) {
+  db.set( key, device, function ( e ) {
     if (e) return cb( null )
     cb( code )
   })

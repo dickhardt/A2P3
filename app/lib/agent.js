@@ -94,8 +94,8 @@ Create.prototype.listAuthorizations = function ( list , cb ) {
         })
       })
 
-// console.log('\nlistAuthorizations results\n',results)
-// console.log('\nlistAuthorizations response\n',response)
+console.log('\nlistAuthorizations results\n',results)
+console.log('\nlistAuthorizations response\n',response)
 
       cb( e, response )
     })

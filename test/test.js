@@ -28,12 +28,6 @@ report app
 
 var config = require('../app/config')
 
-// can't test with Facebook enabled, need to be in Dev mode
-if (config.facebook.appId) {
-  config.facebook.appId = null
-  config.facebook.appSecret = null
-}
-
 var should = require('chai').should()
   , querystring = require('querystring')
   , urlParse = require('url').parse
@@ -45,6 +39,7 @@ var should = require('chai').should()
   , jwt = require('../app/lib/jwt')
   , agent = require('../app/lib/agent')
   , vaultRegistrar = require('../app/registrar/vault')
+  , db = require('../app/lib/db')
 
 var devUser =
     { label: 'Dev'
@@ -85,10 +80,19 @@ function restoreDatabase( done ) {
 describe('Restoring ', function () {
   describe('Database', function () {
     it('should just happen', function (done) {
-      restoreDatabase( done )
+      if (config.database) { // we are using Redis database
+        //  yeah, so this does not work since we build new keys that are then out of sync
+        // so need to do `npm run bootstrap` prior to tests
+        // require('../build/bootstrap').run( done )
+        db.initialize( 0, done )
+      } else {  // JSON dev database
+        restoreDatabase( done )
+      }
     })
   })
 })
+
+
 
 function createUser ( user ) {
   describe('Setup ' + user.label + ' User Enroll', function () {

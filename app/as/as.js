@@ -169,28 +169,13 @@ function registerAgentCode ( req, res, next ) {
   } )
 }
 
-// API called by register web app to generate an agent registration code
-function registerAgentCode ( req, res, next ) {
-  var passcode = req.body.passcode
-  var di = req.session.di
-  var code = jwt.handle()
-  db.updateProfile( 'as'
-                  , code
-                  , {'passcode': passcode, 'di': di }
-                  , function ( e ) {
-    if (e) return next( e )
-    var qrURL = 'a2p3.net://enroll?code=' + code
-    return res.send( { result: {qrURL: qrURL, code: code } } )
-  } )
-}
-
 // called by web app to see if we have completed enrollment
 function checkCode( req, res ) {
   if (!req.body.code)
     return res.send( { error: 'No code provided' } )
   // if profile is gone, then we have registered
   db.getProfile( 'as', req.body.code, function ( e, profile ) {
-    if ( e && e.code != 'UNKNOWN_USER') res.send( { error: e.message } )
+    if ( e && e.code != 'UNKNOWN_USER') return res.send( { error: e.message } )
     var response = { result: { success: true } }
     if ( profile )
       response.status = 'waiting'
