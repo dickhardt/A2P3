@@ -63,13 +63,14 @@ var config = {};
 
 /*
  * Common utility to canculate width and height of the qr code.
- * Depends on jquery.  Returns a minimum of 120 if browser is too small;
+ * Depends on jquery.  Returns a minimum of 120 if browser is too small and
+ * a maximum of 400 as to not make the person lean back in their chair.
  */
 function getQRCodeSize () {
 	var height = $(document).height(); 
 	var width = $(document).width();
+
+	var max = Math.min(height, width, 400 + 120);
 	
-	var min = Math.min (height, width);
-	
-	return Math.max(min - 120, 120);
+	return Math.max(max - 120, 120);
 }
