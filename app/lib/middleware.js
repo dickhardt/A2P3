@@ -15,8 +15,6 @@ var config = require('../config')
   , db = require('./db')
   , fs = require('fs')
   , marked = require('marked')
-  , time = require('time')
-  , dateFormat = require('dateformat')
 
 // outputs trace information if added to middleware
 exports.trace = function trace ( req, res, next ) {
@@ -96,7 +94,6 @@ exports.a2p3Params = function ( params ) {
   }
 }
 
-time.tzset('US/Pacific')  // show time in PST
 // custom logger that color codes non 200 stats codes and A2P3 errors
 exports.colorLogger = function colorLogger ( express ) {
 
@@ -105,14 +102,10 @@ exports.colorLogger = function colorLogger ( express ) {
   }
 
 
-  express.logger.token( 'remoteIP', function (req, res) {
-    var remoteIP = req.headers['x-real-ip'] || req.ip
+  express.logger.token( 'remoteIP', function ( req ) {
+    var remoteIP = req.headers['x-real-ip'] || req.ip || 'UNKNOWN'
     remoteIP = remoteIP.replace('::ffff:','')
     return  remoteIP
-    })
-
-  express.logger.token( 'localTime', function (req, res) {
-    return  dateFormat( time.Date(), "isoDateTime" )
     })
 
   express.logger.token( 'wideHost', function (req, res) {

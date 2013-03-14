@@ -24,12 +24,13 @@ var portListen = port
 */
 
 var dotcloud = null
-if ( fs.existsSync( '/home/dotcloud/environment.json' ) ) {
+var envPath = __dirname
+envPath = envPath.replace('app', '')
+if ( fs.existsSync( envPath + 'environment.json' ) ) {
   dotcloud = require( '../environment.json' )
 }
 
-exports.dotcloud = dotcloud
-if (dotcloud) {
+if (process.env.DOTCLOUD_ENVIRONMENT) {
   port = '80'
   baseDomain = 'a2p3.net'
   scheme = 'http'
@@ -37,7 +38,19 @@ if (dotcloud) {
   console.log('\n****** DOTCLOUD DEPLOYMENT MAGIC *******\n')
 }
 
-console.log('config.dotcloud',dotcloud)
+console.log('config.dotcloud\n',dotcloud)
+
+/*
+* Check if we have a Redis database available and grab config if we do
+*/
+var database = null
+if ( dotcloud ) {
+  database =
+    { port: dotcloud.DOTCLOUD_DATA_REDIS_PORT
+    , host: dotcloud.DOTCLOUD_DATA_REDIS_HOST
+    , password:  dotcloud.DOTCLOUD_DATA_REDIS_PASSWORD
+  }
+}
 
 /*
 *   The following builds out the configuration for all the hosts
@@ -100,15 +113,6 @@ exports.testProfile =
     }
 exports.testUser = profile
 
-
-/*
-*   Insert Facebook App credentials if you want to Setup to use Facebook to gather data
-*/
-exports.facebook =
-  { appID: null
-  , appSecret: null
-  }
-
 /*
 * Edit roles.as entry to add additional Authentication Servers
 */
@@ -170,6 +174,8 @@ exports.baseUrl = baseUrl
 exports.roles = roles
 exports.provinces = provinces
 exports.rootAppDir = __dirname
+exports.database = database
+exports.dotcloud = dotcloud
 
 // how long requests and tokens are valid for
 exports.maxTokenAge = 5 * 60 // 5 minutes

@@ -8,6 +8,7 @@
 
 var fs = require('fs')
   , underscore = require('underscore')
+  , async = require('async')
   , config = require('../config')
   , crypto = require('crypto')
   , b64url = require('./b64url')
@@ -26,6 +27,9 @@ if ( !fExist ) {
 var dummyNoSql = require('../nosql.json')
 var keyChain = dummyNoSql.keyChain
 
+exports.initialize = function (dbNumber, cb) {
+  process.nextTick( function () { cb( null ) } )
+}
 
 // save DB state
 exports.saveSync = function saveSync () {
@@ -54,7 +58,6 @@ exports.restoreSnapshotSync = function restoreSnapshotSync ( name ) {
   }
 }
 
-
 // maps an IX DI to the directed id fo a host
 function mapDI ( host, ixDI ) {
   var input = vaultIX.secret + host + ixDI
@@ -64,6 +67,32 @@ function mapDI ( host, ixDI ) {
   return di
 }
 exports.mapDI = mapDI
+
+
+/*
+*   Functions to create, get and delete Key Objects
+*/
+// generate new app keys and add to Vault
+function newKeyObj ( reg, id, cb ) {
+  var keyObj = identity.makeKeyObj()
+  keyChain[reg] = keyChain[reg] || {}
+  keyChain[reg][id] = keyObj
+  process.nextTick( function () { cb( null, keyObj ) } )
+}
+
+function getKeyObj ( reg, id, cb ) {
+  var keyObj = null
+  if ( keyChain[reg] && keyChain[reg][id] )
+    keyObj = keyChain[reg][id]
+  process.nextTick( function () { cb( null, keyObj ) } )
+}
+
+function deleteKeyObj ( reg, id, cb ) {
+  if ( keyChain[reg] && keyChain[reg][id] )
+    delete keyChain[reg][id]
+  process.nextTick( function () { cb( null ) } )
+}
+
 
 /*
 * functions to add, list and delete agents from IX and Registrar DB
@@ -154,13 +183,7 @@ exports.checkAdminAuthorization = function ( reg, id, di, cb ) {
 /*
 * General App Registration Functions
 */
-// generate new app keys and add to Vault
-function newKeyObj( reg, id ) {
-  var keyObj = identity.makeKeyObj()
-  keyChain[reg] = keyChain[reg] || {}
-  keyChain[reg][id] = keyObj
-  return keyObj
-}
+
 
 // called when an admin logs in to link email with DI
 exports.registerAdmin = function ( reg, adminEmail, di, cb ) {
@@ -187,14 +210,17 @@ exports.appDetails = function ( reg, admin, id, cb ) {
     e.code = "ACCESS_DENIED"
     process.nextTick( function () { cb( e ) } )
   }
-  var result =
-    { name: dummyNoSql[reg + ':app:' + id + ':name']
-    , admins: dummyNoSql[reg + ':app:' + id + ':admins']
-    , keys: keyChain[reg][id]
-    }
-  if (reg == 'registrar')
-    result.anytime = dummyNoSql[reg + ':app:' + id + ':anytime']
-  process.nextTick( function () { cb( null, result ) } )
+  getKeyObj( reg, id, function ( e, keys ) {
+    if (e) return cb( e )
+    var result =
+      { name: dummyNoSql[reg + ':app:' + id + ':name']
+      , admins: dummyNoSql[reg + ':app:' + id + ':admins']
+      , keys: keys
+      }
+    if (reg == 'registrar')
+      result.anytime = dummyNoSql[reg + ':app:' + id + ':anytime']
+    process.nextTick( function () { cb( null, result ) } )
+  })
 }
 
 
@@ -220,8 +246,9 @@ exports.newApp = function ( reg, id, name, adminEmail, anytime, cb ) {
   dummyNoSql[reg + ':admin:' + adminEmail + ':apps'] = dummyNoSql[reg + ':admin:' + adminEmail + ':apps'] || {}
   dummyNoSql[reg + ':admin:' + adminEmail + ':apps'][id] = 'ACTIVE'
   // gen key pair
-  var keyObj = newKeyObj( reg, id )
-  process.nextTick( function () { cb( null, keyObj ) } )
+  newKeyObj( reg, id, function ( e, keyObj ) {
+    cb( e, keyObj )
+  })
 }
 
 exports.checkApp = function ( reg, id, di, cb) {
@@ -259,66 +286,65 @@ exports.deleteAppAdmin = function ( reg, id, admin, cb ) {
 
 exports.deleteApp = function ( reg, id, cb ) {
   delete dummyNoSql[reg + ':app:' + id + ':name']
-  delete keyChain[reg][id]
-  var admins = Object.keys( dummyNoSql[reg + ':app:' + id + ':admins'] )
-  admins.forEach( function (admin) {
-    delete dummyNoSql[reg + ':admin:' + admin + ':apps'][id]
+  deleteKeyObj( reg, id, function ( e ) {
+    var admins = Object.keys( dummyNoSql[reg + ':app:' + id + ':admins'] )
+    admins.forEach( function (admin) {
+      delete dummyNoSql[reg + ':admin:' + admin + ':apps'][id]
+    })
+    process.nextTick( function () { cb( null ) } )
   })
-  process.nextTick( function () { cb( null ) } )
 }
 
 exports.refreshAppKey = function ( reg, id, cb ) {
-  var keyObj = newKeyObj( reg, id )
-  process.nextTick( function () { cb( null, keyObj ) } )
+  newKeyObj( reg, id, function ( e, keyObj ) {
+    cb( e, keyObj )
+  })
 }
 
 exports.getAppKey = function ( reg, id, vaultKeys, cb ) {
-  var key = null
-    , error = null
-  if (reg && keyChain[reg])
-    key = keyChain[reg][id]
-  if (!key && vaultKeys) {
-    key = vaultKeys[id]
-  }
-  if (!key) {
-    error = new Error('No key found for "'+id+'"')
-  }
-  process.nextTick( function () { cb( error, key ) } )
+  getKeyObj( reg, id, function ( e, key) {
+    if (!key) key = vaultKeys[id]
+    if (!key) cb( new Error('No key found for "'+id+'"') )
+    cb( null, key )
+  })
 }
 
 // used by Registrar to check if list of RS are Anytime and then get keys
 exports.getAnytimeAppKeys = function ( list, vaultKeys, cb ) {
-  var keys = {}
+  var tasks = {}
   list.forEach( function ( id ) {
     if (dummyNoSql['registrar:app:' + id + ':anytime']) {
-      var key = keyChain.registrar[id]
-      if (!key && vaultKeys) {
-        key = vaultKeys[id]
+      tasks[id] = function ( done ) {
+        getKeyObj( 'registrar', id, function ( e, keyObj ) {
+          if (e) return done( e )
+          if (!keyObj && vaultKeys) {
+            keyObj = vaultKeys[id]
+          }
+          done( e, keyObj )
+        })
       }
-      keys[id] = key
     }
   })
-  process.nextTick( function () { cb( null, keys ) } )
+  async.parallel( tasks, cb )
 }
 
+// get Keys for all the apps in the list
 exports.getAppKeys = function ( reg, list, vaultKeys, cb ) {
-  var keys = {}
-    , notFound = false
-    , e = null
-
-  list.forEach( function (id) {
-    keys[id] = keyChain[reg] && keyChain[reg][id]
-    if (!keys[id] && vaultKeys && vaultKeys[id]) {
-      keys[id] = vaultKeys[id]
+  var tasks = {}
+  list.forEach( function ( id ) {
+    tasks[id] = function ( done ) {
+      getKeyObj( reg, id, function ( e, keyObj ) {
+        if (e) return done( e )
+        if (!keyObj && vaultKeys) {
+          keyObj = vaultKeys[id]
+        }
+        done( null, keyObj )
+      })
     }
-    if (!keys[id]) notFound = id
   })
-  if (notFound) {
-    e = new Error('Key not found for:'+notFound)
-    e.code = "UNKOWN_RESOURCE"
-  }
-  process.nextTick( function () { cb( e, keys ) } )
+  async.parallel( tasks, cb )
 }
+
 
 /*
 * IX DB functions
@@ -614,7 +640,7 @@ exports.logAgentReport = function ( token, request, appID, cb ) {
   dummyNoSql[appKey] = dummyNoSql[appKey] || {}
   dummyNoSql[appKey][token] =  time
   dummyNoSql[reportsKey] = dummyNoSql[reportsKey] || []
-  dummyNoSql[reportsKey].push( appID )
+  dummyNoSql[reportsKey][appID] = time
   process.nextTick( function () { cb( null ) } )
 }
 

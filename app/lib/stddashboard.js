@@ -49,13 +49,13 @@ exports.routes = function ( app, RS, vault ) {
     stdApi.call( 'registrar', '/app/verify'
                 , {id: req.body.id, token: req.session.tokens[config.host.registrar]}
                 , function ( e, result ) {
-      if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
+      if (e) { e.code = e.code || "INTERNAL_ERROR"; return next(e) }
       db.newApp( RS, req.body.id, result.name, req.session.email, function ( e ) {
-        if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
+        if (e) { e.code = e.code || "INTERNAL_ERROR"; return next(e) }
         _callAllResources( '/std/new/app'
                     , {id: req.body.id, name: result.name, email: req.session.email}
                     , function ( e, results ) {
-          if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
+          if (e) { e.code = e.code || "INTERNAL_ERROR"; return next(e) }
           var keys = {}
           Object.keys( results ).forEach( function ( host ) {
             keys[config.host[host]] = results[host].key
@@ -68,9 +68,9 @@ exports.routes = function ( app, RS, vault ) {
 
   function dashboardDeleteApp ( req, res, next ) {
     _callAllResources( '/std/delete/app', {id: req.body.id}, function ( e ) {
-      if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
+      if (e) { e.code = e.code || "INTERNAL_ERROR"; return next(e) }
       db.deleteApp( RS, req.body.id, function ( e ) {
-        if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
+        if (e) { e.code = e.code || "INTERNAL_ERROR"; return next(e) }
         return res.send( {result:{success: true }} )
       })
     })
@@ -78,7 +78,7 @@ exports.routes = function ( app, RS, vault ) {
 
   function dashboardRefreshKey ( req, res, next ) {
     _callAllResources( '/std/refresh/key', {id: req.body.id}, function ( e, results ) {
-      if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
+      if (e) { e.code = e.code || "INTERNAL_ERROR"; return next(e) }
       var keys = {}
       Object.keys( results ).forEach( function ( host ) {
         if (results[host].key) {
@@ -91,7 +91,7 @@ exports.routes = function ( app, RS, vault ) {
 
   function dashboardGetKey ( req, res, next ) {
     _callAllResources( '/std/getkey', {id: req.body.id}, function ( e, results ) {
-      if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
+      if (e) { e.code = e.code || "INTERNAL_ERROR"; return next(e) }
       var keys = {}
       Object.keys( results ).forEach( function ( host ) {
         if (results[host].key) {

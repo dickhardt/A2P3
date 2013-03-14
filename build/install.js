@@ -22,20 +22,22 @@ if ( fs.existsSync('./app/config.js') && !process.env.DOTCLOUD_PROJECT ) {
   console.log('Edit ./app/config.js to change local behaviour')
 }
 
-// safe to pull in config now
-var config = require('../app/config')
+// // safe to pull in config now
+// var config = require('../app/config')
 
-if ( !config.db && fs.existsSync('./app/nosql.json') ) {
-  console.log('Copying ./app/default.nosql.json -> ./app/nosql.json')
-  copyFileSync( './app/default.nosql.json', './app/nosql.json')
-}
+// if ( !config.db && !fs.existsSync('./app/nosql.json') ) {
+//   console.log('Copying ./app/default.nosql.json -> ./app/nosql.json')
+//   copyFileSync( './app/default.nosql.json', './app/nosql.json')
+// }
 
-require('./bootstrap').run( function ( e ) { // run bootstrap to build default vaults and register default apps
-  if (e) {
-    console.log(e)
-    process.exit(1)
-  } else {
-    process.exit(0)
-  }
-})
+// invoke bootstrap with 'npm run bootstrap' so that it only happens when we want it to
+
+// require('./bootstrap').run( function ( e ) { // run bootstrap to build default vaults and register default apps
+//   if (e) {
+//     console.log(e)
+//     process.exit(1)
+//   } else {
+//     process.exit(0)
+//   }
+// })
 
