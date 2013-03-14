@@ -640,7 +640,7 @@ exports.logAgentReport = function ( token, request, appID, cb ) {
   dummyNoSql[appKey] = dummyNoSql[appKey] || {}
   dummyNoSql[appKey][token] =  time
   dummyNoSql[reportsKey] = dummyNoSql[reportsKey] || []
-  dummyNoSql[reportsKey].push( appID )
+  dummyNoSql[reportsKey][appID] = time
   process.nextTick( function () { cb( null ) } )
 }
 
