@@ -2,10 +2,11 @@ var config = {};
 // namespace wrapper function
 (function() {
 
-  config.protocol = window.location.protocol
-  config.fullhost = window.location.host
-  config.port = window.location.port
-  config.query = window.location.pathname
+  var url = $.url()
+  config.protocol = url.attr('protocol')
+  config.fullhost = url.attr('host')
+  config.port = url.attr('port')
+  config.query = url.attr('query')
   var parts =  config.fullhost.split('.')
   if (parts[1].length === 2) {  // we have a province
     config.province = parts[1]
@@ -85,3 +86,14 @@ Object.keys = Object.keys || function(o) {
     }  
     return result;  
 };
+
+/*
+ * Backwards compatibility for browsers missing forEach, e.g., IE 8
+ */
+if ( !Array.prototype.forEach ) {
+  Array.prototype.forEach = function(fn, scope) {
+    for(var i = 0, len = this.length; i < len; ++i) {
+      fn.call(scope, this[i], i, this);
+    }
+  }
+}
