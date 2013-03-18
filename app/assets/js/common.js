@@ -2,11 +2,10 @@ var config = {};
 // namespace wrapper function
 (function() {
 
-  var url = $.url()
-  config.protocol = url.attr('protocol')
-  config.fullhost = url.attr('host')
-  config.port = url.attr('port')
-  config.query = url.attr('query')
+  config.protocol = window.location.protocol
+  config.fullhost = window.location.host
+  config.port = window.location.port
+  config.query = window.location.pathname
   var parts =  config.fullhost.split('.')
   if (parts[1].length === 2) {  // we have a province
     config.province = parts[1]
@@ -74,3 +73,15 @@ function getQRCodeSize () {
 	
 	return Math.max(max - 120, 120);
 }
+
+/*
+ * Backwards compatibility for browsers mising Object.keys, e.g., IE 8
+ */
+Object.keys = Object.keys || function(o) {  
+    var result = [];  
+    for(var name in o) {  
+        if (o.hasOwnProperty(name))  
+          result.push(name);  
+    }  
+    return result;  
+};
