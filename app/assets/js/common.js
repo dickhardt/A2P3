@@ -63,13 +63,37 @@ var config = {};
 
 /*
  * Common utility to canculate width and height of the qr code.
- * Depends on jquery.  Returns a minimum of 120 if browser is too small;
+ * Depends on jquery.  Returns a minimum of 120 if browser is too small and
+ * a maximum of 400 as to not make the person lean back in their chair.
  */
 function getQRCodeSize () {
 	var height = $(document).height(); 
 	var width = $(document).width();
+
+	var max = Math.min(height, width, 400 + 120);
 	
-	var min = Math.min (height, width);
-	
-	return Math.max(min - 120, 120);
+	return Math.max(max - 120, 120);
+}
+
+/*
+ * Backwards compatibility for browsers mising Object.keys, e.g., IE 8
+ */
+Object.keys = Object.keys || function(o) {  
+    var result = [];  
+    for(var name in o) {  
+        if (o.hasOwnProperty(name))  
+          result.push(name);  
+    }  
+    return result;  
+};
+
+/*
+ * Backwards compatibility for browsers missing forEach, e.g., IE 8
+ */
+if ( !Array.prototype.forEach ) {
+  Array.prototype.forEach = function(fn, scope) {
+    for(var i = 0, len = this.length; i < len; ++i) {
+      fn.call(scope, this[i], i, this);
+    }
+  }
 }

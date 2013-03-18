@@ -1016,3 +1016,19 @@ hr {
 		text-align: center;
 	}
 }
+
+p.label_checkbox_pair {
+	clear: both;
+	float: none;
+	position: relative;
+}
+p.label_checkbox_pair input {
+	left: 0px;
+	position: absolute;
+	top: 1px;
+}
+p.label_checkbox_pair label {
+	display: block;
+	margin-left: 20px;
+	font-weight: bold;
+}
