@@ -3,8 +3,8 @@
 <head>
 <style type="text/css">
   .loginStatus {text-align:right;}
-  .registerAppForm{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:250px; height:200px; position: absolute; top:75px; left:50%; margin-left:-125px; padding:10px; border-radius:4px;}
-  .appDetailPopup{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:320px; height:300px; position: absolute; top:75px; left:5%; margin-left:-20px; padding:10px; border-radius:4px;}
+  .registerAppForm{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:250px; height:250px; position: absolute; top:75px; left:50%; margin-left:-125px; padding:10px; border-radius:4px;}
+  .appDetailPopup{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:320px; height:350px; position: absolute; top:75px; left:5%; margin-left:-20px; padding:10px; border-radius:4px;}
   .confirmDeleteForm{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:300px; height:120px; position: absolute; top:100px; left:10%; margin-left:-20px; padding:10px; border-radius:4px;}
   .addAppAdminForm{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:300px; height:120px; position: absolute; top:100px; left:10%; margin-left:-20px; padding:10px; border-radius:4px;}
 
@@ -51,12 +51,11 @@
 		          <label class="genericLabel" for="ApID" style="text-align: left;">ID</label>
 		          <input type="text" name="AppID" value="" id="registerApp_id_input">
 		        </dd>
-
-           <!-- Greg: would like the checkbox label to be right beside the checkbox -- size of the dialog needs to be adjusted -->
-
             <dt></dt><dd>
-              <label class="genericLabel" for="AppAnytime" style="text-align: left;">Anytime Resource</label>
+              <p class="label_checkbox_pair">
+              	<label for="AppAnytime">Anytime Resource</label>
               <input type="checkbox" name="AppAnytime" value="" id="registerApp_anytime_input">
+              </p>
               <br><br>
             </dd>
 		        <dt></dt><dd>
@@ -75,11 +74,11 @@
 		        <tr><td class="genericLabel" width="50px">Name:</td><td id="appDetails_Name"></td></tr>
 		        <tr><td class="genericLabel">ID:</td><td id="appDetails_ID"></td></tr>
 		        <tr><td class="genericLabel">Key:</td><td><textarea id="appKey"rows="3" style="width: 225px;" readonly="readonly"></textarea></td></tr>
-
-        <!-- Greg: please put the checkbox to the left and the label on the right -->
-
-            <tr><td class="genericLabel">Anytime Resource:</td><td><input type="checkbox" name="AppAnytime" value="" id="appDetails_Anytime" disabled="true">
-</td></tr>
+            <tr><td class="genericLabel"></td><td>
+            	<p class="label_checkbox_pair">
+            	<input type="checkbox" name="AppAnytime" value="" id="appDetails_Anytime" disabled="true">
+            	<label for="appDetails_Anytime">Anytime Resource</label></p>
+			</td></tr>
 
 		        <tr><td class="genericLabel">Key ID:</td><td id="appKID"></td></tr>
 		        <tr><td class="genericLabel">Admins:</td><td><a class="otherLinks" href="" id="addAppAdmin">add</a></td></tr>

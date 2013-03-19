@@ -205,13 +205,13 @@
           if ( status == 'success' && data) {
             // go back to Dashboard if not scanned in 3 minutes
             if (cycles++ > (3 * 120))
-              return window.location = SETUP_DASHBOARD
+              return window.location = SETUP_DASHBOARD;
             // still waiting for QR code to be scanned
             if ( data.status == 'waiting')
               return setTimeout( function () { checkCode( code ) }, 500)
             // we are logged in, goto Dashboard
             if (data.result) {
-              window.location = SETUP_DASHBOARD
+              window.location = SETUP_DASHBOARD;
             }
           }
         })
@@ -244,8 +244,8 @@
                 /// TBD - adjust size of popup and QR code to screen
                 // $('#qrcodeForm').fadeIn('fast')
                 $('#qrcodeForm').dialog({
-                  width : getQRCodeSize() + 70,
-                  height : getQRCodeSize() + 70
+                  width : getQRCodeSize() + 25,
+                  height : getQRCodeSize() + 80
                 });
                 $('#qrcode').qrcode({
                   width : getQRCodeSize(),
