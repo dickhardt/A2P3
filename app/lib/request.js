@@ -56,7 +56,7 @@ exports.verifyAndId = function ( request, RS, keys, callback ) {
       error.code = 'INVALID_REQUEST'
       return callback( error )
     }
-    if (!key[ jws.header.kid ]) {
+    if (!key || !key[ jws.header.kid ]) {
       e = new Error('No key found for "'+jws.payload.iss+'" with KID "'+jws.header.kid+'"')
       e.code = "INVALID_REQUEST"
       return callback( error )
