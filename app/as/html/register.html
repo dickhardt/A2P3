@@ -29,76 +29,50 @@
     <div class="mainContentWrap">
 
       <div class="mainContentSubTitle">Personal Agent Enrollment</div>
-      <div class="mainContentSubTitleTwo">You will need to have a
+      <div class="mainContentSubTitleTwo"><br>You will need to have a
         Personal Agent installed on your iOS device.</div>
       <div id="profile" class="mainContentDoubleWrap"
         style="margin-top: 10px;">
 
         <div>
           <div class="dashboardSection">
-            <form class="formIOS" method="get" id="iOSAgents"
-              action="/dashboard/agent/basic">
-              <div class="categoryTitle">
-                <span id="peopleServerLabel">PC Users</span>
-              </div>
-
-              <div class="dashboardCategoryTitleDetail">If you are
-                currently running on a PC click the button below add an agent.</div>
-
-              <input id="QRinstall" type="submit" value="Add Agent via PC"
-                ontouchstart="" class="buttonAddIOS">
-            </form>
-          </div>
-          <div class="dashboardSection">
-            <div class="categoryTitle">
-              <span id="peopleServerLabel">iOS Users</span>
-            </div>
-            <div class="dashboardCategoryTitleDetail">If you are
-              currently running on an iOS device, click the button below add an
-              agent.</div>
-
-            <input type="submit" value="Add Agent via iOS" ontouchstart=""
-              class="buttonCreateCLI" id="iOSinstall">
-          </div>
-
+			<!-- Dialogs -->
+			
+			  <div title="Personal Agent Passcode" id="passcodeForm">
+			    <div class="dashboardCategoryTitleDetail">Create a passcode and remember it. Reconfirm the passcode when your personal agent prompts you.</div>
+			    <form id="passcode_form_input">
+			
+			      <div class="cliDialogStyle">
+			        <span class="passcodeConfirmLabel"> <label
+			          for="passcode_input">Passcode</label> <input type="password" pattern="\d*"
+			          name="passcode" size="4" maxlength="4" value="" id="passcode_input"
+			          class="textAgentPasscode">
+			        </span>
+			      </div>
+			      <div class="cliDialogStyle">
+			        <span class="passcodeConfirmLabel"> <label
+			          for="passcode_input2">Confirm</label> <input type="password" pattern="\d*"
+			          name="passcode2" size="4" maxlength="4" value=""
+			          id="passcode_input2" class="textAgentPasscode">
+			        </span>
+			      </div>
+			      <div style="margin-top: 20px"
+			        class="ui-dialog-buttonpane ui-helper-clearfix"
+			        style="width:95%">
+			          <input class="genericButton" id="passcode_cancel" type="button"
+			            value="Cancel"> <input class="genericButton"
+			            id="passcode_next" type="button" value="Next">
+			       
+			      </div>
+			    </form>
+			  </div>
+	      </div>
         </div>
-
       </div>
     </div>
   </section>
 
   <section class="footerContent"></section>
-
-  <!-- Dialogs -->
-
-  <div title="Personal Agent Passcode" id="passcodeForm">
-    <div class="dashboardCategoryTitleDetail">Create a passcode and remember it. Reconfirm the passcode when your personal agent prompts you.</div>
-    <form id="passcode_form_input">
-
-      <div class="cliDialogStyle">
-        <span class="passcodeConfirmLabel"> <label
-          for="passcode_input">Passcode</label> <input type="password" pattern="\d*"
-          name="passcode" size="4" maxlength="4" value="" id="passcode_input"
-          class="textAgentPasscode">
-        </span>
-      </div>
-      <div class="cliDialogStyle">
-        <span class="passcodeConfirmLabel"> <label
-          for="passcode_input2">Confirm</label> <input type="password" pattern="\d*"
-          name="passcode2" size="4" maxlength="4" value=""
-          id="passcode_input2" class="textAgentPasscode">
-        </span>
-      </div>
-      <div style="margin-top: 20px"
-        class="ui-dialog-buttonpane ui-helper-clearfix"
-        style="width:95%">
-          <input class="ui-button" id="passcode_cancel" type="button"
-            value="Cancel"> <input class="ui-button"
-            id="passcode_next" type="button" value="Next">
-       
-      </div>
-    </form>
-  </div>
 
   <div title="Scan the QR Code with your Personal
       Agent"
@@ -110,10 +84,7 @@
 
 
     function onReady() {
-      $('#passcodeForm').hide()
       $('#qrcodeForm').hide()
-
-      var iOSinstall = false
 
       var SETUP_DASHBOARD = 'http://setup.' + config.baseDomain
       if (config.port && config.port != 80)
@@ -121,7 +92,7 @@
       SETUP_DASHBOARD += '/dashboard'
 
       function showPasscodeForm() {
-        $('#passcodeForm').dialog();
+        $('#passcodeForm').show();
         $('#passcode_input').val('').focus()
         $('#passcode_input2').val('')
         $('#status').text('Please enter four digits').css('color', 'black')
@@ -154,20 +125,8 @@
         }
       }
 
-      $('#QRinstall').click(function() {
-        iOSinstall = false
-        showPasscodeForm()
-        return false
-      })
-
-      $('#iOSinstall').click(function() {
-        iOSinstall = true
-        showPasscodeForm()
-        return false
-      })
-
       $('#passcode_cancel').click(function() {
-        $('#passcodeForm').dialog("close");
+        window.location = SETUP_DASHBOARD;
       })
 
       $('#passcode_input').bind(
@@ -219,6 +178,8 @@
 
       $('#passcode_next').click( function () {
         // get passcode
+        comparePasscodes(true);
+        
         var passcode = $('#passcode_input').val()
 
         $.ajaxSetup(
@@ -231,30 +192,24 @@
             ,function ( data, status ) {
               // TBD deal with errors  data.error exists ...
               if (data.error) {
-                $('#passcodeForm').fadeOut('fast')
                 return
               }
               var qrURL = data.result.qrURL
-              // TBD check we really got a URL!!!
-              if (iOSinstall) { // launch Personal Agent on iOS device!!! cross your fingers!
-                window.location = qrURL
-              } else {
-                $('#passcodeForm').dialog("close");
-
-                /// TBD - adjust size of popup and QR code to screen
-                // $('#qrcodeForm').fadeIn('fast')
-                $('#qrcodeForm').dialog({
-                  width : getQRCodeSize() + 25,
-                  height : getQRCodeSize() + 80
-                });
-                $('#qrcode').qrcode({
-                  width : getQRCodeSize(),
-                  height : getQRCodeSize(),
-                  text : qrURL
-                })
-                $('#qrcode').css({cursor: 'none'});
-                setTimeout( function () { checkCode( data.result.code ) }, 500 )
-              }
+				
+				/// TBD - adjust size of popup and QR code to screen
+				// $('#qrcodeForm').fadeIn('fast')
+				$('#qrcodeForm').dialog({
+				  width : getQRCodeSize() + 25,
+				  height : getQRCodeSize() + 80
+				});
+				$('#qrcode').qrcode({
+				  width : getQRCodeSize(),
+				  height : getQRCodeSize(),
+				  text : qrURL
+				})
+				$('#qrcode').css({cursor: 'none'});
+				setTimeout( function () { checkCode( data.result.code ) }, 500 )
+              
             })
         return false
       })
