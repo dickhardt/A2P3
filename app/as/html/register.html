@@ -250,8 +250,7 @@
                 $('#qrcode').qrcode({
                   width : getQRCodeSize(),
                   height : getQRCodeSize(),
-                  text : qrURL,
-                  render: 'table'
+                  text : qrURL
                 })
                 $('#qrcode').css({cursor: 'none'});
                 setTimeout( function () { checkCode( data.result.code ) }, 500 )
