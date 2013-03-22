@@ -136,7 +136,7 @@ function onReady() {
         if (status == "success" && !data.error && data.result && data.result.qrURL ) {
           $('#qrcode').empty()
           $('#qrcodeForm').fadeIn('fast')
-          $('#qrcode').qrcode( {width: getQRCodeSize(), height: getQRCodeSize(), text: data.result.qrURL, render: 'table' } )
+          $('#qrcode').qrcode( {width: getQRCodeSize(), height: getQRCodeSize(), text: data.result.qrURL } )
           $('#qrcode').css({cursor: 'none'});
           setTimeout( function () { checkQR( data.result.qrSession ) }, 500 )
         }
@@ -154,7 +154,7 @@ function onReady() {
         if (status == "success" && !data.error && data.result && data.result.qrURL && data.result.qrSession ) {
           $('#qrcode').empty()
           $('#qrcodeForm').fadeIn('fast')
-          $('#qrcode').qrcode( {width: getQRCodeSize(), height: getQRCodeSize(), text: data.result.qrURL, render: 'table' } )
+          $('#qrcode').qrcode( {width: getQRCodeSize(), height: getQRCodeSize(), text: data.result.qrURL } )
           $('#qrcode').css({cursor: 'none'});
           setTimeout( function () { checkQR( data.result.qrSession ) }, 500 )
         }
