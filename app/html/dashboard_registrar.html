@@ -295,7 +295,7 @@
           var item = 0  // use a counter since the app has '.'s which browser is cranky about in element IDs
           $('#appTable').append( "<thead><th style='width: 30%; text-align:left;'>Name</th><th style='width: 30%; text-align:left;'>Id</th></thead>" )
           $.each( list, function ( app ) {
-            html = '<tr><td><a class="otherLinks" href="" id="' + item +'_details">' + list[app].name +'</a>' +
+            html = '<tr><td><a class="otherLinks" href="" id="' + item +'_details">' + list[app] +'</a>' +
               '</td><td>' + app + '</td></tr>'
             $('#appTable').append( html )
             $('#'+item+'_details').click( function () { return showAppDetails( app, true ); } )

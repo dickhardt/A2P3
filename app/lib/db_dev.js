@@ -197,8 +197,7 @@ exports.listApps = function ( reg, admin, cb ) {
   var result = {}
   if (apps) {
     Object.keys(apps).forEach( function (id) {
-      result[id] =
-        { name: dummyNoSql[reg + ':app:' + id + ':name'] }
+      result[id] = dummyNoSql[reg + ':app:' + id + ':name']
     })
   }
   process.nextTick( function () { cb( null, result ) } )
