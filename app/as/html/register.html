@@ -206,7 +206,7 @@
 				  width : getQRCodeSize(),
 				  height : getQRCodeSize(),
 				  text : qrURL,
-				  render: 'table'
+				  render: getQRCodeRenderType()
 				})
 				$('#qrcode').css({cursor: 'none'});
 				setTimeout( function () { checkCode( data.result.code ) }, 500 )
