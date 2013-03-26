@@ -631,14 +631,17 @@ form {
 
 .tableRowAgentName {
 	width: 45%;
+	text-align:left;
 }
 
 .tableRowAgentDate {
 	width: 35%;
+	text-align:left;
 }
 
 .tableRowAgentDelete {
 	width: 10%;
+	text-align:left;
 }
 
 .agentsTable, .profileTable, .appsTable {
