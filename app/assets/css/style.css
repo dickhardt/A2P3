@@ -134,6 +134,11 @@ body img[height="1"] {
 	padding-top: 10px;
 }
 
+.headerLogo {
+	float:left;
+	padding-right: 8px;
+}
+
 .header h1 {
 	margin: 0;
 	margin-left: 40px;
@@ -631,14 +636,17 @@ form {
 
 .tableRowAgentName {
 	width: 45%;
+	text-align:left;
 }
 
 .tableRowAgentDate {
 	width: 35%;
+	text-align:left;
 }
 
 .tableRowAgentDelete {
 	width: 10%;
+	text-align:left;
 }
 
 .agentsTable, .profileTable, .appsTable {
