@@ -17,8 +17,9 @@
 
 <header class="header">
 	<section class="headerContainer">
+		<a href="http://a2p3.net"><img class="headerLogo" alt="A2P3" src="/images/a2p3_logo_rs.png" border="0"></a>
 		<span class="mainTitle" id='title'>XX Resource Server</span>
-		<div class="mainTitleText"></div>
+		<div class="mainTitleText">&nbsp;</div>
 	</section>
 </header>
 <section class="mainContent">
@@ -57,7 +58,7 @@ function onReady() {
   // URL is parsed in config.js and made available
   var title = config.subhost.charAt(0).toUpperCase() + config.subhost.substr( 1 )
   if (title === 'Si') title = 'Social Insurance'
-  if ( config.province ) title += ' '+ config.provinceNames[config.province]
+  if ( config.province ) title += ' '+ config.province.toUpperCase()
   title += ' Resource Server'
   $('#title').text( title )
   var flag = config.province || 'ca'
