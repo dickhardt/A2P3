@@ -20,7 +20,7 @@
 		src="http://code.jquery.com/jquery-1.9.0.js"></script>
 		<script type="text/javascript" src="/js/jquery.dataTables.min.js"></script>
 
-		<script type="text/javascript"
+	+	<script type="text/javascript"
 		src="http://code.jquery.com/ui/1.10.0/jquery-ui.js"></script>
 		<script type="text/javascript" src="/js/purl.js"></script>
 		<script type="text/javascript" src="/js/common.js"></script>
@@ -48,21 +48,25 @@
 
 					<div>
 						<div class="dashboardSection">
-							<TABLE id="nameTable">
+							<TABLE style="width: 100%" id="nameTable">
 								<tbody>
 									<TR>
-										<td rowspan="2"><img class="photoImage" src="" alt=""
-										id="photo" border="1"></span><span class="formItem"></span></td>
-										<td><label type="text" id="name_input" placeholder="Your name" class="dashboardName" name="name"></label></td>
-									</TR>
-									<TR>
+										<td rowspan="2" width="55px">
+											<img class="photoImage" src="" alt="" id="photo" border="1">
+										</td>
 										<td>
-										<input name="removeUserButton"
-										style="margin-top: 5px; margin-left: 15px;" type="button"
-										value="Remove this User" ontouchstart="" id="removeUserButton"
-										class="buttonAddIOS">
+											<label type="text" id="name_input" placeholder="Your name" class="dashboardName" name="name"></label>
+										</td>
+										<td>
+											<input style="float: right;" name="removeUserButton"
+											style="margin-top: 5px; margin-left: 15px;" type="button"
+											value="Delete Account" ontouchstart="" id="removeUserButton"
+											class="buttonAddIOS">
 										</td>
 									</TR>
+									<tr>
+										<td></td>
+									</tr>
 								</tbody>
 							</TABLE>
 						</div>
