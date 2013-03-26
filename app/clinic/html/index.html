@@ -5,14 +5,15 @@
   .loginStatus {text-align:center;}
   .di {text-align:right;}
   .loginItem {padding-left: 5px;}
-  #qrcodeForm{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; position: absolute; top:25px; left:10%; padding:10px; border-radius:4px;z-index: 1;}
 </style>
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 	<meta name="viewport" content="width=device-width,initial-scale=1, maximum-scale=1,user-scalable=no">
 	<link rel="stylesheet" href="/css/style.css">
+	<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.0/themes/base/jquery-ui.css">
 </head>
 <body>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+  <script type="text/javascript" src="http://code.jquery.com/ui/1.10.0/jquery-ui.min.js"></script> 
   <script type="text/javascript"    src="/js/purl.js"></script>
   <script type="text/javascript"    src="/js/jquery.qrcode.min.js"></script>
   <script type="text/javascript" src="/js/common.js"></script>
@@ -32,10 +33,6 @@
 		  <a href="" id="hideDI">hide DI</a>
 		</div>
 		<br>
-		<div id="qrcodeForm">
-		    <p>Scan QR Code with your Agent to login</p>
-		    <div id="qrcode"></div>
-		</div>
 		<table id="profileTable"> </table>
 		<br><br>
 		<div class="loginStatus">
@@ -55,6 +52,11 @@
 	</div>
 </section>
 -->
+
+<div title="Scan the QR Code with your Personal Agent" id="qrcodeForm">
+	<div style="text-align: center;" id="qrcode"></div>
+</div>
+  
 <script type="text/javascript">
 
 function onReady() {
@@ -124,7 +126,10 @@ function onReady() {
       $.post( '/login/QR', function ( data, status ) {
         if (status == "success" && !data.error && data.result && data.result.qrURL && data.result.qrSession ) {
           $('#qrcode').empty()
-          $('#qrcodeForm').fadeIn('fast')
+          $('#qrcodeForm').dialog({
+		  	width : getQRCodeSize() + 35,
+		  	height : getQRCodeSize() + 80
+		  });
           $('#qrcode').qrcode( {width: getQRCodeSize(), height: getQRCodeSize(), text: data.result.qrURL, render: getQRCodeRenderType() } )
           $('#qrcode').css({cursor: 'none'});
           setTimeout( function () { checkQR( data.result.qrSession ) }, 500 )
