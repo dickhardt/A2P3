@@ -349,7 +349,7 @@ exports.newApp = function ( reg, id, name, adminEmail, anytime, cb ) {
     db.multi()
       .hmset( reg + ':app:' + id, app )
       .hset( reg + ':app:' + id + ':admins', adminEmail, 'ACTIVE' )
-      .hset( reg + ':admin:' + adminEmail + ':apps', id, 'ACTIVE' )
+      .hset( reg + ':admin:' + adminEmail + ':apps', id, name )
       .exec( function ( e ) {
         if (e) return cb( e )
         newKeyObj( reg, id, cb )
