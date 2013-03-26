@@ -110,6 +110,7 @@ function onReady() {
         // if (data.error) console.log( data.error )
         if (data.result) {
           $('#qrcodeForm').hide()
+          $("#qrcodeForm").dialog("close");
           $('#logout').show()
           $('#login').hide()
           $('#backdoor').hide()
