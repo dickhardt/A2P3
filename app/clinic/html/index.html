@@ -19,28 +19,31 @@
 
 <header class="header">
 	<section class="headerContainer">
-		<span class="mainTitle">Clinic Check In</span>
+		<a href="http://a2p3.net"><img class="headerLogo" alt="A2P3" src="/images/a2p3_logo.png" border="0"></a>
+		<span class="mainTitle">Clinic Check&nbsp;In</span>
 		<div class="mainTitleText">Welcome to the Clinic Point of Service</div>
 	</section>
 </header>
-
 <section class="mainContent">
 	<div class="mainContentWrap">
-		<div class="di">
-  			<div id="directedIdentifier"></div>
+		<div id="diContainer" class="di">
+  		  <span id="directedIdentifier"></span>
 		  <a href="" id="showDI">show DI</a>
 		  <a href="" id="hideDI">hide DI</a>
 		</div>
+		<br>
 		<div id="qrcodeForm">
 		    <p>Scan QR Code with your Agent to login</p>
 		    <div id="qrcode"></div>
 		</div>
+		<table id="profileTable"> </table>
+		<br><br>
 		<div class="loginStatus">
 		  <a href="" id="login" class="genericButton">&nbsp;&nbsp;&nbsp;&nbsp;Check In&nbsp;&nbsp;&nbsp;&nbsp;</a>
 		  <a href="/logout" id="logout" class="genericButton">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Done&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
 		</div>
-		<br><br>
-		<table id="profileTable"> </table>
+		<br>
+		<br>
 	</div>
 </section>
 <!--
@@ -64,6 +67,7 @@ function onReady() {
   $('#logout').hide()
   $('#hideDI').hide()
   $('#directedIdentifier').hide()
+  $('#diContainer').hide()
 
   $('#hideDI').click( function () {
     $('#directedIdentifier').hide()
@@ -81,6 +85,7 @@ function onReady() {
 
   function drawProfile( profile ) {
     // console.log( profile )
+    $('#diContainer').show()
     var people = profile[ profile[ PEOPLE_RS ].redirects[0] ]
     var healthNumber = profile[ profile[ HEALTH_RS ].redirects[0] ].prov_number
     $('#profileTable').append('<tr><td class="genericLabel">Health Care Number:</td><td>'+healthNumber+'</td></tr>')
@@ -89,7 +94,7 @@ function onReady() {
        if (item !== 'photo') {
           $('#profileTable').append('<tr><td class="genericLabel">' + item + ':</td><td>' + value + '</td></tr>')
         } else {
-          $('#profileTable').append('<tr><td class="genericLabel">' + item + ':</td><td><img class="fullPhotoImage" src="' + value + '"></td></tr>')
+          $('#profileTable').append('<tr><td class="genericLabel">' + item + ':</td><td><img class="photoImage" src="' + value + '"></td></tr>')
         }
     })
   }
