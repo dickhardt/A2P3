@@ -529,7 +529,9 @@ form {
 
 .mainTitleText {
 	font-family: 'Century Gothic';
-	font-size: 15px;
+	font-size: 14px;
+	display: block;
+	white-space: nowrap;
 }
 
 .buttonRemoveAgent,.buttonAddIOS,.buttonCreateCLI,.submitContinue,.submitCancel,.submitEnroll,.submit

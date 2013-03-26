@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="/css/style.css">
 <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.0/themes/base/jquery-ui.css">
 <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.0.js"></script>
-<script type="text/javascript" src="http://code.jquery.com/ui/1.10.0/jquery-ui.js"></script>
+<script type="text/javascript" src="http://code.jquery.com/ui/1.10.0/jquery-ui.min.js"></script>
 <script type="text/javascript" src="/js/jquery.qrcode.min.js"></script>
 <script type="text/javascript" src="/js/purl.js"></script>
 <script type="text/javascript" src="/js/common.js"></script>
@@ -19,6 +19,7 @@
 <body>
   <header class="header">
     <section class="headerContainer">
+      <a href="http://a2p3.net"><img class="headerLogo" alt="A2P3" src="/images/a2p3_logo.png" border="0"></a>
       <span class="mainTitle">Setup</span>
       <div class="mainTitleText">Getting started with your A2P3 experience</div>
     </section>
@@ -198,8 +199,9 @@
 				
 				/// TBD - adjust size of popup and QR code to screen
 				// $('#qrcodeForm').fadeIn('fast')
+				$('#qrcode').empty()
 				$('#qrcodeForm').dialog({
-				  width : getQRCodeSize() + 25,
+				  width : getQRCodeSize() + 35,
 				  height : getQRCodeSize() + 80
 				});
 				$('#qrcode').qrcode({
