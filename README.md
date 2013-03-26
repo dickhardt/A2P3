@@ -48,6 +48,8 @@ Will bootstrap new vaults and database if you have changed relevant settings in 
 
 [sample-node-a2p3](https://github.com/dickhardt/sample-node-a2p3) sample A2P3 application using node-a2p3
 
+[rs-sample-node-a2p3](https://github.com/dickhardt/rs-sample-node-a2p3) sample A2P3 resource server using node-a2p3
+
 ## License
 MIT License
 
