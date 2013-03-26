@@ -240,6 +240,7 @@ function onReady() {
           $('#backdoor').hide()
           $('#profileSection').show()
           $('#diContainer').show()
+          $("#qrcodeForm").dialog("close");
           if (data.result[PEOPLE_RS])
             approveTOS( data.result )
           else
