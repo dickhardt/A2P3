@@ -1042,3 +1042,26 @@ p.label_checkbox_pair label {
 	margin-left: 20px;
 	font-weight: bold;
 }
+
+
+.login-button {
+  background:url(https://s-static.ak.fbcdn.net/images/connect_sprite.png) no-repeat scroll left -188px #29447e;
+  display:inline-block;
+  line-height:14px;
+  outline:medium none;
+  padding:0 0 0 1px
+}
+
+.login-button span {
+  background:url(https://s-static.ak.fbcdn.net/images/connect_sprite.png) repeat scroll 0 0 #5f78ab;
+  border-bottom:1px solid #1a356e;
+  border-top:1px solid #879ac0;
+  color:#fff;
+  cursor:pointer;
+  display:block;
+  font-size:11px;
+  font-weight:bold;
+  margin:1px 1px 0 21px;
+  padding:2px 6px 3px;
+  font-family: 'Lucida Grande', Verdana, Arial, sans-serif;
+}

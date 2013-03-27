@@ -12,6 +12,8 @@
 	<!-- script type="text/javascript" src="/js/jquery-1.9.0.js"></script -->
 	<script type="text/javascript" src="http://code.jquery.com/jquery-1.9.0.js"></script>
 	<script type="text/javascript" src="http://code.jquery.com/ui/1.10.0/jquery-ui.js"></script>
+	<script type="text/javascript" src="/js/purl.js"></script>
+	<script type="text/javascript" src="/js/common.js"></script>
 </head>
 <body>
 	<div id="fb-root"></div>
@@ -26,8 +28,10 @@
 				channelUrl : 'http://setup.a2p3.net/facebook_channel.html', // Channel File for x-domain communication
 				status : false, // check the login status upon init?
 				cookie : true, // set sessions cookies to allow your server to access the session?
-				xfbml : true  // parse XFBML tags on this page?
+				xfbml : false,  // parse XFBML tags on this page?
 			});
+			
+			checkForMobileLogon();
 
 			FB.Event.subscribe('auth.statusChange', function( response) {
 
@@ -57,6 +61,24 @@
 		   ref.parentNode.insertBefore(js, ref);
 		 }(document));
 
+
+		function login() {
+			// If in mobile do the redirect
+			if (isMobile.any()) {
+				window.location = "http://m.facebook.com/dialog/oauth?client_id=311669472267358&response_type=token&redirect_uri=" + encodeURI(window.location) + "&scope=email";
+			}
+			// Else use the popup
+			else {
+		    	FB.login(undefined, {scope: 'email'});
+		   	}
+		}
+		
+		function checkForMobileLogon () {
+			if (window.location.toString().indexOf('access_token') >= 0) {
+				window.FB.getLoginStatus()
+			}
+		}
+		
 	</script>
 
 
@@ -86,10 +108,11 @@ Limitation of Liabilities<br>
 Under no circumstances will the operator of this service be liable to any person or business entity for any direct, indirect, special, incidental, consequential, or other damages based on any use of this service or any other service to which this service is linked, including, without limitation, any lost profits, business interruption, or loss of programs or information, even if the operator of this service has been specifically advised of the possibility of such damages.
 
 						</div>
-
 						<div style="overflow:hidden;" class="formItemButtonSetupPage">
-							<div class="fb-login-button" scope="email">Login with Facebook</div>
-						</div>
+							<a onclick="login()" class="login-button"> 
+					          <span>Login with Facebook</span>
+					        </a>
+					    </div>
 					</div>
 
 				</form>
