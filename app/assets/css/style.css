@@ -1065,3 +1065,7 @@ p.label_checkbox_pair label {
   padding:2px 6px 3px;
   font-family: 'Lucida Grande', Verdana, Arial, sans-serif;
 }
+
+.ui-widget-header {
+	background: none !important;
+}
