@@ -3,9 +3,9 @@
 <head>
 <style type="text/css">
   .loginStatus {text-align:right;}
-  .registerAppForm{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:250px; height:250px; position: absolute; top:75px; left:50%; margin-left:-125px; padding:10px; border-radius:4px;}
-  .appDetailPopup{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:320px; height:350px; position: absolute; top:75px; left:5%; margin-left:-20px; padding:10px; border-radius:4px;}
-  .confirmDeleteForm{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:300px; height:120px; position: absolute; top:100px; left:10%; margin-left:-20px; padding:10px; border-radius:4px;}
+  .registerAppForm{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:220px; height:240px; position: absolute; top:75px; left:50%; margin-left:-125px; padding:10px; border-radius:4px;}
+  .appDetailPopup{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:320px; position: absolute; top:75px; left:5%; margin-left:-20px; padding:10px; border-radius:4px;}
+  .confirmDeleteForm{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; position: absolute; top:100px; left:10%; margin-left:-20px; padding:10px; border-radius:4px;}
   .addAppAdminForm{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:300px; height:120px; position: absolute; top:100px; left:10%; margin-left:-20px; padding:10px; border-radius:4px;}
 
 </style>
@@ -28,13 +28,17 @@
 </header>
 <section class="mainContent">
 	<div class="mainContentWrap">
-		<h2>Welcome <span id="loginEmail"></span></h2>
+		<h2>Welcome <span id="loginEmail"></span>
+			<span style="float: right">
+				<a class="genericButton" href="/logout" id="logout">Logout </a>
+			</span>
+		</h2>
 		<br>
-		<a class="genericButton" href="" id="login"> login </a>
-		<a class="genericButton" href="/logout" id="logout">logout </a>
+		<a class="genericButton" href="" id="login"> Login </a>
+		
 		<a class="genericButton" href="" id="registerApp">Register Application</a>
 		<br><br>
-		<div class="appsTableWrapper">
+		<div class="appsTableWrapper dashboardSection">
 			<table class="appsTable" id='appTable'>
 			</table>
 		</div>
@@ -42,31 +46,22 @@
 		<div id="registerApp_form" class="registerAppForm">
 		  <div class="genericTitle">Register a new App</div>
 		    <form id="registerAppForm_input">
-		      <dl>
-            <dt></dt><dd>
-              <label class="genericLabel" for="AppName" style="text-align: left;">Name</label>
-              <input type="text" name="AppName" value="" id="registerApp_name_input">
-              <br><br>
-            </dd>
-		        <dt></dt><dd>
+		      <div style="padding-left: 10px">
+	              <label class="genericLabel" for="AppName" style="text-align: left;">Name</label>
+	              <input type="text" name="AppName" value="" id="registerApp_name_input">
+	              <br><br>
 		          <label class="genericLabel" for="ApID" style="text-align: left;">ID</label>
 		          <input type="text" name="AppID" value="" id="registerApp_id_input">
-		        </dd>
-            <dt></dt><dd>
-              <p class="label_checkbox_pair">
-              	<label for="AppAnytime">Anytime Resource</label>
-              <input type="checkbox" name="AppAnytime" value="" id="registerApp_anytime_input">
-              </p>
-              <br><br>
-            </dd>
-		        <dt></dt><dd>
-		        <label id="registerApp_status"><i>ID is hostname</i></label>
-		      </dd>
-		      </dl>
-		        <p>
-		          <input class="genericButton" id="registerAppFormCancel" type="button" value="Cancel">
-		          <input class="genericButton" id="registerAppFormSubmit" type="button" value="Register">
-		        </p>
+	              <p class="label_checkbox_pair">
+	              	<label for="AppAnytime">Anytime Resource</label>
+	              <input type="checkbox" name="AppAnytime" value="" id="registerApp_anytime_input">
+	              </p>
+	              <label style="float: left;" id="registerApp_status"><i>ID is hostname</i></label>
+	              <br>
+	              <br>
+              </div>
+	          <input class="genericButton" id="registerAppFormCancel" type="button" value="Cancel">
+	          <input class="genericButton" id="registerAppFormSubmit" type="button" value="Register">
 		    </form>
 		</div>
 		<div id="appDetails_popup" class="appDetailPopup">
@@ -273,7 +268,7 @@
             if (currentAdmin === admin) {
               $('#adminsList').append('<tr class="adminEntry"><td></td><td>'+admin+'</td></tr>')
             } else {
-              $('#adminsList').append('<tr class="adminEntry"><td><a href="" id="deleteAppAdmin_'+item+'">delete</a></td><td>'+admin+'</td></tr>')
+              $('#adminsList').append('<tr class="adminEntry"><td><a class="otherLinks" href="" id="deleteAppAdmin_'+item+'">delete</a></td><td>'+admin+'</td></tr>')
             }
             $('#deleteAppAdmin_'+item).click( function () { return deleteAppAdmin( admin ) } ) //dynamic built element, so ok to hook with closure
           })
@@ -294,10 +289,10 @@
           var list = data.result.list
           var html = null
           var item = 0  // use a counter since the app has '.'s which browser is cranky about in element IDs
-          $('#appTable').append( "<thead><th style='width: 30%; text-align:left;'>Name</th><th style='width: 30%; text-align:left;'>Id</th></thead>" )
+          $('#appTable').append( "<thead><th class='tableRowAgentName' style='width: 30%; text-align:left;'>Name</th><th class='tableRowAgentName'  style='width: 30%; text-align:left;'>Id</th></thead>" )
           $.each( list, function ( app ) {
-            html = '<tr><td><a class="otherLinks" href="" id="' + item +'_details">' + list[app] +'</a>' +
-              '</td><td>' + app + '</td></tr>'
+            html = '<tr><td class="tableRowAgentName"><a class="otherLinks" href="" id="' + item +'_details">' + list[app] +'</a>' +
+              '</td><td  class="tableRowAgentName">' + app + '</td></tr>'
             $('#appTable').append( html )
             $('#'+item+'_details').click( function () { return showAppDetails( app, true ); } )
             item++
