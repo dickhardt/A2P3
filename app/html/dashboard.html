@@ -3,9 +3,9 @@
 <head>
 <style type="text/css">
   .loginStatus {text-align:right;}
-  .registerAppForm{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:250px; height:140px; position: absolute; top:75px; left:50%; margin-left:-125px; padding:10px; border-radius:4px;}
-  .appDetailPopup{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:320px; height:300px; position: absolute; top:75px; left:5%; margin-left:-20px; padding:10px; border-radius:4px;}
-  .confirmDeleteForm{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:300px; height:80px; position: absolute; top:100px; left:10%; margin-left:-20px; padding:10px; border-radius:4px;}
+  .registerAppForm{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:240px; position: absolute; top:75px; left:50%; margin-left:-125px; padding:10px; border-radius:4px;}
+  .appDetailPopup{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; width:320px; position: absolute; top:75px; left:5%; margin-left:-20px; padding:10px; border-radius:4px;}
+  .confirmDeleteForm{border:1px solid #999; -webkit-box-shadow: 0px 0px 6px #CCC; background-color:#FFF; height:80px; position: absolute; top:100px; left:10%; margin-left:-20px; padding:10px; border-radius:4px;}
 </style>
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 	<meta name="viewport" content="width=device-width,initial-scale=1, maximum-scale=1,user-scalable=no">
@@ -25,31 +25,33 @@
 </header>
 <section class="mainContent">
 	<div class="mainContentWrap">
-		<h2></h2>
+		<h2>Welcome <span id="loginEmail"></span>
+			<span style="float: right">
+				<a class="genericButton" href="/logout" id="logout">Logout </a>
+			</span>
+		</h2>
 		<br>
 		<a href="" id="login" class="genericButton"> login </a>
-		<a href="/logout" id="logout" class="genericButton">logout </a>
 		<a class="genericButton" href="" id="registerApp">Register Application</a>
 
 		<hr>
 		<div id="registerApp_form" class="registerAppForm">
 		  <div class="genericTitle">Register an Existing App</div>
 		    <form id="registerAppForm_input">
-		      <dl>
-		        <dt></dt><dd>
-		          <label for="ApID">ID</label>
-		          <input type="text" name="AppID" value="" id="registerApp_id_input">
-		        </dd>
-		        <dt></dt><dd>
-		        <label id="registerApp_status"><i>ID is hostname</i></label>
-		      </dd>
-		      </dl>
+		      
+	          <label class="genericLabel"  style="text-align: left;" for="AppID">ID</label>
+	          <input type="text" name="AppID" value="" id="registerApp_id_input">
+	          <br>
+		      <label style="float: left;" id="registerApp_status"><i>ID is hostname</i></label>
+		      <br>
 		        <p><input class="genericButton" id="registerAppFormCancel" type="button" value="Cancel">
 		            <input class="genericButton" id="registerAppFormSubmit" type="button" value="Register">
+					<BR>
 		          </p>
+		          
 		    </form>
 		</div>
-		<div class="appsTableWrapper">
+		<div class="appsTableWrapper dashboardSection">
 			<table class="appsTable" id='appTable'>
 			</table>
 		</div>
