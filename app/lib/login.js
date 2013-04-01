@@ -88,9 +88,6 @@ function fetchIXToken ( agentRequest, ixToken, details, cb ) {
 // creates an agentRequest and state
 function loginQR( details ) {
   return function loginQR( req, res )  {
-
-console.log('loginQR')
-
     var qrSession = jwt.handle()
     req.session.qrSession = qrSession
     var qrCodeURL = details.baseUrl + '/QR/' + qrSession
