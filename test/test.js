@@ -107,9 +107,8 @@ function createUser ( user ) {
           should.not.exist( e )
           should.exist( response )
           response.statusCode.should.equal( 302 )
-          response.headers.should.exist
-          response.headers.location.should.exist
-          response.headers['set-cookie'].should.exist
+          response.should.have.property('headers')
+          response.headers.should.have.property('location', 'set-cookie')
           response.headers.location.should.equal('/enroll')
           done( null )
         })
@@ -130,9 +129,8 @@ function createUser ( user ) {
           response.statusCode.should.equal( 200 )
           should.exist( body )
           profile = JSON.parse( body )
-          profile.should.exist
-          profile.email.should.exist
-          profile.email.should.equal( user.email )
+          should.exist( profile )
+          profile.should.have.property('email', user.email)
           done( null )
         })
       })
@@ -150,8 +148,8 @@ function createUser ( user ) {
           should.not.exist( e )
           should.exist( response )
           response.statusCode.should.equal( 302 )
-          response.headers.should.exist
-          response.headers.location.should.exist
+          response.should.have.property('headers')
+          response.headers.should.have.property('location')
           response.headers.location.should.equal('/dashboard')
           done( null )
         })
@@ -244,8 +242,8 @@ describe('Enrolling agent at AS', function () {
         should.not.exist( e )
         should.exist( response )
         response.statusCode.should.equal( 302 )
-        response.headers.should.exist
-        response.headers.location.should.exist
+        response.should.have.property('headers')
+        response.headers.should.have.property('location')
         var redirect = urlParse( response.headers.location, true )
         redirect.query.should.have.property('request')
         // save Agent Request for next call
@@ -270,8 +268,8 @@ describe('Enrolling agent at AS', function () {
         should.not.exist( e )
         should.exist( response )
         response.statusCode.should.equal( 302 )
-        response.headers.should.exist
-        response.headers.location.should.exist
+        response.should.have.property('headers')
+        response.headers.should.have.property('location')
       var redirect = urlParse( response.headers.location, true )
       redirect.query.should.have.property('token')
       // save IX Token for next call
@@ -283,19 +281,20 @@ describe('Enrolling agent at AS', function () {
     })
   })
 
+
   describe('AS /register/login', function () {
     it('should confirm valid IX Token and redirect to /register', function (done) {
       var options =
         { url: config.baseUrl.as + '/register/login'
         , method: 'GET'
-        , qs: { token: ixToken }
+        , qs: { token: ixToken, agent: agentRequest }
         , followRedirect: false
         }
       fetch( options, function ( e, response ) {
         should.not.exist( e )
         should.exist( response )
         response.statusCode.should.equal( 302 )
-        response.headers.should.exist
+        response.should.have.property('headers')
         response.headers.should.have.property( 'location', '/register')
         done( null )
       })
@@ -427,9 +426,8 @@ describe('Enrolling agent at AS', function () {
           should.not.exist( e )
           should.exist( response )
           response.statusCode.should.equal( 302 )
-          response.headers.should.exist
-          response.headers.location.should.exist
-          response.headers['set-cookie'].should.exist
+          response.should.have.property('headers')
+          response.headers.should.have.property('location', 'set-cookie')
           response.headers.location.should.equal('/dashboard')
           done( null )
         })
@@ -532,19 +530,39 @@ function registerDemoApp ( rs, standard ) {
       })
     })
 
-    describe( ' /login/return', function () {
-      it('should redirect to /dashboard', function ( done ) {
+
+    describe( ' /login/return error', function () {
+      it('should redirect to /error', function ( done ) {
         var options =
           { url: jws.payload['request.a2p3.org'].returnURL
           , method: 'GET'
-          , qs: { token: ixToken }
+        , qs: { error:'USER_CANCELLED', errorMessage: 'The User cancelled the transaction.', agent: agentRequest }
           , followRedirect: false
           }
         fetch( options, function ( e, response ) {
           should.not.exist( e )
           should.exist( response )
           response.statusCode.should.equal( 302 )
-          response.headers.should.exist
+          response.should.have.property('headers')
+          response.headers.should.have.property( 'location', '/error')
+          done( null )
+        })
+      })
+    })
+
+    describe( ' /login/return', function () {
+      it('should redirect to /dashboard', function ( done ) {
+        var options =
+          { url: jws.payload['request.a2p3.org'].returnURL
+          , method: 'GET'
+        , qs: { token: ixToken, request: agentRequest }
+          , followRedirect: false
+          }
+        fetch( options, function ( e, response ) {
+          should.not.exist( e )
+          should.exist( response )
+          response.statusCode.should.equal( 302 )
+          response.should.have.property('headers')
           response.headers.should.have.property( 'location', '/dashboard')
           done( null )
         })
@@ -1017,7 +1035,6 @@ describe('Demo App calling ', function () {
     })
   })
 
-  var access_token = null
   describe('health:/oauth', function(){
     it('should return an OAuth access token ', function (done){
       api.call( 'health.bc', '/oauth', { token: rsTokens[config.host['health.bc']] }, function ( error, result) {
