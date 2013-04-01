@@ -93,10 +93,6 @@ Create.prototype.listAuthorizations = function ( list , cb ) {
           response[app].name = results[rs][app].name
         })
       })
-
-console.log('\nlistAuthorizations results\n',results)
-console.log('\nlistAuthorizations response\n',response)
-
       cb( e, response )
     })
   })

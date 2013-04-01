@@ -1240,6 +1240,27 @@ describe('CallbackURL check ', function () {
       })
     })
   })
+
+  describe('/check/QR', function () {
+    it('should return waiting', function ( done ) {
+      var options =
+        { url: appURL + '/check/QR'
+        , json: {qrSession: qrSession}
+        , method: 'POST'
+        }
+      fetch( options, function ( e, response, json ) {
+        should.not.exist( e )
+        should.exist( response )
+        response.statusCode.should.equal( 200 )
+        should.exist( json )
+        json.should.not.have.property('error')
+        json.should.have.property('status', 'waiting')
+        done( null )
+      })
+    })
+  })
+
+
   describe('agent.ixToken', function () {
     it('should return an IX Token', function ( done ) {
       userAgent.ixToken( agentRequest, function( e, ixTokenLocal ) {
@@ -1250,6 +1271,26 @@ describe('CallbackURL check ', function () {
       })
     })
   })
+
+  describe('/check/QR', function () {
+    it('should return waiting', function ( done ) {
+      var options =
+        { url: appURL + '/check/QR'
+        , json: {qrSession: qrSession}
+        , method: 'POST'
+        }
+      fetch( options, function ( e, response, json ) {
+        should.not.exist( e )
+        should.exist( response )
+        response.statusCode.should.equal( 200 )
+        should.exist( json )
+        json.should.not.have.property('error')
+        json.should.have.property('status', 'waiting')
+        done( null )
+      })
+    })
+  })
+
   describe('/response/callback', function () {
     it('should return success', function ( done ) {
       var options =
@@ -1273,32 +1314,157 @@ describe('CallbackURL check ', function () {
       })
     })
   })
+
+  describe('/check/QR', function () {
+    it('should return profile info', function ( done ) {
+      var options =
+        { url: appURL + '/check/QR'
+        , json: {qrSession: qrSession}
+        , method: 'POST'
+        }
+      fetch( options, function ( e, response, json ) {
+        should.not.exist( e )
+        should.exist( response )
+        response.statusCode.should.equal( 200 )
+        should.exist( json )
+        json.should.not.have.property('error')
+        json.should.have.property('result')
+        done( null )
+      })
+    })
+  })
+
 })
 
-// describe('Restoring ', function () {
-//   describe('Database', function () {
-//     it('should just happen', function (done) {
-//       restoreDatabase( done )
-//     })
-//   })
-// })
 
-// describe('Restoring Database', function (done) {
-//   restoreDatabase( done )
-// })
+// User Cancel test
+function makeUserCancelTest ( appURL ) {
 
-// console.log('\n =>options\n', options)
+  describe('User Cancel check at '+appURL+' ', function () {
+    var qrURL
+      , qrSession
+      , agentRequest
 
-// console.log('response\n', util.inspect( response, null, 1 ) ) // 'content-type': 'text/html; charset=UTF-8',
+    describe('/loginQR', function () {
+      it('should return a QR code URL', function ( done ) {
+        var options =
+          { url: appURL + '/login/QR'
+          , method: 'POST'
+          }
+        fetch( options, function ( e, response, body ) {
+          should.not.exist( e )
+          should.exist( response )
+          response.statusCode.should.equal( 200 )
+          should.exist( body )
+          var r = JSON.parse( body )
+          should.exist( r )
+          r.should.not.have.property('error')
+          r.should.have.property('result')
+          r.result.should.have.property('qrSession')
+          qrSession = r.result.qrSession
+          r.result.should.have.property('qrURL')
+          qrURL = r.result.qrURL
+          done( null )
+        })
+      })
+    })
+    describe('/QR/xxx', function () {
+      it('should return an Agent Request', function ( done ) {
+        var options =
+          { url: qrURL + '?json=true'
+          , method: 'GET'
+          }
+        fetch( options, function ( e, response, body ) {
+          should.not.exist( e )
+          should.exist( response )
+          response.statusCode.should.equal( 200 )
+          should.exist( body )
+          var r = JSON.parse( body )
+          should.exist( r )
+          r.should.not.have.property('error')
+          r.should.have.property('result')
+          r.result.should.have.property('state', qrSession)
+          r.result.should.have.property('agentRequest')
+          agentRequest = r.result.agentRequest
+          done( null )
+        })
+      })
+    })
 
-// console.log('\n =>r\n',r)
+    describe('/check/QR', function () {
+      it('should return waiting', function ( done ) {
+        var options =
+          { url: appURL + '/check/QR'
+          , json: {qrSession: qrSession}
+          , method: 'POST'
+          }
+        fetch( options, function ( e, response, json ) {
+          should.not.exist( e )
+          should.exist( response )
+          response.statusCode.should.equal( 200 )
+          should.exist( json )
+          json.should.not.have.property('error')
+          json.should.have.property('status', 'waiting')
+          done( null )
+        })
+      })
+    })
 
 
-//console.log('\nredirect\n', util.inspect( redirect, null, null ) )
-// console.log('cookieJar 2\n', util.inspect( cookieJar, null, null ) )
+    describe('/response/callback', function () {
+      it('should return error', function ( done ) {
+        var options =
+          { url: appURL + '/response/callback'
+          , method: 'POST'
+          , json:
+            { error: 'USER_CANCELLED'
+            , errorMessage: 'The User cancelled the transaction.'
+            , request: agentRequest
+            , state: qrSession
+            }
+          }
+        fetch( options, function ( e, response, json ) {
+          should.not.exist( e )
+          should.exist( response )
+          response.statusCode.should.equal( 200 )
+          should.exist( json )
+          json.should.not.have.property('result')
+          json.should.have.property('error')
+          json.error.should.have.property('code', 'USER_CANCELLED')
+          done( null )
+        })
+      })
+    })
 
+    describe('/check/QR', function () {
+      it('should return error', function ( done ) {
+        var options =
+          { url: appURL + '/check/QR'
+          , json: {qrSession: qrSession}
+          , method: 'POST'
+          }
+        fetch( options, function ( e, response, json ) {
+          should.not.exist( e )
+          should.exist( response )
+          response.statusCode.should.equal( 200 )
+          should.exist( json )
+          json.should.not.have.property('result')
+          json.should.have.property('error', 'USER_CANCELLED')
+           done( null )
+        })
+      })
+    })
 
-// console.log('\njws\n',jws)
-// console.log('\noptions\n',options)
+  })
+}
 
+makeUserCancelTest( config.baseUrl.clinic )
+makeUserCancelTest( config.baseUrl.bank )
+makeUserCancelTest( config.baseUrl.si )
+// makeUserCancelTest( config.baseUrl.email )
+// makeUserCancelTest( config.baseUrl.health )
+// makeUserCancelTest( config.baseUrl.people )
+// makeUserCancelTest( config.baseUrl.registrar )
+// makeUserCancelTest( config.baseUrl['health.bc'] )
+// makeUserCancelTest( config.baseUrl['people.bc'] )
 

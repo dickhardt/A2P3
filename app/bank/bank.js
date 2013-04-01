@@ -56,18 +56,21 @@ var sessions = {}
 
 // checks if we are have received the IX Token and Agent Request from the Agent
 function checkForTokenRequest( qrSession, callback ) {
-  if ( !sessions[qrSession] ) return callback( null, null )
+  if ( !sessions[qrSession] ) return callback( null, null, null )
   var agentRequest = sessions[qrSession].agentRequest
   var ixToken = sessions[qrSession].ixToken
+  var error = sessions[qrSession].error
   delete sessions[qrSession]
-  callback( ixToken, agentRequest )
+  callback( error, ixToken, agentRequest )
 }
 
 // stores IX Token and Agent Request we received back channel from the Agent
-function storeTokenRequest( qrSession, agentRequest, ixToken, callback ) {
-  sessions[qrSession] =
-    { ixToken: ixToken
-    , agentRequest: agentRequest
+function storeTokenRequest( result, callback ) {
+  var state = result.state
+  sessions[state] =
+    { agentRequest: result.request
+    , ixToken: result.token
+    , error: result.error
     }
   callback( null )
 }
@@ -341,15 +344,25 @@ function loginResponseCallback( req, res )  {
   var ixToken = req.body.token
   var agentRequest = req.body.request
   var qrSession = req.body.state
+  var error = req.body.error
+  var errorMessage = req.body.errorMessage
 
-  if (!ixToken || !agentRequest || !qrSession) {
-    var code = 'MISSING_STATE'
-    if (!agentRequest) code = 'MISSING_REQUEST'
+  if (!qrSession) {
+    return res.send( { error: { code: 'MISSING_STATE', message: 'State is required' } } )
+  }
+  if (error || errorMessage) {
+    return storeTokenRequest( req.body, function ( e ) {
+      if ( e ) return res.send( { error: e } )
+      return res.send( { error: { code: error, message: errorMessage } } )
+    })
+  }
+  if (!ixToken || !agentRequest) {
+    var code = 'MISSING_REQUEST'
     if (!ixToken) code = 'MISSING_TOKEN'
     return res.send( { error: { code: code, message: 'token, request and state are required' } } )
   }
-  storeTokenRequest( qrSession, agentRequest, ixToken, function ( error ) {
-    if ( error ) return res.send( { error: error } )
+  storeTokenRequest( req.body, function ( e ) {
+    if ( e ) return res.send( { error: e } )
     return res.send( { result: { success: true } } )
   })
 }
@@ -416,20 +429,21 @@ function closeAccount( req, res, next ) {
 function checkQR( req, res ) {
   if (!req.body.qrSession)
     return res.send( { error: 'No QR Session provided' } )
-    checkForTokenRequest( req.body.qrSession, function ( ixToken, agentRequest ) {
-      if (!ixToken || !agentRequest) {
-        return res.send( { status: 'waiting'} )
+  checkForTokenRequest( req.body.qrSession, function ( e, ixToken, agentRequest ) {
+    if (e) return res.send( { error: e } )
+    if (!ixToken || !agentRequest) {
+      return res.send( { status: 'waiting'} )
+    }
+    fetchProfile( agentRequest, ixToken, req.session, function ( error, results ) {
+      var response = {}
+      if ( error ) response.error = error
+      if ( results ) {
+        response.result = results
+        req.session.profile = results
       }
-      fetchProfile( agentRequest, ixToken, req.session, function ( error, results ) {
-        var response = {}
-        if ( error ) response.error = error
-        if ( results ) {
-          response.result = results
-          req.session.profile = results
-        }
-        return res.send( response )
-      })
+      return res.send( response )
     })
+  })
 }
 
 
