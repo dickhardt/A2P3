@@ -695,6 +695,158 @@ function registerDemoApp ( rs, standard ) {
       })
     })
 
+    // delete and add back in app
+
+    describe(' /dashboard/delete/app', function () {
+      it('should succeed', function (done) {
+        var options =
+          { url: config.baseUrl[rs] + '/dashboard/delete/app'
+          , form: { id: demoApp.host }
+          , method: 'POST'
+          }
+        if (rs == 'registrar') options.form.name = demoApp.name
+        fetch( options, function ( e, response, body ) {
+          should.not.exist( e )
+          should.exist( response )
+          response.statusCode.should.equal( 200 )
+          should.exist( body )
+          var r = JSON.parse( body )
+          should.exist( r )
+          r.should.not.have.property('error')
+          r.should.have.property('result')
+          r.result.should.have.property('success',true)
+          done( null )
+        })
+      })
+    })
+
+    describe(' /dashboard/list/apps', function () {
+      it('should not return the Demo App in the list', function (done) {
+        var options =
+          { url: config.baseUrl[rs] + '/dashboard/list/apps'
+          , method: 'POST'
+          }
+        fetch( options, function ( e, response, body ) {
+          should.not.exist( e )
+          should.exist( response )
+          response.statusCode.should.equal( 200 )
+          should.exist( body )
+          var r = JSON.parse( body )
+          should.exist( r )
+          r.should.have.property('result')
+          r.result.should.have.property('list')
+          r.result.list.should.not.have.property('demo.example.com')
+          done( null )
+        })
+      })
+    })
+
+
+    describe(' /dashboard/new/app', function () {
+      it('should return keys for the Demo app', function (done) {
+        var options =
+          { url: config.baseUrl[rs] + '/dashboard/new/app'
+          , form: { id: demoApp.host }
+          , method: 'POST'
+          }
+        if (rs == 'registrar') {
+          options.form.name = demoApp.name
+          options.form.anytime = true        // we will set the anytime flag this time and check that
+        }
+        fetch( options, function ( e, response, body ) {
+          should.not.exist( e )
+          should.exist( response )
+          response.statusCode.should.equal( 200 )
+          should.exist( body )
+          var r = JSON.parse( body )
+
+
+console.log('\n /dashboard/new/app\n',r)
+
+
+          should.exist( r )
+          r.should.have.property('result')
+          if (standard) { // we are working with a standardized resource
+            var hosts = Object.keys(r.result)
+            hosts.should.have.length(config.provinces.length)
+            hosts.forEach( function (host) {
+              r.result.should.have.property(host)
+              r.result[host].should.have.property('latest')
+              r.result[host].latest.should.have.property('key')
+              r.result[host].latest.should.have.property('kid')
+              vault.keys[host] = r.result[host]
+            })
+            done( null )
+          } else {
+            r.result.should.have.property('key')
+            r.result.key.should.have.property('latest')
+            r.result.key.latest.should.have.property('key')
+            r.result.key.latest.should.have.property('kid')
+            // save keys for later calls
+            vault.keys[config.host[rs]] = r.result.key
+            if (rs == 'registrar') vault.keys[config.host.ix] = r.result.key
+            done( null )
+          }
+        })
+      })
+    })
+
+    describe(' /dashboard/list/apps', function () {
+      it('should return the Demo App in the list', function (done) {
+        var options =
+          { url: config.baseUrl[rs] + '/dashboard/list/apps'
+          , method: 'POST'
+          }
+        fetch( options, function ( e, response, body ) {
+          should.not.exist( e )
+          should.exist( response )
+          response.statusCode.should.equal( 200 )
+          should.exist( body )
+          var r = JSON.parse( body )
+          should.exist( r )
+
+
+console.log('\n /dashboard/list/apps after new app\n',r)
+
+
+          r.should.have.property('result')
+          r.result.should.have.property('list')
+          r.result.list.should.have.property('demo.example.com')
+          done( null )
+        })
+      })
+    })
+
+    describe(' /dashboard/app/details', function () {
+      it('should return the Demo App details', function (done) {
+        var options =
+          { url: config.baseUrl[rs] + '/dashboard/app/details'
+          , form: { id: demoApp.host }
+          , method: 'POST'
+          }
+        fetch( options, function ( e, response, body ) {
+          should.not.exist( e )
+          should.exist( response )
+          response.statusCode.should.equal( 200 )
+          should.exist( body )
+          var r = JSON.parse( body )
+          should.exist( r )
+
+console.log('\n /dashboard/list/details after new app\n',r)
+
+
+          r.should.not.have.property('error')
+          r.should.have.property('result')
+          r.result.should.have.property('details')
+          r.result.details.should.have.property('admins')
+          r.result.details.admins.should.have.property( devUser.email )
+          if (rs == 'registrar')
+            r.result.details.should.have.property('anytime', true)
+          done( null )
+        })
+      })
+    })
+
     // test adding, listing and deleting an admin
     if (rs == 'registrar') {
       describe(' /dashboard/add/admin', function () {

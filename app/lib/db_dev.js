@@ -302,7 +302,7 @@ exports.refreshAppKey = function ( reg, id, cb ) {
 
 exports.getAppKey = function ( reg, id, vaultKeys, cb ) {
   getKeyObj( reg, id, function ( e, key) {
-    if (!key) key = vaultKeys[id]
+    if (!key) key = vaultKeys && vaultKeys[id]
     if (!key) cb( new Error('No key found for "'+id+'"') )
     cb( null, key )
   })
