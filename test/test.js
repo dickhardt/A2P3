@@ -1344,6 +1344,7 @@ function makeUserCancelTest ( appURL ) {
     var qrURL
       , qrSession
       , agentRequest
+      , jws
 
     describe('/loginQR', function () {
       it('should return a QR code URL', function ( done ) {
@@ -1386,6 +1387,8 @@ function makeUserCancelTest ( appURL ) {
           r.result.should.have.property('state', qrSession)
           r.result.should.have.property('agentRequest')
           agentRequest = r.result.agentRequest
+          jws = new jwt.Parse( agentRequest )
+          jws.payload['request.a2p3.org'].should.have.property('callbackURL')
           done( null )
         })
       })
@@ -1414,7 +1417,7 @@ function makeUserCancelTest ( appURL ) {
     describe('/response/callback', function () {
       it('should return error', function ( done ) {
         var options =
-          { url: appURL + '/response/callback'
+          { url: jws.payload['request.a2p3.org'].callbackURL
           , method: 'POST'
           , json:
             { error: 'USER_CANCELLED'
@@ -1461,10 +1464,10 @@ function makeUserCancelTest ( appURL ) {
 makeUserCancelTest( config.baseUrl.clinic )
 makeUserCancelTest( config.baseUrl.bank )
 makeUserCancelTest( config.baseUrl.si )
-// makeUserCancelTest( config.baseUrl.email )
-// makeUserCancelTest( config.baseUrl.health )
-// makeUserCancelTest( config.baseUrl.people )
-// makeUserCancelTest( config.baseUrl.registrar )
-// makeUserCancelTest( config.baseUrl['health.bc'] )
-// makeUserCancelTest( config.baseUrl['people.bc'] )
+makeUserCancelTest( config.baseUrl.email )
+makeUserCancelTest( config.baseUrl.health )
+makeUserCancelTest( config.baseUrl.people )
+makeUserCancelTest( config.baseUrl.registrar )
+makeUserCancelTest( config.baseUrl['health.bc'] )
+makeUserCancelTest( config.baseUrl['people.bc'] )
 
