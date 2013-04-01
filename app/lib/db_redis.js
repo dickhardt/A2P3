@@ -282,7 +282,10 @@ exports.registerAdmin = function ( reg, adminEmail, di, cb ) {
 }
 
 exports.listApps = function ( reg, admin, cb ) {
-  db.hgetall( reg + ':admin:' + admin + ':apps', cb )
+  db.hgetall( reg + ':admin:' + admin + ':apps', function ( e, result) {
+    if (!e && !result) result = {}
+    cb( e, result )
+  })
   // var apps = dummyNoSql[reg + ':admin:' + admin + ':apps']
   // var result = {}
   // if (apps) {

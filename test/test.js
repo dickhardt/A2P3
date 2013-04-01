@@ -759,11 +759,6 @@ function registerDemoApp ( rs, standard ) {
           response.statusCode.should.equal( 200 )
           should.exist( body )
           var r = JSON.parse( body )
-
-
-console.log('\n /dashboard/new/app\n',r)
-
-
           should.exist( r )
           r.should.have.property('result')
           if (standard) { // we are working with a standardized resource
@@ -804,11 +799,6 @@ console.log('\n /dashboard/new/app\n',r)
           should.exist( body )
           var r = JSON.parse( body )
           should.exist( r )
-
-
-console.log('\n /dashboard/list/apps after new app\n',r)
-
-
           r.should.have.property('result')
           r.result.should.have.property('list')
           r.result.list.should.have.property('demo.example.com')
@@ -831,10 +821,6 @@ console.log('\n /dashboard/list/apps after new app\n',r)
           should.exist( body )
           var r = JSON.parse( body )
           should.exist( r )
-
-console.log('\n /dashboard/list/details after new app\n',r)
-
-
           r.should.not.have.property('error')
           r.should.have.property('result')
           r.result.should.have.property('details')
