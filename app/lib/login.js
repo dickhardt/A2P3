@@ -185,7 +185,7 @@ function loginResponseRedirect ( details ) {
     var errorCode = req.query.error
     var errorMessage = req.query.errorMessage
 
-    if (!agentRequest || !ixToken) res.redirect( '/error' )
+    if (!agentRequest || !ixToken) return res.redirect( '/error' )
 
     fetchIXToken( agentRequest, ixToken, details, function ( error, result ) {
       if (error) return res.redirect( '/error' )
