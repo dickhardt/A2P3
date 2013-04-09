@@ -1,2 +1,3 @@
 { "/scope/verify": { "en": "Verify you are an administrator for applications" }
+, "/scope/app/list": { "en": "List all the applications you are an administrator for" }
 }

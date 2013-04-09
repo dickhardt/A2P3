@@ -112,6 +112,16 @@ function appVerify ( req, res, next ) {
   })
 }
 
+// /app/List
+function appList ( req, res, next ) {
+  db.listAppsByDI( 'registrar', req.token.sub, function ( e, list ) {
+    if ( e ) return next( e )
+    if ( list ) return res.send( { result: list } )
+    var err = new Error('UNKNOWN')
+    next( err )
+  })
+}
+
 exports.app = function() {
 	var app = express()
   app.use( express.limit('10kb') )  // protect against large POST attack
@@ -132,6 +142,15 @@ exports.app = function() {
           , token.checkRS( vault.keys, 'registrar', ['/scope/verify'] )
           , appVerify
           )
+
+// called by RS
+  app.post('/app/list'
+          , request.check( vault, null, 'registrar')
+          , mw.a2p3Params( ['token'] )
+          , token.checkRS( vault.keys, 'registrar', ['/scope/app/list'] )
+          , appList
+          )
+
 
   app.get('/documentation', mw.md( __dirname+'/README.md' ) )
   app.get(/\/scope[\w\/]*/, mw.scopes( __dirname + '/scopes.json', config.host.registrar ) )

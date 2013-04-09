@@ -150,7 +150,7 @@ exports.validAgent = function ( token, cb ) {
 }
 
 exports.getAppName = function ( id, cb ) {
-  var name = dummyNoSql['registrar:app:' + id + ':name']
+  var name = dummyNoSql['registrar:app:name'][ id ]
   process.nextTick( function () { cb( null, name ) } )
 }
 
@@ -159,34 +159,39 @@ exports.checkRegistrarAppIdTaken = function ( id, cb ) {
   process.nextTick( function () { cb( null, taken ) } )
 }
 
-// called when an RS wants to know if admin is authorized for an app ID
-exports.checkAdminAuthorization = function ( reg, id, di, cb ) {
-  var e = null
-  var adminEmail = dummyNoSql[reg + ':admin:di:' + di]
-  if (adminEmail && dummyNoSql[reg + ':app:' + id + ':admins']) {
-    var authorized = dummyNoSql[reg + ':app:' + id + ':admins'][adminEmail] == 'ACTIVE'
-    return process.nextTick( function () { cb( null, authorized ) } )
-  }
-  // something was wrong
-  if (!adminEmail) {
-    e = new Error('Unknown administrator')
-    e.code = 'UNKNOWN_USER'
-    return process.nextTick( function () { cb( e) } )
-  }
-  if (!dummyNoSql[reg + ':app:' + id + ':admins']) {
-    e = new Error('Unknown application "'+id+'"')
-    e.code = 'UNKNOWN_APP'
-    return process.nextTick( function () { cb( e) } )
-  }
-}
+// // called when an RS wants to know if admin is authorized for an app ID
+// exports.checkAdminAuthorization = function ( reg, id, di, cb ) {
+//   var e = null
+//   var adminEmail = dummyNoSql[reg + ':admin:di:' + di]
+//   if (adminEmail && dummyNoSql[reg + ':app:' + id + ':admins']) {
+//     var authorized = dummyNoSql[reg + ':app:' + id + ':admins'][adminEmail] == 'ACTIVE'
+//     return process.nextTick( function () { cb( null, authorized ) } )
+//   }
+//   // something was wrong
+//   if (!adminEmail) {
+//     e = new Error('Unknown administrator')
+//     e.code = 'UNKNOWN_USER'
+//     return process.nextTick( function () { cb( e) } )
+//   }
+//   if (!dummyNoSql[reg + ':app:' + id + ':admins']) {
+//     e = new Error('Unknown application "'+id+'"')
+//     e.code = 'UNKNOWN_APP'
+//     return process.nextTick( function () { cb( e) } )
+//   }
+// }
 
 /*
 * General App Registration Functions
 */
 
+// returns list of all apps that have been registered at an RS
+exports.registeredApps = function ( reg, cb ) {
+  process.nextTick( function () { cb( null, dummyNoSql[reg + ':app:name'] ) } )
+}
 
 // called when an admin logs in to link email with DI
 exports.registerAdmin = function ( reg, adminEmail, di, cb ) {
+  if ( reg != 'registrar') return cb( null )
   dummyNoSql[reg + ':admin:' + adminEmail + ':di'] = di
   dummyNoSql[reg + ':admin:di:' + di] = adminEmail
   process.nextTick( function () { cb( null ) } )
@@ -197,22 +202,21 @@ exports.listApps = function ( reg, admin, cb ) {
   var result = {}
   if (apps) {
     Object.keys(apps).forEach( function (id) {
-      result[id] = dummyNoSql[reg + ':app:' + id + ':name']
+      result[id] = dummyNoSql[reg + ':app:name'][ id ]
     })
   }
   process.nextTick( function () { cb( null, result ) } )
 }
 
-exports.appDetails = function ( reg, admin, id, cb ) {
-  if (!dummyNoSql[reg + ':admin:' + admin + ':apps'][id]) {
-    var e = new Error('Admin is not authorative for '+id)
-    e.code = "ACCESS_DENIED"
-    process.nextTick( function () { cb( e ) } )
-  }
+exports.listAppsByDI = function ( reg, di, cb ) {
+  exports.listApps( reg, dummyNoSql[reg + ':admin:di:' + di], cb )
+}
+
+exports.appDetails = function ( reg, id, cb ) {
   getKeyObj( reg, id, function ( e, keys ) {
     if (e) return cb( e )
     var result =
-      { name: dummyNoSql[reg + ':app:' + id + ':name']
+      { name: dummyNoSql[reg + ':app:name'][ id ]
       , admins: dummyNoSql[reg + ':app:' + id + ':admins']
       , keys: keys
       }
@@ -227,23 +231,26 @@ exports.appDetails = function ( reg, admin, id, cb ) {
 // supports anytime OAuth 2.0 access and the
 // /authorizations/list & /authorization/delete APIs
 exports.newApp = function ( reg, id, name, adminEmail, anytime, cb ) {
+  dummyNoSql[reg + ':app:name'] = dummyNoSql[reg + ':app:name'] || {}
   if (typeof anytime === 'function') {
     cb = anytime
     anytime = false
   }
-  if ( dummyNoSql[reg + ':app:' + id + ':name'] ) {
+  if ( dummyNoSql[reg + ':app:name'][ id ] ) {
     var err = new Error('"'+ id + '" already registered')
     err.code = 'APP_ID_ALREADY_REGISTERED'
     return process.nextTick( function () { cb( err ) } )
   }
   // add to DB
-  dummyNoSql[reg + ':app:' + id + ':name'] = name
+  dummyNoSql[reg + ':app:name'][ id ] = name
   if ( (reg == 'registrar') && anytime)
     dummyNoSql[reg + ':app:' + id + ':anytime'] = true
   dummyNoSql[reg + ':app:' + id + ':admins'] = {}
   dummyNoSql[reg + ':app:' + id + ':admins'][adminEmail] = 'ACTIVE'
-  dummyNoSql[reg + ':admin:' + adminEmail + ':apps'] = dummyNoSql[reg + ':admin:' + adminEmail + ':apps'] || {}
-  dummyNoSql[reg + ':admin:' + adminEmail + ':apps'][id] = 'ACTIVE'
+  if ( reg == 'registrar' ) {
+    dummyNoSql[reg + ':admin:' + adminEmail + ':apps'] = dummyNoSql[reg + ':admin:' + adminEmail + ':apps'] || {}
+    dummyNoSql[reg + ':admin:' + adminEmail + ':apps'][id] = 'ACTIVE'
+  }
   // gen key pair
   newKeyObj( reg, id, function ( e, keyObj ) {
     cb( e, keyObj )
@@ -266,7 +273,7 @@ exports.checkApp = function ( reg, id, di, cb) {
       e.code = 'ACCESS_DENIED'
     }
   }
-  if (ok) name =  dummyNoSql[reg + ':app:' + id + ':name']
+  if (ok) name =  dummyNoSql[reg + ':app:name'][ id ]
   process.nextTick( function () { cb( e, name ) } )
 }
 
@@ -284,12 +291,17 @@ exports.deleteAppAdmin = function ( reg, id, admin, cb ) {
 }
 
 exports.deleteApp = function ( reg, id, cb ) {
-  delete dummyNoSql[reg + ':app:' + id + ':name']
+  if ( dummyNoSql[reg + ':app:name'][ id ] )
+    delete dummyNoSql[reg + ':app:name'][ id ]
+  if ( dummyNoSql[reg + ':app:' + id + ':anytime'] )
+    delete dummyNoSql[reg + ':app:' + id + ':anytime']
   deleteKeyObj( reg, id, function ( e ) {
-    var admins = Object.keys( dummyNoSql[reg + ':app:' + id + ':admins'] )
-    admins.forEach( function (admin) {
-      delete dummyNoSql[reg + ':admin:' + admin + ':apps'][id]
-    })
+    if (reg == 'registrar') {
+      var admins = Object.keys( dummyNoSql[reg + ':app:' + id + ':admins'] )
+      admins.forEach( function (admin) {
+        delete dummyNoSql[reg + ':admin:' + admin + ':apps'][id]
+      })
+    }
     process.nextTick( function () { cb( null ) } )
   })
 }

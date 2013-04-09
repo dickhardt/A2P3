@@ -4,8 +4,7 @@
 * Copyright (C) Province of British Columbia, 2013
 */
 
-var express = require('express')
-  , util = require('util')
+var underscore = require('underscore')
   , config = require('../config')
   , request = require('./request')
   , db = require('./db')
@@ -36,23 +35,52 @@ exports.routes = function ( app, RS, vault ) {
     })
   }
 
-  // only called at Registrar Dashboard
-  function dashboardAppIdTaken ( req, res, next ) {
-    db.checkRegistrarAppIdTaken( req.body.id, function ( e, taken ) {
-      if (e) { e.code = e.code || "INTERNAL_ERROR"; return next(e) }
-      return res.send( {result:{'id': req.body.id, 'taken': taken}} )
-    })
-  }
+  // // only called at Registrar Dashboard
+  // function dashboardAppIdTaken ( req, res, next ) {
+  //   db.checkRegistrarAppIdTaken( req.body.id, function ( e, taken ) {
+  //     if (e) { e.code = e.code || "INTERNAL_ERROR"; return next(e) }
+  //     return res.send( {result:{'id': req.body.id, 'taken': taken}} )
+  //   })
+  // }
 
-  function dashboardlistApps ( req, res, next ) {
+  function dashboardlistRegistrarApps ( req, res, next ) {
     db.listApps( RS, req.session.email, function ( e, list ) {
       if (e) { e.code = e.code || "INTERNAL_ERROR"; return next(e) }
+      if (list)
+        req.session.apps = Object.keys( list )
+      else
+        req.session.apps = null
       return res.send( { result: {'list': list, 'email': req.session.email } } )
     })
   }
 
+  function dashboardlistApps ( req, res, next ) {
+    var stdApi = new api.Standard( RS, vault )
+    stdApi.call( 'registrar', '/app/list'
+                , {token: req.session.tokens[config.host.registrar]}
+                , function ( e, result ) {
+      if (e) return next( e )
+      var allAdminAppIDs = result && Object.keys( result )
+      req.session.apps = allAdminAppIDs
+      db.registeredApps( RS, function ( e, result ) {
+        if (e) { e.code = e.code || "INTERNAL_ERROR"; return next(e) }
+        var appsAtRS = null
+        if (result && allAdminAppIDs) {
+          appsAtRS = underscore.intersection( allAdminAppIDs, Object.keys( result ) )
+        }
+        var list = {}
+        if (appsAtRS) {
+          appsAtRS.forEach( function ( id ) {
+            list[id] = result[id]
+          })
+        }
+        return res.send( { result: {'list': list, 'email': req.session.email } } )
+      })
+    })
+  }
+
   function dashboardAppDetails ( req, res, next ) {
-    db.appDetails( RS, req.session.email, req.body.id, function ( e, details ) {
+    db.appDetails( RS, req.body.id, function ( e, details ) {
       if (e) { e.code = e.code || "INTERNAL_ERROR"; return next(e) }
       return res.send( { result: {'details': details, 'email': req.session.email } } )
     })
@@ -111,15 +139,12 @@ exports.routes = function ( app, RS, vault ) {
   }
 
   function checkAdminAuthorization ( req, res, next ) {
-    db.checkAdminAuthorization( RS, req.body.id, req.session.di, function ( e, authorized ) {
-      if (e) { e.code = e.code || "INTERNAL_ERROR"; return next(e) }
-      if (!authorized) {
-        var err = new Error( req.session.di + ' not authorized for ' + req.body.id )
-        err.code = "ACCESS_DENIED"
-        return next(err)
-      } else
-        next()
-    })
+    if (!req.session.apps || req.session.apps.indexOf( req.body.id ) == -1 ) {
+      var e = new Error('Admin is not authorative for '+req.body.id )
+      e.code = "ACCESS_DENIED"
+      return next( e )
+    }
+    next()
   }
 
 // reformat parameters from standard resource host API calls
@@ -213,11 +238,11 @@ exports.routes = function ( app, RS, vault ) {
   app.get('/', function( req, res ) { res.sendfile( config.rootAppDir + '/html/homepage_rs.html' ) } )
 
   if (RS == 'registrar') { // only Registrar is allowed to check if ID is available
-    app.post('/dashboard/appid/taken'
-            , checkSession
-            , mw.checkParams( {'body':['id']} )
-            , dashboardAppIdTaken
-            )
+    // app.post('/dashboard/appid/taken'
+    //         , checkSession
+    //         , mw.checkParams( {'body':['id']} )
+    //         , dashboardAppIdTaken
+    //         )
     app.post('/dashboard/add/admin'
             , checkSession
             , mw.checkParams( {'body':['id','admin']} )
@@ -230,15 +255,21 @@ exports.routes = function ( app, RS, vault ) {
             , checkAdminAuthorization
             , dashboardDeleteAdmin
             )
-    app.get('/dashboard', checkSession, function( req, res ) { res.sendfile( config.rootAppDir + '/html/dashboard_registrar.html' ) } )
+    app.post('/dashboard/list/apps'
+            , checkSession
+            , dashboardlistRegistrarApps
+            )
+    app.get('/dashboard', checkSession, function( req, res )
+      { res.sendfile( config.rootAppDir + '/html/dashboard_registrar.html' ) } )
   } else { // if not registrar
-    app.get('/dashboard', checkSession, function( req, res ) { res.sendfile( config.rootAppDir + '/html/dashboard.html' ) } )
+    app.post('/dashboard/list/apps'
+            , checkSession
+            , dashboardlistApps
+            )
+    app.get('/dashboard', checkSession, function( req, res )
+      { res.sendfile( config.rootAppDir + '/html/dashboard.html' ) } )
   }
 
-  app.post('/dashboard/list/apps'
-          , checkSession
-          , dashboardlistApps
-          )
   app.post('/dashboard/app/details'
           , checkSession
           , mw.checkParams( {'body':['id'],'session':['email','di']} )
@@ -295,6 +326,5 @@ exports.routes = function ( app, RS, vault ) {
             , stdGetKey
             )
   }
-
 
 }

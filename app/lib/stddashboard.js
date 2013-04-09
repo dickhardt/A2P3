@@ -4,7 +4,7 @@
 * Copyright (C) Province of British Columbia, 2013
 */
 
-var express = require('express')
+var underscore = require('underscore')
   , api = require('./api')
   , config = require('../config')
   , async = require('async')
@@ -12,7 +12,6 @@ var express = require('express')
   , mw = require('./middleware')
   , login = require('./login')
   , api = require('./api')
-  , util = require('util')
 
 // main function that sets up all the routes
 exports.routes = function ( app, RS, vault ) {
@@ -32,14 +31,32 @@ exports.routes = function ( app, RS, vault ) {
 
 
   function dashboardlistApps ( req, res, next ) {
-    db.listApps( RS, req.session.email, function ( e, list ) {
-      if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
-      return res.send( { result: {'list': list, 'email': req.session.email } } )
+    var stdApi = new api.Standard( RS, vault )
+    stdApi.call( 'registrar', '/app/list'
+                , {token: req.session.tokens[config.host.registrar]}
+                , function ( e, result ) {
+      if (e) return next( e )
+      var allAdminAppIDs = result && Object.keys( result )
+      req.session.apps = allAdminAppIDs
+      db.registeredApps( RS, function ( e, result ) {
+        if (e) { e.code = e.code || "INTERNAL_ERROR"; return next(e) }
+        var appsAtRS = null
+        if (result && allAdminAppIDs) {
+          appsAtRS = underscore.intersection( allAdminAppIDs, Object.keys( result ) )
+        }
+        var list = {}
+        if (appsAtRS) {
+          appsAtRS.forEach( function ( id ) {
+            list[id] = result[id]
+          })
+        }
+        return res.send( { result: {'list': list, 'email': req.session.email } } )
+      })
     })
   }
 
   function dashboardAppDetails ( req, res, next ) {
-    db.appDetails( RS, req.session.email, req.body.id, function ( e, details ) {
+    db.appDetails( RS, req.body.id, function ( e, details ) {
       if (e) { e.code = "INTERNAL_ERROR"; return next(e) }
       return res.send( { result: {'details': details, 'email': req.session.email } } )
     })
@@ -103,15 +120,15 @@ exports.routes = function ( app, RS, vault ) {
   }
 
   function checkAdminAuthorization ( req, res, next ) {
-    db.checkAdminAuthorization( RS, req.body.id, req.session.di, function ( e, authorized ) {
-      if (e) { e.code = e.code || "INTERNAL_ERROR"; return next(e) }
-      if (!authorized) {
-        var err = new Error( req.session.di + ' not authorized for ' + req.body.id )
-        err.code = "ACCESS_DENIED"
-        return next(err)
-      } else
-        next()
-    })
+
+// console.log('\n checkAdminAuthorization req.session.apps\n',req.session.apps)
+
+    if (!req.session.apps || req.session.apps.indexOf( req.body.id ) == -1 ) {
+      var e = new Error('Admin is not authorative for '+req.body.id )
+      e.code = "ACCESS_DENIED"
+      return next( e )
+    }
+    next()
   }
 
   // checks session has required data, otherwise goes and gets it

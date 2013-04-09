@@ -241,40 +241,47 @@ exports.validAgent = function ( token, cb ) {
 }
 
 exports.getAppName = function ( id, cb ) {
-  db.hget( 'registrar:app:' + id, 'name', cb )
+  db.hget( 'registrar:app:name', id, cb )
 }
 
-exports.checkRegistrarAppIdTaken = function ( id, cb ) {
-  db.get( config.host.registrar + ':app:' + id + ':name', cb )
-}
+// exports.checkRegistrarAppIdTaken = function ( id, cb ) {
+//   db.hget( config.host.registrar + ':app:' + id + ':name', cb )
+// }
 
-// called when an RS wants to know if admin is authorized for an app ID
-exports.checkAdminAuthorization = function ( reg, id, di, cb ) {
-  db.get( reg + ':admin:di:' + di, function ( e, adminEmail ) {
-    if ( e ) return cb( e )
-    if (!adminEmail) {
-      e = new Error('Unknown administrator')
-      e.code = 'UNKNOWN_USER'
-      return cb( e )
-    }
-    db.hget( reg + ':app:' + id + ':admins', adminEmail, function ( e, status ) {
-      if ( e ) return cb( e )
-      if ( !status ) {
-        e = new Error('Unknown application "'+id+'"')
-        e.code = 'UNKNOWN_APP'
-        return cb( e )
-      }
-      cb( null, status == 'ACTIVE' )
-    })
-  })
-}
+// // called when an RS wants to know if admin is authorized for an app ID
+// // SHOULD NOT BE CALLED ANYMORE AS RS CAN GET THE LIST OF APPS THAT AN ADMIN HAS ACCESS TO
+// exports.checkAdminAuthorization = function ( reg, id, di, cb ) {
+//   db.get( reg + ':admin:di:' + di, function ( e, adminEmail ) {
+//     if ( e ) return cb( e )
+//     if (!adminEmail) {
+//       e = new Error('Unknown administrator')
+//       e.code = 'UNKNOWN_USER'
+//       return cb( e )
+//     }
+//     db.hget( reg + ':app:' + id + ':admins', adminEmail, function ( e, status ) {
+//       if ( e ) return cb( e )
+//       if ( !status ) {
+//         e = new Error('Unknown application "'+id+'"')
+//         e.code = 'UNKNOWN_APP'
+//         return cb( e )
+//       }
+//       cb( null, status == 'ACTIVE' )
+//     })
+//   })
+// }
 
+
+// returns list of all apps that have been registered at an RS
+exports.registeredApps = function ( reg, cb ) {
+  db.hgetall( reg + ':app:name', cb )
+}
 
 /*
 * General App Registration Functions
 */
 // called when an admin logs in to link email with DI
 exports.registerAdmin = function ( reg, adminEmail, di, cb ) {
+  if ( reg != 'registrar') return cb( null )
   db.multi()
     .set( reg + ':admin:' + adminEmail + ':di', di )
     .set( reg + ':admin:di:' + di, adminEmail )
@@ -297,20 +304,32 @@ exports.listApps = function ( reg, admin, cb ) {
   // process.nextTick( function () { cb( null, result ) } )
 }
 
-exports.appDetails = function ( reg, admin, id, cb ) {
+exports.listAppsByDI = function ( reg, di, cb ) {
+  db.get( reg + ':admin:di:' + di, function ( e, result ) {
+    if (!e && !result) result = {}
+    exports.listApps( reg, result, cb )
+  })
+}
+
+exports.appDetails = function ( reg, id, cb ) {
+  var results = null
   getKeyObj( reg, id, function ( e, keys ) {
     if (e) return cb( e )
     if (!keys) return cb( new Error('INVALID_APP_ID') )
-    db.hgetall( reg + ':app:' + id, function ( e, results ) {
+    db.hget( reg + ':app:name', id, function ( e, name ) {
       if (e) return cb( e )
-      if (!results) return cb( new Error('INVALID_APP_ID') )
-        results.anytime = (results.anytime == 'true') // convert from string to boolean
-      db.hgetall( reg + ':app:' + id + ':admins', function ( e, admins ) {
+      if (!name) return cb( new Error('INVALID_APP_ID') )
+      results.name = name
+      db.hget( reg + ':app:anytime', id, function ( e, anytime ) {
         if (e) return cb( e )
-        if (!admins) return cb( new Error('UNKNOWN_ERROR') )
-        results.admins = admins
-        results.keys = keys
-        cb( null, results )
+        results.anytime = ( anytime == 'true' ) // convert from string to boolean
+        db.hgetall( reg + ':app:' + id + ':admins', function ( e, admins ) {
+          if (e) return cb( e )
+          if (!admins) return cb( new Error('UNKNOWN_ERROR') )
+          results.admins = admins
+          results.keys = keys
+          cb( null, results )
+        })
       })
     })
   })
@@ -347,13 +366,15 @@ exports.newApp = function ( reg, id, name, adminEmail, anytime, cb ) {
       err.code = 'APP_ID_ALREADY_REGISTERED'
       return cb( err )
     }
-    var app = { name: name }
-    if ( (reg == 'registrar') && (anytime !== 'NA') ) app.anytime = anytime
-    db.multi()
-      .hmset( reg + ':app:' + id, app )
-      .hset( reg + ':app:' + id + ':admins', adminEmail, 'ACTIVE' )
-      .hset( reg + ':admin:' + adminEmail + ':apps', id, name )
-      .exec( function ( e ) {
+    var multi = db.multi()
+    if ( (reg == 'registrar') && (anytime !== 'NA') && anytime ) {
+      multi.hset( reg + ':app:anytime', id, anytime )
+    }
+    multi.hset( reg + ':app:name', id, name )
+    multi.hset( reg + ':app:' + id + ':admins', adminEmail, 'ACTIVE' )
+    if ( reg == 'registrar' )
+      multi.hset( reg + ':admin:' + adminEmail + ':apps', id, name )
+    multi.exec( function ( e ) {
         if (e) return cb( e )
         newKeyObj( reg, id, cb )
       })
@@ -392,7 +413,7 @@ exports.checkApp = function ( reg, id, di, cb) {
         err.code = 'ACCESS_DENIED'
         return cb( err )
       }
-      db.hget( reg + ':app:' + id, 'name', function ( e, name ) {
+      db.hget( reg + ':app:name', id, function ( e, name ) {
         if (e) return cb( e )
         if (!name) return cb( new Error('Could not find app:'+id ) )
         cb( null, name )
@@ -445,10 +466,13 @@ exports.deleteApp = function ( reg, id, cb ) {
     db.hgetall( reg + ':app:' + id + ':admins', function ( e, admins ) {
       if (e) return cb( e )
       var multi = db.multi()
-      Object.keys( admins ).forEach( function ( admin ) {
-        multi.hdel( reg + ':admin:' + admin + ':apps', id )
-      })
-      multi.del( reg + ':app:' + id )
+      if (reg == 'registrar') {
+        Object.keys( admins ).forEach( function ( admin ) {
+          multi.hdel( reg + ':admin:' + admin + ':apps', id )
+        })
+      }
+      multi.hdel( reg + ':app:name', id )
+      multi.hdel( reg + ':app:anytime', id )
       multi.exec( cb )
     })
   })
