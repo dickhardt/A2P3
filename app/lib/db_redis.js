@@ -512,9 +512,6 @@ exports.getAnytimeAppKeys = function ( list, vaultKeys, cb ) {
     tasks.push( function ( done ) {
       db.hget( 'registrar:app:anytime', id, function ( e, anytime ) {
         if (e) return done( e )
-
-console.log('\n getAnytimeAppKeys() anytime:"'+anytime+'"\n')
-
         if (anytime == "true") {
           getKeyObj( 'registrar', id, function ( e, keyObj ) {
             if (e) return done( e )
