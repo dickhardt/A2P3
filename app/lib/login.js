@@ -314,7 +314,7 @@ exports.router = function ( app, detailsOrig ) {
     details.baseUrl = config.baseUrl[details.dashboard]
     details.resources =
       [ config.baseUrl.email + '/scope/default'
-      , config.baseUrl.registrar + '/scope/verify'
+      , config.baseUrl.registrar + '/scope/app/list'
       ]
     details.pathSuccess = '/dashboard'                // HTML to be provided on success
 

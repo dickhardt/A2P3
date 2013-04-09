@@ -236,6 +236,7 @@ exports.newApp = function ( reg, id, name, adminEmail, anytime, cb ) {
     cb = anytime
     anytime = false
   }
+  if (!name) name = 'unknown'
   if ( dummyNoSql[reg + ':app:name'][ id ] ) {
     var err = new Error('"'+ id + '" already registered')
     err.code = 'APP_ID_ALREADY_REGISTERED'

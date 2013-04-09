@@ -29,9 +29,14 @@ exports.create = function ( payload, credentials ) {
 }
 
 function validScope ( passedScopes, acceptedScopes ) {
+
+
   var valid = underscore.intersection( passedScopes, acceptedScopes )
-  if (!valid) console.log('\ninvalid scope\npassed:\t'+passedScopes+'\naccepted:\t'+acceptedScopes)
-  return valid
+  if (!valid || !valid.length) console.error('\ninvalid scope\npassed:\t'+passedScopes+'\naccepted:\t'+acceptedScopes)
+
+// console.log('\n validScopes\npassed:',passedScopes,'\naccepted:',acceptedScopes,'\nvalid:',valid)
+
+  return valid.length
 }
 
 // middleware that checks token is valid
@@ -47,7 +52,7 @@ exports.checkRS = function ( vault, rs, scopePaths, stdRS ) {
     var stdAcceptedScopes = scopePaths.map( function ( scopePath ) {
       return (config.baseUrl[stdRS] + scopePath)
     })
-    acceptedScopes.push( stdAcceptedScopes )
+    acceptedScopes = underscore.union( acceptedScopes, stdAcceptedScopes )
   }
 
   return (function checkRS (req, res, next) {

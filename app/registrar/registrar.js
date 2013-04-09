@@ -62,6 +62,16 @@ function requestVerify (req, res, next) {
   })
 }
 
+
+// /app/name
+function appName (req, res, next) {
+  var appID = req.request['request.a2p3.org'].id
+  db.getAppName( appID, function ( e, appName ) {
+    if ( e ) return next( e )
+    return res.send( {result: { name: appName } } )
+  })
+}
+
 // /report
 function report (req, res, next) {
   request.verifyAndId( req.body.request, 'registrar', vault.keys, function ( error, appID ) {
@@ -135,12 +145,20 @@ exports.app = function() {
   app.post('/report', checkValidAgent, report )
   app.post('/authorizations/requests', checkValidAgent, authorizationsRequests )
 
+  // DEPRECIATED in favor of /app/list
   // called by RS
   app.post('/app/verify'
           , request.check( vault, null, 'registrar')
           , mw.a2p3Params( ['id', 'token'] )
           , token.checkRS( vault.keys, 'registrar', ['/scope/verify'] )
           , appVerify
+          )
+
+  // called by RS to get App Name
+  app.post('/app/name'
+          , request.check( vault, null, 'registrar')
+          , mw.a2p3Params( ['id'] )
+          , appName
           )
 
 // called by RS

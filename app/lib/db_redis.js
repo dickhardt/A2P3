@@ -360,6 +360,7 @@ exports.newApp = function ( reg, id, name, adminEmail, anytime, cb ) {
     cb = anytime
     anytime = 'NA'
   }
+  if (!name) name = 'unknown'
   db.exists( reg + ':app:' + id, function ( e, exist ) {
     if ( exist ) {
       var err = new Error('"'+ id + '" already registered')

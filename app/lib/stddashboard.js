@@ -62,23 +62,28 @@ exports.routes = function ( app, RS, vault ) {
     })
   }
 
+
+/*
+*     NOTE: took out app name from calls to create a new app ...
+*/
+
   function dashboardNewApp ( req, res, next ) {
-    stdApi.call( 'registrar', '/app/verify'
-                , {id: req.body.id, token: req.session.tokens[config.host.registrar]}
-                , function ( e, result ) {
+    if (!req.session.apps || req.session.apps.indexOf( req.body.id ) == -1 ) {
+      var e = new Error('Admin is not authorative for '+req.body.id )
+      e.code = "ACCESS_DENIED"
+      return next( e )
+    }
+    db.newApp( RS, req.body.id, null, req.session.email, function ( e ) {
       if (e) { e.code = e.code || "INTERNAL_ERROR"; return next(e) }
-      db.newApp( RS, req.body.id, result.name, req.session.email, function ( e ) {
+      _callAllResources( '/std/new/app'
+                  , {id: req.body.id, email: req.session.email}
+                  , function ( e, results ) {
         if (e) { e.code = e.code || "INTERNAL_ERROR"; return next(e) }
-        _callAllResources( '/std/new/app'
-                    , {id: req.body.id, name: result.name, email: req.session.email}
-                    , function ( e, results ) {
-          if (e) { e.code = e.code || "INTERNAL_ERROR"; return next(e) }
-          var keys = {}
-          Object.keys( results ).forEach( function ( host ) {
-            keys[config.host[host]] = results[host].key
-          })
-          return res.send( {result: keys} )
+        var keys = {}
+        Object.keys( results ).forEach( function ( host ) {
+          keys[config.host[host]] = results[host].key
         })
+        return res.send( {result: keys} )
       })
     })
   }

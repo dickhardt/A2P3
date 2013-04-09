@@ -100,19 +100,11 @@ exports.routes = function ( app, RS, vault ) {
     // check that User is auth for this App at Registrar unless we are the Registrar
     // or this is an API call from a Standardized Resource
     if ( ( RS == 'registrar' ) || req.request ) return newApp()
-    if (!req.session && !req.session.tokens && !req.session.tokens[config.host.registrar]) {
-      var e = new Error('No RS Token for Registrar found')
-      e.code = 'INTERNAL_ERROR'
-      return next( e )
-    }
-    var stdApi = new api.Standard( RS, vault )
-    stdApi.call( 'registrar', '/app/verify'
-                , {id: req.body.id, token: req.session.tokens[config.host.registrar]}
-                , function ( e, result ) {
-      if (e) return next(e)
-      req.body.name = result.name
-      newApp()
-    })
+    // check if this is an app User has already registered
+    if (req.session.apps && req.session.apps.indexOf( req.body.id ) != -1 ) return newApp()
+    var e = new Error('Admin is not authorative for '+req.body.id )
+    e.code = "ACCESS_DENIED"
+    return next( e )
   }
 
 
@@ -307,7 +299,7 @@ exports.routes = function ( app, RS, vault ) {
     accessList[config.host[std]] = true
     app.post('/std/new/app'
             , request.check( vault.keys, accessList, config.host[RS])
-            , mw.a2p3Params( ['id', 'name', 'email'] )
+            , mw.a2p3Params( ['id', 'email'] )
             , stdNewApp
             )
     app.post('/std/delete/app'

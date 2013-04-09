@@ -585,6 +585,27 @@ function registerDemoApp ( rs, standard ) {
       })
     })
 
+    describe(' /dashboard/list/apps', function () {
+      it('should NOT return the Demo App in the list', function (done) {
+        var options =
+          { url: config.baseUrl[rs] + '/dashboard/list/apps'
+          , method: 'POST'
+          }
+        fetch( options, function ( e, response, body ) {
+          should.not.exist( e )
+          should.exist( response )
+          response.statusCode.should.equal( 200 )
+          should.exist( body )
+          var r = JSON.parse( body )
+          should.exist( r )
+          r.should.have.property('result')
+          r.result.should.have.property('list')
+          r.result.list.should.not.have.property('demo.example.com')
+          done( null )
+        })
+      })
+    })
+
     describe(' /dashboard/new/app', function () {
       it('should return keys for the Demo app', function (done) {
         var options =
