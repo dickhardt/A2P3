@@ -361,7 +361,10 @@ exports.newApp = function ( reg, id, name, adminEmail, anytime, cb ) {
     anytime = 'NA'
   }
   if (!name) name = 'unknown'
-  db.exists( reg + ':app:' + id, function ( e, exist ) {
+  db.hexists( reg + ':app:name', id, function ( e, exist ) {
+
+console.log('\n newApp\ne:',e,'\nexist:',exist)
+
     if ( exist ) {
       var err = new Error('"'+ id + '" already registered')
       err.code = 'APP_ID_ALREADY_REGISTERED'

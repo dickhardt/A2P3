@@ -144,10 +144,11 @@ function registerAgent ( req, res, next ) {
         // TBD: let listener on channel know that QR code was read successfully
 
         // async clear out data associated with the code
+        // ... yeah, well that did not work, tests fail as call is made quickly before DB finishes
         db.deleteProfile( 'as', code, function ( e ) {
           if (e) console.log("Profile update error:\n", e )
+          return res.send( { 'result': {'token': result.token } } )
         })
-        return res.send( { 'result': {'token': result.token } } )
       })
     })
   })
