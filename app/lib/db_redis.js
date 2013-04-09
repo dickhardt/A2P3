@@ -312,7 +312,7 @@ exports.listAppsByDI = function ( reg, di, cb ) {
 }
 
 exports.appDetails = function ( reg, id, cb ) {
-  var results = null
+  var results = {}
   getKeyObj( reg, id, function ( e, keys ) {
     if (e) return cb( e )
     if (!keys) return cb( new Error('INVALID_APP_ID') )
