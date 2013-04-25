@@ -1069,3 +1069,7 @@ p.label_checkbox_pair label {
 .ui-widget-header {
 	background: none !important;
 }
+
+.ui-dialog-titlebar {
+	border: 0px !important;
+}
