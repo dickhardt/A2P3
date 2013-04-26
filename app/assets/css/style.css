@@ -188,6 +188,13 @@ body img[height="1"] {
 	line-height: 0.8;
 }
 
+.mainTitleSmall {
+	font-family: 'Sansus_Webissimo-Regular';
+	font-size: 28px;
+	line-height: 0.8;
+}
+
+
 .headerContainer h2 {
 	font-weight: 300;
 	font-size: 28px;
