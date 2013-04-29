@@ -157,7 +157,8 @@
 				showOn : "button",
 				dateFormat : 'MM d, yy',
 				buttonImage : "images/datepicker.png",
-				buttonImageOnly : true
+				buttonImageOnly : true,
+				yearRange: "1900:" + new Date().getFullYear()
 			};
 
 			$("#provinceValue").change(
@@ -172,7 +173,6 @@
 
 
 			$("#dob_input").datepicker(pickerOpts)
-			// TBD -- set date in text field to Date Picker result
 
 			$.post('enroll/profile', null, function(data, status) {
 				if (status == 'success') {
