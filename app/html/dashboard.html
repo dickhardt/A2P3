@@ -19,17 +19,16 @@
 <header class="header">
 	<section class="headerContainer">
 		<a href="http://a2p3.net"><img class="headerLogo" alt="A2P3" src="/images/a2p3_logo_rs.png" border="0"></a>
-		<span class="mainTitle" id='title'>XX Dashboard</span>
-		<div class="mainTitleText"></div>
+		<span class="mainTitleSmall" id='title'>XX Dashboard</span>
+		<span style="float:right;">
+			<br>
+			<span id="loginEmail"></span>
+			<a class="genericButton" href="/logout" id="logout">Logout </a>
+		</span>
 	</section>
 </header>
 <section class="mainContent">
 	<div class="mainContentWrap">
-		<h2>Welcome <span id="loginEmail"></span>
-			<span style="float: right">
-				<a class="genericButton" href="/logout" id="logout">Logout </a>
-			</span>
-		</h2>
 		<br>
 		<a href="" id="login" class="genericButton"> login </a>
 		<a class="genericButton" href="" id="registerApp">Register Application</a>
@@ -167,10 +166,10 @@
           var list = data.result.list
           var html = null
           var item = 0  // use a counter since the app has '.'s which browser is cranky about in element IDs
-          $('#appTable').append( "<thead><th style='width: 30%; text-align:left;'>Name</th><th style='width: 30%; text-align:left;'>Id</th></thead>" )
+          $('#appTable').append( "<thead><th class='tableRowAgentName' style='width: 30%; text-align:left;'>Name</th><th class='tableRowAgentName' style='width: 30%; text-align:left;'>Id</th></thead>" )
           $.each( list, function ( app ) {
-            html = '<tr><td><a class="otherLinks" href="" id="' + item +'_details">' + list[app] +'</a>' +
-              '</td><td>' + app + '</td></tr>'
+            html = '<tr><td class="tableRow"><a class="otherLinks" href="" id="' + item +'_details">' + list[app] +'</a>' +
+              '</td><td class="tableRow">' + app + '</td></tr>'
             $('#appTable').append( html )
             $('#'+item+'_details').click( function () { return showAppDetails( app, true ); } )
             item++
@@ -192,6 +191,22 @@
       $('#registerApp_id_input').removeAttr('disabled')
       $('#registerAppFormSubmit').removeAttr('disabled')
       $('#registerAppFormCancel').removeAttr('disabled')
+      $('#registerApp_id_input').bind('keypress', function(e) {
+      	 var code = (e.keyCode ? e.keyCode : e.which);
+		 if(code == 13) { //Enter keycode
+		   if ($('#registerAppFormSubmit').attr('disabled') != 'disabled') {
+		      $('#registerAppFormSubmit').click();
+		   }
+		   return false;
+		 }
+      });
+      $('#registerApp_id_input').bind('keyup', function(e) {
+      	 var code = (e.keyCode ? e.keyCode : e.which);
+		 if (code == 27) { // escape keycode
+		 	$('#registerAppFormCancel').click();
+		 	return false;
+		 } 
+      });
       return false
     })
 
@@ -248,7 +263,7 @@
       // URL is parsed in config.js and made available
       var title = config.subhost.charAt(0).toUpperCase() + config.subhost.substr( 1 )
       if (title === 'Si') title = 'Social Insurance'
-      if ( config.province ) title += ' '+ config.provinceNames[config.province]
+      if ( config.province ) title += ' '+ config.province.toUpperCase()
       title += ' Resource Server Dashboard'
       $('#title').text( title )
       var flag = config.province || 'ca'
