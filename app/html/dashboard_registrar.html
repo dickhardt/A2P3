@@ -14,7 +14,6 @@
 	<link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
   <script type="text/javascript"    src="/js/purl.js"></script>
   <script type="text/javascript" src="/js/common.js"></script>
@@ -290,8 +289,8 @@
           var item = 0  // use a counter since the app has '.'s which browser is cranky about in element IDs
           $('#appTable').append( "<thead><th class='tableRowAgentName' style='width: 30%; text-align:left;'>Name</th><th class='tableRowAgentName'  style='width: 30%; text-align:left;'>Id</th></thead>" )
           $.each( list, function ( app ) {
-            html = '<tr><td class="tableRowAgentName"><a class="otherLinks" href="" id="' + item +'_details">' + list[app] +'</a>' +
-              '</td><td  class="tableRowAgentName">' + app + '</td></tr>'
+            html = '<tr><td class="tableRow"><a class="otherLinks" href="" id="' + item +'_details">' + list[app] +'</a>' +
+              '</td><td  class="tableRow">' + app + '</td></tr>'
             $('#appTable').append( html )
             $('#'+item+'_details').click( function () { return showAppDetails( app, true ); } )
             item++

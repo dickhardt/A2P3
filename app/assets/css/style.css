@@ -646,11 +646,19 @@ form {
 .tableRowAgentName {
 	width: 45%;
 	text-align:left;
+	border-bottom: 1px solid black;
+	padding: 3px 18px 3px 10px;
 }
 
 .tableRowAgentDate {
 	width: 35%;
 	text-align:left;
+	border-bottom: 1px solid black;
+	padding: 3px 18px 3px 10px;
+}
+
+.tableRow {
+	padding: 3px 10px;
 }
 
 .tableRowAgentDelete {
