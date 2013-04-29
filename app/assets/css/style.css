@@ -188,6 +188,13 @@ body img[height="1"] {
 	line-height: 0.8;
 }
 
+.mainTitleSmall {
+	font-family: 'Sansus_Webissimo-Regular';
+	font-size: 28px;
+	line-height: 0.8;
+}
+
+
 .headerContainer h2 {
 	font-weight: 300;
 	font-size: 28px;
@@ -639,11 +646,19 @@ form {
 .tableRowAgentName {
 	width: 45%;
 	text-align:left;
+	border-bottom: 1px solid black;
+	padding: 3px 18px 3px 10px;
 }
 
 .tableRowAgentDate {
 	width: 35%;
 	text-align:left;
+	border-bottom: 1px solid black;
+	padding: 3px 18px 3px 10px;
+}
+
+.tableRow {
+	padding: 3px 10px;
 }
 
 .tableRowAgentDelete {
@@ -1068,4 +1083,8 @@ p.label_checkbox_pair label {
 
 .ui-widget-header {
 	background: none !important;
+}
+
+.ui-dialog-titlebar {
+	border: 0px !important;
 }
