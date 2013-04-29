@@ -187,6 +187,22 @@
       $('#registerApp_id_input').removeAttr('disabled')
       $('#registerAppFormSubmit').removeAttr('disabled')
       $('#registerAppFormCancel').removeAttr('disabled')
+      $('#registerApp_id_input').bind('keypress', function(e) {
+      	 var code = (e.keyCode ? e.keyCode : e.which);
+		 if(code == 13) { //Enter keycode
+		   if ($('#registerAppFormSubmit').attr('disabled') != 'disabled') {
+		    	$('#registerAppFormSubmit').click();
+		   }
+		   return false;
+		 }
+      });
+      $('#registerApp_id_input').bind('keyup', function(e) {
+      	 var code = (e.keyCode ? e.keyCode : e.which);
+		 if (code == 27) { // escape keycode
+		 	$('#registerAppFormCancel').click();
+		 	return false;
+		 } 
+      });
       return false
     })
 
