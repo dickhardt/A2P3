@@ -9,10 +9,11 @@
 	<meta name="viewport" content="width=device-width,initial-scale=1, maximum-scale=1,user-scalable=no">
 	<link rel="stylesheet" href="/css/style.css">
 	<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/themes/base/jquery-ui.css">
+  <title>Bank Demo</title>
 </head>
 <body>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/jquery-ui.min.js"></script> 
+  <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/jquery-ui.min.js"></script>
   <script type="text/javascript"    src="/js/purl.js"></script>
   <script type="text/javascript"    src="/js/jquery.qrcode.min.js"></script>
   <script type="text/javascript" src="/js/common.js"></script>
@@ -80,7 +81,7 @@
 		  <a href="" id="newAccount" class="genericButton"> Open an Account </a>
 		  <a href="" id="login" class="genericButton"> Login </a>
 		  <a href="/logout" id="logout" class="genericButton">Logout</a>
-		  
+
 		  <a href="/close" id="closeAccount" class="genericButton">Close Account</a>
 		</div>
 	</div>
@@ -94,7 +95,7 @@
 	  <a href="/login/backdoor" id="loginBackdoor" class="backdoorLinks"> Login </a>
 	  * Backdoor *
 	</div>
-	
+
 </section>
 -->
 <div title="Scan the QR Code with your Personal Agent" id="qrcodeForm">
@@ -103,6 +104,16 @@
 
 
 <script type="text/javascript">
+// Google Analytics
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-38150737-1']);
+_gaq.push(['_setDomainName', 'a2p3.net']);
+_gaq.push(['_trackPageview']);
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
 
 function onReady() {
 
@@ -279,7 +290,7 @@ function onReady() {
       $('#introduction').hide()
       $('#backdoor').hide()
       $('#diContainer').show()
-      
+
       if (data.result['people.a2p3.net'])
         approveTOS( data.result )
       else

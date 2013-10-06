@@ -10,11 +10,23 @@
 	<link rel="stylesheet" href="/css/style.css">
 	<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/themes/base/jquery-ui.css">
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-	<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/jquery-ui.min.js"></script> 
+	<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/jquery-ui.min.js"></script>
 	<script type="text/javascript" src="/js/purl.js"></script>
 	<script type="text/javascript" src="/js/common.js"></script>
 </head>
 <body>
+<script>
+// Google Analytics
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-38150737-1']);
+_gaq.push(['_setDomainName', 'a2p3.net']);
+_gaq.push(['_trackPageview']);
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
 	<div id="fb-root"></div>
 	<script>
 
@@ -29,7 +41,7 @@
 				cookie : true, // set sessions cookies to allow your server to access the session?
 				xfbml : false,  // parse XFBML tags on this page?
 			});
-			
+
 			checkForMobileLogon();
 
 			FB.Event.subscribe('auth.statusChange', function( response) {
@@ -38,9 +50,11 @@
 
 				if (response.status === 'connected') {
 					$.post( '/fb/login', response.authResponse, function ( data, status ) {
-						if ( status != 'success') return console.error( status, 'returned from Setup server ')
-						if ( data.error ) return console.error( 'Setup returned error', data.error )
-						if ( !data.result && !data.result.url ) console.error('No URL received from Setup')
+						if ( status != 'success')
+							return // console.error( status, 'returned from Setup server ')
+						if ( data.error )
+							return // console.error( 'Setup returned error', data.error )
+						// if ( !data.result && !data.result.url ) console.error('No URL received from Setup')
 						window.location = data.result.url
 					})
 				}
@@ -71,13 +85,13 @@
 		    	FB.login(undefined, {scope: 'email'});
 		   	}
 		}
-		
+
 		function checkForMobileLogon () {
 			if (window.location.toString().indexOf('access_token') >= 0) {
 				window.FB.getLoginStatus()
 			}
 		}
-		
+
 	</script>
 
 
@@ -108,7 +122,7 @@ Under no circumstances will the operator of this service be liable to any person
 
 						</div>
 						<div style="overflow:hidden;" class="formItemButtonSetupPage">
-							<a onclick="login()" class="login-button"> 
+							<a onclick="login()" class="login-button">
 					          <span>Login with Facebook</span>
 					        </a>
 					    </div>

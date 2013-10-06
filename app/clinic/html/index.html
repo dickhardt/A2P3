@@ -6,58 +6,70 @@
   .di {text-align:right;}
   .loginItem {padding-left: 5px;}
 </style>
-	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-	<meta name="viewport" content="width=device-width,initial-scale=1, maximum-scale=1,user-scalable=no">
-	<link rel="stylesheet" href="/css/style.css">
-	<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/themes/base/jquery-ui.css">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1, maximum-scale=1,user-scalable=no">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/themes/base/jquery-ui.css">
+  <title>Clinic Demo</title>
 </head>
 <body>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/jquery-ui.min.js"></script> 
+  <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/jquery-ui.min.js"></script>
   <script type="text/javascript"    src="/js/purl.js"></script>
   <script type="text/javascript"    src="/js/jquery.qrcode.min.js"></script>
   <script type="text/javascript" src="/js/common.js"></script>
 
 <header class="header">
-	<section class="headerContainer">
-		<a href="http://a2p3.net"><img class="headerLogo" alt="A2P3" src="/images/a2p3_logo.png" border="0"></a>
-		<span class="mainTitle">Clinic Check&nbsp;In</span>
-		<div class="mainTitleText">Welcome to the Clinic Point of Service</div>
-	</section>
+  <section class="headerContainer">
+    <a href="http://a2p3.net"><img class="headerLogo" alt="A2P3" src="/images/a2p3_logo.png" border="0"></a>
+    <span class="mainTitle">Clinic Check&nbsp;In</span>
+    <div class="mainTitleText">Welcome to the Clinic Point of Service</div>
+  </section>
 </header>
 <section class="mainContent">
-	<div class="mainContentWrap">
-		<div id="diContainer" class="di">
-  		  <span id="directedIdentifier"></span>
-		  <a class="otherLinks" href="" id="showDI">show DI</a>
-		  <a class="otherLinks" href="" id="hideDI">hide DI</a>
-		</div>
-		<br>
-		<table id="profileTable"> </table>
-		<br><br>
-		<div class="loginStatus">
-		  <a href="" id="login" class="genericButton">&nbsp;&nbsp;&nbsp;&nbsp;Check In&nbsp;&nbsp;&nbsp;&nbsp;</a>
-		  <a href="/logout" id="logout" class="genericButton">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Done&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
-		</div>
-		<br>
-		<br>
-	</div>
+  <div class="mainContentWrap">
+    <div id="diContainer" class="di">
+        <span id="directedIdentifier"></span>
+      <a class="otherLinks" href="" id="showDI">show DI</a>
+      <a class="otherLinks" href="" id="hideDI">hide DI</a>
+    </div>
+    <br>
+    <table id="profileTable"> </table>
+    <br><br>
+    <div class="loginStatus">
+      <a href="" id="login" class="genericButton">&nbsp;&nbsp;&nbsp;&nbsp;Check In&nbsp;&nbsp;&nbsp;&nbsp;</a>
+      <a href="/logout" id="logout" class="genericButton">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Done&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+    </div>
+    <br>
+    <br>
+  </div>
 </section>
 <!--
 <section class="footerContent">
-	<div class="loginStatus" id="backdoor">
-	  * Backdoor *
-	  <a href="/login/backdoor" id="loginBackdoor" class="backdoorLinks"> Check In </a>
-	  * Backdoor *
-	</div>
+  <div class="loginStatus" id="backdoor">
+    * Backdoor *
+    <a href="/login/backdoor" id="loginBackdoor" class="backdoorLinks"> Check In </a>
+    * Backdoor *
+  </div>
 </section>
 -->
 
 <div title="Scan the QR Code with your Personal Agent" id="qrcodeForm">
-	<div style="text-align: center;" id="qrcode"></div>
+  <div style="text-align: center;" id="qrcode"></div>
 </div>
-  
+
 <script type="text/javascript">
+
+// Google Analytics
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-38150737-1']);
+_gaq.push(['_setDomainName', 'a2p3.net']);
+_gaq.push(['_trackPageview']);
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
 
 function onReady() {
 
@@ -109,6 +121,7 @@ function onReady() {
           return setTimeout( function () { checkQR( qrSession ) }, 500 )
         // if (data.error) console.log( data.error )
         if (data.result) {
+          _gaq.push(['_trackPageview', '/login/QR/complete']);
           $('#qrcodeForm').hide()
           $("#qrcodeForm").dialog("close");
           $('#logout').show()
@@ -122,15 +135,18 @@ function onReady() {
 
   $('#login').click( function () {
     if (config.agentDirect) {
+      _gaq.push(['_trackEvent', 'Login', 'Direct', 'Clinic'])
       window.location = '/login/direct'
     } else {  // put up QR code
+      _gaq.push(['_trackEvent', 'Login', 'QR', 'Clinic'])
+      _gaq.push(['_trackPageview', '/login/QR/start']);
       $.post( '/login/QR', function ( data, status ) {
         if (status == "success" && !data.error && data.result && data.result.qrURL && data.result.qrSession ) {
           $('#qrcode').empty()
-          $('#qrcodeForm').dialog({
-		  	width : getQRCodeSize() + 35,
-		  	height : getQRCodeSize() + 80
-		  });
+          $('#qrcodeForm').dialog(
+            { width: getQRCodeSize() + 35
+            , height : getQRCodeSize() + 80
+            })
           $('#qrcode').qrcode( {width: getQRCodeSize(), height: getQRCodeSize(), text: data.result.qrURL, render: getQRCodeRenderType() } )
           $('#qrcode').css({cursor: 'none'});
           setTimeout( function () { checkQR( data.result.qrSession ) }, 500 )

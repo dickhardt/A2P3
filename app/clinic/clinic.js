@@ -73,10 +73,28 @@ function storeTokenRequest( result, callback ) {
   callback( null )
 }
 
+// personal agent links and store images
+var STORES =
+  { iOS:
+    { url: "https://itunes.apple.com/us/app/personal-agent/id615429770?mt=8&uo=4"
+    , image: "/images/Download_on_the_App_Store_Badge_US-UK_135x40.png"
+    }
+  , windowsPhone:
+    { url: "http://www.windowsphone.com/en-ca/store/app/personalagent/cb6a6cab-f905-4387-818e-17e838189146"
+    , image: "/images/Windows_Phone_Store_154x40.png"
+    }
+}
+
 // metaRedirectInfoPage() returns a meta-refresh page with the supplied URL
-function metaRedirectInfoPage ( redirectURL ) {
+function metaRedirectInfoPage ( redirectURL, userAgent ) {
   var html = fs.readFileSync( META_REFRESH_HTML_FILE, 'utf8' )
-  return html.replace( '$REDIRECT_URL', redirectURL )
+  html = html.replace( '$REDIRECT_URL', redirectURL )
+  var mobilePlatform = 'iOS'  // default
+  if (userAgent.indexOf("Windows Phone 8") > -1)
+    mobilePlatform = 'windowsPhone'
+  html = html.replace( '$STORE_URL', STORES[mobilePlatform].url)
+  html = html.replace( '$STORE_IMAGE', STORES[mobilePlatform].image)
+  return html
 }
 
 function fetchProfile( agentRequest, ixToken, callback ) {
@@ -117,7 +135,7 @@ function loginDirect( req, res ) {
     return res.send( { result: { request: agentRequest } } )
   } else {
     var redirectURL = 'a2p3.net://token?request=' + agentRequest
-      , html = metaRedirectInfoPage( redirectURL )
+      , html = metaRedirectInfoPage( redirectURL, req.headers['user-agent'] )
     res.send( html )
   }
 }

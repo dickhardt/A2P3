@@ -10,14 +10,26 @@
 <link rel="stylesheet" href="/css/style.css">
 <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/themes/base/jquery-ui.css">
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/jquery-ui.min.js"></script> 
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/jquery-ui.min.js"></script>
 <script type="text/javascript" src="/js/jquery.qrcode.min.js"></script>
 <script type="text/javascript" src="/js/purl.js"></script>
 <script type="text/javascript" src="/js/common.js"></script>
 
 </head>
 <body>
-  <header class="header">
+<script>
+// Google Analytics
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-38150737-1']);
+_gaq.push(['_setDomainName', 'a2p3.net']);
+_gaq.push(['_trackPageview']);
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+<header class="header">
     <section class="headerContainer">
       <a href="http://a2p3.net"><img class="headerLogo" alt="A2P3" src="/images/a2p3_logo.png" border="0"></a>
       <span class="mainTitle">A2P3</span>
@@ -153,6 +165,7 @@
                   $('#passcodeForm').fadeOut('fast')
                   return
                 }
+                _gaq.push(['_trackEvent', 'Agent', 'Personal', 'Direct'])
                 var qrURL = data.result.qrURL
                 window.location = qrURL
                 // wait a bit, and the redirect to Dashboard so that is in browser

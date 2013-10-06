@@ -16,11 +16,23 @@
 		<!-- link rel="shortcut icon" href="/static/favicon.png" -->
 
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-		<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/jquery-ui.min.js"></script> 
+		<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/jquery-ui.min.js"></script>
 		<script type="text/javascript" src="/js/jquery.dataTables.min.js"></script>
 		<script type="text/javascript" src="/js/purl.js"></script>
 		<script type="text/javascript" src="/js/common.js"></script>
-	</head>
+	<script>
+// Google Analytics
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-38150737-1']);
+_gaq.push(['_setDomainName', 'a2p3.net']);
+_gaq.push(['_trackPageview']);
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+</head>
 	<body>
 		<header class="header">
 			<section class="headerContainer">
@@ -114,8 +126,7 @@
 									You'll need an iOS device with a camera running iOS 5 or 6 and the iOS personal agent app.
 								</div>
 
-								<input type="submit" value="Add iOS Agent" ontouchstart=""
-								class="buttonAddIOS">
+								<input type="submit" value="Add iOS Agent" ontouchstart="" class="buttonAddIOS">
 							</form>
 						</div>
 						<div class="dashboardSection">
@@ -298,7 +309,7 @@
 				$('#agentCLI_form').hide()
 				$('#agentCLI_success').hide()
 				$('#agentCLI_delete').hide()
-				
+
 				$('#agentTableWrap').hide();
 				$('#hasAgentIntroText').hide();
 				$('#hasNoAgentIntroText').hide();
@@ -378,7 +389,7 @@
 					width : 400,
 					open: function() {
 				        var $this = $(this);
-				
+
 				        $this.keypress(function(e) {
 				            if( e.keyCode == 13 ) {
 				                $this.parent().find('.ui-dialog-buttonpane button:last').click();
@@ -387,7 +398,7 @@
 				        });
 				    },
 					buttons : {
-						
+
 						"Cancel" : function() {
 							$(this).dialog("close");
 						},
@@ -403,6 +414,7 @@
 								if (status == 'success') {
 									$('#agentCLI_device').val(data.result.device)
 									$('#agentCLI_token').val(data.result.token)
+									_gaq.push(['_trackEvent', 'Agent', 'CLI'])
 								} else {
 									$('#agentCLI_device').text = 'Error creating CLI Agent'
 								}
