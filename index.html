@@ -108,7 +108,7 @@ $(document).ready( function ($) {
     var link = this.text
     if ( !link.match(/\w/) )
       link = this.host // this.host will be supplied for image links to stores where there is no text in the link
-     _gaq.push(['_trackEvent', 'Outbound Link', link ])
+    _gaq.push(['_trackEvent', 'Outbound Link', link ])
   })
 })
 
