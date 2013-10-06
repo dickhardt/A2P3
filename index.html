@@ -105,8 +105,8 @@ A2P3 is being developed under the <a href="http://www.openwebfoundation.org/">Op
 // hook all links with a Google Analytics tracking event
 $(document).ready( function ($) {
   $('a').on('click', function ( event ) {
-     _gaq.push(['_trackEvent', 'Outbound Link', this.text || this.host ]) // this.host will be supplied for image links to stores
-     console.log('tracking event:', this.text)
+    var link = this.text || this.host // this.host will be supplied for image links to stores
+     _gaq.push(['_trackEvent', 'Outbound Link', link ])
   })
 })
 
