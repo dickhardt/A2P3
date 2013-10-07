@@ -37,13 +37,17 @@ var config = {};
     , 'yt': 'Yukon'
     }
 
-// detect if running on platform that supports having a Personal Agent
-
+  // check if are running on a mobile platform to determine if we put up QR code or redirect to a2p3: scheme
   var deviceAgent = navigator.userAgent.toLowerCase()
   var iOS = deviceAgent.match(/(iphone|ipod|ipad)/)
-  var isAndroid = deviceAgent.indexOf("android") > -1
-  config.agentDirect = iOS   // || isAndroid // don't support Android yet
+  var isWindowsPhone8 = deviceAgent.indexOf("windows phone 8") > -1
 
+  // the following are placeholders, there may be additional refinement as to which platforms the available agents can properly run on
+  var isBlackberry10 = deviceAgent.indexOf("bb10") > -1
+  var isAndroid = deviceAgent.indexOf("android") > -1
+
+  // flag to indicate we will invoke the agent directly via a2p3: and put a link to the agent in the meta_refresh page
+  config.agentDirect = iOS || isWindowsPhone8 // agents are only available for iOS and Windows Phone 8
 
 })();
 

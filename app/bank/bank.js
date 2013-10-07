@@ -260,7 +260,7 @@ function newDirect( req, res ) {
     return res.send( { result: { request: agentRequest } } )
   } else {
     var redirectURL = 'a2p3.net://token?request=' + agentRequest
-    var html = metaRedirectInfoPage( redirectURL )
+    var html = metaRedirectInfoPage( redirectURL, req.headers['user-agent'] )
     res.send( html )
   }
 }
@@ -305,7 +305,7 @@ function qrCode( req, res ) {
     return res.send( { result: { agentRequest: agentRequest, state: qrSession } } )
   } else {
     var redirectURL = 'a2p3://token?request=' + agentRequest + '&state=' + qrSession
-    var html =  metaRedirectInfoPage( redirectURL )
+    var html =  metaRedirectInfoPage( redirectURL, req.headers['user-agent'] )
     return res.send( html )
   }
 }
@@ -329,7 +329,7 @@ function qrNewCode( req, res ) {
     return res.send( response )
   } else {
     var redirectURL = 'a2p3://token?request=' + agentRequest + '&state=' + qrSession
-    var html =  metaRedirectInfoPage( redirectURL )
+    var html =  metaRedirectInfoPage( redirectURL, req.headers['user-agent'] )
     return res.send( html )
   }
 }

@@ -175,7 +175,7 @@ body img[height="1"] {
 }
 
 .headerContainer .mainLogo {
-	
+
 }
 
 .removeUserButton {
@@ -203,7 +203,7 @@ body img[height="1"] {
 }
 
 form {
-	
+
 }
 
 .formItemImage,.formItem {
@@ -541,7 +541,7 @@ form {
 	white-space: nowrap;
 }
 
-.buttonRemoveAgent,.buttonAddIOS,.buttonCreateCLI,.submitContinue,.submitCancel,.submitEnroll,.submit
+.buttonRemoveAgent,.buttonAddPersonalAgent,.buttonCreateCLI,.submitContinue,.submitCancel,.submitEnroll,.submit
 	{
 	background: none;
 	border: none;
@@ -624,7 +624,7 @@ form {
 	height: 35px;
 }
 
-.buttonAddIOS {
+.buttonAddPersonalAgent {
 	width: 150px;
 	height: 24px;
 	font-size: 13px;
@@ -748,13 +748,13 @@ form {
 }
 
 .submitCancel {
-	
+
 }
 
 .ie7 .submit,.ie8 .submit {
-	filter: progid:DXImageTransform.Microsoft.gradient(              
-		                     
-		                     
+	filter: progid:DXImageTransform.Microsoft.gradient(
+
+
 		                     startColorstr='#e9573f', endColorstr='#be3322',
 		GradientType=0 );
 }
@@ -763,7 +763,7 @@ form {
 	line-height: 44px;
 }
 
-.buttonRemoveAgent:hover,.buttonCreateCLI:hover,.buttonAddIOS:hover,.submitContinue:hover,.submitCancel:hover,.submitEnroll:hover,.submit:hover
+.buttonRemoveAgent:hover,.buttonCreateCLI:hover,.buttonAddPersonalAgent:hover,.submitContinue:hover,.submitCancel:hover,.submitEnroll:hover,.submit:hover
 	{
 	background: rgb(63, 164, 239);
 	background: -moz-linear-gradient(top, rgba(63, 164, 239, 1) 0%,
@@ -780,7 +780,7 @@ form {
 		rgba(16, 116, 190, 1) 100% );
 }
 
-.buttonRemoveAgent:active,.buttonCreateCLI:active,.buttonAddIOS:active,.submitContinue:active,.submitCancel:active,.submitEnroll:active,.submit:active
+.buttonRemoveAgent:active,.buttonCreateCLI:active,.buttonAddPersonalAgent:active,.submitContinue:active,.submitCancel:active,.submitEnroll:active,.submit:active
 	{
 	background: rgb(30, 86, 190);
 	background: -moz-linear-gradient(top, rgba(27, 116, 170, 1) 0%,

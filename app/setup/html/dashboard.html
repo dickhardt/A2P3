@@ -70,7 +70,7 @@ _gaq.push(['_trackPageview']);
 											<input style="float: right;" name="removeUserButton"
 											style="margin-top: 5px; margin-left: 15px;" type="button"
 											value="Delete Account" ontouchstart="" id="removeUserButton"
-											class="buttonAddIOS">
+											class="buttonAddPersonalAgent">
 										</td>
 									</TR>
 									<tr>
@@ -119,14 +119,22 @@ _gaq.push(['_trackPageview']);
 							<form class="formIOS" method="get" id="iOSAgents"
 							action="/dashboard/agent/basic">
 								<div class="categoryTitle">
-									<span id="peopleServerLabel">iOS Agents</span>
+									<span id="peopleServerLabel">iOS or Windows Phone 8 Agents</span>
 								</div>
 
 								<div class="dashboardCategoryTitleDetail">
-									You'll need an iOS device with a camera running iOS 5 or 6 and the iOS personal agent app.
+									You'll need one of:
+									<ul>
+										<li>
+									 	iOS device with a camera running iOS 5 or later and the iOS personal agent app.
+										</li>
+										<li>
+									 	Windows Phone 8 device and the Windows Phone 8 personal agent app installed.
+										</li>
+									</ul>
 								</div>
 
-								<input type="submit" value="Add iOS Agent" ontouchstart="" class="buttonAddIOS">
+								<input type="submit" value="Add Personal Agent" ontouchstart="" class="buttonAddPersonalAgent">
 							</form>
 						</div>
 						<div class="dashboardSection">
@@ -134,7 +142,7 @@ _gaq.push(['_trackPageview']);
 								<span id="peopleServerLabel">CLI & Development Agents</span>
 							</div>
 							<div class="dashboardCategoryTitleDetail">
-								If you are a developer, a command line agent will allow you to register your own applications into the A2P3 technology research system and against the various resource servers.  See the A2P3.NET website for more information.
+								If you are a developer, a command line agent will allow you to register your own applications into the A2P3 technology research system and against the various resource servers.  See the <a href="http://a2p3.net">A2P3.NET</a> for more information.
 							</div>
 
 							<input type="submit" value="Create CLI Agent" ontouchstart=""

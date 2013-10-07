@@ -174,7 +174,7 @@ function qrCode( req, res ) {
     return res.send( { result: { agentRequest: agentRequest, state: qrSession } } )
   } else {
     var redirectURL = 'a2p3://token?request=' + agentRequest + '&state=' + qrSession
-    var html =  metaRedirectInfoPage( redirectURL )
+    var html =  metaRedirectInfoPage( redirectURL, req.headers['user-agent'] )
     return res.send( html )
   }
 }
